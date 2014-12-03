@@ -6,7 +6,7 @@ using System.Text;
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
-    public struct DateTimeLayout : IEquatable<DateTimeLayout>
+    internal struct DateTimeLayout : IEquatable<DateTimeLayout>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(DateTimeLayout other)
@@ -57,7 +57,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
         }
     }
 
-    public static class DateTimeLayoutTabRecordExtensions
+    internal static class DateTimeLayoutTabRecordExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void AppendInTabRecordFormat(this StringBuilder builder, DateTimeLayout value)

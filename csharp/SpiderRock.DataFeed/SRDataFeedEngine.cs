@@ -184,7 +184,7 @@ namespace SpiderRock.DataFeed
         {
             return new IPEndPoint(
                 IPAddress.Parse(string.Format("233.74.249.{0}", (int) channel)),
-                40000 + ((int) SysEnvironment*1000) + (int) channel);
+                40000 + ((30 + (int) SysEnvironment)*500) + (int) channel);
         }
 
         ~SRDataFeedEngine()

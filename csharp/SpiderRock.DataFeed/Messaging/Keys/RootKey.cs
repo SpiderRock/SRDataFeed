@@ -12,23 +12,20 @@ using SpiderRock.DataFeed.Diagnostics;
 
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
-    public class RootKey : IEquatable<RootKey>, IComparable<RootKey>, IEquatable<RootKeyLayout>
+    public class RootKey : IEquatable<RootKey>, IComparable<RootKey>, IKeyEquatable<RootKeyLayout>
     {
-        private static SpinLock spinLock = new SpinLock();
+        private static SpinLock keyCacheLock = new SpinLock();
         private static readonly Dictionary<RootKeyLayout, RootKey> KeyCache = new Dictionary<RootKeyLayout, RootKey>();
 
         public static readonly RootKey Empty = new RootKey(new RootKeyLayout());
 
-        internal static readonly string EmptyTab = Empty.TabRecord;
-        internal static readonly string EmptyStr = Empty.StringKey;
-
-        private RootKeyLayout key;
+        internal readonly RootKeyLayout Layout;
 
         private string root, stringKey, tabRecord;
 
-        private RootKey(RootKeyLayout keyLayout)
+        private RootKey(RootKeyLayout layout)
         {
-            key = keyLayout;
+            Layout = layout;
         }
 
         public override bool Equals(object obj)
@@ -38,41 +35,32 @@ namespace SpiderRock.DataFeed.Messaging.Keys
 
         public bool Equals(RootKey other)
         {
-            return !ReferenceEquals(null, other) && key == other.key;
+            return other != null && Layout == other.Layout;
+        }
+
+        bool IKeyEquatable<RootKeyLayout>.Equals(ref RootKeyLayout other)
+        {
+            return Layout.Equals(other);
         }
 
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
-            return key.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
+            return Layout.GetHashCode();
         }
 
         public AssetType AssetType
         {
-            get { return key.AssetType; }
+            get { return Layout.AssetType; }
         }
 
         public TickerSrc TickerSrc
         {
-            get { return key.TickerSrc; }
+            get { return Layout.TickerSrc; }
         }
 
         public string Root
         {
-            get { return root ?? (root = key.Root.ToString()); }
-        }
-
-        /// <summary>
-        /// Returns value is equivalent to comp1 and comp2 or creates a new value, caches it, and returns it.
-        /// </summary>
-        /// <param name="value">Existing value.</param>
-        /// <param name="comp">The value that is compared to <see cref="value"/>.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RootKey CreateOrReuse(RootKey value, RootKeyLayout comp)
-        {
-            return (value != null && value.key == comp) ? value : GetCreateRootKey(comp);
+            get { return root ?? (root = Layout.Root.ToString()); }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -84,15 +72,11 @@ namespace SpiderRock.DataFeed.Messaging.Keys
             if (KeyCache.TryGetValue(key, out cacheKey)) return cacheKey;
 
             bool lockTaken = false;
-            spinLock.Enter(ref lockTaken);
-
-            if (!lockTaken)
-            {
-                SRTrace.KeyErrors.TraceError("GetCreateRootKey: SpinLock Miss");
-            }
 
             try
             {
+                keyCacheLock.Enter(ref lockTaken);
+
                 if (!KeyCache.TryGetValue(key, out cacheKey))
                 {
                     KeyCache[key] = cacheKey = new RootKey(key);
@@ -100,19 +84,26 @@ namespace SpiderRock.DataFeed.Messaging.Keys
                     if (!cacheKey.IsValid)
                     {
                         SRTrace.KeyErrors.TraceError("GetCreateRootKey: Invalid: {0}",
-                                  cacheKey.StringKey);
+                            cacheKey.StringKey);
                     }
                 }
 
                 return cacheKey;
             }
-            catch
+            catch (Exception e)
             {
-                SRTrace.KeyErrors.TraceError("GetCreateRootKey: Cache Exception");
+                SRTrace.KeyErrors.TraceError(e, "GetCreateRootKey: Cache Exception");
             }
             finally
             {
-                if (lockTaken) spinLock.Exit(false);
+                if (lockTaken)
+                {
+                    keyCacheLock.Exit(false);
+                }
+                else
+                {
+                    SRTrace.KeyErrors.TraceError("GetCreateRootKey: SpinLock Miss");
+                }
             }
 
             return Empty;
@@ -157,7 +148,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
 
         public bool IsValid
         {
-            get { return !key.IsEmpty && key.Root.Length > 0; }            
+            get { return !Layout.IsEmpty && Layout.Root.Length > 0; }            
         }
 
         public bool HasDigit
@@ -199,12 +190,6 @@ namespace SpiderRock.DataFeed.Messaging.Keys
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(RootKeyLayout other)
-        {
-            return key.Equals(other);
-        }
-
         public override string ToString()
         {
             return StringKey;
@@ -213,13 +198,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
         public int CompareTo(RootKey other)
         {
             if (other == null) return 1;
-            return key.CompareTo(other.key);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator RootKeyLayout(RootKey v)
-        {
-            return v.key;
+            return Layout.CompareTo(other.Layout);
         }
     }
 } // namespace

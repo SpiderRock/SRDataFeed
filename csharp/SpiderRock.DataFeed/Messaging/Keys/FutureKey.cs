@@ -12,82 +12,162 @@ using SpiderRock.DataFeed.Diagnostics;
 
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
-    public class FutureKey : IComparable<FutureKey>, IEquatable<FutureKey>, IEquatable<FutureKeyLayout>
+    public class FutureKey : IComparable<FutureKey>, IEquatable<FutureKey>, IKeyEquatable<FutureKeyLayout>
     {
-        public static readonly int NowIndex = DateTime.Today.Year * 10000 + DateTime.Today.Month * 100 + DateTime.Today.Day;
+        public static readonly int NowIndex = DateTime.Today.Year*10000 + DateTime.Today.Month*100 + DateTime.Today.Day;
 
-        private static SpinLock spinLock = new SpinLock();
+        private static SpinLock keyCacheLock = new SpinLock();
         private static readonly Dictionary<FutureKeyLayout, FutureKey> KeyCache = new Dictionary<FutureKeyLayout, FutureKey>();
 
         public static readonly FutureKey Empty = new FutureKey(new FutureKeyLayout());
 
-        internal static readonly string EmptyTab = Empty.TabRecord;
-        internal static readonly string EmptyStr = Empty.StringKey;
+        internal readonly FutureKeyLayout Layout;
+        private string ccode;
+        private string expiration;
+        private string stringKey, tabRecord;
 
-        private FutureKeyLayout key;
-        private string ccode, stringKey, tabRecord, expiration;
-       
-        private FutureKey(FutureKeyLayout keyLayout)
+        private FutureKey(FutureKeyLayout layout)
         {
-            key = keyLayout;
+            Layout = layout;
         }
 
         public AssetType AssetType
         {
-            get { return key.AssetType; }
+            get { return Layout.AssetType; }
         }
 
         public TickerSrc TickerSrc
         {
-            get { return key.TickerSrc; }
+            get { return Layout.TickerSrc; }
         }
 
         public int TickerSrcInt
         {
-            get { return (byte) key.TickerSrc; }
+            get { return (byte) Layout.TickerSrc; }
         }
 
         public string CCode
         {
-            get { return ccode ?? (ccode = key.CCode.ToString()); }
-        }             
+            get { return ccode ?? (ccode = Layout.CCode.ToString()); }
+        }
 
         public int Year
         {
-            get { return key.Year; }
+            get { return Layout.Year; }
         }
 
         public int Month
         {
-            get { return key.Month; }
+            get { return Layout.Month; }
         }
 
         public int Day
         {
-            get { return key.Day; }
+            get { return Layout.Day; }
         }
 
         public RootKey RootKey
         {
-            get { return RootKey.GetCreateRootKey(new RootKeyLayout(key.AssetType, key.TickerSrc, key.CCode)); }
+            get { return RootKey.GetCreateRootKey(new RootKeyLayout(Layout.AssetType, Layout.TickerSrc, Layout.CCode)); }
         }
 
         public DateTime Date
         {
-            get { return new DateTime(key.Year, key.Month, key.Day); }
+            get { return new DateTime(Layout.Year, Layout.Month, Layout.Day); }
         }
 
-        /// <summary>
-        /// Returns value is equivalent to comp1 and comp2 or creates a new value, caches it, and returns it.
-        /// </summary>
-        /// <param name="value">Existing value.</param>
-        /// <param name="comp">The value that is compared to <see cref="value"/>.</param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static FutureKey CreateOrReuse(FutureKey value, FutureKeyLayout comp)
+        public bool IsValid
         {
-            return (value != null && value.key == comp) ? value : GetCreateFutureKey(comp);
+            get
+            {
+                if (string.IsNullOrEmpty(CCode)) return false;
+
+                int yr = Year;
+                int mn = Month;
+                int dy = Day;
+
+                if (yr < 1901 || yr > 2150) return false;
+                if (mn < 1 || mn > 12) return false;
+                if (dy < 1 || dy > 31) return false;
+
+                return true;
+            }
         }
+
+        public int ExpIndex
+        {
+            get { return Year*10000 + Month*100 + Day; }
+        }
+
+        public string Expiration
+        {
+            get { return expiration ?? (expiration = string.Format("{0:D4}-{1:D2}-{2:D2}", Year, Month, Day)); }
+        }
+
+        public bool IsExpired
+        {
+            get { return (ExpIndex < NowIndex); }
+        }
+
+        public string StringKey
+        {
+            get { return stringKey ?? (stringKey = String.Format("{0}-{1}-{2}-{3:D4}-{4:D2}-{5:D2}", CCode, TickerSrc, AssetType, Year, Month, Day)); }
+        }
+
+        public string TabRecord
+        {
+            get { return tabRecord ?? (tabRecord = String.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}", CCode, TickerSrc, AssetType, Year, Month, Day)); }
+        }
+
+        public static string TabHeader
+        {
+            get { return "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy"; }
+        }
+
+        public int CompareTo(FutureKey other)
+        {
+            if (other == null) return 1;
+            return Layout.CompareTo(other.Layout);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(FutureKey other)
+        {
+            return other != null && Layout.Equals(other.Layout);
+        }
+
+        bool IKeyEquatable<FutureKeyLayout>.Equals(ref FutureKeyLayout other)
+        {
+            return Layout.Equals(other);
+        }
+
+        #region relational operator overloads
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator <(FutureKey x, FutureKey y)
+        {
+            return x.Layout.CCode < y.Layout.CCode;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator >(FutureKey x, FutureKey y)
+        {
+            return x.Layout.CCode > y.Layout.CCode;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator <=(FutureKey x, FutureKey y)
+        {
+            return x.Layout.CCode <= y.Layout.CCode;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator >=(FutureKey x, FutureKey y)
+        {
+            return x.Layout.CCode >= y.Layout.CCode;
+        }
+
+        #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static FutureKey GetCreateFutureKey(FutureKeyLayout key)
@@ -98,15 +178,11 @@ namespace SpiderRock.DataFeed.Messaging.Keys
             if (KeyCache.TryGetValue(key, out cacheKey)) return cacheKey;
 
             bool lockTaken = false;
-            spinLock.Enter(ref lockTaken);
-
-            if (!lockTaken)
-            {
-                SRTrace.KeyErrors.TraceError("GetCreateFutureKey: SpinLock Miss");
-            }
 
             try
             {
+                keyCacheLock.Enter(ref lockTaken);
+
                 if (!KeyCache.TryGetValue(key, out cacheKey))
                 {
                     KeyCache[key] = cacheKey = new FutureKey(key);
@@ -114,198 +190,29 @@ namespace SpiderRock.DataFeed.Messaging.Keys
                     if (!cacheKey.IsValid)
                     {
                         SRTrace.KeyErrors.TraceError("GetCreateFutureKey: Invalid: {0}, trace={1}",
-                                  cacheKey.StringKey, Environment.StackTrace);
+                            cacheKey.StringKey, Environment.StackTrace);
                     }
                 }
 
                 return cacheKey;
             }
-            catch
+            catch (Exception e)
             {
-                SRTrace.KeyErrors.TraceError("GetCreateFutureKey: Cache Exception");
+                SRTrace.KeyErrors.TraceError(e, "GetCreateFutureKey: Cache Exception");
             }
             finally
             {
-                if (lockTaken) spinLock.Exit(false);
+                if (lockTaken)
+                {
+                    keyCacheLock.Exit(false);
+                }
+                else
+                {
+                    SRTrace.KeyErrors.TraceError("GetCreateFutureKey: SpinLock Miss");
+                }
             }
 
             return Empty;
-        }
-
-        public static FutureKey GetCreateFutureKey(string futureKeyStr)
-        {
-            if (futureKeyStr == null)
-            {
-                SRTrace.KeyErrors.TraceError("GetCreateFutureKey: futureKeyStr Null");
-
-                return Empty; 
-            }
-
-            string[] tokens = futureKeyStr.Split('-');
-
-            if (tokens.Length != 6)
-            {
-                SRTrace.KeyErrors.TraceError("GetCreateFutureKey: futureKeyStr: [{0}]", futureKeyStr);
-
-                return Empty;             
-            }
-
-            int yr, mn, dy;
-
-            int.TryParse(tokens[3], out yr);
-            int.TryParse(tokens[4], out mn);
-            int.TryParse(tokens[5], out dy);           
-
-            return GetCreateFutureKey(tokens[2], tokens[1], tokens[0], yr, mn, dy);
-        }
-
-        public static FutureKey GetCreateFutureKey(string assetType, string tickerSrc, string root, int year, int month, int day)
-        {
-            AssetType at;
-            Enum.TryParse(assetType, out at);            
-
-            TickerSrc ts;
-            Enum.TryParse(tickerSrc, out ts);
-            
-            return GetCreateFutureKey(at, ts, root, year, month, day);
-        }
-
-        public static FutureKey GetCreateFutureKey(AssetType assetType, TickerSrc tickerSrc, string root, int year, int month, int day)
-        {
-            return GetCreateFutureKey(new FutureKeyLayout(assetType, tickerSrc, root, year, month, day));
-        }
-
-        public bool IsValid
-        {
-            get
-            {                  
-                if (string.IsNullOrEmpty(CCode)) return false;
-
-                int yr = Year;
-                int mn = Month;
-                int dy = Day;
-             
-                if (yr < 1901 || yr > 2150) return false;
-                if (mn < 1 || mn > 12) return false;
-                if (dy < 1 || dy > 31) return false;              
-
-                return true;
-            }
-        }
-
-        public int ExpIndex
-        {
-            get { return Year * 10000 + Month * 100 + Day; }
-        }
-
-        public string Expiration
-        {
-            get
-            {
-                return expiration ?? (expiration = string.Format("{0:D4}-{1:D2}-{2:D2}", Year, Month, Day));
-            }
-        }
-
-        public bool IsExpired
-        {
-            get
-            {
-                return (ExpIndex < NowIndex);
-            }
-        }
-
-        public string StringKey
-        {
-            get
-            {
-                return stringKey ?? (stringKey = String.Format("{0}-{1}-{2}-{3:D4}-{4:D2}-{5:D2}", CCode, TickerSrc, AssetType, Year, Month, Day));
-            }
-        }
-
-        public string TabRecord
-        {
-            get
-            {
-                return tabRecord ?? (tabRecord = String.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}", CCode, TickerSrc, AssetType, Year, Month, Day));
-            }
-        }
-
-        public static string TabHeader
-        {
-            get
-            {
-                return "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy";
-            }
-        }
-
-        public int CompareTo(FutureKey other)
-        {
-            if (other == null) return 1;
-            return key.CompareTo(other.key);
-        }
-
-        #region relational operator overloads
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <(FutureKey x, FutureKey y)
-        {
-            return x.key.CCode < y.key.CCode;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >(FutureKey x, FutureKey y)
-        {
-            return x.key.CCode > y.key.CCode;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <=(FutureKey x, FutureKey y)
-        {
-            return x.key.CCode <= y.key.CCode;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >=(FutureKey x, FutureKey y)
-        {
-            return x.key.CCode >= y.key.CCode;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <(FutureKey x, RootLayout y)
-        {
-            return x.key.CCode < y;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >(FutureKey x, RootLayout y)
-        {
-            return x.key.CCode > y;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <=(FutureKey x, RootLayout y)
-        {
-            return x.key.CCode <= y;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >=(FutureKey x, RootLayout y)
-        {
-            return x.key.CCode >= y;
-        }
-
-        #endregion
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(FutureKey other)
-        {
-            return key.Equals(other);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(FutureKeyLayout other)
-        {
-            return key.Equals(other);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -313,14 +220,5 @@ namespace SpiderRock.DataFeed.Messaging.Keys
         {
             return StringKey;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator FutureKeyLayout(FutureKey v)
-        {
-            return v.key;
-        }
     }
-
 } // namespace
-
-

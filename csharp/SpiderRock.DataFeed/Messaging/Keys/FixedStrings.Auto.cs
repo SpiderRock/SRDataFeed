@@ -14,7 +14,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
 {
 	
 	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-	public unsafe struct FixedString12Layout : IEquatable<FixedString12Layout>, IComparable<FixedString12Layout>, IEquatable<string>
+	internal unsafe struct FixedString12Layout : IEquatable<FixedString12Layout>, IComparable<FixedString12Layout>, IEquatable<string>
 	{
 		public fixed byte chars[12];
 
@@ -201,7 +201,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
 	}
  	
 	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-	public unsafe struct FixedString16Layout : IEquatable<FixedString16Layout>, IComparable<FixedString16Layout>, IEquatable<string>
+	internal unsafe struct FixedString16Layout : IEquatable<FixedString16Layout>, IComparable<FixedString16Layout>, IEquatable<string>
 	{
 		public fixed byte chars[16];
 
@@ -388,7 +388,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
 	}
  	
 	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-	public unsafe struct FixedString256Layout : IEquatable<FixedString256Layout>, IComparable<FixedString256Layout>, IEquatable<string>
+	internal unsafe struct FixedString256Layout : IEquatable<FixedString256Layout>, IComparable<FixedString256Layout>, IEquatable<string>
 	{
 		public fixed byte chars[256];
 
@@ -575,7 +575,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
 	}
  	
 	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-	public unsafe struct FixedString32Layout : IEquatable<FixedString32Layout>, IComparable<FixedString32Layout>, IEquatable<string>
+	internal unsafe struct FixedString32Layout : IEquatable<FixedString32Layout>, IComparable<FixedString32Layout>, IEquatable<string>
 	{
 		public fixed byte chars[32];
 

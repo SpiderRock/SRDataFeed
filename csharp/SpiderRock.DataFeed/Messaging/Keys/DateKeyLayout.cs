@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
-    public struct DateKeyLayout : IEquatable<DateKeyLayout>
+    internal struct DateKeyLayout : IEquatable<DateKeyLayout>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(DateKeyLayout other)

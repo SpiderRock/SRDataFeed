@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 8)]
-    public struct TimeSpanLayout : IEquatable<TimeSpanLayout>
+    internal struct TimeSpanLayout : IEquatable<TimeSpanLayout>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(TimeSpanLayout other)

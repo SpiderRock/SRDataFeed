@@ -12,45 +12,40 @@ using SpiderRock.DataFeed.Diagnostics;
 
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
-    public class StockKey : IComparable<StockKey>, IEquatable<StockKeyLayout>
+    public class StockKey : IComparable<StockKey>, IEquatable<StockKey>, IKeyEquatable<StockKeyLayout>
     {
-        private static SpinLock spinLock = new SpinLock();
-
-        private static readonly Dictionary<StockKeyLayout, StockKey> KeyCache =
-            new Dictionary<StockKeyLayout, StockKey>();
+        private static SpinLock keyCacheLock = new SpinLock();
+        private static readonly Dictionary<StockKeyLayout, StockKey> KeyCache = new Dictionary<StockKeyLayout, StockKey>();
 
         public static readonly StockKey Empty = new StockKey(new StockKeyLayout());
 
-        internal static readonly string EmptyTab = Empty.TabRecord;
-        internal static readonly string EmptyStr = Empty.StringKey;
-        private StockKeyLayout key;
+        internal readonly StockKeyLayout Layout;
+        private readonly bool is4Letter;
+        private readonly string ticker;
 
         private string stringKey, tabRecord;
-        private string ticker;
 
-        private bool is4Letter;
-
-        private StockKey(StockKeyLayout key)
+        private StockKey(StockKeyLayout layout)
         {
-            this.key = key;
+            Layout = layout;
 
-            ticker = key.Ticker.ToString();
+            ticker = layout.Ticker.ToString();
             is4Letter = (ticker.Length > 3);
         }
 
         public AssetType AssetType
         {
-            get { return key.AssetType; }
+            get { return Layout.AssetType; }
         }
 
         public TickerSrc TickerSrc
         {
-            get { return key.TickerSrc; }
+            get { return Layout.TickerSrc; }
         }
 
         public int TickerSrcInt
         {
-            get { return (int) key.TickerSrc; }
+            get { return (int) Layout.TickerSrc; }
         }
 
         public string Ticker
@@ -60,7 +55,7 @@ namespace SpiderRock.DataFeed.Messaging.Keys
 
         public bool IsValid
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return (TickerSrc != TickerSrc.None && AssetType != AssetType.None && !key.Ticker.IsEmpty); }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return (TickerSrc != TickerSrc.None && AssetType != AssetType.None && !Layout.Ticker.IsEmpty); }
         }
 
         public bool Is4Letter
@@ -86,7 +81,18 @@ namespace SpiderRock.DataFeed.Messaging.Keys
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int CompareTo(StockKey b)
         {
-            return key.CompareTo(b.key);
+            return Layout.CompareTo(b.Layout);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(StockKey other)
+        {
+            return other != null && Layout.Equals(other.Layout);
+        }
+
+        bool IKeyEquatable<StockKeyLayout>.Equals(ref StockKeyLayout other)
+        {
+            return Layout.Equals(other);
         }
 
         #region relational operator overloads
@@ -94,67 +100,31 @@ namespace SpiderRock.DataFeed.Messaging.Keys
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <(StockKey x, StockKey y)
         {
-            return x.key.Ticker < y.key.Ticker;
+            return x.Layout.Ticker < y.Layout.Ticker;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >(StockKey x, StockKey y)
         {
-            return x.key.Ticker > y.key.Ticker;
+            return x.Layout.Ticker > y.Layout.Ticker;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <=(StockKey x, StockKey y)
         {
-            return x.key.Ticker <= y.key.Ticker;
+            return x.Layout.Ticker <= y.Layout.Ticker;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >=(StockKey x, StockKey y)
         {
-            return x.key.Ticker >= y.key.Ticker;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <(StockKey x, TickerLayout y)
-        {
-            return x.key.Ticker < y;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >(StockKey x, TickerLayout y)
-        {
-            return x.key.Ticker > y;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator <=(StockKey x, TickerLayout y)
-        {
-            return x.key.Ticker <= y;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator >=(StockKey x, TickerLayout y)
-        {
-            return x.key.Ticker >= y;
+            return x.Layout.Ticker >= y.Layout.Ticker;
         }
 
         #endregion
 
-        /// <summary>
-        ///     Returns value is equivalent to comp1 and comp2 or creates a new value, caches it, and returns it.
-        /// </summary>
-        /// <param name="value">Existing value.</param>
-        /// <param name="comp">The value that is compared to value.</param>
-        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static StockKey CreateOrReuse(StockKey value, StockKeyLayout comp)
-        {
-            return (value != null && value.key == comp) ? value : GetCreateStockKey(comp);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static StockKey GetCreateStockKey(StockKeyLayout key)
+        internal static StockKey GetCreateStockKey(StockKeyLayout key)
         {
             if (key.IsEmpty) return Empty;
 
@@ -162,15 +132,11 @@ namespace SpiderRock.DataFeed.Messaging.Keys
             if (KeyCache.TryGetValue(key, out cacheKey)) return cacheKey;
 
             bool lockTaken = false;
-            spinLock.Enter(ref lockTaken);
-
-            if (!lockTaken)
-            {
-                SRTrace.KeyErrors.TraceError("GetCreateStockKey: SpinLock Miss");
-            }
 
             try
             {
+                keyCacheLock.Enter(ref lockTaken);
+
                 if (!KeyCache.TryGetValue(key, out cacheKey))
                 {
                     KeyCache[key] = cacheKey = new StockKey(key);
@@ -178,19 +144,26 @@ namespace SpiderRock.DataFeed.Messaging.Keys
                     if (!cacheKey.IsValid)
                     {
                         SRTrace.KeyErrors.TraceError("GetCreateStockKey: Invalid: {0}",
-                                  cacheKey.StringKey);
+                            cacheKey.StringKey);
                     }
                 }
 
                 return cacheKey;
             }
-            catch
+            catch (Exception e)
             {
-                SRTrace.KeyErrors.TraceError("GetCreateStockKey: Cache Exception");
+                SRTrace.KeyErrors.TraceError(e, "GetCreateStockKey: Cache Exception");
             }
             finally
             {
-                if (lockTaken) spinLock.Exit(false);
+                if (lockTaken)
+                {
+                    keyCacheLock.Exit(false);
+                }
+                else
+                {
+                    SRTrace.KeyErrors.TraceError("GetCreateStockKey: SpinLock Miss");
+                }
             }
 
             return Empty;
@@ -241,21 +214,9 @@ namespace SpiderRock.DataFeed.Messaging.Keys
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(StockKeyLayout other)
-        {
-            return key.Equals(other);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
             return StringKey;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator StockKeyLayout(StockKey v)
-        {
-            return v.key;
         }
     }
 }

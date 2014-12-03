@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct RootKeyLayout : IEquatable<RootKeyLayout>, IComparable<RootKeyLayout>
+    internal struct RootKeyLayout : IEquatable<RootKeyLayout>, IComparable<RootKeyLayout>
     {
         public RootKeyLayout(AssetType assetType, TickerSrc tickerSrc, RootLayout root)
         {

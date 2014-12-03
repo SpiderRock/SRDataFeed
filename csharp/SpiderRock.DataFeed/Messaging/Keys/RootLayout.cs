@@ -8,7 +8,7 @@ using System.Threading;
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public unsafe struct RootLayout :
+    internal unsafe struct RootLayout :
         IEquatable<RootLayout>, 
         IEquatable<string>, 
         IComparable<RootLayout>

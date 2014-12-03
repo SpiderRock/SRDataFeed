@@ -4,6 +4,7 @@ using System.Net;
 using SpiderRock.DataFeed;
 using SpiderRock.DataFeed.Messaging;
 using SpiderRock.DataFeed.Diagnostics;
+using SpiderRock.DataFeed.Proto.DBL.Myricom;
 
 namespace ServerExample
 {
@@ -22,17 +23,20 @@ namespace ServerExample
                 {
                     SysEnvironment = SysEnvironment.Stable,
 
-                    // Substitute the address of the adapter
+                    // TODO: Substitute the address of the adapter
 
                     IFAddress = IPAddress.Parse("127.0.0.1"),
 
-                    // Substitute the address (or hostname) and port of the cache server
+                    // Network adapter interface address can also be obtained this way (the array index may vary):
+                    //IFAddress = MyricomAdapter.Addresses[0],
+
+                    // TODO: Substitute the address (or hostname) and port of the cache server
 
                     CacheHost = "127.0.0.1",
-                    CachePort = 8123,
+                    CachePort = 3260,
 
 
-                    // Channel subscriptions.  One dedicated thread is used
+                    // Channel subscriptions.  A dedicated thread is used
                     // to process incoming messages
 
                     Channels = new[]
@@ -50,8 +54,8 @@ namespace ServerExample
                         UdpChannel.StkNbboQuote4
                     }
 
-                    // Alternatively, it's possible to create custom assignments of
-                    // channels to dedicated threads by creating channel thread groups:
+                    // Alternatively, it's possible to assign sets of channels to 
+                    // dedicated threads by creating channel thread groups:
 
                     //ChannelThreadGroups = new[]
                     //{

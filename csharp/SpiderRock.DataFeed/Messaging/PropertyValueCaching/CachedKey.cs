@@ -1,10 +1,10 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using SpiderRock.DataFeed.Messaging.Keys;
 
 namespace SpiderRock.DataFeed.Messaging.PropertyValueCaching
 {
     internal abstract class CachedKey<TKey, TKeyLayout> : CachedValue<TKey, TKeyLayout>
-        where TKey : class, IEquatable<TKeyLayout>
+        where TKey : class, IKeyEquatable<TKeyLayout> 
         where TKeyLayout : struct
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -26,7 +26,7 @@ namespace SpiderRock.DataFeed.Messaging.PropertyValueCaching
 
                 Version = version;
 
-                if (Value.Equals(keyLayout)) return Value;
+                if (Value.Equals(ref keyLayout)) return Value;
 
                 Value = ToKey(keyLayout);
 

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    unsafe public struct FutureKeyLayout : IEquatable<FutureKeyLayout>, IComparable<FutureKeyLayout>
+    unsafe internal struct FutureKeyLayout : IEquatable<FutureKeyLayout>, IComparable<FutureKeyLayout>
     {
         public FutureKeyLayout(AssetType assetType, TickerSrc tickerSrc, RootLayout ccode, int year, int month,
                                int day)

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiderRock.DataFeed.Messaging.Keys
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct OptionKeyLayout : IEquatable<OptionKeyLayout>, IComparable<OptionKeyLayout>
+    internal struct OptionKeyLayout : IEquatable<OptionKeyLayout>, IComparable<OptionKeyLayout>
     {
         public static readonly int NowIndex = DateTime.Today.Year * 10000 + DateTime.Today.Month * 100 + DateTime.Today.Day;
 

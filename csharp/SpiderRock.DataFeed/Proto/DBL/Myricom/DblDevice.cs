@@ -258,23 +258,29 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
 
         private async void WorkerMonitor(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            try
             {
-                await Task.Delay(TimeSpan.FromMinutes(1), token);
+                while (!token.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(1), token);
 
-                SRTrace.NetDbl.TraceDebug(
-                    "ReadWorker [{0:D2}]: state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10}/{11})",
-                    0, readLoopState, readLoopCount, readSpinCount, spinYieldAttempt, spinYieldSwitch, spinSleep0,
-                    readErrorCount,
-                    receiveWorkerThread != null ? receiveWorkerThread.ThreadState : ThreadState.Unstarted,
-                    receiveWorkerThread != null && receiveWorkerThread.IsAlive, IFAddress, source);
+                    SRTrace.NetDbl.TraceDebug(
+                        "ReadWorker [{0:D2}]: state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10}/{11})",
+                        0, readLoopState, readLoopCount, readSpinCount, spinYieldAttempt, spinYieldSwitch, spinSleep0,
+                        readErrorCount,
+                        receiveWorkerThread != null ? receiveWorkerThread.ThreadState : ThreadState.Unstarted,
+                        receiveWorkerThread != null && receiveWorkerThread.IsAlive, IFAddress, source);
 
-                readLoopCount = 0;
-                readSpinCount = 0;
+                    readLoopCount = 0;
+                    readSpinCount = 0;
 
-                spinSleep0 = 0;
-                spinYieldSwitch = 0;
-                spinYieldAttempt = 0;
+                    spinSleep0 = 0;
+                    spinYieldSwitch = 0;
+                    spinYieldAttempt = 0;
+                }
+            }
+            catch (TaskCanceledException)
+            {
             }
         }
 

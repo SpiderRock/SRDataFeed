@@ -59,6 +59,7 @@
     <Compile Include="ChangedEventArgs.cs" />
     <Compile Include="CreatedEventArgs.cs" />
     <Compile Include="FrameHandling\MessageHandler.cs" />
+    <Compile Include="Messaging\Keys\IKeyEquatable.cs" />
     <Compile Include="SRDataFeedEngine.Auto.cs" />
     <Compile Include="UdpChannelThreadGroup.cs" />
     <Compile Include="SRDataFeedEngine.cs" />
