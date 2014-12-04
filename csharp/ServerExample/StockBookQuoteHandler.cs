@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using SpiderRock.DataFeed;
-using SpiderRock.DataFeed.Messaging;
 
 namespace ServerExample
 {

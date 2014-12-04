@@ -7,7 +7,6 @@ using System.Net.Sockets;
 using System.Threading;
 using SpiderRock.DataFeed.Cache;
 using SpiderRock.DataFeed.FrameHandling;
-using SpiderRock.DataFeed.Messaging;
 using SpiderRock.DataFeed.Proto.DBL;
 using SpiderRock.DataFeed.Diagnostics;
 
@@ -131,11 +130,6 @@ namespace SpiderRock.DataFeed
                 .First(addr => addr.AddressFamily == AddressFamily.InterNetwork);
 
             return address;
-        }
-
-        public void AddGlobalTraceListener(TraceListener traceListener)
-        {
-            SRTrace.AddGlobalTraceListener(traceListener);
         }
 
         public bool GetCachedMessages(TimeSpan timeout, params MessageType[] requestList)

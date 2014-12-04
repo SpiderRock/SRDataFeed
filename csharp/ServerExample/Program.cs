@@ -2,9 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 using SpiderRock.DataFeed;
-using SpiderRock.DataFeed.Messaging;
 using SpiderRock.DataFeed.Diagnostics;
-using SpiderRock.DataFeed.Proto.DBL.Myricom;
 
 namespace ServerExample
 {
@@ -28,7 +26,7 @@ namespace ServerExample
                     IFAddress = IPAddress.Parse("127.0.0.1"),
 
                     // Network adapter interface address can also be obtained this way (the array index may vary):
-                    //IFAddress = MyricomAdapter.Addresses[0],
+                    //IFAddress = SpiderRock.DataFeed.Proto.DBL.Myricom.MyricomAdapter.Addresses[0],
 
                     // TODO: Substitute the address (or hostname) and port of the cache server
 

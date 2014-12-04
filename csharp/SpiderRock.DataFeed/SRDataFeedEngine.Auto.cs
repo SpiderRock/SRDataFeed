@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 using SpiderRock.DataFeed.FrameHandling;
-using SpiderRock.DataFeed.Messaging;
 using SpiderRock.DataFeed.Diagnostics;
 
 namespace SpiderRock.DataFeed

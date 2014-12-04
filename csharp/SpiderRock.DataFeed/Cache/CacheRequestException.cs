@@ -2,7 +2,7 @@
 
 namespace SpiderRock.DataFeed.Cache
 {
-    public class CacheRequestException : Exception
+    internal class CacheRequestException : Exception
     {
         public CacheRequestException(string message) : base(message)
         {

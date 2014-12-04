@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using SpiderRock.DataFeed.Messaging;
+using SpiderRock.DataFeed.FrameHandling;
 using SpiderRock.DataFeed.Diagnostics;
 
 namespace SpiderRock.DataFeed

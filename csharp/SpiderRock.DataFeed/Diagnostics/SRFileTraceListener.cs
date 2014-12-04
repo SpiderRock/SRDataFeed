@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using SpiderRock.DataFeed.Messaging;
 
 namespace SpiderRock.DataFeed.Diagnostics
 {

@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using SpiderRock.DataFeed.FrameHandling;
-using SpiderRock.DataFeed.Messaging;
 using SpiderRock.DataFeed.Diagnostics;
 
 namespace SpiderRock.DataFeed.Cache
