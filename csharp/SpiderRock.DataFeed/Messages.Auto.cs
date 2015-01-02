@@ -21,7 +21,6 @@ namespace SpiderRock.DataFeed
 	/// FutureBookQuote:111
 	/// </summary>
 	/// <remarks>
-	/// Live Future Market Data 
 	/// --- FutureBookQuote ---
 	/// </remarks>
 
@@ -869,7 +868,7 @@ namespace SpiderRock.DataFeed
 	/// LiveSurfaceAtm:356
 	/// </summary>
 	/// <remarks>
-	/// Live ATM/Surface Records
+	/// Live Surface Atm Records
 	/// LiveSurfaceAtm
 	/// note: this records is computed live during the day
 	/// </remarks>
@@ -1106,6 +1105,8 @@ namespace SpiderRock.DataFeed
 			public float pwidth;
 			public float vwidth;
 			public float sdivEMA;
+			public float sdivLoEMA;
+			public float sdivHiEMA;
 			public float atmMAC;
 			public float cprMAC;
 			public float cAtmMove;
@@ -1244,6 +1245,12 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>sdiv exp moving average (10 minutes)</summary>
         public float SdivEMA { get { return body.sdivEMA; } set { body.sdivEMA = value; } }
+ 
+		
+        public float SdivLoEMA { get { return body.sdivLoEMA; } set { body.sdivLoEMA = value; } }
+ 
+		
+        public float SdivHiEMA { get { return body.sdivHiEMA; } set { body.sdivHiEMA = value; } }
  
 		
         public float AtmMAC { get { return body.atmMAC; } set { body.atmMAC = value; } }
@@ -2168,7 +2175,6 @@ namespace SpiderRock.DataFeed
 	/// OptionNbboQuote:102
 	/// </summary>
 	/// <remarks>
-	/// Live Option Market Data 
 	/// --- OptionNbboQuote ---
 	/// </remarks>
 
@@ -3648,7 +3654,9 @@ namespace SpiderRock.DataFeed
 	/// StockBookQuote:121
 	/// </summary>
 	/// <remarks>
-	/// Live Stock Market Data 
+	/// Composite stock book feed computed for all available feeds.  This stream should
+	/// be used to determine best ex stock routing and for internal micro market modeling.
+	/// Updates on every tick
 	/// </remarks>
 
     public partial class StockBookQuote
@@ -4640,7 +4648,9 @@ namespace SpiderRock.DataFeed
 	/// StockPrint:122
 	/// </summary>
 	/// <remarks>
-	/// --- stock print records ---
+	/// Consolidated stock print which contains last print and tick test across all
+	/// data streams.  This stream is used to compute short sale tick tests at the point of order
+	/// generation. Updates on every print.
 	/// </remarks>
 
     public partial class StockPrint

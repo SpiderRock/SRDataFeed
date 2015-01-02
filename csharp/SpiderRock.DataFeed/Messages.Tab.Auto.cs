@@ -230,7 +230,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\taxisVol\tcAtm\tpAtm\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\ttimestamp";
+		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\taxisVol\tcAtm\tpAtm\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tsdivLoEMA\tsdivHiEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\ttimestamp";
 
 		public string TabRecord
         {
@@ -309,6 +309,10 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(Vwidth);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(SdivEMA);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SdivLoEMA);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SdivHiEMA);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AtmMAC);
 				recordBuilder.Append("\t");

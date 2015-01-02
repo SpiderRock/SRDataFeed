@@ -17,6 +17,8 @@
         FutQuoteNymex = 23,
         FutQuoteComex = 24,
 
+        CMEAdmin = 25,
+
         OptQuoteCme = 31,
         OptQuoteCbot = 32,
         OptQuoteNymex = 33,
