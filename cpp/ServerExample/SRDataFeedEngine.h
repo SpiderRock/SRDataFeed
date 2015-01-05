@@ -10,14 +10,17 @@
 
 #include "stdafx.h"
 
-#include "MessageBus.h"
+#include "Mbus.h"
 #include "IPEndPoint.h"
 #include "EventObserver.h"
+#include "CoreMessages.h"
 
 namespace SpiderRock
 {
 	namespace DataFeed
 	{
+		using namespace Mbus;
+		
 		class SRDataFeedEngine
 		{
 			class impl;

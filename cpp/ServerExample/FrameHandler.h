@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 
+#include "MbusEnums.h"
 #include "MessageHandler.h"
 #include "Channel.h"
 #include "DblLib.h"
@@ -10,6 +11,8 @@ namespace SpiderRock
 {
 	namespace DataFeed
 	{
+		using namespace Mbus;
+
 		class FrameHandler : public Myricom::DblReadHandler<Channel>
 		{
 			class ErrorCounter
@@ -20,7 +23,7 @@ namespace SpiderRock
 				string label_;
 
 			public:
-				ErrorCounter(const string& label, uint8_t max) : label_(label), max_(max), counter_(-1), max_reached_(false) { }
+				ErrorCounter(const string& label, uint8_t max) : counter_(-1), max_(max), max_reached_(false), label_(label) { }
 				~ErrorCounter() { }
 
 				inline const string& label() const { return label_; }
@@ -40,7 +43,7 @@ namespace SpiderRock
 			FrameHandler(SysEnvironment env);
 			~FrameHandler();
 
-			void RegisterMessageHandler(MessageHandler* msg_handler);
+			void RegisterMessageHandler(MessageHandler* message_handler, initializer_list<MessageType> message_types);
 
 			int Handle(uint8_t* buffer, uint32_t length, Channel* channel, const sockaddr_in& source);
 		};

@@ -6,11 +6,11 @@ namespace SpiderRock
 {
 	namespace DataFeed
 	{
-		template<class __TmessageKey, class _Tmessage> class MessageEventSource : public SpiderRock::DataFeed::MessageHandler
+		template<class __TmessageKey, class _Tmessage> 
+		class MessageEventSource : public SpiderRock::DataFeed::MessageHandler
 		{
 			unordered_map<__TmessageKey, _Tmessage, __TmessageKey, __TmessageKey> objects_by_key_;
 			mutex objects_by_key_mutex_;
-			vector<MessageType> message_types_;
 
 			vector<shared_ptr<CreateEventObserver<_Tmessage>>> on_create_observers_;
 			vector<shared_ptr<ChangeEventObserver<_Tmessage>>> on_change_observers_;
@@ -18,7 +18,6 @@ namespace SpiderRock
 
 		public:
 			MessageEventSource() :
-				message_types_({ _Tmessage::Type }),
 				objects_by_key_(),
 				objects_by_key_mutex_()
 			{
@@ -31,8 +30,6 @@ namespace SpiderRock
 			void RegisterObserver(shared_ptr<CreateEventObserver<_Tmessage>> observer);
 			void RegisterObserver(shared_ptr<ChangeEventObserver<_Tmessage>> observer);
 			void RegisterObserver(shared_ptr<UpdateEventObserver<_Tmessage>> observer);
-
-			inline const vector<MessageType>& HandledTypes() const { return message_types_; }
 
 			void Handle(Header* header, uint64_t timestamp);
 		};
@@ -58,10 +55,10 @@ namespace SpiderRock
 		template<class __TmessageKey, class _Tmessage>
 		void MessageEventSource<__TmessageKey, _Tmessage>::Handle(Header* header, uint64_t timestamp)
 		{
-			if (header->key_len != sizeof(__TmessageKey))
+			if (header->key_length != sizeof(__TmessageKey))
 			{
 				throw runtime_error(
-					"Invalid MBUS Record: msg.keylen=" + to_string(header->key_len) +
+					"Invalid MBUS Record: msg.keylen=" + to_string(header->key_length) +
 					", obj.keylen=" + to_string(sizeof(__TmessageKey)));
 			}
 

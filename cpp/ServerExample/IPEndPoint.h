@@ -2,9 +2,12 @@
 
 #include "stdafx.h"
 
-#if defined _WINDOWS_
+#include <cstring>
+
+#ifdef _WINDOWS_
 #	include <winsock.h>
 #else
+#	include <netdb.h>
 #	include <sys/types.h>
 #	include <sys/socket.h>
 #	include <netinet/in.h>
@@ -37,7 +40,11 @@ namespace SpiderRock
 				}
 				else
 				{
+#ifdef _WINDOWS_
 					addr.S_un.S_addr = inet_addr(h);
+#else
+					addr.s_addr = inet_addr(h);
+#endif
 				}
 
 				return addr;
@@ -118,7 +125,11 @@ namespace SpiderRock
 
 			inline bool operator == (const IPEndPoint& other) const
 			{
+#ifdef _WINDOWS_
 				return port_ == other.port_ && address_.S_un.S_addr == other.address_.S_un.S_addr;
+#else
+				return port_ == other.port_ && address_.s_addr == other.address_.s_addr;
+#endif
 			}
 		};
 	}

@@ -1,4 +1,9 @@
+#include <stdio.h>
 #include "FrameHandler.h"
+
+#ifdef __GNUC__
+#	include <ctime>
+#endif
 
 using namespace SpiderRock::DataFeed;
 
@@ -11,10 +16,12 @@ inline bool FrameHandler::ErrorCounter::ShouldLog()
 {
 	if (max_reached_) return false;
 
-#if defined(_WINDOWS_)
+#ifdef _WINDOWS_
 	auto c = InterlockedIncrement16(&counter_);
+#elif defined __GNUC__
+	auto c = __sync_add_and_fetch(&counter_, 1);
 #else
-#	error FrameHandler::ErrorCounter::ShouldLog() only implemented on Windows
+#	error FrameHandler::ErrorCounter::ShouldLog() InterlockedIncrement implementation missing for this compiler
 #endif
 
 	if (c == max_)
@@ -32,7 +39,7 @@ inline bool FrameHandler::ErrorCounter::ShouldLog()
 FrameHandler::FrameHandler(SysEnvironment env)
 	: env_(env), frame_parse_error_("Frame parse error", 50)
 {
-	for (int i = 0; i < MAX_MESSAGE_TYPE; i++)
+	for (UShort i = 0; i < MAX_MESSAGE_TYPE; i++)
 	{
 		msg_handlers_[i] = nullptr;
 
@@ -45,7 +52,7 @@ FrameHandler::FrameHandler(SysEnvironment env)
 
 FrameHandler::~FrameHandler()
 {
-	for (int i = 0; i < MAX_MESSAGE_TYPE; i++)
+	for (UShort i = 0; i < MAX_MESSAGE_TYPE; i++)
 	{
 		msg_handlers_[i] = nullptr;
 		channel_cross_errors_[i] = nullptr;
@@ -54,56 +61,66 @@ FrameHandler::~FrameHandler()
 	}
 }
 
-void FrameHandler::RegisterMessageHandler(MessageHandler* msg_handler)
+void FrameHandler::RegisterMessageHandler(MessageHandler* message_handler, initializer_list<MessageType> message_types)
 {
-	for (MessageType message_type : msg_handler->HandledTypes())
+	for (MessageType message_type : message_types)
 	{
-		msg_handlers_[message_type] = msg_handler;
+		msg_handlers_[static_cast<size_t>(message_type)] = message_handler;
 	}
 }
 
 int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, const sockaddr_in& source)
 {
-	uint32_t offset = 0;
+	int32_t offset = 0;
 
 	try
 	{
+		int64_t timestamp;
+#ifdef _WINDOWS_
 		LARGE_INTEGER ts;
 		QueryPerformanceCounter(&ts);
+		timestamp = ts.QuadPart - ts.QuadPart;
+#elif defined __GNUC__
+		timespec ts;
+		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
+		timestamp = ts.tv_nsec;
+#endif
 
 		while (offset + sizeof(Header) <= length)
 		{
 			Header* header = reinterpret_cast<Header*>(buffer + offset);
 
-			if (!IsValid(header->env) || !IsValid(header->msg_type) || header->msg_len <= sizeof(Header) + header->key_len)
+			if (!IsValid(header->environment) || 
+				!IsValid(header->message_type) || 
+				header->message_length <= (sizeof(Header) + header->key_length))
 			{
 				channel->SetLastError(INVALID_HEADER_ENCOUNTERED);
 				return -1; // throw invalid frame error
 			}
 
-			if (offset + header->msg_len > length) break;
+			if (offset + header->message_length > (int32_t)length) break;
 
-			channel->IncrementMessageTypeCounters(header->msg_type, header->msg_len);
+			channel->IncrementMessageTypeCounters(header->message_type, header->message_length);
 
-			if (header->env == env_)
+			if (header->environment == env_)
 			{
 				try
 				{
-					MessageHandler* handler = msg_handlers_[header->msg_type];
+					MessageHandler* handler = msg_handlers_[static_cast<size_t>(header->message_type)];
 					if (handler)
 					{
-						msg_handlers_[header->msg_type]->Handle(header, ts.QuadPart - ts.QuadPart);
+						msg_handlers_[static_cast<size_t>(header->message_type)]->Handle(header, timestamp);
 					}
-					else if (unknown_msg_type_errors_[header->msg_type]->ShouldLog())
+					else if (unknown_msg_type_errors_[static_cast<size_t>(header->message_type)]->ShouldLog())
 					{
-						auto label = unknown_msg_type_errors_[header->msg_type]->label();
+						auto label = unknown_msg_type_errors_[static_cast<size_t>(header->message_type)]->label();
 						channel->SetLastError(label.c_str());
 						SR_LOG_ERR(label);
 					}
 				}
 				catch (const exception& e)
 				{
-					auto error_counter = msg_parse_errors_[header->msg_type].get();
+					auto error_counter = msg_parse_errors_[static_cast<size_t>(header->message_type)].get();
 
 					if (error_counter->ShouldLog())
 					{
@@ -115,25 +132,25 @@ int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, con
 			}
 			else
 			{
-				auto error_counter = channel_cross_errors_[header->msg_type].get();
+				auto error_counter = channel_cross_errors_[static_cast<size_t>(header->message_type)].get();
 
 				if (error_counter->ShouldLog())
 				{
 					SR_LOG_ERR(
-						"Channel cross: MessageType=" + to_string(header->msg_type) +
-						", SysEnvironment=" + to_string(static_cast<int>(header->env)) +
+						"Channel cross: MessageType=" + to_string(static_cast<UShort>(header->message_type)) +
+						", SysEnvironment=" + to_string(static_cast<int>(header->environment)) +
 						", Channel=" + channel->label() + ", Source=" + string(inet_ntoa(source.sin_addr)) + ":" + to_string(source.sin_port));
 				}
 
 				channel->SetLastError(error_counter->label().c_str());
 			}
 
-			offset += header->msg_len;
+			offset += header->message_length;
 		} // while              
 
 		if (offset < 0) return offset; // frame parse error (generally not recoverable)
 
-		if (offset == length) return 0;
+		if (offset == (int32_t)length) return 0;
 		if (offset == 0) return length;
 
 		channel->IncrementPartials();

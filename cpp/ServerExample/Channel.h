@@ -2,12 +2,14 @@
 
 #include "stdafx.h"
 
-#include "MessageBus.h"
+#include "MbusEnums.h"
 
 namespace SpiderRock
 {
 	namespace DataFeed
 	{
+		using namespace Mbus;
+
 		class Channel
 		{
 			string label_;

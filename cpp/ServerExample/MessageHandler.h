@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "MessageBus.h"
+#include "Mbus.h"
 
 namespace SpiderRock
 {
@@ -10,8 +10,7 @@ namespace SpiderRock
 		class MessageHandler
 		{
 		public:
-			virtual void Handle(Header* header, uint64_t timestamp) = 0;
-			virtual const vector<MessageType>& HandledTypes() const = 0;
+			virtual void Handle(Mbus::Header* header, uint64_t timestamp) = 0;
 		};
 	}
 }

@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#if defined _WINDOWS_
+#ifdef _WINDOWS_
 #	include <winsock.h>
 #else
 #	include <sys/types.h>
@@ -11,7 +11,7 @@
 #	include <arpa/inet.h>
 #endif
 
-#include "MessageBus.h"
+#include "Mbus.h"
 #include "MessageHandler.h"
 #include "FrameHandler.h"
 #include "IPEndPoint.h"
@@ -20,6 +20,8 @@ namespace SpiderRock
 {
 	namespace DataFeed
 	{
+		using namespace Mbus;
+
 		class CacheClientException : public runtime_error
 		{
 		public:
@@ -33,9 +35,8 @@ namespace SpiderRock
 			IPEndPoint end_point_;
 			FrameHandler& frame_handler_;
 			bool cancel_requested_;
-			Channel receive_channel_;
-			Channel send_channel_;
-			vector<MessageType> handled_types_;
+			shared_ptr<Channel> receive_channel_;
+			shared_ptr<Channel> send_channel_;
 
 #ifdef _WINDOWS_
 			SOCKET socket_;
@@ -48,14 +49,13 @@ namespace SpiderRock
 			void Disconnect();
 
 		public:
-			CacheClient(SysEnvironment environment, const IPEndPoint& end_point, FrameHandler& frame_handler);
+			CacheClient(SysEnvironment environment, const IPEndPoint& end_point, FrameHandler& frame_handler, shared_ptr<Channel> receive_channel, shared_ptr<Channel> send_channel);
 			~CacheClient();
 
 			void SendRequest(initializer_list<MessageType> message_types);
 			void ReadResponse();
 
 			void Handle(Header* header, uint64_t timestamp);
-			const vector<MessageType>& HandledTypes() const;
 		};
 	}
 }

@@ -6,8 +6,6 @@
 //
 // ------------------------------------------------------------------------------------------------------------------------------
 
-#pragma once
-
 #include "SRDataFeedEngine.h"
 #include "CacheClient.h"
 #include "DblLib.h"
@@ -54,23 +52,23 @@ SRDataFeedEngine::SRDataFeedEngine(SysEnvironment environment, in_addr device_ad
 {
 	Myricom::DblLib::Initialize();
 
-	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->futuresettlementmark);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->livesurfaceatm);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->optionclosemark);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->optionclosequote);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->optionimpliedquote);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->optionnbboquote);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->optionopenmark);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->optionprint);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->optionsettlementmark);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->spreadquote);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->stockbookquote);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->stockclosemark);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->stockclosequote);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->stockopenmark);
-	impl_->frame_handler.RegisterMessageHandler(&impl_->stockprint);
+	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote, { MessageType::FutureBookQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->futuresettlementmark, { MessageType::FutureSettlementMark });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->livesurfaceatm, { MessageType::LiveSurfaceAtm });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->optionclosemark, { MessageType::OptionCloseMark });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->optionclosequote, { MessageType::OptionCloseQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->optionimpliedquote, { MessageType::OptionImpliedQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->optionnbboquote, { MessageType::OptionNbboQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->optionopenmark, { MessageType::OptionOpenMark });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->optionprint, { MessageType::OptionPrint });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->optionsettlementmark, { MessageType::OptionSettlementMark });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->spreadquote, { MessageType::SpreadQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->stockbookquote, { MessageType::StockBookQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->stockclosemark, { MessageType::StockCloseMark });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->stockclosequote, { MessageType::StockCloseQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->stockopenmark, { MessageType::StockOpenMark });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->stockprint, { MessageType::StockPrint });
 }
 
 SRDataFeedEngine::~SRDataFeedEngine()
@@ -81,7 +79,12 @@ SRDataFeedEngine::~SRDataFeedEngine()
 
 void SRDataFeedEngine::MakeCacheRequest(const IPEndPoint& end_point, initializer_list<MessageType> message_types)
 {
-	CacheClient cache_client(impl_->environment, end_point, impl_->frame_handler);
+	auto send_channel = make_shared<Channel>("tcp.send(" + end_point.str() + ")");
+	auto receive_channel = make_shared<Channel>("tcp.recv(" + end_point.str() + ")");
+	impl_->channels.push_back(send_channel);
+	impl_->channels.push_back(receive_channel);
+
+	CacheClient cache_client(impl_->environment, end_point, impl_->frame_handler, receive_channel, send_channel);
 	cache_client.SendRequest(message_types);
 	cache_client.ReadResponse();
 }
@@ -96,7 +99,7 @@ void SRDataFeedEngine::CreateThreadGroup(initializer_list<UdpChannel> channels)
 		string address = "233.74.249." + to_string(static_cast<uint16_t>(c));
 		IPEndPoint ep(address, port);
 
-		auto channel = make_shared<Channel>(ep.str());
+		auto channel = make_shared<Channel>("dbl.recv(" + ep.str() + ")");
 		impl_->channels.push_back(channel);
 		dev->AddChannel(ep, channel);
 	}

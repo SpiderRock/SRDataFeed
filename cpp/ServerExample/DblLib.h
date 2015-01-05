@@ -2,6 +2,16 @@
 
 #include "stdafx.h"
 
+#ifdef _WINDOWS_
+#	include <winsock.h>
+#else
+#	include <netdb.h>
+#	include <sys/types.h>
+#	include <sys/socket.h>
+#	include <netinet/in.h>
+#	include <arpa/inet.h>
+#endif
+
 #include "dbl.h"
 
 #if !defined(SR_LOG_ERR)
@@ -64,7 +74,8 @@ namespace SpiderRock
 
 					~DblChannel()
 					{
-						DblLibCall(dbl_mcast_leave(channel_, &end_point_.address()));
+						auto addr = end_point_.address();
+						DblLibCall(dbl_mcast_leave(channel_, &addr));
 						DblLibCall(dbl_unbind(channel_));
 						context_ = nullptr;
 					}
@@ -75,7 +86,8 @@ namespace SpiderRock
 					void Join(dbl_device_t device)
 					{
 						DblLibCall(dbl_bind(device, DBL_BIND_REUSEADDR, end_point_.port(), this, &channel_));
-						DblLibCall(dbl_mcast_join(channel_, &end_point_.address(), NULL));
+						auto addr = end_point_.address();
+						DblLibCall(dbl_mcast_join(channel_, &addr, NULL));
 					}
 
 					bool operator == (const DblChannel& other) const
@@ -97,7 +109,7 @@ namespace SpiderRock
 
 			public:
 				DblDevice(const in_addr& if_addr, DblReadHandler<_Tcontext>* read_handler)
-					: if_addr_(if_addr), read_handler_(read_handler), device_(nullptr), cancel_requested_(true)
+					: if_addr_(if_addr),  device_(nullptr), read_handler_(read_handler), cancel_requested_(true)
 				{
 					DblLibCall(dbl_open(&if_addr_, DBL_OPEN_THREADSAFE, &device_));
 				}

@@ -151,15 +151,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\myricom\dbl.h" />
+    <ClInclude Include="AdminMessages.h" />
     <ClInclude Include="CacheClient.h" />
     <ClInclude Include="Channel.h" />
+    <ClInclude Include="CoreMessages.h" />
     <ClInclude Include="EventObserver.h" />
     <ClInclude Include="IPEndPoint.h" />
-    <ClInclude Include="MessageBusTypes.h" />
+    <ClInclude Include="Mbus.h" />
+    <ClInclude Include="MbusEnums.h" />
+    <ClInclude Include="MbusFields.h" />
     <ClInclude Include="MessageEventSource.h" />
     <ClInclude Include="DblLib.h" />
     <ClInclude Include="FrameHandler.h" />
-    <ClInclude Include="MessageBus.h" />
     <ClInclude Include="MessageHandler.h" />
     <ClInclude Include="SRDataFeed.h" />
     <ClInclude Include="SRDataFeedEngine.h" />

@@ -25,6 +25,9 @@
     <Filter Include="SpiderRock\Net">
       <UniqueIdentifier>{5f3285f0-dc5c-439d-aa4f-6c7445adffde}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SpiderRock\DataFeed\Mbus">
+      <UniqueIdentifier>{5d4c9f47-341d-4820-8cae-fdd53e1f982f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -40,9 +43,6 @@
       <Filter>SpiderRock\DataFeed</Filter>
     </ClInclude>
     <ClInclude Include="FrameHandler.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageBus.h">
       <Filter>SpiderRock\DataFeed</Filter>
     </ClInclude>
     <ClInclude Include="MessageHandler.h">
@@ -72,7 +72,19 @@
     <ClInclude Include="SRDataFeed.h">
       <Filter>SpiderRock\DataFeed</Filter>
     </ClInclude>
-    <ClInclude Include="MessageBusTypes.h">
+    <ClInclude Include="MbusEnums.h">
+      <Filter>SpiderRock\DataFeed\Mbus</Filter>
+    </ClInclude>
+    <ClInclude Include="Mbus.h">
+      <Filter>SpiderRock\DataFeed\Mbus</Filter>
+    </ClInclude>
+    <ClInclude Include="MbusFields.h">
+      <Filter>SpiderRock\DataFeed\Mbus</Filter>
+    </ClInclude>
+    <ClInclude Include="AdminMessages.h">
+      <Filter>SpiderRock\DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreMessages.h">
       <Filter>SpiderRock\DataFeed</Filter>
     </ClInclude>
   </ItemGroup>

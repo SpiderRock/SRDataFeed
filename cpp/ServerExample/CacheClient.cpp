@@ -1,27 +1,41 @@
 #include "CacheClient.h"
+#include "Mbus.h"
+#include "AdminMessages.h"
+
+#ifdef _WINDOWS_
+#	include <winsock.h>
+#else
+#	include <netinet/tcp.h>
+#	include <unistd.h>
+#	include <fcntl.h>
+#	include <netdb.h>
+#	include <sys/types.h>
+#	include <sys/socket.h>
+#	include <netinet/in.h>
+#	include <arpa/inet.h>
+#	include <stdio.h>
+#	include <errno.h>
+#endif
 
 using namespace SpiderRock::DataFeed;
+using namespace SpiderRock::DataFeed::Mbus;
 
-CacheClient::CacheClient(SysEnvironment environment, const IPEndPoint& end_point, FrameHandler& frame_handler) :
-	socket_				(0),
+const uint16_t MAX_MESSAGE_LENGTH = 64000;
+
+CacheClient::CacheClient(SysEnvironment environment, const IPEndPoint& end_point, FrameHandler& frame_handler, shared_ptr<Channel> receive_channel, shared_ptr<Channel> send_channel) :
 	environment_		(environment),
-	end_point_			(end_point),
+	end_point_		(end_point),
 	frame_handler_		(frame_handler),
 	cancel_requested_	(false),
-	handled_types_		({ CacheComplete::Type }),
-	send_channel_		("tcp.send(" + end_point.str() + ")"),
-	receive_channel_	("tcp.recv(" + end_point.str() + ")")
+	receive_channel_	(receive_channel),
+	send_channel_		(send_channel),
+	socket_			(0)
 {
 }
 
 CacheClient::~CacheClient()
 {
 	Disconnect();
-}
-
-const vector<MessageType>& CacheClient::HandledTypes() const
-{ 
-	return handled_types_;
 }
 
 #ifdef _WINDOWS_
@@ -92,36 +106,39 @@ void CacheClient::Disconnect()
 }
 
 #else
-#	error CacheClientException::ThrowLastError() only defined for VC++ so far
+
+void CacheClient::ThrowLastError()
+{
+	throw CacheClientException(string(strerror(errno)));
+}
 
 void CacheClient::Connect()
 {
-	end_point_.sin_family = AF_INET;
+	sockaddr_in ep = end_point_;
 	socket_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (socket_ == INVALID_SOCKET)
+	if (socket_ < 0) 
 	{
 		ThrowLastError();
 	}
 
-	int opts = fcntl(sock, F_GETFL);
-	if (opts < 0)
+	int opts = fcntl(socket_, F_GETFL);
+	if (opts < 0) 
 	{
 		ThrowLastError();
 	}
-	opts = (opts | O_NONBLOCK);
-	if (fcntl(sock, F_SETFL, opts) < 0)
+	if (fcntl(socket_, F_SETFL, opts & (~O_NONBLOCK)) < 0) 
 	{
 		ThrowLastError();
 	}
 
 	int flag = 1;
-	if (setsockopt(socket_, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&flag), sizeof(flag)) != NO_ERROR)
+	if (setsockopt(socket_, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&flag), sizeof(flag)) < 0)
 	{
 		ThrowLastError();
 	}
 
-	auto addr = reinterpret_cast<sockaddr*>(&end_point_);
-	if (connect(socket_, const_cast<const sockaddr*>(addr), sizeof end_point_) != 0)
+	auto addr = reinterpret_cast<sockaddr*>(&ep);
+	if (connect(socket_, const_cast<const sockaddr*>(addr), sizeof ep) < 0)
 	{
 		ThrowLastError();
 	}
@@ -138,10 +155,9 @@ void CacheClient::Disconnect()
 		socket_ = 0;
 	}
 }
-
 #endif
 
-
+GCC_DIAG_OFF(unused-parameter);
 void CacheClient::Handle(Header* header, uint64_t timestamp)
 {
 	CacheComplete cache_complete;
@@ -162,6 +178,7 @@ void CacheClient::Handle(Header* header, uint64_t timestamp)
 
 	cancel_requested_ = true;
 }
+GCC_DIAG_ON(unused-parameter);
 
 void CacheClient::SendRequest(initializer_list<MessageType> message_types)
 {
@@ -173,16 +190,17 @@ void CacheClient::SendRequest(initializer_list<MessageType> message_types)
 	for (MessageType t : message_types)
 	{
 		GetCache::MsgType i;
-		i.msgtype(t);
+		i.msgtype(static_cast<UShort>(t));
 		msg_types.push_back(i);
 	}
-	get_cache.header().env = environment_;
+	get_cache.header().environment = environment_;
 	get_cache.msgtype(msg_types);
 	uint16_t length = get_cache.Encode(&buf[0]);
 
 	Connect();
 
 	int sent = send(socket_, reinterpret_cast<char*>(&buf[0]), length, 0);
+	send_channel_->IncrementMessageTypeCounters(MessageType::GetCache, length);
 	if (sent != length) ThrowLastError();
 }
 
@@ -191,14 +209,14 @@ void CacheClient::ReadResponse()
 	uint8_t buf[MAX_MESSAGE_LENGTH];
 	int roffset = 0;
 
-	frame_handler_.RegisterMessageHandler(this);
+	frame_handler_.RegisterMessageHandler(this, { MessageType::CacheComplete });
 
 	while (!cancel_requested_)
 	{
 		int received = recv(socket_, reinterpret_cast<char*>(&buf[roffset]), MAX_MESSAGE_LENGTH - roffset, 0);
 		if (received < 1) ThrowLastError();
 
-		roffset = frame_handler_.Handle(&buf[0], roffset + received, &receive_channel_, end_point_);
+		roffset = frame_handler_.Handle(&buf[0], roffset + received, receive_channel_.get(), end_point_);
 		if (roffset < 0)
 		{
 			throw CacheClientException("Frame handler returned an error code");
