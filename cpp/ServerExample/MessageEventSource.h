@@ -6,10 +6,10 @@ namespace SpiderRock
 {
 	namespace DataFeed
 	{
-		template<class __TmessageKey, class _Tmessage> 
+		template<class _TmessageKey, class _Tmessage> 
 		class MessageEventSource : public SpiderRock::DataFeed::MessageHandler
 		{
-			unordered_map<__TmessageKey, _Tmessage, __TmessageKey, __TmessageKey> objects_by_key_;
+			unordered_map<_TmessageKey, _Tmessage, _TmessageKey, _TmessageKey> objects_by_key_;
 			mutex objects_by_key_mutex_;
 
 			vector<shared_ptr<CreateEventObserver<_Tmessage>>> on_create_observers_;
@@ -34,32 +34,32 @@ namespace SpiderRock
 			void Handle(Header* header, uint64_t timestamp);
 		};
 
-		template<class __TmessageKey, class _Tmessage>
-		void MessageEventSource<__TmessageKey, _Tmessage>::RegisterObserver(shared_ptr<CreateEventObserver<_Tmessage>> observer)
+		template<class _TmessageKey, class _Tmessage>
+		void MessageEventSource<_TmessageKey, _Tmessage>::RegisterObserver(shared_ptr<CreateEventObserver<_Tmessage>> observer)
 		{
 			on_create_observers_.push_back(observer);
 		}
 
-		template<class __TmessageKey, class _Tmessage>
-		void MessageEventSource<__TmessageKey, _Tmessage>::RegisterObserver(shared_ptr<ChangeEventObserver<_Tmessage>> observer)
+		template<class _TmessageKey, class _Tmessage>
+		void MessageEventSource<_TmessageKey, _Tmessage>::RegisterObserver(shared_ptr<ChangeEventObserver<_Tmessage>> observer)
 		{
 			on_change_observers_.push_back(observer);
 		}
 
-		template<class __TmessageKey, class _Tmessage>
-		void MessageEventSource<__TmessageKey, _Tmessage>::RegisterObserver(shared_ptr<UpdateEventObserver<_Tmessage>> observer)
+		template<class _TmessageKey, class _Tmessage>
+		void MessageEventSource<_TmessageKey, _Tmessage>::RegisterObserver(shared_ptr<UpdateEventObserver<_Tmessage>> observer)
 		{
 			on_update_observers_.push_back(observer);
 		}
 
-		template<class __TmessageKey, class _Tmessage>
-		void MessageEventSource<__TmessageKey, _Tmessage>::Handle(Header* header, uint64_t timestamp)
+		template<class _TmessageKey, class _Tmessage>
+		void MessageEventSource<_TmessageKey, _Tmessage>::Handle(Header* header, uint64_t timestamp)
 		{
-			if (header->key_length != sizeof(__TmessageKey))
+			if (header->key_length != sizeof(_TmessageKey))
 			{
 				throw runtime_error(
 					"Invalid MBUS Record: msg.keylen=" + to_string(header->key_length) +
-					", obj.keylen=" + to_string(sizeof(__TmessageKey)));
+					", obj.keylen=" + to_string(sizeof(_TmessageKey)));
 			}
 
 			_Tmessage received;
