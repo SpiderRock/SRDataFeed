@@ -1,7 +1,8 @@
 #include "Channel.h"
 
 using namespace SpiderRock::DataFeed;
-using namespace SpiderRock::DataFeed::Mbus;
+using std::string;
+using std::array;
 
 Channel::Channel(const string& label) : label_(label), last_error_(nullptr), partials_(0)
 {

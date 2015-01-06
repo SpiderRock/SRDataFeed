@@ -7,19 +7,27 @@
 // ------------------------------------------------------------------------------------------------------------------------------
 
 #include "SRDataFeedEngine.h"
+
+#include <string>
+#include <memory>
+#include <vector>
+#include <initializer_list>
+
 #include "CacheClient.h"
-#include "DblLib.h"
+#include "Net/Proto/DBL/Device.h"
 #include "MessageEventSource.h"
 #include "FrameHandler.h"
 
+using namespace std;
 using namespace SpiderRock::DataFeed;
-using namespace SpiderRock::DataFeed::Myricom;
+using SpiderRock::Net::Proto::DBL::Device;
+using SpiderRock::Net::IPEndPoint;
 
 class SRDataFeedEngine::impl {
 public:
 	SysEnvironment environment;
 	FrameHandler frame_handler;
-	vector<unique_ptr<Myricom::DblDevice<Channel>>> devices;
+	vector<unique_ptr<Device<Channel>>> devices;
 	vector<shared_ptr<Channel>> channels;
 	in_addr device_address;
 
@@ -50,8 +58,6 @@ public:
 SRDataFeedEngine::SRDataFeedEngine(SysEnvironment environment, in_addr device_address)
 	: impl_{ new impl(environment, device_address) }
 {
-	Myricom::DblLib::Initialize();
-
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote, { MessageType::FutureBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futuresettlementmark, { MessageType::FutureSettlementMark });
@@ -89,9 +95,9 @@ void SRDataFeedEngine::MakeCacheRequest(const IPEndPoint& end_point, initializer
 	cache_client.ReadResponse();
 }
 			
-void SRDataFeedEngine::CreateThreadGroup(initializer_list<UdpChannel> channels)
+void SRDataFeedEngine::CreateThreadGroup(initializer_list<DataChannel> channels)
 {
-	auto dev = make_unique<DblDevice<Channel>>(impl_->device_address, &impl_->frame_handler);
+	auto dev = unique_ptr<Device<Channel>>(new Device<Channel>(impl_->device_address, &impl_->frame_handler));
 
 	for (auto c : channels)
 	{

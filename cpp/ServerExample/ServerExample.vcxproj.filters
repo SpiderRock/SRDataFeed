@@ -13,20 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="SpiderRock">
-      <UniqueIdentifier>{b1d3b493-fc32-444f-b1fc-456a476c38f7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SpiderRock\DataFeed">
+    <Filter Include="DataFeed">
       <UniqueIdentifier>{8c6c794c-3be8-4860-b082-9a58afed82ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SpiderRock\DataFeed\Myricom">
-      <UniqueIdentifier>{bc3e177d-c921-454b-8974-6e8bf770d9bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SpiderRock\Net">
+    <Filter Include="Net">
       <UniqueIdentifier>{5f3285f0-dc5c-439d-aa4f-6c7445adffde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SpiderRock\DataFeed\Mbus">
-      <UniqueIdentifier>{5d4c9f47-341d-4820-8cae-fdd53e1f982f}</UniqueIdentifier>
+    <Filter Include="Net\Proto">
+      <UniqueIdentifier>{0a3ec678-261c-47d5-9bc5-78e548b8f5ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Net\Proto\DBL">
+      <UniqueIdentifier>{c47b0797-0eec-4854-ab9b-2c6d1fad7f49}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,53 +36,65 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Channel.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameHandler.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageHandler.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\myricom\dbl.h">
-      <Filter>SpiderRock\DataFeed\Myricom</Filter>
-    </ClInclude>
-    <ClInclude Include="DblLib.h">
-      <Filter>SpiderRock\DataFeed\Myricom</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageEventSource.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
-    <ClInclude Include="CacheClient.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
-    <ClInclude Include="SRDataFeedEngine.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
-    <ClInclude Include="IPEndPoint.h">
-      <Filter>SpiderRock\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="EventObserver.h">
-      <Filter>SpiderRock\DataFeed</Filter>
-    </ClInclude>
     <ClInclude Include="SRDataFeed.h">
-      <Filter>SpiderRock\DataFeed</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MbusEnums.h">
-      <Filter>SpiderRock\DataFeed\Mbus</Filter>
+    <ClInclude Include="Net\Proto\DBL\Device.h">
+      <Filter>Net\Proto\DBL</Filter>
     </ClInclude>
-    <ClInclude Include="Mbus.h">
-      <Filter>SpiderRock\DataFeed\Mbus</Filter>
+    <ClInclude Include="Net\Proto\DBL\LibraryCallException.h">
+      <Filter>Net\Proto\DBL</Filter>
     </ClInclude>
-    <ClInclude Include="MbusFields.h">
-      <Filter>SpiderRock\DataFeed\Mbus</Filter>
+    <ClInclude Include="Net\Proto\DBL\ReadHandler.h">
+      <Filter>Net\Proto\DBL</Filter>
     </ClInclude>
-    <ClInclude Include="AdminMessages.h">
-      <Filter>SpiderRock\DataFeed</Filter>
+    <ClInclude Include="Net\IPEndPoint.h">
+      <Filter>Net\Proto</Filter>
     </ClInclude>
-    <ClInclude Include="CoreMessages.h">
-      <Filter>SpiderRock\DataFeed</Filter>
+    <ClInclude Include="DataFeed\AdminMessages.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\CacheClient.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\Channel.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\CoreMessages.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\DataChannel.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\Enums.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\EventObserver.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\Fields.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\FrameHandler.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\Header.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\MessageEventSource.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\MessageHandler.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\MessageType.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\SRDataFeedEngine.h">
+      <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="DataFeed\SysEnvironment.h">
+      <Filter>DataFeed</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,17 +104,17 @@
     <ClCompile Include="ServerExample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameHandler.cpp">
-      <Filter>SpiderRock\DataFeed</Filter>
+    <ClCompile Include="DataFeed\SRDataFeedEngine.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CacheClient.cpp">
-      <Filter>SpiderRock\DataFeed</Filter>
+    <ClCompile Include="DataFeed\CacheClient.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SRDataFeedEngine.cpp">
-      <Filter>SpiderRock\DataFeed</Filter>
+    <ClCompile Include="DataFeed\Channel.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Channel.cpp">
-      <Filter>SpiderRock\DataFeed</Filter>
+    <ClCompile Include="DataFeed\FrameHandler.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

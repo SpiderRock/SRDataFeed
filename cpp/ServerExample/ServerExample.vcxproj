@@ -135,7 +135,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include/myricom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)include/myricom;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,31 +150,35 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\myricom\dbl.h" />
-    <ClInclude Include="AdminMessages.h" />
-    <ClInclude Include="CacheClient.h" />
-    <ClInclude Include="Channel.h" />
-    <ClInclude Include="CoreMessages.h" />
-    <ClInclude Include="EventObserver.h" />
-    <ClInclude Include="IPEndPoint.h" />
-    <ClInclude Include="Mbus.h" />
-    <ClInclude Include="MbusEnums.h" />
-    <ClInclude Include="MbusFields.h" />
-    <ClInclude Include="MessageEventSource.h" />
-    <ClInclude Include="DblLib.h" />
-    <ClInclude Include="FrameHandler.h" />
-    <ClInclude Include="MessageHandler.h" />
+    <ClInclude Include="DataFeed\AdminMessages.h" />
+    <ClInclude Include="DataFeed\CacheClient.h" />
+    <ClInclude Include="DataFeed\Channel.h" />
+    <ClInclude Include="DataFeed\CoreMessages.h" />
+    <ClInclude Include="DataFeed\DataChannel.h" />
+    <ClInclude Include="DataFeed\Enums.h" />
+    <ClInclude Include="DataFeed\EventObserver.h" />
+    <ClInclude Include="DataFeed\Fields.h" />
+    <ClInclude Include="DataFeed\FrameHandler.h" />
+    <ClInclude Include="DataFeed\Header.h" />
+    <ClInclude Include="DataFeed\MessageEventSource.h" />
+    <ClInclude Include="DataFeed\MessageHandler.h" />
+    <ClInclude Include="DataFeed\MessageType.h" />
+    <ClInclude Include="DataFeed\SRDataFeedEngine.h" />
+    <ClInclude Include="DataFeed\SysEnvironment.h" />
+    <ClInclude Include="Net\IPEndPoint.h" />
+    <ClInclude Include="Net\Proto\DBL\Device.h" />
+    <ClInclude Include="Net\Proto\DBL\LibraryCallException.h" />
+    <ClInclude Include="Net\Proto\DBL\ReadHandler.h" />
     <ClInclude Include="SRDataFeed.h" />
-    <ClInclude Include="SRDataFeedEngine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CacheClient.cpp" />
-    <ClCompile Include="Channel.cpp" />
-    <ClCompile Include="FrameHandler.cpp" />
+    <ClCompile Include="DataFeed\CacheClient.cpp" />
+    <ClCompile Include="DataFeed\Channel.cpp" />
+    <ClCompile Include="DataFeed\FrameHandler.cpp" />
+    <ClCompile Include="DataFeed\SRDataFeedEngine.cpp" />
     <ClCompile Include="ServerExample.cpp" />
-    <ClCompile Include="SRDataFeedEngine.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

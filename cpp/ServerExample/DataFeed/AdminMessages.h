@@ -9,15 +9,18 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Mbus.h"
+
+#include <vector>
+
+#include "Fields.h"
+#include "Enums.h"
+#include "Header.h"
 
 #pragma pack(1)
 
 namespace SpiderRock { 
 
 namespace DataFeed {
-
-using namespace Mbus;
 
 class CacheComplete
 {
@@ -102,7 +105,7 @@ private:
 	
 	Header header_;
 	Layout layout_;
-	vector<MsgType> msgtype_;
+	std::vector<MsgType> msgtype_;
 	int64_t time_received_;
 	
 public:
@@ -117,7 +120,7 @@ public:
 	inline void requestID(Int value) { layout_.requestID = value; }
 	inline void filter(const String<32>& value) { layout_.filter = value; }
 	inline void limit(Int value) { layout_.limit = value; }
-	inline void msgtype(const vector<MsgType> value) { msgtype_.assign(value.begin(), value.end()); }
+	inline void msgtype(const std::vector<MsgType> value) { msgtype_.assign(value.begin(), value.end()); }
 	
 	inline uint16_t Encode(uint8_t* buf) 
 	{

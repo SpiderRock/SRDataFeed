@@ -19,7 +19,7 @@
 using SpiderRock::Net::IPEndPoint;
 
 using SpiderRock::DataFeed::SRDataFeedEngine;
-using SpiderRock::DataFeed::UdpChannel;
+using SpiderRock::DataFeed::DataChannel;
 using SpiderRock::DataFeed::SysEnvironment;
 
 using SpiderRock::DataFeed::UpdateEventObserver;
@@ -31,9 +31,9 @@ using SpiderRock::DataFeed::StockPrint;
 using SpiderRock::DataFeed::OptionNbboQuote;
 using SpiderRock::DataFeed::OptionPrint;
 
-using SpiderRock::DataFeed::Mbus::Root;
-using SpiderRock::DataFeed::Mbus::Ticker;
-using SpiderRock::DataFeed::Mbus::MessageType;
+using SpiderRock::DataFeed::Root;
+using SpiderRock::DataFeed::Ticker;
+using SpiderRock::DataFeed::MessageType;
 
 using namespace std;
 
@@ -51,10 +51,10 @@ public:
 		auto bidDelta = received.bidPrice1() - current.bidPrice1();
 		if (abs(bidDelta) < 0.001) return;
 
-		std::cout 
+		cout 
 			<< "Bid price change for " << *received.pkey().ticker().ticker().str()
-			<< " from " << std::to_string(current.bidPrice1()) 
-			<< " to " << std::to_string(received.bidPrice1()) << std::endl;
+			<< " from " << to_string(current.bidPrice1()) 
+			<< " to " << to_string(received.bidPrice1()) << endl;
 	}
 
 	void OnChange(const StockPrint& obj)
@@ -63,7 +63,7 @@ public:
 		if (obj.pkey().ticker().ticker() != spy) return;
 		time_t t = static_cast<time_t>(obj.timestamp());
 		struct tm* timeinfo = gmtime(&t);
-		std::cout << "Printed " << *obj.pkey().ticker().ticker().str() << " at " << asctime(timeinfo);
+		cout << "Printed " << *obj.pkey().ticker().ticker().str() << " at " << asctime(timeinfo);
 	}
 
 	void OnChange(const OptionNbboQuote& obj)
@@ -72,7 +72,7 @@ public:
 
 		if (obj.pkey().okey().root() != spy) return;
 
-		std::cout << "SPY " << obj.pkey().okey().strike() << std::endl;
+		cout << "SPY " << obj.pkey().okey().strike() << endl;
 	}
 };
 
@@ -95,26 +95,26 @@ int main()
 
 		engine.CreateThreadGroup(
 		{
-			UdpChannel::StkNbboQuote1,
-			UdpChannel::StkNbboQuote2,
+			DataChannel::StkNbboQuote1,
+			DataChannel::StkNbboQuote2,
 
-			UdpChannel::OptNbboQuote1,
-			UdpChannel::OptNbboQuote2
+			DataChannel::OptNbboQuote1,
+			DataChannel::OptNbboQuote2
 		});
 
 		engine.CreateThreadGroup(
 		{
-			UdpChannel::StkNbboQuote3,
-			UdpChannel::StkNbboQuote4,
+			DataChannel::StkNbboQuote3,
+			DataChannel::StkNbboQuote4,
 
-			UdpChannel::OptNbboQuote3,
-			UdpChannel::OptNbboQuote4
+			DataChannel::OptNbboQuote3,
+			DataChannel::OptNbboQuote4
 		});
 
-		auto observer = std::make_shared<Observer>();
-		engine.RegisterObserver(std::dynamic_pointer_cast<UpdateEventObserver<StockBookQuote>>(observer));
-		engine.RegisterObserver(std::dynamic_pointer_cast<ChangeEventObserver<StockPrint>>(observer));
-		engine.RegisterObserver(std::dynamic_pointer_cast<ChangeEventObserver<OptionNbboQuote>>(observer));
+		auto observer = make_shared<Observer>();
+		engine.RegisterObserver(dynamic_pointer_cast<UpdateEventObserver<StockBookQuote>>(observer));
+		engine.RegisterObserver(dynamic_pointer_cast<ChangeEventObserver<StockPrint>>(observer));
+		engine.RegisterObserver(dynamic_pointer_cast<ChangeEventObserver<OptionNbboQuote>>(observer));
 
 		engine.Start();
 
@@ -130,15 +130,15 @@ int main()
 			}
 		);
 
-		std::cout << "Cache request time: " << ((double)clock() - start) / CLOCKS_PER_SEC << "s" << std::endl;
+		cout << "Cache request time: " << ((double)clock() - start) / CLOCKS_PER_SEC << "s" << endl;
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+		this_thread::sleep_for(chrono::milliseconds(5000));
 
-		std::cout << std::endl << "Exiting..." << std::endl;
+		cout << endl << "Exiting..." << endl;
 	}
-	catch (const std::runtime_error& e)
+	catch (const runtime_error& e)
 	{
-		std::cerr << e.what() << std::endl;
+		cerr << e.what() << endl;
 	}
 
 	return 0;

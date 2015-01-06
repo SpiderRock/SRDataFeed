@@ -1,11 +1,21 @@
-#include <stdio.h>
 #include "FrameHandler.h"
+
+#include <stdio.h>
+#include <memory>
+#include <string>
+#include <stdexcept>
+#include <initializer_list>
 
 #ifdef __GNUC__
 #	include <ctime>
 #endif
 
 using namespace SpiderRock::DataFeed;
+using std::string;
+using std::to_string;
+using std::unique_ptr;
+using std::exception;
+using std::initializer_list;
 
 #if !defined(SR_LOG_ERR)
 #	include <iostream>
@@ -44,9 +54,9 @@ FrameHandler::FrameHandler(SysEnvironment env)
 		msg_handlers_[i] = nullptr;
 
 		auto messageType = to_string(i);
-		channel_cross_errors_[i] = make_unique<ErrorCounter>(ErrorCounter("Channel cross error: " + messageType, 20));
-		msg_parse_errors_[i] = make_unique<ErrorCounter>(ErrorCounter("Message parse error: " + messageType, 20));
-		unknown_msg_type_errors_[i] = make_unique<ErrorCounter>(ErrorCounter("Unknown message type: " + messageType, 1));
+		channel_cross_errors_[i] = unique_ptr<ErrorCounter>(new ErrorCounter("Channel cross error: " + messageType, 20));
+		msg_parse_errors_[i] = unique_ptr<ErrorCounter>(new ErrorCounter("Message parse error: " + messageType, 20));
+		unknown_msg_type_errors_[i] = unique_ptr<ErrorCounter>(new ErrorCounter("Unknown message type: " + messageType, 1));
 	}
 }
 

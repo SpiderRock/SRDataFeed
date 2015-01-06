@@ -1,7 +1,11 @@
 #pragma once
 
-#include "Mbus.h"
-#include "IPEndPoint.h"
-#include "SRDataFeedEngine.h"
-#include "EventObserver.h"
-#include "CoreMessages.h"
+#include "DataFeed/Enums.h"
+#include "DataFeed/SysEnvironment.h"
+#include "DataFeed/MessageType.h"
+#include "DataFeed/CoreMessages.h"
+#include "DataFeed/DataChannel.h"
+#include "DataFeed/SRDataFeedEngine.h"
+#include "DataFeed/EventObserver.h"
+
+#include "Net/IPEndPoint.h"

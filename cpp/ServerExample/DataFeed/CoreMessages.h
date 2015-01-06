@@ -8,16 +8,18 @@
 
 #pragma once
 
+#include <functional>
+
 #include "stdafx.h"
-#include "Mbus.h"
+#include "Fields.h"
+#include "Enums.h"
+#include "Header.h"
 
 #pragma pack(1)
 
 namespace SpiderRock { 
 
 namespace DataFeed {
-
-using namespace Mbus;
 
 class FutureBookQuote
 {
@@ -230,8 +232,8 @@ public:
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = FutureKey()(k.fkey_);
-			hash_code = (hash_code * 397) ^ hash<Byte>()(static_cast<Byte>(k.early_));
-			hash_code = (hash_code * 397) ^ hash<Byte>()(static_cast<Byte>(k.priorPeriod_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.early_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.priorPeriod_));
 
 			return hash_code;
 		}
@@ -307,7 +309,7 @@ public:
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = FutureKey()(k.fkey_);
-			hash_code = (hash_code * 397) ^ hash<Byte>()(static_cast<Byte>(k.surfaceType_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.surfaceType_));
 
 			return hash_code;
 		}
@@ -943,7 +945,7 @@ public:
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = OptionKey()(k.okey_);
-			hash_code = (hash_code * 397) ^ hash<Byte>()(static_cast<Byte>(k.exch_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exch_));
 
 			return hash_code;
 		}
@@ -1042,8 +1044,8 @@ public:
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = OptionKey()(k.okey_);
-			hash_code = (hash_code * 397) ^ hash<Byte>()(static_cast<Byte>(k.early_));
-			hash_code = (hash_code * 397) ^ hash<Byte>()(static_cast<Byte>(k.priorPeriod_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.early_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.priorPeriod_));
 
 			return hash_code;
 		}
@@ -1121,7 +1123,7 @@ public:
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = StockKey()(k.ticker_);
-			hash_code = (hash_code * 397) ^ hash<Byte>()(static_cast<Byte>(k.sprdSource_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.sprdSource_));
 
 			return hash_code;
 		}
