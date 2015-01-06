@@ -79,11 +79,11 @@ int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, con
 #ifdef _WINDOWS_
 		LARGE_INTEGER ts;
 		QueryPerformanceCounter(&ts);
-		timestamp = ts.QuadPart - ts.QuadPart;
+		timestamp = ts.QuadPart;
 #elif defined __GNUC__
 		timespec ts;
 		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
-		timestamp = ts.tv_nsec;
+		timestamp = ts.tv_nsec / 100;
 #endif
 
 		while (offset + sizeof(Header) <= length)
