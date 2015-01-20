@@ -110,7 +110,7 @@ namespace SpiderRock
 							{
 								SpiderRock::ThrowLastErrorAs<std::runtime_error>();
 							}
-							if (fcntl(socket_, F_SETFL, opts & O_NONBLOCK) < 0)
+							if (fcntl(socket_, F_SETFL, opts | O_NONBLOCK) < 0)
 							{
 								SpiderRock::ThrowLastErrorAs<std::runtime_error>();
 							}
