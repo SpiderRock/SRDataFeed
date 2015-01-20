@@ -41,8 +41,7 @@ using namespace std;
 class Observer : 
 	public UpdateEventObserver<StockBookQuote>, 
 	public ChangeEventObserver<StockPrint>,
-	public ChangeEventObserver<OptionNbboQuote>,
-	public ChangeEventObserver<LiveSurfaceAtm>
+	public ChangeEventObserver<OptionNbboQuote>
 {
 public:
 	void OnUpdate(const StockBookQuote& received, const StockBookQuote& current)
@@ -66,11 +65,6 @@ public:
 		time_t t = static_cast<time_t>(obj.timestamp());
 		struct tm* timeinfo = gmtime(&t);
 		cout << "Printed " << *obj.pkey().ticker().ticker().str() << " at " << asctime(timeinfo);
-	}
-
-	void OnChange(const LiveSurfaceAtm& obj)
-	{
-		cout << "Live surface atm " << *obj.pkey().fkey().ticker().str() << endl;
 	}
 
 	void OnChange(const OptionNbboQuote& obj)
@@ -99,27 +93,22 @@ int main()
 		engine.CreateThreadGroup(
 			SRDataFeedEngine::Protocol::UDP,
 			{
-				DataChannel::LiveSurface1,
-				DataChannel::LiveSurface2,
-				DataChannel::LiveSurface3,
-				DataChannel::LiveSurface4
+				DataChannel::StkNbboQuote1,
+				DataChannel::StkNbboQuote2,
+
+				DataChannel::OptNbboQuote1,
+				DataChannel::OptNbboQuote2
 			});
 
-		//engine.CreateThreadGroup(
-		//	SRDataFeedEngine::Protocol::UDP,
-		//	{
-		//		DataChannel::LiveSurface3,
-		//		DataChannel::LiveSurface4
-		//	});
+		engine.CreateThreadGroup(
+			SRDataFeedEngine::Protocol::UDP,
+			{
+				DataChannel::StkNbboQuote3,
+				DataChannel::StkNbboQuote4,
 
-		//engine.CreateThreadGroup(
-		//{
-		//	DataChannel::StkNbboQuote3,
-		//	DataChannel::StkNbboQuote4,
-
-		//	DataChannel::OptNbboQuote3,
-		//	DataChannel::OptNbboQuote4
-		//});
+				DataChannel::OptNbboQuote3,
+				DataChannel::OptNbboQuote4
+			});
 
 		auto observer = make_shared<Observer>();
 		engine.RegisterObserver(dynamic_pointer_cast<void>(observer));
@@ -128,15 +117,13 @@ int main()
 
 		auto start = clock();
 
-		//engine.MakeCacheRequest(
-		//	IPEndPoint("spidernj146:3260"),
-		//	{ 
-		//		MessageType::StockBookQuote, 
-		//		MessageType::StockPrint, 
-		//		MessageType::OptionNbboQuote, 
-		//		MessageType::OptionPrint 
-		//	}
-		//);
+		engine.MakeCacheRequest(
+			IPEndPoint("spidernj146:3260"),
+			{ 
+				MessageType::StockBookQuote, 
+				MessageType::OptionNbboQuote
+			}
+		);
 
 		cout << "Cache request time: " << ((double)clock() - start) / CLOCKS_PER_SEC << "s" << endl;
 
