@@ -111,7 +111,9 @@ int main()
 			});
 
 		auto observer = make_shared<Observer>();
-		engine.RegisterObserver(dynamic_pointer_cast<void>(observer));
+		engine.RegisterObserver(dynamic_pointer_cast<UpdateEventObserver<StockBookQuote>>(observer));
+		engine.RegisterObserver(dynamic_pointer_cast<ChangeEventObserver<StockPrint>>(observer));
+		engine.RegisterObserver(dynamic_pointer_cast<ChangeEventObserver<OptionNbboQuote>>(observer));
 
 		engine.Start();
 
