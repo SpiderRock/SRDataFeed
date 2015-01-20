@@ -7,22 +7,20 @@
 #include <initializer_list>
 #include <memory>
 
-#ifdef _WINDOWS_
-#	include <winsock.h>
-#else
+#ifndef _WINDOWS_
 #	include <netinet/in.h>
 #endif
 
 #include "MessageHandler.h"
 #include "MessageType.h"
 #include "Channel.h"
-#include "Net/Proto/DBL/Device.h"
+#include "Net/Proto/ReadHandler.h"
 
 namespace SpiderRock
 {
 	namespace DataFeed
 	{
-		class FrameHandler : public SpiderRock::Net::Proto::DBL::ReadHandler<Channel>
+		class FrameHandler : public SpiderRock::Net::Proto::ReadHandler<Channel>
 		{
 			class ErrorCounter
 			{

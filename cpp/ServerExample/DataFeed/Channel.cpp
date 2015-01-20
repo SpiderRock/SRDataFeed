@@ -10,7 +10,6 @@ Channel::Channel(const string& label) : label_(label), last_error_(nullptr), par
 
 Channel::~Channel()
 {
-	last_error_ = nullptr;
 }
 
 void Channel::SetLastError(const char* last_err)

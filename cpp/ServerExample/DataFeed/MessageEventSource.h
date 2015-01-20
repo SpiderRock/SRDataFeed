@@ -9,6 +9,9 @@
 #include <utility>
 #include <stdexcept>
 
+#include "MessageHandler.h"
+#include "EventObserver.h"
+
 namespace SpiderRock
 {
 	namespace DataFeed

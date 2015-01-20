@@ -51,6 +51,11 @@ namespace SpiderRock
 			ImpliedQuoteNymex = 64,
 			ImpliedQuoteComex = 65,
 
+			LiveSurface1 = 71,
+			LiveSurface2 = 72,
+			LiveSurface3 = 73,
+			LiveSurface4 = 74,
+
 			StkExchQuote1Nsdq = 101,
 			StkExchQuote2Nsdq = 102,
 			StkExchQuote3Nsdq = 103,

@@ -2,16 +2,16 @@
 
 #include "stdafx.h"
 
+#include <string>
+#include <stdexcept>
 #include <cstring>
 
-#ifdef _WINDOWS_
-#	include <winsock.h>
-#else
-#	include <netdb.h>
-#	include <sys/types.h>
-#	include <sys/socket.h>
+#include "IPAddress.h"
+
+#ifndef _WINDOWS_
 #	include <netinet/in.h>
 #	include <arpa/inet.h>
+#	include <sys/socket.h>
 #endif
 
 namespace SpiderRock
@@ -20,37 +20,11 @@ namespace SpiderRock
 	{
 		class IPEndPoint
 		{
-			in_addr address_;
+			IPAddress address_;
 			uint32_t port_;
 			std::string label_;
 
-			inline static in_addr GetAddress(const std::string& hostname)
-			{
-				const char* h = hostname.c_str();
-				struct hostent* record;
-				struct in_addr addr;
-
-				memset(&addr, 0, sizeof addr);
-
-				if (isalpha(h[0]))
-				{
-					record = gethostbyname(h);
-					if (record == nullptr) throw std::runtime_error("Unable to resolve hostname");
-					addr.s_addr = *(u_long *)record->h_addr_list[0];
-				}
-				else
-				{
-#ifdef _WINDOWS_
-					addr.S_un.S_addr = inet_addr(h);
-#else
-					addr.s_addr = inet_addr(h);
-#endif
-				}
-
-				return addr;
-			}
-
-			inline static std::string GetHostname(const std::string& end_point)
+			static std::string GetHostname(const std::string& end_point)
 			{
 				auto colon = end_point.find_last_of(":");
 
@@ -62,7 +36,7 @@ namespace SpiderRock
 				return end_point.substr(0, colon);
 			}
 
-			inline static uint16_t GetPort(const std::string& end_point)
+			static uint16_t GetPort(const std::string& end_point)
 			{
 				auto colon = end_point.find_last_of(":");
 
@@ -74,34 +48,30 @@ namespace SpiderRock
 				return (uint16_t)stoi(end_point.substr(colon + 1));
 			}
 
-			inline static std::string CreateLabel(in_addr address, uint16_t port)
+			static std::string CreateLabel(const IPAddress& address, uint16_t port)
 			{
 				return std::string(inet_ntoa(address)) + ":" + std::to_string(port);
 			}
 
 		public:
-			IPEndPoint(const std::string& end_point)
-				: IPEndPoint(GetAddress(GetHostname(end_point)), GetPort(end_point))
+			IPEndPoint(const std::string& end_point) : 
+				address_(GetHostname(end_point)), 
+				port_(GetPort(end_point)),
+				label_(CreateLabel(address_, port_))
 			{
 			}
 
-			IPEndPoint(const std::string& hostname, uint16_t port)
-				: IPEndPoint(GetAddress(hostname), port)
+			IPEndPoint(const IPAddress& hostname, uint16_t port) :
+				address_(hostname), 
+				port_(port), 
+				label_(CreateLabel(address_, port_))
 			{
 			}
 
-			IPEndPoint(const IPEndPoint& end_point)
-				: IPEndPoint(end_point.address_, end_point.port_)
-			{
-			}
-
-			IPEndPoint(const sockaddr_in& end_point)
-				: IPEndPoint(end_point.sin_addr, end_point.sin_port)
-			{
-			}
-
-			IPEndPoint(in_addr address, uint16_t port)
-				: address_(address), port_(port), label_(CreateLabel(address, port))
+			IPEndPoint(const IPEndPoint& end_point) : 
+				address_(end_point.address_), 
+				port_(end_point.port_), 
+				label_(CreateLabel(address_, port_))
 			{
 			}
 
@@ -110,8 +80,8 @@ namespace SpiderRock
 			}
 
 			inline uint32_t port() const { return port_; }
-			inline in_addr address() const { return address_; }
-			inline std::string str() const { return label_; }
+			inline const IPAddress& address() const { return address_; }
+			inline std::string label() const { return label_; }
 
 			inline operator sockaddr_in() const
 			{
@@ -123,13 +93,11 @@ namespace SpiderRock
 				return addr;
 			}
 
+			inline operator std::string() { return label_; }
+
 			inline bool operator == (const IPEndPoint& other) const
 			{
-#ifdef _WINDOWS_
-				return port_ == other.port_ && address_.S_un.S_addr == other.address_.S_un.S_addr;
-#else
-				return port_ == other.port_ && address_.s_addr == other.address_.s_addr;
-#endif
+				return port_ == other.port_ && address_ == other.address_;
 			}
 		};
 	}

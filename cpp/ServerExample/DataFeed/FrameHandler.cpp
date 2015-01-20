@@ -8,6 +8,9 @@
 
 #ifdef __GNUC__
 #	include <ctime>
+#	include <sys/socket.h>
+#	include <netinet/in.h>
+#	include <arpa/inet.h>
 #endif
 
 using namespace SpiderRock::DataFeed;
@@ -17,7 +20,7 @@ using std::unique_ptr;
 using std::exception;
 using std::initializer_list;
 
-#if !defined(SR_LOG_ERR)
+#ifndef SR_LOG_ERR
 #	include <iostream>
 #	define SR_LOG_ERR(msg) std::cerr << msg << std::endl;
 #endif
@@ -79,6 +82,9 @@ void FrameHandler::RegisterMessageHandler(MessageHandler* message_handler, initi
 	}
 }
 
+const int64_t TICKS_PER_SECOND = 10000000;
+const int64_t TICKS_PER_NANOSECOND = 100;
+
 int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, const sockaddr_in& source)
 {
 	int32_t offset = 0;
@@ -92,8 +98,8 @@ int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, con
 		timestamp = ts.QuadPart;
 #elif defined __GNUC__
 		timespec ts;
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
-		timestamp = ts.tv_nsec / 100;
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		timestamp = ts.tv_sec*TICKS_PER_SECOND + ts.tv_nsec/TICKS_PER_NANOSECOND;
 #endif
 
 		while (offset + sizeof(Header) <= length)

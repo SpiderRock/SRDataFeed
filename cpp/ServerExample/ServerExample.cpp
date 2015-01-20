@@ -30,6 +30,7 @@ using SpiderRock::DataFeed::StockBookQuote;
 using SpiderRock::DataFeed::StockPrint;
 using SpiderRock::DataFeed::OptionNbboQuote;
 using SpiderRock::DataFeed::OptionPrint;
+using SpiderRock::DataFeed::LiveSurfaceAtm;
 
 using SpiderRock::DataFeed::Root;
 using SpiderRock::DataFeed::Ticker;
@@ -40,7 +41,8 @@ using namespace std;
 class Observer : 
 	public UpdateEventObserver<StockBookQuote>, 
 	public ChangeEventObserver<StockPrint>,
-	public ChangeEventObserver<OptionNbboQuote>
+	public ChangeEventObserver<OptionNbboQuote>,
+	public ChangeEventObserver<LiveSurfaceAtm>
 {
 public:
 	void OnUpdate(const StockBookQuote& received, const StockBookQuote& current)
@@ -66,6 +68,11 @@ public:
 		cout << "Printed " << *obj.pkey().ticker().ticker().str() << " at " << asctime(timeinfo);
 	}
 
+	void OnChange(const LiveSurfaceAtm& obj)
+	{
+		cout << "Live surface atm " << *obj.pkey().fkey().ticker().str() << endl;
+	}
+
 	void OnChange(const OptionNbboQuote& obj)
 	{
 		static Root spy = Root("SPY");
@@ -85,50 +92,51 @@ int main()
 	try
 	{
 		in_addr ifaddr;
-#ifdef _WINDOWS_
-		ifaddr.S_un.S_addr = inet_addr("10.37.12.95");
-#else
-		ifaddr.s_addr = inet_addr("10.37.12.95");
-#endif
+		ifaddr.s_addr = inet_addr("10.37.200.95");
 
 		SRDataFeedEngine engine(SysEnvironment::Stable, ifaddr);
 
 		engine.CreateThreadGroup(
-		{
-			DataChannel::StkNbboQuote1,
-			DataChannel::StkNbboQuote2,
+			SRDataFeedEngine::Protocol::UDP,
+			{
+				DataChannel::LiveSurface1,
+				DataChannel::LiveSurface2,
+				DataChannel::LiveSurface3,
+				DataChannel::LiveSurface4
+			});
 
-			DataChannel::OptNbboQuote1,
-			DataChannel::OptNbboQuote2
-		});
+		//engine.CreateThreadGroup(
+		//	SRDataFeedEngine::Protocol::UDP,
+		//	{
+		//		DataChannel::LiveSurface3,
+		//		DataChannel::LiveSurface4
+		//	});
 
-		engine.CreateThreadGroup(
-		{
-			DataChannel::StkNbboQuote3,
-			DataChannel::StkNbboQuote4,
+		//engine.CreateThreadGroup(
+		//{
+		//	DataChannel::StkNbboQuote3,
+		//	DataChannel::StkNbboQuote4,
 
-			DataChannel::OptNbboQuote3,
-			DataChannel::OptNbboQuote4
-		});
+		//	DataChannel::OptNbboQuote3,
+		//	DataChannel::OptNbboQuote4
+		//});
 
 		auto observer = make_shared<Observer>();
-		engine.RegisterObserver(dynamic_pointer_cast<UpdateEventObserver<StockBookQuote>>(observer));
-		engine.RegisterObserver(dynamic_pointer_cast<ChangeEventObserver<StockPrint>>(observer));
-		engine.RegisterObserver(dynamic_pointer_cast<ChangeEventObserver<OptionNbboQuote>>(observer));
+		engine.RegisterObserver(dynamic_pointer_cast<void>(observer));
 
 		engine.Start();
 
 		auto start = clock();
 
-		engine.MakeCacheRequest(
-			IPEndPoint("spidernj146:3260"),
-			{ 
-				MessageType::StockBookQuote, 
-				MessageType::StockPrint, 
-				MessageType::OptionNbboQuote, 
-				MessageType::OptionPrint 
-			}
-		);
+		//engine.MakeCacheRequest(
+		//	IPEndPoint("spidernj146:3260"),
+		//	{ 
+		//		MessageType::StockBookQuote, 
+		//		MessageType::StockPrint, 
+		//		MessageType::OptionNbboQuote, 
+		//		MessageType::OptionPrint 
+		//	}
+		//);
 
 		cout << "Cache request time: " << ((double)clock() - start) / CLOCKS_PER_SEC << "s" << endl;
 

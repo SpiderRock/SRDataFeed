@@ -6,6 +6,5 @@
 #include "DataFeed/CoreMessages.h"
 #include "DataFeed/DataChannel.h"
 #include "DataFeed/SRDataFeedEngine.h"
-#include "DataFeed/EventObserver.h"
 
 #include "Net/IPEndPoint.h"

@@ -7,9 +7,7 @@
 #include <memory>
 #include <initializer_list>
 
-#ifdef _WINDOWS_
-#	include <winsock.h>
-#else
+#ifndef _WINDOWS_
 #	include <sys/types.h>
 #	include <sys/socket.h>
 #	include <netinet/in.h>
@@ -48,7 +46,6 @@ namespace SpiderRock
 			int socket_;
 #endif
 
-			void ThrowLastError();
 			void Connect();
 			void Disconnect();
 

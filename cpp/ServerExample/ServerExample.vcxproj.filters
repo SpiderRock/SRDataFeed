@@ -25,6 +25,9 @@
     <Filter Include="Net\Proto\DBL">
       <UniqueIdentifier>{c47b0797-0eec-4854-ab9b-2c6d1fad7f49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Net\Proto\UDP">
+      <UniqueIdentifier>{360fb562-f9ac-44bd-99a9-ea86d3c10034}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -38,18 +41,6 @@
     </ClInclude>
     <ClInclude Include="SRDataFeed.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Net\Proto\DBL\Device.h">
-      <Filter>Net\Proto\DBL</Filter>
-    </ClInclude>
-    <ClInclude Include="Net\Proto\DBL\LibraryCallException.h">
-      <Filter>Net\Proto\DBL</Filter>
-    </ClInclude>
-    <ClInclude Include="Net\Proto\DBL\ReadHandler.h">
-      <Filter>Net\Proto\DBL</Filter>
-    </ClInclude>
-    <ClInclude Include="Net\IPEndPoint.h">
-      <Filter>Net\Proto</Filter>
     </ClInclude>
     <ClInclude Include="DataFeed\AdminMessages.h">
       <Filter>DataFeed</Filter>
@@ -95,6 +86,24 @@
     </ClInclude>
     <ClInclude Include="DataFeed\SysEnvironment.h">
       <Filter>DataFeed</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\IPEndPoint.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\IPAddress.h">
+      <Filter>Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Proto\Receiver.h">
+      <Filter>Net\Proto</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Proto\ReadHandler.h">
+      <Filter>Net\Proto</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Proto\UDP\Receiver.h">
+      <Filter>Net\Proto\UDP</Filter>
+    </ClInclude>
+    <ClInclude Include="Net\Proto\DBL\Receiver.h">
+      <Filter>Net\Proto\DBL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
