@@ -120,7 +120,7 @@ namespace SpiderRock
 							memset(reinterpret_cast<char*>(&local_socket), 0, sizeof(local_socket));
 							local_socket.sin_family = AF_INET;
 							local_socket.sin_port = htons(end_point_.port());
-							local_socket.sin_addr = if_addr_;
+							local_socket.sin_addr = end_point_.address();
 							if (bind(socket_, reinterpret_cast<const struct sockaddr*>(&local_socket), static_cast<int>(sizeof(local_socket))) < 0)
 							{
 								SpiderRock::ThrowLastErrorAs<std::runtime_error>();
