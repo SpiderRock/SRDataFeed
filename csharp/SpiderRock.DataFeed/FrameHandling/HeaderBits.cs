@@ -6,7 +6,6 @@ namespace SpiderRock.DataFeed.FrameHandling
     internal enum HeaderBits : byte
     {
         None = 0,
-        IsDeleted = 1,
         FromCache = 2,
     }
 }

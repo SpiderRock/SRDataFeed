@@ -94,8 +94,6 @@ namespace SpiderRock.DataFeed
 		
 		public byte SeqNum { get { return header.seqnum; } }
 
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
-
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
@@ -240,7 +238,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -394,8 +392,6 @@ namespace SpiderRock.DataFeed
 		
 		public byte SeqNum { get { return header.seqnum; } }
 
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
-
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
@@ -536,7 +532,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -679,8 +675,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -831,7 +825,7 @@ namespace SpiderRock.DataFeed
 		private volatile int usn;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { ++usn; }
+		internal void Invalidate() { ++usn; }
 		
  		private CachedDateKey settleDate;
 		
@@ -944,8 +938,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -1140,7 +1132,7 @@ namespace SpiderRock.DataFeed
 		private volatile int usn;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { ++usn; }
+		internal void Invalidate() { ++usn; }
 		
  		private CachedStockKey ticker;
  		private CachedFutureKey sFKey;
@@ -1410,8 +1402,6 @@ namespace SpiderRock.DataFeed
 		
 		public byte SeqNum { get { return header.seqnum; } }
 
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
-
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
@@ -1554,7 +1544,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -1702,8 +1692,6 @@ namespace SpiderRock.DataFeed
 		
 		public byte SeqNum { get { return header.seqnum; } }
 
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
-
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
@@ -1833,7 +1821,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -1943,8 +1931,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -2092,7 +2078,7 @@ namespace SpiderRock.DataFeed
 		private volatile int usn;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { ++usn; }
+		internal void Invalidate() { ++usn; }
 		
  		private CachedStockKey ticker;
  		private CachedFixedLengthString<FixedString16Layout> calcErr;
@@ -2248,8 +2234,6 @@ namespace SpiderRock.DataFeed
 		
 		public byte SeqNum { get { return header.seqnum; } }
 
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
-
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
@@ -2388,7 +2372,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -2523,8 +2507,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -2668,7 +2650,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -2815,8 +2797,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -2967,7 +2947,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -3110,8 +3090,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -3263,7 +3241,7 @@ namespace SpiderRock.DataFeed
 		private volatile int usn;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { ++usn; }
+		internal void Invalidate() { ++usn; }
 		
  		private CachedDateKey settleDate;
 		
@@ -3379,8 +3357,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -3544,7 +3520,7 @@ namespace SpiderRock.DataFeed
 		private volatile int usn;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { ++usn; }
+		internal void Invalidate() { ++usn; }
 		
  		private CachedFixedLengthString<FixedString16Layout> spreadID;
  		private CachedFixedLengthString<FixedString12Layout> source;
@@ -3729,8 +3705,6 @@ namespace SpiderRock.DataFeed
 		
 		public byte SeqNum { get { return header.seqnum; } }
 
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
-
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
@@ -3874,7 +3848,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -4025,8 +3999,6 @@ namespace SpiderRock.DataFeed
 		
 		public byte SeqNum { get { return header.seqnum; } }
 
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
-
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
@@ -4153,7 +4125,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -4252,8 +4224,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -4384,7 +4354,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -4492,8 +4462,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -4621,7 +4589,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
@@ -4722,8 +4690,6 @@ namespace SpiderRock.DataFeed
 		public SourceId SourceId { get { return header.sourceid; } }
 		
 		public byte SeqNum { get { return header.seqnum; } }
-
-		public bool IsDeleted { get { return (header.bits & HeaderBits.IsDeleted) == HeaderBits.IsDeleted; } }
 
 		public PKey Key { get { return pkey; } }
 
@@ -4872,7 +4838,7 @@ namespace SpiderRock.DataFeed
 		internal BodyLayout body;
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Invalidate() { }
+		internal void Invalidate() { }
 		
 		
 
