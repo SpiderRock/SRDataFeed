@@ -9,13 +9,13 @@
 #include <stdexcept>
 #include <chrono>
 
-#include "dbl.h"
+#include "Myricom/dbl.h"
 
-#include "Net/IPAddress.h"
-#include "Net/IPEndPoint.h"
+#include "SpiderRock/Net/IPAddress.h"
+#include "SpiderRock/Net/IPEndPoint.h"
 
-#include "Net/Proto/Receiver.h"
-#include "Net/Proto/ReadHandler.h"
+#include "SpiderRock/Net/Proto/Receiver.h"
+#include "SpiderRock/Net/Proto/ReadHandler.h"
 
 class DblLibraryCallException;
 #define THROW_IF_ERROR(dbl_call) do { int rc = dbl_call; if (rc != 0) { throw DblLibraryCallException(std::string(#dbl_call) + std::string(" returned error code ") + std::to_string(rc)); } } while(0)

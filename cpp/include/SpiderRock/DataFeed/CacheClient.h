@@ -14,11 +14,11 @@
 #	include <arpa/inet.h>
 #endif
 
-#include "SysEnvironment.h"
-#include "MessageType.h"
-#include "MessageHandler.h"
-#include "FrameHandler.h"
-#include "Net/IPEndPoint.h"
+#include "SpiderRock/DataFeed/SysEnvironment.h"
+#include "SpiderRock/DataFeed/MessageType.h"
+#include "SpiderRock/DataFeed/MessageHandler.h"
+#include "SpiderRock/DataFeed/FrameHandler.h"
+#include "SpiderRock/Net/IPEndPoint.h"
 
 namespace SpiderRock
 {

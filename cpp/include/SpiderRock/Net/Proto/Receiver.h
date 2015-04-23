@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "Net/IPEndPoint.h"
+#include "SpiderRock/Net/IPEndPoint.h"
 
 namespace SpiderRock
 {

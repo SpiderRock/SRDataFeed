@@ -1,4 +1,4 @@
-#include "Channel.h"
+#include "SpiderRock/DataFeed/Channel.h"
 
 using namespace SpiderRock::DataFeed;
 using std::string;

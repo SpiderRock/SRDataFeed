@@ -1,6 +1,6 @@
-#include "CacheClient.h"
+#include "SpiderRock/DataFeed/CacheClient.h"
 
-#include "AdminMessages.h"
+#include "SpiderRock/DataFeed/AdminMessages.h"
 
 #ifndef _WINDOWS_
 #	include <netinet/tcp.h>

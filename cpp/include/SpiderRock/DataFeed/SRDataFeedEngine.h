@@ -14,10 +14,10 @@
 #include <initializer_list>
 
 #include "DataChannel.h"
-#include "Net/IPEndPoint.h"
 #include "EventObserver.h"
 #include "CoreMessages.h"
 #include "SysEnvironment.h"
+#include "SpiderRock/Net/IPEndPoint.h"
 
 namespace SpiderRock
 {

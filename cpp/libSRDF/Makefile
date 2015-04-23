@@ -1,6 +1,6 @@
 #### PROJECT SETTINGS ####
 # The name of the executable to be created
-BIN_NAME := ServerExample
+BIN_NAME := libSRDF.so
 # Compiler used
 CXX ?= g++
 # Extension of source files used in the project
@@ -10,7 +10,7 @@ SRC_PATH = .
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g
+COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g -fpic
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
@@ -18,15 +18,15 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH)/../include/ 
 # General linker settings
-LINK_FLAGS = -L $(SRC_PATH)/../lib/ -ldbl -lSRDF
+LINK_FLAGS = -L $(SRC_PATH)/../lib/ -ldbl -shared -Wl,-soname,libSRDF.so
 # Additional release-specific linker settings
 RLINK_FLAGS = 
 # Additional debug-specific linker settings
 DLINK_FLAGS = 
 # Destination directory, like a jail or mounted system
-DESTDIR = /
+DESTDIR = 
 # Install path (bin/ is appended automatically)
-INSTALL_PREFIX = usr/local
+INSTALL_PREFIX = $(SRC_PATH)/../lib/ 
 #### END PROJECT SETTINGS ####
 
 # Generally should not need to edit below this line
@@ -151,8 +151,8 @@ dirs:
 # Installs to the set path
 .PHONY: install
 install:
-	@echo "Installing to $(DESTDIR)$(INSTALL_PREFIX)/bin"
-	@$(INSTALL_PROGRAM) $(BIN_PATH)/$(BIN_NAME) $(DESTDIR)$(INSTALL_PREFIX)/bin
+	@echo "Installing to $(DESTDIR)$(INSTALL_PREFIX)"
+	@$(INSTALL_PROGRAM) $(BIN_PATH)/$(BIN_NAME) $(DESTDIR)$(INSTALL_PREFIX)
 
 # Uninstalls the program
 .PHONY: uninstall

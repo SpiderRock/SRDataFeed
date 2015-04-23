@@ -11,10 +11,10 @@
 #	include <netinet/in.h>
 #endif
 
-#include "MessageHandler.h"
-#include "MessageType.h"
-#include "Channel.h"
-#include "Net/Proto/ReadHandler.h"
+#include "SpiderRock/DataFeed/MessageHandler.h"
+#include "SpiderRock/DataFeed/MessageType.h"
+#include "SpiderRock/DataFeed/Channel.h"
+#include "SpiderRock/Net/Proto/ReadHandler.h"
 
 namespace SpiderRock
 {

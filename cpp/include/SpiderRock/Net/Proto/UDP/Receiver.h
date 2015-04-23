@@ -40,11 +40,11 @@ typedef int SOCKET;
 
 #endif
 
-#include "Net/IPEndPoint.h"
-#include "Net/IPAddress.h"
+#include "SpiderRock/Net/IPEndPoint.h"
+#include "SpiderRock/Net/IPAddress.h"
 
-#include "Net/Proto/ReadHandler.h"
-#include "Net/Proto/Receiver.h"
+#include "SpiderRock/Net/Proto/ReadHandler.h"
+#include "SpiderRock/Net/Proto/Receiver.h"
 
 namespace SpiderRock
 {
