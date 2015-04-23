@@ -120,8 +120,7 @@ int main()
 		auto start = clock();
 
 		engine.MakeCacheRequest(
-			IPEndPoint("spidernj146:3260"),
-			{ 
+			{
 				MessageType::StockBookQuote, 
 				MessageType::OptionNbboQuote
 			}

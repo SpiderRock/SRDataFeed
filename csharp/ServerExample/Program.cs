@@ -23,15 +23,14 @@ namespace ServerExample
 
                     // TODO: Substitute the address of the adapter
 
-                    IFAddress = IPAddress.Parse("127.0.0.1"),
+                    IFAddress = IPAddress.Parse("LOCAL ADAPTER INTERFACE"),
 
                     // Network adapter interface address can also be obtained this way (the array index may vary):
                     //IFAddress = SpiderRock.DataFeed.Proto.DBL.Myricom.MyricomAdapter.Addresses[0],
 
-                    // TODO: Substitute the address (or hostname) and port of the cache server
-
-                    CacheHost = "127.0.0.1",
-                    CachePort = 3260,
+                    CacheHost = "198.102.4.145", // Primary cache server
+                    //CacheHost = "198.102.4.146", // Secondary cache server
+                    CachePort = 3340,
 
 
                     // Channel subscriptions.  A dedicated thread is used
