@@ -1735,162 +1735,6 @@ namespace SpiderRock.DataFeed
 			}
 		}	
  
-		private sealed class SpreadQuoteContainerCache
-		{
-			#region Events
-			
-			[ThreadStatic] private static CreatedEventArgs<SpreadQuote> createdEventArgs;
-			[ThreadStatic] private static ChangedEventArgs<SpreadQuote> changedEventArgs;
-			[ThreadStatic] private static UpdatedEventArgs<SpreadQuote> updatedEventArgs;
-
-			public event EventHandler<CreatedEventArgs<SpreadQuote>> Created;
-			public event EventHandler<ChangedEventArgs<SpreadQuote>> Changed;
-			public event EventHandler<UpdatedEventArgs<SpreadQuote>> Updated;
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			private static CreatedEventArgs<SpreadQuote> GetCreatedEventArgs()
-			{
-				return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<SpreadQuote>());
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			private static ChangedEventArgs<SpreadQuote> GetChangedEventArgs()
-			{
-				return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<SpreadQuote>());
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			private static UpdatedEventArgs<SpreadQuote> GetUpdatedEventArgs()
-			{
-				return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<SpreadQuote>());
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			private void FireCreatedEventIfSubscribed(SpreadQuote obj)
-			{
-				EventHandler<CreatedEventArgs<SpreadQuote>> created = Created;
-				if (created == null) return;
-				try
-				{
-					CreatedEventArgs<SpreadQuote> args = GetCreatedEventArgs();
-					args.Created = obj;
-					created(this, args);
-				}
-				catch (Exception e)
-				{
-					SRTrace.Default.TraceError(e, "SpreadQuote.FireCreatedEventIfSubscribed exception");
-				}
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			private void FireChangedEventIfSubscribed(SpreadQuote obj)
-			{
-				EventHandler<ChangedEventArgs<SpreadQuote>> changed = Changed;
-				if (changed == null) return;
-				try
-				{
-					ChangedEventArgs<SpreadQuote> args = GetChangedEventArgs();
-					args.Changed = obj;
-					changed(this, args);
-				}
-				catch (Exception e)
-				{
-					SRTrace.Default.TraceError(e, "SpreadQuote.FireChangedEventIfSubscribed exception");
-				}
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			private void FireUpdatedEvent(SpreadQuote current, SpreadQuote previous)
-			{
-				try
-				{
-					UpdatedEventArgs<SpreadQuote> args = GetUpdatedEventArgs();
-					args.Current = current;
-					args.Previous = previous;
-					Updated(this, args);
-				}
-				catch (Exception e)
-				{
-					SRTrace.Default.TraceError(e, "SpreadQuote.FireUpdatedEvent exception");
-				}
-			}
-
-			#endregion
-			
-			private readonly Dictionary<SpreadQuote.PKeyLayout, SpreadQuote> objectsByKey = new Dictionary<SpreadQuote.PKeyLayout, SpreadQuote>();
-			
-			[ThreadStatic] private static SpreadQuote decodeTarget;
-
-			public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
-			{
-				if (hdr.keylen != sizeof(SpreadQuote.PKeyLayout))
-				{
-					throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(SpreadQuote.PKeyLayout))));
-				}			
-				
-				SpreadQuote.PKeyLayout pkey = *(SpreadQuote.PKeyLayout*)(ptr + offset + sizeof(Header)); 
-				SpreadQuote item;		
-				
-				if (!objectsByKey.TryGetValue(pkey, out item))
-				{		
-					lock (objectsByKey)
-					{
-						if (!objectsByKey.TryGetValue(pkey, out item))
-						{		
-							item = new SpreadQuote(pkey) {TimeRcvd = timestamp};
-							unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-							
-							FireCreatedEventIfSubscribed(item);
-							if (Updated != null)
-							{
-								FireUpdatedEvent(item, null);
-							}
-							FireChangedEventIfSubscribed(item);
-
-                            item.header.bits &= ~HeaderBits.FromCache;
-							
-							objectsByKey[pkey] = item;
-							
-							return;											
-						}	
-					}	
-				}
-				
-				if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;	
-
-				item.TimeRcvd = timestamp;
-				item.Invalidate();
-
-				if (Updated != null)
-				{
-					if (decodeTarget == null) decodeTarget = new SpreadQuote();
-					
-					unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
-
-					decodeTarget.Invalidate();
-					item.pkey.CopyTo(decodeTarget.pkey);
-					
-					FireUpdatedEvent(decodeTarget, item);
-					
-					decodeTarget.CopyTo(item);																				
-				}
-				else
-				{
-					unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-				}
-
-				FireChangedEventIfSubscribed(item);			
-			}
-			
-			public void Clear()
-			{
-				lock (objectsByKey)
-				{
-					objectsByKey.Clear();
-				}
-			}
-		}	
- 
 		private sealed class StockBookQuoteContainerCache
 		{
 			#region Events
@@ -2687,7 +2531,6 @@ namespace SpiderRock.DataFeed
  		private readonly OptionOpenMarkContainerCache optionOpenMarkContainerCache = new OptionOpenMarkContainerCache();
  		private readonly OptionPrintContainerCache optionPrintContainerCache = new OptionPrintContainerCache();
  		private readonly OptionSettlementMarkContainerCache optionSettlementMarkContainerCache = new OptionSettlementMarkContainerCache();
- 		private readonly SpreadQuoteContainerCache spreadQuoteContainerCache = new SpreadQuoteContainerCache();
  		private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
  		private readonly StockCloseMarkContainerCache stockCloseMarkContainerCache = new StockCloseMarkContainerCache();
  		private readonly StockCloseQuoteContainerCache stockCloseQuoteContainerCache = new StockCloseQuoteContainerCache();
@@ -2712,7 +2555,6 @@ namespace SpiderRock.DataFeed
  				frameHandler.OnMessage(MessageType.OptionOpenMark, optionOpenMarkContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.OptionPrint, optionPrintContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.OptionSettlementMark, optionSettlementMarkContainerCache.OnMessage);
- 				frameHandler.OnMessage(MessageType.SpreadQuote, spreadQuoteContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.StockCloseMark, stockCloseMarkContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.StockCloseQuote, stockCloseQuoteContainerCache.OnMessage);
@@ -2732,7 +2574,6 @@ namespace SpiderRock.DataFeed
  			optionOpenMarkContainerCache.Clear();
  			optionPrintContainerCache.Clear();
  			optionSettlementMarkContainerCache.Clear();
- 			spreadQuoteContainerCache.Clear();
  			stockBookQuoteContainerCache.Clear();
  			stockCloseMarkContainerCache.Clear();
  			stockCloseQuoteContainerCache.Clear();
@@ -2941,24 +2782,6 @@ namespace SpiderRock.DataFeed
         {
             add		{ lock (eventLock) { optionSettlementMarkContainerCache.Updated += value; } }
             remove	{ lock (eventLock) { optionSettlementMarkContainerCache.Updated -= value; } }
-        }
- 		
-		public event EventHandler<CreatedEventArgs<SpreadQuote>> SpreadQuoteCreated
-        {
-            add		{ lock (eventLock) { spreadQuoteContainerCache.Created += value; } }
-            remove	{ lock (eventLock) { spreadQuoteContainerCache.Created -= value; } }
-        }
-		
-		public event EventHandler<ChangedEventArgs<SpreadQuote>> SpreadQuoteChanged
-        {
-            add		{ lock (eventLock) { spreadQuoteContainerCache.Changed += value; } }
-            remove	{ lock (eventLock) { spreadQuoteContainerCache.Changed -= value; } }
-        }
-		
-		public event EventHandler<UpdatedEventArgs<SpreadQuote>> SpreadQuoteUpdated
-        {
-            add		{ lock (eventLock) { spreadQuoteContainerCache.Updated += value; } }
-            remove	{ lock (eventLock) { spreadQuoteContainerCache.Updated -= value; } }
         }
  		
 		public event EventHandler<CreatedEventArgs<StockBookQuote>> StockBookQuoteCreated

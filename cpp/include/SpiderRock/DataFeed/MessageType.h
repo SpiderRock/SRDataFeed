@@ -33,7 +33,6 @@ namespace SpiderRock
 			OptionOpenMark = 105,
 			OptionPrint = 106,
 			OptionSettlementMark = 374,
-			SpreadQuote = 131,
 			StockBookQuote = 121,
 			StockCloseMark = 125,
 			StockCloseQuote = 123,

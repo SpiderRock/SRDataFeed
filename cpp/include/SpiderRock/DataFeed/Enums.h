@@ -16,14 +16,7 @@ namespace SpiderRock
 { 
 	namespace DataFeed
 	{
-		enum class BuySell : Enum 
-		{
-			None=0,
-			Buy=1,
-			Sell=2
-		};
-
- 		enum class CallOrPut : Enum 
+		enum class CallOrPut : Enum 
 		{
 			Call=0,
 			Put=1
@@ -68,7 +61,8 @@ namespace SpiderRock
 			SRVol=2,
 			LoBound=3,
 			HiBound=4,
-			SRPricer=5
+			SRPricer=5,
+			SRQuote=6
 		};
 
  		enum class MarketStatus : Enum 
@@ -101,29 +95,11 @@ namespace SpiderRock
 			COMEX=16
 		};
 
- 		enum class QuoteType : Enum 
-		{
-			New=0,
-			Modify=1,
-			Delete=2,
-			Print=3,
-			Internal=4
-		};
-
  		enum class SettleTime : Enum 
 		{
 			None=0,
 			PM=1,
 			AM=2
-		};
-
- 		enum class SprdSource : Enum 
-		{
-			None=0,
-			Internal=1,
-			ISE=2,
-			CBOE=3,
-			PHLX=4
 		};
 
  		enum class StkExch : Enum 

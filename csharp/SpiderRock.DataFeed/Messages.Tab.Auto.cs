@@ -469,7 +469,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tticker_tk\tticker_ts\tticker_at\tubid\tuask\tyears\trate\tsdiv\tddiv\tobid\toask\tobiv\toaiv\tsatm\tsmny\tsvol\tsprc\tde\tga\tth\tve\tro\tcalcErr\ttimestamp";
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tticker_tk\tticker_ts\tticker_at\tuprc\tyears\trate\tsdiv\tddiv\tobid\toask\tobiv\toaiv\tsatm\tsmny\tsvol\tsprc\tde\tga\tth\tve\tro\tph\tup50\tdn50\tup15\tdn15\tup06\tdn08\tcalcErr\ttimestamp";
 
 		public string TabRecord
         {
@@ -483,9 +483,7 @@ namespace SpiderRock.DataFeed
 
 				recordBuilder.Append(Ticker.TabRecord);
 				recordBuilder.Append("\t");
-				recordBuilder.Append(Ubid);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Uask);
+				recordBuilder.Append(Uprc);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Years);
 				recordBuilder.Append("\t");
@@ -520,6 +518,20 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(Ve);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Ro);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Ph);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up50);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn50);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up15);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn15);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up06);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn08);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(CalcErr);
 				recordBuilder.Append("\t");
@@ -736,87 +748,6 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(OpenInt);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Volume);
-				recordBuilder.Append("\t");
-				recordBuilder.AppendInTabRecordFormat(Timestamp);
-
-				return recordBuilder.ToString();
-			}
-        }
-    }
-
-    public partial class SpreadQuote
-    {
-		[ThreadStatic] private static StringBuilder recordBuilder;
-
-		public const string TabHeader = "ticker_tk\tticker_ts\tticker_at\tsprdSource\tspreadID\tisOurs\tsource\ttype\tpremium\tquantity\tvalidTill\tstockSide\tstockShares\tnumLegs\tokey1_rt\tokey1_ts\tokey1_at\tokey1_yr\tokey1_mn\tokey1_dy\tokey1_xx\tokey1_cp\tmult1\tside1\tokey2_rt\tokey2_ts\tokey2_at\tokey2_yr\tokey2_mn\tokey2_dy\tokey2_xx\tokey2_cp\tmult2\tside2\tokey3_rt\tokey3_ts\tokey3_at\tokey3_yr\tokey3_mn\tokey3_dy\tokey3_xx\tokey3_cp\tmult3\tside3\tokey4_rt\tokey4_ts\tokey4_at\tokey4_yr\tokey4_mn\tokey4_dy\tokey4_xx\tokey4_cp\tmult4\tside4\tokey5_rt\tokey5_ts\tokey5_at\tokey5_yr\tokey5_mn\tokey5_dy\tokey5_xx\tokey5_cp\tmult5\tside5\tokey6_rt\tokey6_ts\tokey6_at\tokey6_yr\tokey6_mn\tokey6_dy\tokey6_xx\tokey6_cp\tmult6\tside6\ttimestamp";
-
-		public string TabRecord
-        {
-            get
-			{
-				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
-				else						recordBuilder.Clear();
-
-				recordBuilder.Append(pkey.Ticker.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(pkey.SprdSource);
-				recordBuilder.Append("\t");
-
-				recordBuilder.Append(SpreadID);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(IsOurs);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Source);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Type);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Premium);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Quantity);
-				recordBuilder.Append("\t");
-				recordBuilder.AppendInTabRecordFormat(ValidTill);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(StockSide);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(StockShares);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(NumLegs);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Okey1.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Mult1);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Side1);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Okey2.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Mult2);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Side2);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Okey3.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Mult3);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Side3);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Okey4.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Mult4);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Side4);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Okey5.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Mult5);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Side5);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Okey6.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Mult6);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Side6);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 

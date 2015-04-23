@@ -673,8 +673,7 @@ private:
 	{
 		Key pkey;
 		StockKey ticker;
-		Float ubid;
-		Float uask;
+		Float uprc;
 		Float years;
 		Float rate;
 		Float sdiv;
@@ -692,6 +691,13 @@ private:
 		Float th;
 		Float ve;
 		Float ro;
+		Float ph;
+		Float up50;
+		Float dn50;
+		Float up15;
+		Float dn15;
+		Float up06;
+		Float dn08;
 		String<16> calcErr;
 		DateTime timestamp;
 	};
@@ -709,8 +715,7 @@ public:
 	inline uint64_t time_received() const { return time_received_; }
 	
 	inline const StockKey& ticker() const { return layout_.ticker; }
-	inline Float ubid() const { return layout_.ubid; }
-	inline Float uask() const { return layout_.uask; }
+	inline Float uprc() const { return layout_.uprc; }
 	inline Float years() const { return layout_.years; }
 	inline Float rate() const { return layout_.rate; }
 	inline Float sdiv() const { return layout_.sdiv; }
@@ -728,6 +733,13 @@ public:
 	inline Float th() const { return layout_.th; }
 	inline Float ve() const { return layout_.ve; }
 	inline Float ro() const { return layout_.ro; }
+	inline Float ph() const { return layout_.ph; }
+	inline Float up50() const { return layout_.up50; }
+	inline Float dn50() const { return layout_.dn50; }
+	inline Float up15() const { return layout_.up15; }
+	inline Float dn15() const { return layout_.dn15; }
+	inline Float up06() const { return layout_.up06; }
+	inline Float dn08() const { return layout_.dn08; }
 	inline const String<16>& calcErr() const { return layout_.calcErr; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
@@ -1101,125 +1113,6 @@ public:
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
 		layout_ = *reinterpret_cast<OptionSettlementMark::Layout*>(ptr);
-		ptr += sizeof(layout_);
-		
-
-	}
-
-};
-
- class SpreadQuote
-{
-public:
-	class Key
-	{
-		StockKey ticker_;
-		SprdSource sprdSource_;
-		
-	public:
-		inline const StockKey& ticker() const { return ticker_; }
-		inline SprdSource sprdSource() const { return sprdSource_; }
-
-		inline size_t operator()(const Key& k) const
-		{
-			size_t hash_code = StockKey()(k.ticker_);
-			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.sprdSource_));
-
-			return hash_code;
-		}
-		
-		inline bool operator()(const Key& a, const Key& b) const
-		{
-			return
-				a.ticker_ == b.ticker_
-				&& a.sprdSource_ == b.sprdSource_;
-		}
-	};
-	
-
-private:
-	struct Layout
-	{
-		Key pkey;
-		String<16> spreadID;
-		Byte isOurs;
-		String<12> source;
-		QuoteType type;
-		Float premium;
-		Int quantity;
-		DateTime validTill;
-		BuySell stockSide;
-		Int stockShares;
-		Byte numLegs;
-		OptionKey okey1;
-		UShort mult1;
-		BuySell side1;
-		OptionKey okey2;
-		UShort mult2;
-		BuySell side2;
-		OptionKey okey3;
-		UShort mult3;
-		BuySell side3;
-		OptionKey okey4;
-		UShort mult4;
-		BuySell side4;
-		OptionKey okey5;
-		UShort mult5;
-		BuySell side5;
-		OptionKey okey6;
-		UShort mult6;
-		BuySell side6;
-		DateTime timestamp;
-	};
-	
-	Header header_;
-	Layout layout_;
-	
-	int64_t time_received_;
-
-public:
-	inline Header& header() { return header_; }
-	inline const Key& pkey() const { return layout_.pkey; }
-	
-	inline void time_received(uint64_t value) { time_received_ = value; }
-	inline uint64_t time_received() const { return time_received_; }
-	
-	inline const String<16>& spreadID() const { return layout_.spreadID; }
-	inline Byte isOurs() const { return layout_.isOurs; }
-	inline const String<12>& source() const { return layout_.source; }
-	inline QuoteType type() const { return layout_.type; }
-	inline Float premium() const { return layout_.premium; }
-	inline Int quantity() const { return layout_.quantity; }
-	inline DateTime validTill() const { return layout_.validTill; }
-	inline BuySell stockSide() const { return layout_.stockSide; }
-	inline Int stockShares() const { return layout_.stockShares; }
-	inline Byte numLegs() const { return layout_.numLegs; }
-	inline const OptionKey& okey1() const { return layout_.okey1; }
-	inline UShort mult1() const { return layout_.mult1; }
-	inline BuySell side1() const { return layout_.side1; }
-	inline const OptionKey& okey2() const { return layout_.okey2; }
-	inline UShort mult2() const { return layout_.mult2; }
-	inline BuySell side2() const { return layout_.side2; }
-	inline const OptionKey& okey3() const { return layout_.okey3; }
-	inline UShort mult3() const { return layout_.mult3; }
-	inline BuySell side3() const { return layout_.side3; }
-	inline const OptionKey& okey4() const { return layout_.okey4; }
-	inline UShort mult4() const { return layout_.mult4; }
-	inline BuySell side4() const { return layout_.side4; }
-	inline const OptionKey& okey5() const { return layout_.okey5; }
-	inline UShort mult5() const { return layout_.mult5; }
-	inline BuySell side5() const { return layout_.side5; }
-	inline const OptionKey& okey6() const { return layout_.okey6; }
-	inline UShort mult6() const { return layout_.mult6; }
-	inline BuySell side6() const { return layout_.side6; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
-	
-	inline void Decode(Header* buf) 
-	{
-		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
-		
-		layout_ = *reinterpret_cast<SpreadQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 

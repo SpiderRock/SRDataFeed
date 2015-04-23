@@ -1858,6 +1858,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// --- OptionImpliedQuote ---
+	/// --- OptionImpliedQuote ---
 	/// </remarks>
 
     public partial class OptionImpliedQuote
@@ -2049,8 +2050,7 @@ namespace SpiderRock.DataFeed
 		internal struct BodyLayout
 		{
 			public StockKeyLayout ticker;
-			public float ubid;
-			public float uask;
+			public float uprc;
 			public float years;
 			public float rate;
 			public float sdiv;
@@ -2068,6 +2068,13 @@ namespace SpiderRock.DataFeed
 			public float th;
 			public float ve;
 			public float ro;
+			public float ph;
+			public float up50;
+			public float dn50;
+			public float up15;
+			public float dn15;
+			public float up06;
+			public float dn08;
 			public FixedString16Layout calcErr;
 			public DateTimeLayout timestamp;
 		}
@@ -2088,11 +2095,8 @@ namespace SpiderRock.DataFeed
 		
         public StockKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
  
-		/// <summary>underlyer bid price</summary>
-        public float Ubid { get { return body.ubid; } set { body.ubid = value; } }
- 
-		/// <summary>underlyer ask price</summary>
-        public float Uask { get { return body.uask; } set { body.uask = value; } }
+		/// <summary>underlyer price (usually mid-market)</summary>
+        public float Uprc { get { return body.uprc; } set { body.uprc = value; } }
  
 		/// <summary>years to expiration</summary>
         public float Years { get { return body.years; } set { body.years = value; } }
@@ -2106,46 +2110,67 @@ namespace SpiderRock.DataFeed
 		/// <summary>cumulative discrete dividend values</summary>
         public float Ddiv { get { return body.ddiv; } set { body.ddiv = value; } }
  
-		
+		/// <summary>option bid price</summary>
         public float Obid { get { return body.obid; } set { body.obid = value; } }
  
-		
+		/// <summary>option ask price</summary>
         public float Oask { get { return body.oask; } set { body.oask = value; } }
  
-		
+		/// <summary>option implied bid</summary>
         public float Obiv { get { return body.obiv; } set { body.obiv = value; } }
  
-		
+		/// <summary>option implied ask</summary>
         public float Oaiv { get { return body.oaiv; } set { body.oaiv = value; } }
  
-		
+		/// <summary>option atm volatility (from SR surface)</summary>
         public float Satm { get { return body.satm; } set { body.satm = value; } }
  
-		
+		/// <summary>option moneyness</summary>
         public float Smny { get { return body.smny; } set { body.smny = value; } }
  
-		
+		/// <summary>option surface volatility</summary>
         public float Svol { get { return body.svol; } set { body.svol = value; } }
  
-		
+		/// <summary>option surface price</summary>
         public float Sprc { get { return body.sprc; } set { body.sprc = value; } }
  
-		
+		/// <summary>option delta (from svol)</summary>
         public float De { get { return body.de; } set { body.de = value; } }
  
-		
+		/// <summary>option gamma (from svol)</summary>
         public float Ga { get { return body.ga; } set { body.ga = value; } }
  
-		
+		/// <summary>option theta (from svol)</summary>
         public float Th { get { return body.th; } set { body.th = value; } }
  
-		
+		/// <summary>option vega (from svol)</summary>
         public float Ve { get { return body.ve; } set { body.ve = value; } }
  
-		
+		/// <summary>option rho (from svol)</summary>
         public float Ro { get { return body.ro; } set { body.ro = value; } }
  
-		
+		/// <summary>option phi (from svol)</summary>
+        public float Ph { get { return body.ph; } set { body.ph = value; } }
+ 
+		/// <summary>underlyer up 50% slide</summary>
+        public float Up50 { get { return body.up50; } set { body.up50 = value; } }
+ 
+		/// <summary>underlyer dn 50% slide</summary>
+        public float Dn50 { get { return body.dn50; } set { body.dn50 = value; } }
+ 
+		/// <summary>underlyer up 15% slide</summary>
+        public float Up15 { get { return body.up15; } set { body.up15 = value; } }
+ 
+		/// <summary>underlyer dn 15% slide</summary>
+        public float Dn15 { get { return body.dn15; } set { body.dn15 = value; } }
+ 
+		/// <summary>underlyer up 6% slide</summary>
+        public float Up06 { get { return body.up06; } set { body.up06 = value; } }
+ 
+		/// <summary>underlyer dn 8% slide</summary>
+        public float Dn08 { get { return body.dn08; } set { body.dn08 = value; } }
+ 
+		/// <summary>option pricing error (if any)</summary>
         public string CalcErr { get { return CacheVar.AllocIfNull(ref calcErr).Get(ref body.calcErr, usn); } set { CacheVar.AllocIfNull(ref calcErr).Set(value); body.calcErr = value; } }
  
 		
@@ -3275,355 +3300,6 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // OptionSettlementMark
-
-
-	/// <summary>
-	/// SpreadQuote:131
-	/// </summary>
-	/// <remarks>
-	/// Option Spread Quote / Request For Quote
-	/// note: spreadID must be unique for each SprdSource; should be the external spread ID if possible
-	/// note: all spreads should be from &quot;our&quot; perspective.  That is, where side=Buy we are buying (and visa versa)
-	/// </remarks>
-
-    public partial class SpreadQuote
-    {
-		public SpreadQuote()
-		{
-		}
-		
-		public SpreadQuote(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public SpreadQuote(SpreadQuote source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal SpreadQuote(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as SpreadQuote);
-		}
-		
-		public bool Equals(SpreadQuote other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(SpreadQuote target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-		
-
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.SpreadQuote};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private StockKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public StockKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
- 			
-			public SprdSource SprdSource
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.sprdSource; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.sprdSource = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // SpreadQuote.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public StockKeyLayout ticker;
- 			public SprdSource sprdSource;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker) &&
-					 	sprdSource.Equals(other.sprdSource);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
- 					hashCode = (hashCode*397) ^ ((int) sprdSource);
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // SpreadQuote.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public FixedString16Layout spreadID;
-			public byte isOurs;
-			public FixedString12Layout source;
-			public QuoteType type;
-			public float premium;
-			public int quantity;
-			public DateTimeLayout validTill;
-			public BuySell stockSide;
-			public int stockShares;
-			public byte numLegs;
-			public OptionKeyLayout okey1;
-			public ushort mult1;
-			public BuySell side1;
-			public OptionKeyLayout okey2;
-			public ushort mult2;
-			public BuySell side2;
-			public OptionKeyLayout okey3;
-			public ushort mult3;
-			public BuySell side3;
-			public OptionKeyLayout okey4;
-			public ushort mult4;
-			public BuySell side4;
-			public OptionKeyLayout okey5;
-			public ushort mult5;
-			public BuySell side5;
-			public OptionKeyLayout okey6;
-			public ushort mult6;
-			public BuySell side6;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedFixedLengthString<FixedString16Layout> spreadID;
- 		private CachedFixedLengthString<FixedString12Layout> source;
- 		private CachedOptionKey okey1;
- 		private CachedOptionKey okey2;
- 		private CachedOptionKey okey3;
- 		private CachedOptionKey okey4;
- 		private CachedOptionKey okey5;
- 		private CachedOptionKey okey6;
-		
-
-
-		
-        public string SpreadID { get { return CacheVar.AllocIfNull(ref spreadID).Get(ref body.spreadID, usn); } set { CacheVar.AllocIfNull(ref spreadID).Set(value); body.spreadID = value; } }
- 
-		/// <summary>0=public,1=our.order</summary>
-        public byte IsOurs { get { return body.isOurs; } set { body.isOurs = value; } }
- 
-		/// <summary>source of spread</summary>
-        public string Source { get { return CacheVar.AllocIfNull(ref source).Get(ref body.source, usn); } set { CacheVar.AllocIfNull(ref source).Set(value); body.source = value; } }
- 
-		
-        public QuoteType Type { get { return body.type; } set { body.type = value; } }
- 
-		/// <summary>premium for the entire spread basket</summary>
-        public float Premium { get { return body.premium; } set { body.premium = value; } }
- 
-		/// <summary>number of spread baskets available</summary>
-        public int Quantity { get { return body.quantity; } set { body.quantity = value; } }
- 
-		/// <summary>expiration date/time of order (if any) [&lt;= 2001-01-01 implies none]</summary>
-        public DateTime ValidTill { get { return body.validTill; } set { body.validTill = value; } }
- 
-		
-        public BuySell StockSide { get { return body.stockSide; } set { body.stockSide = value; } }
- 
-		/// <summary>number of shares included (zero if none) [can be + or -]</summary>
-        public int StockShares { get { return body.stockShares; } set { body.stockShares = value; } }
- 
-		/// <summary>number of valid legs below</summary>
-        public byte NumLegs { get { return body.numLegs; } set { body.numLegs = value; } }
-             
-		/// <summary>leg #1</summary>
-        public OptionKey Okey1 { get { return CacheVar.AllocIfNull(ref okey1).Get(ref body.okey1, usn); } set { CacheVar.AllocIfNull(ref okey1).Set(value); body.okey1 = value.Layout; } }
- 
-		
-        public ushort Mult1 { get { return body.mult1; } set { body.mult1 = value; } }
- 
-		
-        public BuySell Side1 { get { return body.side1; } set { body.side1 = value; } }
-             
-		/// <summary>leg #2</summary>
-        public OptionKey Okey2 { get { return CacheVar.AllocIfNull(ref okey2).Get(ref body.okey2, usn); } set { CacheVar.AllocIfNull(ref okey2).Set(value); body.okey2 = value.Layout; } }
- 
-		
-        public ushort Mult2 { get { return body.mult2; } set { body.mult2 = value; } }
- 
-		
-        public BuySell Side2 { get { return body.side2; } set { body.side2 = value; } }
-             
-		/// <summary>leg #3</summary>
-        public OptionKey Okey3 { get { return CacheVar.AllocIfNull(ref okey3).Get(ref body.okey3, usn); } set { CacheVar.AllocIfNull(ref okey3).Set(value); body.okey3 = value.Layout; } }
- 
-		
-        public ushort Mult3 { get { return body.mult3; } set { body.mult3 = value; } }
- 
-		
-        public BuySell Side3 { get { return body.side3; } set { body.side3 = value; } }
-             
-		/// <summary>leg #4</summary>
-        public OptionKey Okey4 { get { return CacheVar.AllocIfNull(ref okey4).Get(ref body.okey4, usn); } set { CacheVar.AllocIfNull(ref okey4).Set(value); body.okey4 = value.Layout; } }
- 
-		
-        public ushort Mult4 { get { return body.mult4; } set { body.mult4 = value; } }
- 
-		
-        public BuySell Side4 { get { return body.side4; } set { body.side4 = value; } }
-             
-		/// <summary>leg #5</summary>
-        public OptionKey Okey5 { get { return CacheVar.AllocIfNull(ref okey5).Get(ref body.okey5, usn); } set { CacheVar.AllocIfNull(ref okey5).Set(value); body.okey5 = value.Layout; } }
- 
-		
-        public ushort Mult5 { get { return body.mult5; } set { body.mult5 = value; } }
- 
-		
-        public BuySell Side5 { get { return body.side5; } set { body.side5 = value; } }
-             
-		/// <summary>leg #6</summary>
-        public OptionKey Okey6 { get { return CacheVar.AllocIfNull(ref okey6).Get(ref body.okey6, usn); } set { CacheVar.AllocIfNull(ref okey6).Set(value); body.okey6 = value.Layout; } }
- 
-		
-        public ushort Mult6 { get { return body.mult6; } set { body.mult6 = value; } }
- 
-		
-        public BuySell Side6 { get { return body.side6; } set { body.side6 = value; } }
- 
-		/// <summary>timestamp</summary>
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // SpreadQuote
 
 
 	/// <summary>
