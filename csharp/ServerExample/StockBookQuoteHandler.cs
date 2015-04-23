@@ -14,19 +14,28 @@ namespace ServerExample
 
         public void OnCreate(object sender, CreatedEventArgs<StockBookQuote> args)
         {
-            // note: this event will fire once for each new instance of a StockBookQuote.PKey.
-            // the cObj instance reference will not change when a new quote arrives so it is safe to keep track of cObj references as below
-            // if a reference to cObj is stored as below and properties of cObj are accessed later properties will contain current quote values, not values when initially created.
+            /* This event will fire once for each new instance of a StockBookQuote.PKey.  The 
+             * instance of the message is stored a the 'Created' property of the 'args' argument.
+             * It is safe to retain a reference to the instance past the completion of the 
+             * event handler as well as to continue accessing its properties.  The properties
+             * will contain the latest values for that key rather than the initial ones.
+             */
 
             StockBookQuotes[args.Created.Key] = args.Created;
         }
 
         public void OnUpdate(object sender, UpdatedEventArgs<StockBookQuote> args)
         {
-            // note: this event is fired each time a new quote arrives. 
-            // pObj will contain the new quote and cObj the prior quote
-            // the first time this event fires cObj will be null            
-            // this handler should not keep any pObj references on exit
+            /* The UpdateEvent is useful when the consumer wishes to know the previous state of the object as well as the current.  
+             * The 'args' argument contains a 'Previous' property with a reference to an object that contains
+             * the last known state prior to the update and a 'Current' property with the latest data.  The engine
+             * uses the instance at the 'Previous' property internally so it isn't safe to refer to it
+             * past the completion of the event handler.  However, the instance at the 'Current' property is the same as 
+             * the one in the create event (above) and is safe to retain and read.
+             * 
+             * It is important to note that there is a slight performance overhead associated with handling
+             * this event.  The overhead is incurred by subscribing to the event even with an empty handler.
+             */
 
             bool isBidPrice1Changed = (args.Previous == null ||
                                        Math.Abs(args.Current.BidPrice1 - args.Previous.BidPrice1) > 0.0001);
@@ -39,9 +48,10 @@ namespace ServerExample
 
         public void OnChange(object sender, ChangedEventArgs<StockBookQuote> args)
         {
-            // note: this event is fired each time a new quote arrives.
-            // when processing of UpdateEvent handlers is completed the newly arrived quote (pObj) is copied into the static cObj
-            // this event is fired after the pObj->cObj copy takes place
+            /* The change event fires after the update event (if subscribed) and contains
+             * an instance at the 'Changed' property of the 'args' argument with the latest values
+             * for that key.  It is safe to retain and access past the completion of the event handler.
+             */
 
             numStockBookQuoteChanges += 1;
         }
