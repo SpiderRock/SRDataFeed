@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SpiderRock.DataFeed
 {
-    public sealed class UdpChannelThreadGroup : IEnumerable<UdpChannel>
+    public sealed class DblChannelThreadGroup : IEnumerable<UdpChannel>
     {
         private readonly HashSet<UdpChannel> channels = new HashSet<UdpChannel>();
 

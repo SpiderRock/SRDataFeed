@@ -25,7 +25,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
         private double asyncRecvTime;
 
-        public UdpReceiver(IPEndPoint endPoint, string ifaddr, FrameHandler frameHandler)
+        public UdpReceiver(IPEndPoint endPoint, IPAddress ifaddr, FrameHandler frameHandler)
         {
             this.endPoint = endPoint;
             this.frameHandler = frameHandler;
@@ -35,7 +35,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
             try
             {
                 IPAddress groupAddress = endPoint.Address;
-                IPAddress localAddress = (ifaddr != null ? IPAddress.Parse(ifaddr) : IPAddress.Any);
+                IPAddress localAddress = ifaddr ?? IPAddress.Any;
 
                 var iep = new IPEndPoint(localAddress, endPoint.Port);
 

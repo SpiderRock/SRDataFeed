@@ -23,18 +23,17 @@ namespace ServerExample
 
                     // TODO: Substitute the address of the adapter
 
-                    IFAddress = IPAddress.Parse("LOCAL ADAPTER INTERFACE"),
-
-                    // Network adapter interface address can also be obtained this way (the array index may vary):
-                    //IFAddress = SpiderRock.DataFeed.Proto.DBL.Myricom.MyricomAdapter.Addresses[0],
+                    IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
 
                     CacheHost = "198.102.4.145", // Primary cache server
                     //CacheHost = "198.102.4.146", // Secondary cache server
                     CachePort = 3340,
 
+                    // Protocol is set to UDP by default but can be switched to DBL(Myricom)
+                    //Protocol = Protocol.DBL,
 
                     // Channel subscriptions.  A dedicated thread is used
-                    // to process incoming messages
+                    // to process incoming messages when Protocol = DBL
 
                     Channels = new[]
                     {
@@ -54,9 +53,9 @@ namespace ServerExample
                     // Alternatively, it's possible to assign sets of channels to 
                     // dedicated threads by creating channel thread groups:
 
-                    //ChannelThreadGroups = new[]
+                    //DblChannelThreadGroups = new[]
                     //{
-                    //    new UdpChannelThreadGroup
+                    //    new DblChannelThreadGroup
                     //    {
                     //        UdpChannel.OptNbboQuote1,
                     //        UdpChannel.OptNbboQuote2,
@@ -65,7 +64,7 @@ namespace ServerExample
                     //        UdpChannel.StkNbboQuote2
                     //    },
 
-                    //    new UdpChannelThreadGroup
+                    //    new DblChannelThreadGroup
                     //    {
                     //        UdpChannel.OptNbboQuote3,
                     //        UdpChannel.OptNbboQuote4,

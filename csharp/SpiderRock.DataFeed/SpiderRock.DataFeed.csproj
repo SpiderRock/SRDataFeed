@@ -60,8 +60,9 @@
     <Compile Include="CreatedEventArgs.cs" />
     <Compile Include="FrameHandling\MessageHandler.cs" />
     <Compile Include="Layouts\IKeyLayoutEquatable.cs" />
+    <Compile Include="Protocol.cs" />
     <Compile Include="SRDataFeedEngine.Auto.cs" />
-    <Compile Include="UdpChannelThreadGroup.cs" />
+    <Compile Include="DblChannelThreadGroup.cs" />
     <Compile Include="SRDataFeedEngine.cs" />
     <Compile Include="Proto\DBL\Myricom\MyricomAdapter.cs" />
     <Compile Include="Diagnostics\SRTrace.cs" />
