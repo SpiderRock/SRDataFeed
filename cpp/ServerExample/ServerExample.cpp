@@ -120,6 +120,8 @@ int main()
 		auto start = clock();
 
 		engine.MakeCacheRequest(
+			IPEndPoint("198.102.4.145:3340"),	// Primary cache server
+			//IPEndPoint("198.102.4.146:3340"),	// Secondary cache server
 			{
 				MessageType::StockBookQuote, 
 				MessageType::OptionNbboQuote
