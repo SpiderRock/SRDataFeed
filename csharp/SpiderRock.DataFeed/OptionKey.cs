@@ -207,6 +207,11 @@ namespace SpiderRock.DataFeed
             return Layout.CompareTo(other.Layout);
         }
 
+        public override int GetHashCode()
+        {
+            return Layout.GetHashCode();
+        }
+
         public bool Equals(OptionKey other)
         {
             return other != null && Layout.Equals(other.Layout);

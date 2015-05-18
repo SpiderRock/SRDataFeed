@@ -125,6 +125,11 @@ namespace SpiderRock.DataFeed
             return Layout.CompareTo(other.Layout);
         }
 
+        public override int GetHashCode()
+        {
+            return Layout.GetHashCode();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(FutureKey other)
         {
