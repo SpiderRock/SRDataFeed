@@ -26,6 +26,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType OptionNbboQuote = 102;
  		public static readonly MessageType OptionOpenMark = 105;
  		public static readonly MessageType OptionPrint = 106;
+ 		public static readonly MessageType OptionRiskFactor = 379;
  		public static readonly MessageType OptionSettlementMark = 374;
  		public static readonly MessageType StockBookQuote = 121;
  		public static readonly MessageType StockCloseMark = 125;
@@ -51,6 +52,7 @@ namespace SpiderRock.DataFeed
  			isCore[OptionNbboQuote] = true;
  			isCore[OptionOpenMark] = true;
  			isCore[OptionPrint] = true;
+ 			isCore[OptionRiskFactor] = true;
  			isCore[OptionSettlementMark] = true;
  			isCore[StockBookQuote] = true;
  			isCore[StockCloseMark] = true;
@@ -89,6 +91,7 @@ namespace SpiderRock.DataFeed
  			names[OptionNbboQuote] = "OptionNbboQuote";
  			names[OptionOpenMark] = "OptionOpenMark";
  			names[OptionPrint] = "OptionPrint";
+ 			names[OptionRiskFactor] = "OptionRiskFactor";
  			names[OptionSettlementMark] = "OptionSettlementMark";
  			names[StockBookQuote] = "StockBookQuote";
  			names[StockCloseMark] = "StockCloseMark";

@@ -1579,6 +1579,162 @@ namespace SpiderRock.DataFeed
 			}
 		}	
  
+		private sealed class OptionRiskFactorContainerCache
+		{
+			#region Events
+			
+			[ThreadStatic] private static CreatedEventArgs<OptionRiskFactor> createdEventArgs;
+			[ThreadStatic] private static ChangedEventArgs<OptionRiskFactor> changedEventArgs;
+			[ThreadStatic] private static UpdatedEventArgs<OptionRiskFactor> updatedEventArgs;
+
+			public event EventHandler<CreatedEventArgs<OptionRiskFactor>> Created;
+			public event EventHandler<ChangedEventArgs<OptionRiskFactor>> Changed;
+			public event EventHandler<UpdatedEventArgs<OptionRiskFactor>> Updated;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private static CreatedEventArgs<OptionRiskFactor> GetCreatedEventArgs()
+			{
+				return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<OptionRiskFactor>());
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private static ChangedEventArgs<OptionRiskFactor> GetChangedEventArgs()
+			{
+				return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<OptionRiskFactor>());
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private static UpdatedEventArgs<OptionRiskFactor> GetUpdatedEventArgs()
+			{
+				return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<OptionRiskFactor>());
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private void FireCreatedEventIfSubscribed(OptionRiskFactor obj)
+			{
+				EventHandler<CreatedEventArgs<OptionRiskFactor>> created = Created;
+				if (created == null) return;
+				try
+				{
+					CreatedEventArgs<OptionRiskFactor> args = GetCreatedEventArgs();
+					args.Created = obj;
+					created(this, args);
+				}
+				catch (Exception e)
+				{
+					SRTrace.Default.TraceError(e, "OptionRiskFactor.FireCreatedEventIfSubscribed exception");
+				}
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private void FireChangedEventIfSubscribed(OptionRiskFactor obj)
+			{
+				EventHandler<ChangedEventArgs<OptionRiskFactor>> changed = Changed;
+				if (changed == null) return;
+				try
+				{
+					ChangedEventArgs<OptionRiskFactor> args = GetChangedEventArgs();
+					args.Changed = obj;
+					changed(this, args);
+				}
+				catch (Exception e)
+				{
+					SRTrace.Default.TraceError(e, "OptionRiskFactor.FireChangedEventIfSubscribed exception");
+				}
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private void FireUpdatedEvent(OptionRiskFactor current, OptionRiskFactor previous)
+			{
+				try
+				{
+					UpdatedEventArgs<OptionRiskFactor> args = GetUpdatedEventArgs();
+					args.Current = current;
+					args.Previous = previous;
+					Updated(this, args);
+				}
+				catch (Exception e)
+				{
+					SRTrace.Default.TraceError(e, "OptionRiskFactor.FireUpdatedEvent exception");
+				}
+			}
+
+			#endregion
+			
+			private readonly Dictionary<OptionRiskFactor.PKeyLayout, OptionRiskFactor> objectsByKey = new Dictionary<OptionRiskFactor.PKeyLayout, OptionRiskFactor>();
+			
+			[ThreadStatic] private static OptionRiskFactor decodeTarget;
+
+			public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+			{
+				if (hdr.keylen != sizeof(OptionRiskFactor.PKeyLayout))
+				{
+					throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(OptionRiskFactor.PKeyLayout))));
+				}			
+				
+				OptionRiskFactor.PKeyLayout pkey = *(OptionRiskFactor.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+				OptionRiskFactor item;		
+				
+				if (!objectsByKey.TryGetValue(pkey, out item))
+				{		
+					lock (objectsByKey)
+					{
+						if (!objectsByKey.TryGetValue(pkey, out item))
+						{		
+							item = new OptionRiskFactor(pkey) {TimeRcvd = timestamp};
+							unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+							
+							FireCreatedEventIfSubscribed(item);
+							if (Updated != null)
+							{
+								FireUpdatedEvent(item, null);
+							}
+							FireChangedEventIfSubscribed(item);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+							
+							objectsByKey[pkey] = item;
+							
+							return;											
+						}	
+					}	
+				}
+				
+				if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;	
+
+				item.TimeRcvd = timestamp;
+				item.Invalidate();
+
+				if (Updated != null)
+				{
+					if (decodeTarget == null) decodeTarget = new OptionRiskFactor();
+					
+					unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+					decodeTarget.Invalidate();
+					item.pkey.CopyTo(decodeTarget.pkey);
+					
+					FireUpdatedEvent(decodeTarget, item);
+					
+					decodeTarget.CopyTo(item);																				
+				}
+				else
+				{
+					unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+				}
+
+				FireChangedEventIfSubscribed(item);			
+			}
+			
+			public void Clear()
+			{
+				lock (objectsByKey)
+				{
+					objectsByKey.Clear();
+				}
+			}
+		}	
+ 
 		private sealed class OptionSettlementMarkContainerCache
 		{
 			#region Events
@@ -2530,6 +2686,7 @@ namespace SpiderRock.DataFeed
  		private readonly OptionNbboQuoteContainerCache optionNbboQuoteContainerCache = new OptionNbboQuoteContainerCache();
  		private readonly OptionOpenMarkContainerCache optionOpenMarkContainerCache = new OptionOpenMarkContainerCache();
  		private readonly OptionPrintContainerCache optionPrintContainerCache = new OptionPrintContainerCache();
+ 		private readonly OptionRiskFactorContainerCache optionRiskFactorContainerCache = new OptionRiskFactorContainerCache();
  		private readonly OptionSettlementMarkContainerCache optionSettlementMarkContainerCache = new OptionSettlementMarkContainerCache();
  		private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
  		private readonly StockCloseMarkContainerCache stockCloseMarkContainerCache = new StockCloseMarkContainerCache();
@@ -2554,6 +2711,7 @@ namespace SpiderRock.DataFeed
  				frameHandler.OnMessage(MessageType.OptionNbboQuote, optionNbboQuoteContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.OptionOpenMark, optionOpenMarkContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.OptionPrint, optionPrintContainerCache.OnMessage);
+ 				frameHandler.OnMessage(MessageType.OptionRiskFactor, optionRiskFactorContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.OptionSettlementMark, optionSettlementMarkContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
  				frameHandler.OnMessage(MessageType.StockCloseMark, stockCloseMarkContainerCache.OnMessage);
@@ -2573,6 +2731,7 @@ namespace SpiderRock.DataFeed
  			optionNbboQuoteContainerCache.Clear();
  			optionOpenMarkContainerCache.Clear();
  			optionPrintContainerCache.Clear();
+ 			optionRiskFactorContainerCache.Clear();
  			optionSettlementMarkContainerCache.Clear();
  			stockBookQuoteContainerCache.Clear();
  			stockCloseMarkContainerCache.Clear();
@@ -2764,6 +2923,24 @@ namespace SpiderRock.DataFeed
         {
             add		{ lock (eventLock) { optionPrintContainerCache.Updated += value; } }
             remove	{ lock (eventLock) { optionPrintContainerCache.Updated -= value; } }
+        }
+ 		
+		public event EventHandler<CreatedEventArgs<OptionRiskFactor>> OptionRiskFactorCreated
+        {
+            add		{ lock (eventLock) { optionRiskFactorContainerCache.Created += value; } }
+            remove	{ lock (eventLock) { optionRiskFactorContainerCache.Created -= value; } }
+        }
+		
+		public event EventHandler<ChangedEventArgs<OptionRiskFactor>> OptionRiskFactorChanged
+        {
+            add		{ lock (eventLock) { optionRiskFactorContainerCache.Changed += value; } }
+            remove	{ lock (eventLock) { optionRiskFactorContainerCache.Changed -= value; } }
+        }
+		
+		public event EventHandler<UpdatedEventArgs<OptionRiskFactor>> OptionRiskFactorUpdated
+        {
+            add		{ lock (eventLock) { optionRiskFactorContainerCache.Updated += value; } }
+            remove	{ lock (eventLock) { optionRiskFactorContainerCache.Updated -= value; } }
         }
  		
 		public event EventHandler<CreatedEventArgs<OptionSettlementMark>> OptionSettlementMarkCreated

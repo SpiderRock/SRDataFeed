@@ -42,7 +42,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tfutexch\tbidPrice1\taskPrice1\tbidSize1\taskSize1\tbidPrice2\taskPrice2\tbidSize2\taskSize2\tbidPrice3\taskPrice3\tbidSize3\taskSize3\tbidPrice4\taskPrice4\tbidSize4\taskSize4\tbidPrintQuan\taskPrintQuan\tdisplayFactor\tsession\ttimestamp";
+		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tmarketStatus\tbidPrice1\taskPrice1\tbidSize1\taskSize1\tbidOrders1\taskOrders1\tbidPrice2\taskPrice2\tbidSize2\taskSize2\tbidOrders2\taskOrders2\tbidPrice3\taskPrice3\tbidSize3\taskSize3\tbidOrders3\taskOrders3\tbidPrice4\taskPrice4\tbidSize4\taskSize4\tbidOrders4\taskOrders4\tbidPrintQuan\taskPrintQuan\ttimestamp";
 
 		public string TabRecord
         {
@@ -54,7 +54,7 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(pkey.Fkey.TabRecord);
 				recordBuilder.Append("\t");
 
-				recordBuilder.Append(Futexch);
+				recordBuilder.Append(MarketStatus);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(BidPrice1);
 				recordBuilder.Append("\t");
@@ -64,6 +64,10 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskSize1);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(BidOrders1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskOrders1);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(BidPrice2);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskPrice2);
@@ -71,6 +75,10 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(BidSize2);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskSize2);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidOrders2);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskOrders2);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(BidPrice3);
 				recordBuilder.Append("\t");
@@ -80,6 +88,10 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskSize3);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(BidOrders3);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskOrders3);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(BidPrice4);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskPrice4);
@@ -88,13 +100,13 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskSize4);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(BidOrders4);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskOrders4);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(BidPrintQuan);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskPrintQuan);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(DisplayFactor);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Session);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Timestamp);
 
@@ -107,7 +119,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tfutexch\tprtPrice\tprtQuan\tprtSize\tprtType\tprtVolume\tbidCount\taskCount\tbidVolume\taskVolume\tiniPrice\tmrkPrice\topnPrice\tclsPrice\tminPrice\tmaxPrice\tsession\ttimestamp";
+		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tfutexch\tprtPrice\tprtQuan\tprtSize\tprtType\tprtOrders\tprtVolume\tbidCount\taskCount\tbidVolume\taskVolume\tiniPrice\tmrkPrice\topnPrice\tclsPrice\tminPrice\tmaxPrice\ttimestamp";
 
 		public string TabRecord
         {
@@ -128,6 +140,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(PrtSize);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtOrders);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtVolume);
 				recordBuilder.Append("\t");
@@ -150,8 +164,6 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(MinPrice);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(MaxPrice);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Session);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 
@@ -230,7 +242,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\taxisVol\tcAtm\tpAtm\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tsdivLoEMA\tsdivHiEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\ttimestamp";
+		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\texType\taxisVol\tcAtm\tpAtm\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tsdivLoEMA\tsdivHiEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\ttimestamp";
 
 		public string TabRecord
         {
@@ -257,6 +269,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(Sdiv);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Ddiv);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExType);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AxisVol);
 				recordBuilder.Append("\t");
@@ -469,7 +483,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tticker_tk\tticker_ts\tticker_at\tuprc\tyears\trate\tsdiv\tddiv\tobid\toask\tobiv\toaiv\tsatm\tsmny\tsvol\tsprc\tde\tga\tth\tve\tro\tph\tup50\tdn50\tup15\tdn15\tup06\tdn08\tcalcErr\ttimestamp";
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tticker_tk\tticker_ts\tticker_at\tuprc\tyears\trate\tsdiv\tddiv\tobid\toask\tobiv\toaiv\tsatm\tsmny\tsvol\tsprc\tsmrk\tde\tga\tth\tve\tro\tph\tup50\tdn50\tup15\tdn15\tup06\tdn08\tcalcErr\tcalcSource\ttimestamp";
 
 		public string TabRecord
         {
@@ -509,6 +523,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Sprc);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(Smrk);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(De);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Ga);
@@ -534,6 +550,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(Dn08);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(CalcErr);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CalcSource);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 
@@ -660,7 +678,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\texch\tprtPrice\tprtSize\tprtType\tprtVolume\tcxlVolume\tlastPrice\tlastSize\tlastTime\tbidCount\taskCount\tbidVolume\taskVolume\tebid\teask\tebsz\teasz\teage\ttimestamp";
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\texch\tprtPrice\tprtSize\tprtType\tprtOrders\tprtVolume\tcxlVolume\tlastPrice\tlastSize\tlastTime\tbidCount\taskCount\tbidVolume\taskVolume\tebid\teask\tebsz\teasz\teage\ttimestamp";
 
 		public string TabRecord
         {
@@ -679,6 +697,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(PrtSize);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtOrders);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtVolume);
 				recordBuilder.Append("\t");
@@ -707,6 +727,71 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(Easz);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Eage);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
+    public partial class OptionRiskFactor
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tticker_tk\tticker_ts\tticker_at\tuprc\tyears\tsvol\tsprc\tde\tobid\toask\tup15\tdn15\tup12\tdn12\tup09\tdn09\tdn08\tup06\tdn06\tup03\tdn03\tcalcErr\tcalcSource\ttimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Okey.TabRecord);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(Ticker.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Uprc);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Years);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Svol);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Sprc);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(De);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Obid);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Oask);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up15);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn15);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up12);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn12);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up09);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn09);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn08);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up06);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn06);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Up03);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Dn03);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CalcErr);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CalcSource);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 

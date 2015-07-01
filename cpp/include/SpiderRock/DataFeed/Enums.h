@@ -16,7 +16,15 @@ namespace SpiderRock
 { 
 	namespace DataFeed
 	{
-		enum class CallOrPut : Enum 
+		enum class CalcSource : Enum 
+		{
+			None=0,
+			Tick=1,
+			Loop=2,
+			Close=3
+		};
+
+ 		enum class CallOrPut : Enum 
 		{
 			Call=0,
 			Put=1
@@ -69,9 +77,12 @@ namespace SpiderRock
 		{
 			None=0,
 			PreOpen=1,
-			Open=2,
-			AfterHours=3,
-			Halted=4
+			PreCross=2,
+			Cross=3,
+			Open=4,
+			Closed=5,
+			Halted=6,
+			AfterHours=7
 		};
 
  		enum class OptExch : Enum 
@@ -93,13 +104,6 @@ namespace SpiderRock
 			CBOT=14,
 			NYMEX=15,
 			COMEX=16
-		};
-
- 		enum class SettleTime : Enum 
-		{
-			None=0,
-			PM=1,
-			AM=2
 		};
 
  		enum class StkExch : Enum 

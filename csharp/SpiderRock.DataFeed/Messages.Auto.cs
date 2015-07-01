@@ -210,27 +210,33 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public FutExch futexch;
+			public MarketStatus marketStatus;
 			public double bidPrice1;
 			public double askPrice1;
 			public ushort bidSize1;
 			public ushort askSize1;
+			public ushort bidOrders1;
+			public ushort askOrders1;
 			public double bidPrice2;
 			public double askPrice2;
 			public ushort bidSize2;
 			public ushort askSize2;
+			public ushort bidOrders2;
+			public ushort askOrders2;
 			public double bidPrice3;
 			public double askPrice3;
 			public ushort bidSize3;
 			public ushort askSize3;
+			public ushort bidOrders3;
+			public ushort askOrders3;
 			public double bidPrice4;
 			public double askPrice4;
 			public ushort bidSize4;
 			public ushort askSize4;
+			public ushort bidOrders4;
+			public ushort askOrders4;
 			public int bidPrintQuan;
 			public int askPrintQuan;
-			public float displayFactor;
-			public SettleTime session;
 			public int timestamp;
 		}
 
@@ -243,8 +249,8 @@ namespace SpiderRock.DataFeed
 		
 
 
-		/// <summary>quote exchange</summary>
-        public FutExch Futexch { get { return body.futexch; } set { body.futexch = value; } }
+		/// <summary>market status (open, halted, etc)</summary>
+        public MarketStatus MarketStatus { get { return body.marketStatus; } set { body.marketStatus = value; } }
  
 		/// <summary>bid price</summary>
         public double BidPrice1 { get { return body.bidPrice1; } set { body.bidPrice1 = value; } }
@@ -258,6 +264,12 @@ namespace SpiderRock.DataFeed
 		/// <summary>ask size in contracts</summary>
         public ushort AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
  
+		/// <summary>number of participating orders at the bid price</summary>
+        public ushort BidOrders1 { get { return body.bidOrders1; } set { body.bidOrders1 = value; } }
+ 
+		/// <summary>number of participating orders at the ask price</summary>
+        public ushort AskOrders1 { get { return body.askOrders1; } set { body.askOrders1 = value; } }
+ 
 		/// <summary>bid price</summary>
         public double BidPrice2 { get { return body.bidPrice2; } set { body.bidPrice2 = value; } }
  
@@ -269,6 +281,12 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>ask size in contracts</summary>
         public ushort AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
+ 
+		/// <summary>number of participating orders at the bid price</summary>
+        public ushort BidOrders2 { get { return body.bidOrders2; } set { body.bidOrders2 = value; } }
+ 
+		/// <summary>number of participating orders at the ask price</summary>
+        public ushort AskOrders2 { get { return body.askOrders2; } set { body.askOrders2 = value; } }
  
 		/// <summary>bid price</summary>
         public double BidPrice3 { get { return body.bidPrice3; } set { body.bidPrice3 = value; } }
@@ -282,6 +300,12 @@ namespace SpiderRock.DataFeed
 		/// <summary>ask size in contracts</summary>
         public ushort AskSize3 { get { return body.askSize3; } set { body.askSize3 = value; } }
  
+		/// <summary>number of participating orders at the bid price</summary>
+        public ushort BidOrders3 { get { return body.bidOrders3; } set { body.bidOrders3 = value; } }
+ 
+		/// <summary>number of participating orders at the ask price</summary>
+        public ushort AskOrders3 { get { return body.askOrders3; } set { body.askOrders3 = value; } }
+ 
 		/// <summary>bid price</summary>
         public double BidPrice4 { get { return body.bidPrice4; } set { body.bidPrice4 = value; } }
  
@@ -294,17 +318,17 @@ namespace SpiderRock.DataFeed
 		/// <summary>ask size in contracts</summary>
         public ushort AskSize4 { get { return body.askSize4; } set { body.askSize4 = value; } }
  
+		/// <summary>number of participating orders at the bid price</summary>
+        public ushort BidOrders4 { get { return body.bidOrders4; } set { body.bidOrders4 = value; } }
+ 
+		/// <summary>number of participating orders at the ask price</summary>
+        public ushort AskOrders4 { get { return body.askOrders4; } set { body.askOrders4 = value; } }
+ 
 		
         public int BidPrintQuan { get { return body.bidPrintQuan; } set { body.bidPrintQuan = value; } }
  
 		
         public int AskPrintQuan { get { return body.askPrintQuan; } set { body.askPrintQuan = value; } }
- 
-		
-        public float DisplayFactor { get { return body.displayFactor; } set { body.displayFactor = value; } }
- 
-		
-        public SettleTime Session { get { return body.session; } set { body.session = value; } }
  
 		/// <summary>milliseconds since midnight</summary>
         public int Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
@@ -513,6 +537,7 @@ namespace SpiderRock.DataFeed
 			public int prtQuan;
 			public int prtSize;
 			public byte prtType;
+			public ushort prtOrders;
 			public int prtVolume;
 			public ushort bidCount;
 			public ushort askCount;
@@ -524,7 +549,6 @@ namespace SpiderRock.DataFeed
 			public double clsPrice;
 			public double minPrice;
 			public double maxPrice;
-			public SettleTime session;
 			public DateTimeLayout timestamp;
 		}
 
@@ -549,10 +573,13 @@ namespace SpiderRock.DataFeed
 		/// <summary>print size [contracts]</summary>
         public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
  
-		/// <summary>print type [this exchange]</summary>
+		/// <summary>print type [exchange specific]</summary>
         public byte PrtType { get { return body.prtType; } set { body.prtType = value; } }
  
-		/// <summary>day print volume in contracts [this exchange]</summary>
+		/// <summary>number of orders participating in this print</summary>
+        public ushort PrtOrders { get { return body.prtOrders; } set { body.prtOrders = value; } }
+ 
+		/// <summary>cumulative day (electronic) print volume in contracts</summary>
         public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
  
 		/// <summary>number of bid prints</summary>
@@ -584,9 +611,6 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>maximum print price within session hours</summary>
         public double MaxPrice { get { return body.maxPrice; } set { body.maxPrice = value; } }
- 
-		
-        public SettleTime Session { get { return body.session; } set { body.session = value; } }
  
 		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
@@ -1071,6 +1095,7 @@ namespace SpiderRock.DataFeed
 			public float rate;
 			public float sdiv;
 			public float ddiv;
+			public byte exType;
 			public float axisVol;
 			public float cAtm;
 			public float pAtm;
@@ -1159,6 +1184,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>present value of discrete dividend stream</summary>
         public float Ddiv { get { return body.ddiv; } set { body.ddiv = value; } }
+ 
+		/// <summary>exercise type of the options used to compute this surface</summary>
+        public byte ExType { get { return body.exType; } set { body.exType = value; } }
  
 		/// <summary>axis volatility (vol used to compute xAxis)</summary>
         public float AxisVol { get { return body.axisVol; } set { body.axisVol = value; } }
@@ -1858,7 +1886,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// --- OptionImpliedQuote ---
-	/// --- OptionImpliedQuote ---
 	/// </remarks>
 
     public partial class OptionImpliedQuote
@@ -2063,6 +2090,7 @@ namespace SpiderRock.DataFeed
 			public float smny;
 			public float svol;
 			public float sprc;
+			public float smrk;
 			public float de;
 			public float ga;
 			public float th;
@@ -2076,6 +2104,7 @@ namespace SpiderRock.DataFeed
 			public float up06;
 			public float dn08;
 			public FixedString16Layout calcErr;
+			public CalcSource calcSource;
 			public DateTimeLayout timestamp;
 		}
 
@@ -2116,10 +2145,10 @@ namespace SpiderRock.DataFeed
 		/// <summary>option ask price</summary>
         public float Oask { get { return body.oask; } set { body.oask = value; } }
  
-		/// <summary>option implied bid</summary>
+		/// <summary>volatility implied by option bid price</summary>
         public float Obiv { get { return body.obiv; } set { body.obiv = value; } }
  
-		/// <summary>option implied ask</summary>
+		/// <summary>volatility implied by option ask price</summary>
         public float Oaiv { get { return body.oaiv; } set { body.oaiv = value; } }
  
 		/// <summary>option atm volatility (from SR surface)</summary>
@@ -2133,6 +2162,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>option surface price</summary>
         public float Sprc { get { return body.sprc; } set { body.sprc = value; } }
+ 
+		/// <summary>option surface mark (option surface price w/bounding rules)</summary>
+        public float Smrk { get { return body.smrk; } set { body.smrk = value; } }
  
 		/// <summary>option delta (from svol)</summary>
         public float De { get { return body.de; } set { body.de = value; } }
@@ -2170,8 +2202,11 @@ namespace SpiderRock.DataFeed
 		/// <summary>underlyer dn 8% slide</summary>
         public float Dn08 { get { return body.dn08; } set { body.dn08 = value; } }
  
-		/// <summary>option pricing error (if any)</summary>
+		/// <summary>option pricing error, otherwise, an empty string.  pertains to the Greeks (de, ga, th, ve, ro, ph) and sprc</summary>
         public string CalcErr { get { return CacheVar.AllocIfNull(ref calcErr).Get(ref body.calcErr, usn); } set { CacheVar.AllocIfNull(ref calcErr).Set(value); body.calcErr = value; } }
+ 
+		/// <summary>Tick=from NBBO quote change; Loop=from background loop; Close=Final EOD record;</summary>
+        public CalcSource CalcSource { get { return body.calcSource; } set { body.calcSource = value; } }
  
 		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
@@ -2951,6 +2986,7 @@ namespace SpiderRock.DataFeed
 			public float prtPrice;
 			public int prtSize;
 			public byte prtType;
+			public ushort prtOrders;
 			public int prtVolume;
 			public int cxlVolume;
 			public float lastPrice;
@@ -2985,6 +3021,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>print type</summary>
         public byte PrtType { get { return body.prtType; } set { body.prtType = value; } }
+ 
+		/// <summary>number of participating orders</summary>
+        public ushort PrtOrders { get { return body.prtOrders; } set { body.prtOrders = value; } }
  
 		/// <summary>day print volume in contracts [this exchange]</summary>
         public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
@@ -3035,6 +3074,310 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // OptionPrint
+
+
+	/// <summary>
+	/// OptionRiskFactor:379
+	/// </summary>
+	/// <remarks>
+	/// --- OptionRiskFactor ---
+	/// </remarks>
+
+    public partial class OptionRiskFactor
+    {
+		public OptionRiskFactor()
+		{
+		}
+		
+		public OptionRiskFactor(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public OptionRiskFactor(OptionRiskFactor source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal OptionRiskFactor(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as OptionRiskFactor);
+		}
+		
+		public bool Equals(OptionRiskFactor other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(OptionRiskFactor target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+ 			target.Invalidate();
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			Invalidate();
+ 			body = new BodyLayout();
+
+        }
+		
+
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.OptionRiskFactor};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private OptionKey okey;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				okey = other.okey;
+				
+			}
+			
+			
+			public OptionKey Okey
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				okey = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.okey = okey;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.okey = okey;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // OptionRiskFactor.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public OptionKeyLayout okey;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	okey.Equals(other.okey);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = okey.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // OptionRiskFactor.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public StockKeyLayout ticker;
+			public float uprc;
+			public float years;
+			public float svol;
+			public float sprc;
+			public float de;
+			public float obid;
+			public float oask;
+			public float up15;
+			public float dn15;
+			public float up12;
+			public float dn12;
+			public float up09;
+			public float dn09;
+			public float dn08;
+			public float up06;
+			public float dn06;
+			public float up03;
+			public float dn03;
+			public FixedString16Layout calcErr;
+			public CalcSource calcSource;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		private volatile int usn;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedStockKey ticker;
+ 		private CachedFixedLengthString<FixedString16Layout> calcErr;
+		
+
+            
+		
+        public StockKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+ 
+		/// <summary>underlyer price (usually mid-market)</summary>
+        public float Uprc { get { return body.uprc; } set { body.uprc = value; } }
+ 
+		/// <summary>years to expiration</summary>
+        public float Years { get { return body.years; } set { body.years = value; } }
+ 
+		/// <summary>option surface volatility</summary>
+        public float Svol { get { return body.svol; } set { body.svol = value; } }
+ 
+		/// <summary>option surface price</summary>
+        public float Sprc { get { return body.sprc; } set { body.sprc = value; } }
+ 
+		/// <summary>option delta (from svol)</summary>
+        public float De { get { return body.de; } set { body.de = value; } }
+ 
+		/// <summary>option bid price</summary>
+        public float Obid { get { return body.obid; } set { body.obid = value; } }
+ 
+		/// <summary>option ask price</summary>
+        public float Oask { get { return body.oask; } set { body.oask = value; } }
+ 
+		/// <summary>underlyer up 15% slide</summary>
+        public float Up15 { get { return body.up15; } set { body.up15 = value; } }
+ 
+		/// <summary>underlyer dn 15% slide</summary>
+        public float Dn15 { get { return body.dn15; } set { body.dn15 = value; } }
+ 
+		/// <summary>underlyer up 12% slide</summary>
+        public float Up12 { get { return body.up12; } set { body.up12 = value; } }
+ 
+		/// <summary>underlyer dn 12% slide</summary>
+        public float Dn12 { get { return body.dn12; } set { body.dn12 = value; } }
+ 
+		/// <summary>underlyer up 9% slide</summary>
+        public float Up09 { get { return body.up09; } set { body.up09 = value; } }
+ 
+		/// <summary>underlyer dn 9% slide</summary>
+        public float Dn09 { get { return body.dn09; } set { body.dn09 = value; } }
+ 
+		/// <summary>underlyer dn 8% slide</summary>
+        public float Dn08 { get { return body.dn08; } set { body.dn08 = value; } }
+ 
+		/// <summary>underlyer up 6% slide</summary>
+        public float Up06 { get { return body.up06; } set { body.up06 = value; } }
+ 
+		/// <summary>underlyer dn 6% slide</summary>
+        public float Dn06 { get { return body.dn06; } set { body.dn06 = value; } }
+ 
+		/// <summary>underlyer up 3% slide</summary>
+        public float Up03 { get { return body.up03; } set { body.up03 = value; } }
+ 
+		/// <summary>underlyer dn 3% slide</summary>
+        public float Dn03 { get { return body.dn03; } set { body.dn03 = value; } }
+ 
+		/// <summary>option pricing error, otherwise, an empty string.</summary>
+        public string CalcErr { get { return CacheVar.AllocIfNull(ref calcErr).Get(ref body.calcErr, usn); } set { CacheVar.AllocIfNull(ref calcErr).Set(value); body.calcErr = value; } }
+ 
+		
+        public CalcSource CalcSource { get { return body.calcSource; } set { body.calcSource = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // OptionRiskFactor
 
 
 	/// <summary>
