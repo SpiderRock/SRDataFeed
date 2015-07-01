@@ -7,8 +7,7 @@ namespace SpiderRock.DataFeed
     {
         None = 0,
         Stable = 1,
-        Current = 2,
-        UAT = 3
+        Beta = 2
     }
 
     public static class SysEnvironmentExtensions

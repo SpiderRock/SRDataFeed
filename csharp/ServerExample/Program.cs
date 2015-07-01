@@ -25,10 +25,6 @@ namespace ServerExample
 
                     IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
 
-                    CacheHost = "198.102.4.145", // Primary cache server
-                    //CacheHost = "198.102.4.146", // Secondary cache server
-                    CachePort = 3340,
-
                     // Protocol is set to UDP by default but can be switched to DBL(Myricom)
                     //Protocol = Protocol.DBL,
 
@@ -131,26 +127,18 @@ namespace ServerExample
                 engine.OptionNbboQuoteUpdated += optionBookQuoteHandler.OnUpdate;
                 engine.OptionNbboQuoteChanged += optionBookQuoteHandler.OnChange;
 
+                // This will start the engine and request all of the state corresponding
+                // to the message types being requested
+                engine.StartWith(MessageType.OptionNbboQuote, MessageType.StockBookQuote);
+
+                // Alternatively, start without cache data
                 engine.Start();
-
-                TimeSpan timeout = TimeSpan.FromMinutes(1);
-                MessageType[] messageTypesToRequest = {MessageType.OptionNbboQuote, MessageType.StockBookQuote};
-
-                // Synchronous request to get existing stock and option quote data.
-                // While cache data is being retrieved, live quote data
-                // is simultaneously arriving.  When the request completes
-                // the application will contain the latest state of the data.
-
-                if (!engine.GetCachedMessages(timeout, messageTypesToRequest))
-                {
-                    throw new TimeoutException("Cache request timed out");
-                }
 
                 Console.ReadLine();
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine("Cache request error: {0}", e);
+                Console.Error.WriteLine("Engine failed to start: {0}", e);
                 Console.ReadLine();
             }
             finally
