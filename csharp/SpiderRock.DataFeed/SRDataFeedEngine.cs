@@ -31,7 +31,7 @@ namespace SpiderRock.DataFeed
 
         public SRDataFeedEngine()
         {
-            SysEnvironment = SysEnvironment.Stable;
+            SysEnvironment = SysEnvironment.Beta;
             disposeTokenSource = new CancellationTokenSource();
         }
 
