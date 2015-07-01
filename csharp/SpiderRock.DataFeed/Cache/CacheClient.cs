@@ -54,6 +54,8 @@ namespace SpiderRock.DataFeed.Cache
             {
                 if (client == null) return;
 
+                SRTrace.NetTcp.TraceInformation("CacheClient [{0}]: disposing", endPoint.ToString());
+
                 try
                 {
                     frameHandler.OnMessage(MessageType.CacheComplete, null);
@@ -61,9 +63,11 @@ namespace SpiderRock.DataFeed.Cache
                     sendChannel.CloseChannel();
                     recvChannel.CloseChannel();
 
-                    SRTrace.NetTcp.TraceInformation("CacheClient [{0}]: closing connection", endPoint.ToString());
-
-                    client.Close(30);
+                    if (client.Connected)
+                    {
+                        SRTrace.NetTcp.TraceInformation("CacheClient [{0}]: closing socket", endPoint.ToString());
+                        client.Close(30);
+                    }
                 }
                 catch (ObjectDisposedException)
                 {
@@ -84,9 +88,16 @@ namespace SpiderRock.DataFeed.Cache
                 NoDelay = true
             };
 
-            client.Connect(endPoint);
-
-            client.Blocking = true;
+            try
+            {
+                client.Connect(endPoint);
+                client.Blocking = true;
+            }
+            catch (Exception e)
+            {
+                SRTrace.NetTcp.TraceError(e, "{0}: connection failed", this);
+                throw;
+            }
 
             SRTrace.NetTcp.TraceInformation("{0}: connection succeeded", this);
         }
