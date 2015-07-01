@@ -24,7 +24,7 @@ namespace SpiderRock.DataFeed
 
         public override string ToString()
         {
-            return "UdpChannelThreadGroup: " + string.Join(", ", channels);
+            return "DblChannelThreadGroup: " + string.Join(", ", channels);
         }
     }
 }
