@@ -1188,73 +1188,73 @@ namespace SpiderRock.DataFeed
 		/// <summary>exercise type of the options used to compute this surface</summary>
         public byte ExType { get { return body.exType; } set { body.exType = value; } }
  
-		/// <summary>axis volatility (vol used to compute xAxis)</summary>
+		/// <summary>axis volatility (vol used to compute xAxis) [usually atm vol]</summary>
         public float AxisVol { get { return body.axisVol; } set { body.axisVol = value; } }
  
-		/// <summary>atm (volMny = 0) volatility</summary>
+		/// <summary>call atm vol (xAxis = 0)</summary>
         public float CAtm { get { return body.cAtm; } set { body.cAtm = value; } }
  
-		
+		/// <summary>put atm vol (xAxis = 0)</summary>
         public float PAtm { get { return body.pAtm; } set { body.pAtm = value; } }
  
-		/// <summary>-8.00</summary>
+		/// <summary>h (x-axis step size; usually 0.5) [xAxis = (effStrike / fwdEffUPrc - 1.0) / volRT; fwdEffUPrc = effUPrc * exp(lsa.years * lsa.rate) - lsa.ddiv; volRT = axisVol * sqrt(max(1.0/252.0, lsa.years))]</summary>
         public float AdjDI { get { return body.adjDI; } set { body.adjDI = value; } }
  
-		/// <summary>-4.00</summary>
+		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]</summary>
         public float AdjD8 { get { return body.adjD8; } set { body.adjD8 = value; } }
  
-		/// <summary>-3.50</summary>
+		/// <summary>dn 7 steps</summary>
         public float AdjD7 { get { return body.adjD7; } set { body.adjD7 = value; } }
  
-		/// <summary>-3.00</summary>
+		/// <summary>dn 6 steps</summary>
         public float AdjD6 { get { return body.adjD6; } set { body.adjD6 = value; } }
  
-		/// <summary>-2.50</summary>
+		/// <summary>dn 5 steps</summary>
         public float AdjD5 { get { return body.adjD5; } set { body.adjD5 = value; } }
  
-		/// <summary>-2.00</summary>
+		/// <summary>dn 4 steps</summary>
         public float AdjD4 { get { return body.adjD4; } set { body.adjD4 = value; } }
  
-		/// <summary>-1.50</summary>
+		/// <summary>dn 3 steps</summary>
         public float AdjD3 { get { return body.adjD3; } set { body.adjD3 = value; } }
  
-		/// <summary>-1.00</summary>
+		/// <summary>dn 2 steps</summary>
         public float AdjD2 { get { return body.adjD2; } set { body.adjD2 = value; } }
  
-		/// <summary>-0.50</summary>
+		/// <summary>dn 1 step</summary>
         public float AdjD1 { get { return body.adjD1; } set { body.adjD1 = value; } }
  
-		/// <summary>+0.50</summary>
+		/// <summary>up 1 step</summary>
         public float AdjU1 { get { return body.adjU1; } set { body.adjU1 = value; } }
  
-		/// <summary>+1.00</summary>
+		/// <summary>up 2 steps</summary>
         public float AdjU2 { get { return body.adjU2; } set { body.adjU2 = value; } }
  
-		/// <summary>+1.50</summary>
+		/// <summary>up 3 steps</summary>
         public float AdjU3 { get { return body.adjU3; } set { body.adjU3 = value; } }
  
-		/// <summary>+2.00</summary>
+		/// <summary>up 4 steps</summary>
         public float AdjU4 { get { return body.adjU4; } set { body.adjU4 = value; } }
  
-		/// <summary>+2.50</summary>
+		/// <summary>up 5 steps</summary>
         public float AdjU5 { get { return body.adjU5; } set { body.adjU5 = value; } }
  
-		/// <summary>+3.00</summary>
+		/// <summary>up 6 steps</summary>
         public float AdjU6 { get { return body.adjU6; } set { body.adjU6 = value; } }
  
-		/// <summary>+3.50</summary>
+		/// <summary>up 7 steps</summary>
         public float AdjU7 { get { return body.adjU7; } set { body.adjU7 = value; } }
  
-		/// <summary>+4.00</summary>
+		/// <summary>up 8 steps</summary>
         public float AdjU8 { get { return body.adjU8; } set { body.adjU8 = value; } }
  
-		/// <summary>+8.00</summary>
+		/// <summary>unused</summary>
         public float AdjUI { get { return body.adjUI; } set { body.adjUI = value; } }
  
-		/// <summary>vol = atmVol * [1.0 + slope * volMny + cmult * Spline(volMny)]</summary>
+		/// <summary>surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
         public float Slope { get { return body.slope; } set { body.slope = value; } }
  
-		
+		/// <summary>unused (always 1.0)</summary>
         public float Cmult { get { return body.cmult; } set { body.cmult = value; } }
  
 		/// <summary>minimum mkt premium width</summary>
@@ -1266,10 +1266,10 @@ namespace SpiderRock.DataFeed
 		/// <summary>sdiv exp moving average (10 minutes)</summary>
         public float SdivEMA { get { return body.sdivEMA; } set { body.sdivEMA = value; } }
  
-		
+		/// <summary>maximum sdiv bid (all markets in this expiration)</summary>
         public float SdivLoEMA { get { return body.sdivLoEMA; } set { body.sdivLoEMA = value; } }
  
-		
+		/// <summary>minimum sdiv ask (all markets in this expiration)</summary>
         public float SdivHiEMA { get { return body.sdivHiEMA; } set { body.sdivHiEMA = value; } }
  
 		
@@ -1311,28 +1311,28 @@ namespace SpiderRock.DataFeed
 		/// <summary>worst case surface premium violation</summary>
         public float FitMaxPrcErr { get { return body.fitMaxPrcErr; } set { body.fitMaxPrcErr = value; } }
  
-		
+		/// <summary>okey_xx of the option with the largest fit error in this expiration</summary>
         public float FitErrXX { get { return body.fitErrXX; } set { body.fitErrXX = value; } }
  
-		
+		/// <summary>okey_cp of the option with the largest fit error in this expiration</summary>
         public CallOrPut FitErrCP { get { return body.fitErrCP; } set { body.fitErrCP = value; } }
  
-		
+		/// <summary>bid of the option with the largest fit error</summary>
         public float FitErrBid { get { return body.fitErrBid; } set { body.fitErrBid = value; } }
  
-		
+		/// <summary>ask of the option with the largest fit error</summary>
         public float FitErrAsk { get { return body.fitErrAsk; } set { body.fitErrAsk = value; } }
  
-		
+		/// <summary>surface prc of the option with the largest fit error</summary>
         public float FitErrPrc { get { return body.fitErrPrc; } set { body.fitErrPrc = value; } }
  
-		
+		/// <summary>surface vol of the option with the largest fit error</summary>
         public float FitErrVol { get { return body.fitErrVol; } set { body.fitErrVol = value; } }
  
 		/// <summary>type of surface fit used</summary>
         public FitType FitType { get { return body.fitType; } set { body.fitType = value; } }
              
-		/// <summary>LiveSurfaceSpline used for ATM calcs</summary>
+		/// <summary>overnight LiveSurfaceSpline used for surface</summary>
         public FutureKey SFKey { get { return CacheVar.AllocIfNull(ref sFKey).Get(ref body.sFKey, usn); } set { CacheVar.AllocIfNull(ref sFKey).Set(value); body.sFKey = value.Layout; } }
  
 		
