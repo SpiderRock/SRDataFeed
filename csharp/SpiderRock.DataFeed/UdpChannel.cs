@@ -29,11 +29,16 @@
         IdxQuoteRut = 51,
         IdxQuoteCboe = 52,
 
-        ImpliedQuoteNms = 61,
+        ImpliedQuoteNmsLoop = 61,
         ImpliedQuoteCme = 62,
         ImpliedQuoteCbot = 63,
         ImpliedQuoteNymex = 64,
         ImpliedQuoteComex = 65,
+
+        ImpliedQuoteNms1 = 71,
+        ImpliedQuoteNms2 = 72,
+        ImpliedQuoteNms3 = 73,
+        ImpliedQuoteNms4 = 74,
 
         StkExchQuote1Nsdq = 101,
         StkExchQuote2Nsdq = 102,
