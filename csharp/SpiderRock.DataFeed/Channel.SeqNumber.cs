@@ -9,20 +9,10 @@ namespace SpiderRock.DataFeed
 {
     internal partial class Channel
     {
-        /// <remarks>
-        ///     A shared 3-dimensional array for quick lookups of sequence number counters by:
-        ///     (SourceID, MessageType, Id)
-        ///     Performance optimization assumptions:
-        ///     1) There are few actual (~10) sources
-        ///     2) Each source sends few types (~10) message types
-        ///     3) There are no more than 100 channels
-        ///     4) Allocations happen infrequently
-        /// </remarks>
         private static readonly SeqNumberCounter[][][] SeqNumberCounterIndex =
             new SeqNumberCounter[ushort.MaxValue][][];
 
         private static long numSlotsSeqNumberCounters = ushort.MaxValue;
-        private static long numSeqNumberCounters;
 
         private SeqNumberCounter seqNumber;
         private volatile SeqNumberCounter[] seqNumberCounters = new SeqNumberCounter[0];
@@ -48,9 +38,6 @@ namespace SpiderRock.DataFeed
                             messageTypeIndex = MessageType.CreateSizedArray<SeqNumberCounter[]>();
 
                         Interlocked.Add(ref numSlotsSeqNumberCounters, messageTypeIndex.Length);
-
-                        //SRTrace.NetChannels.TraceDebug("Message type index allocated for {0} (# slots: {1:N0})",
-                        //    sourceId, numSlotsSeqNumberCounters);
                     }
                 }
             }
@@ -66,9 +53,6 @@ namespace SpiderRock.DataFeed
                 if (tmp != null) tmp.CopyTo(channelIndex, 0);
 
                 Interlocked.Add(ref numSlotsSeqNumberCounters, channelIndex.Length);
-
-                //SRTrace.NetChannels.TraceDebug("Channel ID index allocated for {0}/{1} (# of slots: {2:N0})",
-                //    sourceId, messageType, numSlotsSeqNumberCounters);
             }
         }
 
@@ -93,8 +77,6 @@ namespace SpiderRock.DataFeed
             byte sequenceNumber)
         {
             var counter = new SeqNumberCounter(this, sourceId, messageType, sequenceNumber);
-            //SRTrace.NetChannels.TraceDebug("Created SeqNumberCounter {0}/{1} for {2}/Id={3} (# of instances: {4})",
-            //    sourceId, messageType, this, Id, Interlocked.Increment(ref numSeqNumberCounters));
             SeqNumberCounterIndex[sourceId][messageType][Id] = counter;
             seqNumberCounters = seqNumberCounters.Union(new[] {counter}).ToArray();
             return counter;
