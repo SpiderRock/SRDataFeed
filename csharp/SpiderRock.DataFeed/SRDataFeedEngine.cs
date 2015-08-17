@@ -33,6 +33,8 @@ namespace SpiderRock.DataFeed
         {
             SysEnvironment = SysEnvironment.Beta;
             disposeTokenSource = new CancellationTokenSource();
+
+            InitializeFrameHandler();
         }
 
         public DblChannelThreadGroup[] DblChannelThreadGroups { get; set; }
@@ -92,7 +94,7 @@ namespace SpiderRock.DataFeed
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Cache servers: {0}",
                     string.Join(", ", CacheServers.Select(ep => ep.ToString())));
 
-                InitializeFrameHandler();
+                ClearContainerCaches();
 
                 Channels = Channels.Except(DblChannelThreadGroups.SelectMany(g => g)).Distinct().ToArray();
 
@@ -194,11 +196,6 @@ namespace SpiderRock.DataFeed
 
         public bool GetCachedMessages(TimeSpan timeout, params MessageType[] requestList)
         {
-            if (!running)
-            {
-                throw new InvalidOperationException("Engine has not been started with Start()");
-            }
-
             var timeoutTokenSource = new CancellationTokenSource(timeout);
 
             SRTrace.Default.TraceDebug("SRDataFeedEngine: initiating remote cache request for: {0}",
