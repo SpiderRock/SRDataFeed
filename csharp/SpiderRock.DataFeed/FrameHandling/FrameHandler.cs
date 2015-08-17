@@ -104,6 +104,7 @@ namespace SpiderRock.DataFeed.FrameHandling
                         if (offset + header.msglen > length) break;
 
                         channel.IncrementMsgCount(header.msgtype, header.msglen);
+                        channel.CheckSeqNumber(header.sourceid, header.msgtype, header.seqnum);
 
                         if (header.environment == SysEnvironment)
                         {

@@ -78,6 +78,7 @@
     <Compile Include="Proto\DBL\Myricom\DblReadHandler.cs" />
     <Compile Include="Proto\DBL\Myricom\ReadLoopState.cs" />
     <Compile Include="FrameHandling\SourceId.cs" />
+    <Compile Include="Channel.SeqNumber.cs" />
     <Compile Include="SysEnvironment.cs" />
     <Compile Include="Messages.Tab.Auto.cs" />
     <Compile Include="ChannelType.cs" />

@@ -11,7 +11,7 @@ using SpiderRock.DataFeed.Diagnostics;
 
 namespace SpiderRock.DataFeed
 {
-    internal class Channel : IEquatable<Channel>
+    internal partial class Channel : IEquatable<Channel>
     {
         public const string LogName = "channels";
 
@@ -33,6 +33,8 @@ namespace SpiderRock.DataFeed
         private static readonly TimeSpan EndTime = new TimeSpan(15, 0, 0);
 
         private static readonly Dictionary<string, int> DataFeedChannels = new Dictionary<string, int>();
+        private static int idGenerator;
+
         private readonly bool isRecv;
         private readonly MsgStats[] msgStats;
 
@@ -84,7 +86,13 @@ namespace SpiderRock.DataFeed
             }
 
             isRecv = (channelType == ChannelType.TcpRecv || channelType == ChannelType.UdpRecv);
+
+            supressSeqNumberCheck = channelType == ChannelType.TcpSend || channelType == ChannelType.TcpRecv;
+
+            Id = Interlocked.Increment(ref idGenerator);
         }
+
+        public int Id { get; private set; }
 
         public string SourceAddr { get; set; }
         public string ChannelAddr { get; set; }
@@ -185,8 +193,10 @@ namespace SpiderRock.DataFeed
 
             long numSenders = 0;
             long numMessages = 0;
+            long numGaps = 0;
 
             long totalMessages = 0;
+            long totalGaps = 0;
 
             // --- aggregate by channelType + MessageType ---
 
@@ -202,6 +212,9 @@ namespace SpiderRock.DataFeed
                     string key = String.Format("{0,8} ({1,25}/{2,3})", channel.ChannelType, msgType, i);
 
                     MsgStats agg = GetOrCreate(aggregate, key);
+
+                    agg.Gaps += channel.GetGapsByMessageType(msgType);
+                    agg.TotalGaps += channel.GetCumulativeGapsByMessageType(msgType);
 
                     long count = stats.Count - stats.LastCount;
                     stats.LastCount = stats.Count;
@@ -224,11 +237,16 @@ namespace SpiderRock.DataFeed
 
             foreach (var kv in aggregate)
             {
-                string line = String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,15:N0}",
+                numGaps += kv.Value.Gaps;
+                totalGaps += kv.Value.TotalGaps;
+
+                string line = String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}",
                     kv.Key,
                     kv.Value.Count,
                     kv.Value.Count/elapsed,
                     kv.Value.LastCount,
+                    kv.Value.Gaps,
+                    kv.Value.TotalGaps,
                     kv.Value.TotalCount
                     );
 
@@ -238,15 +256,16 @@ namespace SpiderRock.DataFeed
             lines.Sort();
 
             lines.Insert(0,
-                "--- [messages] --------------------------------------------------------------------------------");
+                "--- [messages] ----------------------------------------------------------------------------------------------------------");
             lines.Insert(1,
-                "channel  (msg)                               msgCount    msgRate/s   numSources        cumCount");
+                "channel  (msg)                               msgCount    msgRate/s   numSources      numGaps      cumGaps        cumCount");
             lines.Insert(2,
-                "-----------------------------------------------------------------------------------------------");
+                "-------------------------------------------------------------------------------------------------------------------------");
 
-            lines.Add("-----------------------------------------------------------------------------------------------");
-            lines.Add(String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,15:N0}", "TOTAL:", numMessages,
-                numMessages/elapsed, numSenders, totalMessages));
+            lines.Add(
+                "-------------------------------------------------------------------------------------------------------------------------");
+            lines.Add(String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}", "TOTAL:",
+                numMessages, numMessages/elapsed, numSenders, numGaps, totalGaps, totalMessages));
 
             return lines;
         }
@@ -261,6 +280,7 @@ namespace SpiderRock.DataFeed
             long numSyscalls = 0;
             long numMessages = 0;
             long numPartials = 0;
+            long numGaps = 0;
 
             double maxAsyncTime = 0;
             double maxHandlerTime = 0;
@@ -286,6 +306,8 @@ namespace SpiderRock.DataFeed
                 long newPartials = channel.Partials - channel.lastPartials;
                 channel.lastPartials = channel.Partials;
 
+                long newGaps = channel.Gaps;
+
                 long newErrors = channel.Errors - channel.lastErrors;
                 channel.lastErrors = channel.Errors;
 
@@ -299,6 +321,7 @@ namespace SpiderRock.DataFeed
 
                 if (channel.ChannelType == ChannelType.TcpRecv)
                 {
+                    newGaps = 0;
                     if (newBytes == 0 && newSyscalls == 0 && newMessages == 0) continue;
                 }
                 else if (channel.ChannelType == ChannelType.DblRecv || channel.ChannelType == ChannelType.UdpRecv)
@@ -333,6 +356,7 @@ namespace SpiderRock.DataFeed
                 numSyscalls += newSyscalls;
                 numMessages += newMessages;
                 numPartials += newPartials;
+                numGaps += newGaps;
 
                 if (channel.isRecv)
                 {
@@ -347,14 +371,15 @@ namespace SpiderRock.DataFeed
 
                 // write channel incremental stats to log file                           
 
-                string msg = String.Format(
-                    "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:N0} {6,8:N4} {7,8:N4} {8,8:N3} {9,8:N3} {10,25} {11,25}  {12,-20}",
+                string msg = string.Format(
+                    "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:N0} {6,7:N0} {7,8:N4} {8,8:N4} {9,8:N3} {10,8:N3} {11,35} {12,25}  {13,-20}",
                     channel.ChannelType,
                     newBytes/(1024.0*1024.0),
                     newBytes/(1024.0*elapsed),
                     newSyscalls/elapsed,
                     newMessages/elapsed,
                     newPartials,
+                    newGaps,
                     Math.Min(99, channel.maxAsyncTime),
                     Math.Min(99, channel.maxHandlerTime),
                     Math.Min(99, asyncTime),
@@ -373,23 +398,24 @@ namespace SpiderRock.DataFeed
             lines.Sort();
 
             lines.Insert(0,
-                "--- [channel stats] ------------------------------------------------------------------------------------------------------------------------------");
+                "--- [channel stats] ------------------------------------------------------------------------------------------------------------------------------------------------");
             lines.Insert(1,
-                " channel   mbytes   kbytes/s syscalls/s messages/s   parts  maxWait  maxProc  sumWait  sumProc             channel.label            source.address");
+                " channel   mbytes   kbytes/s syscalls/s messages/s   parts    gaps  maxWait  maxProc  sumWait  sumProc                       channel.label            source.address");
             lines.Insert(2,
-                "--------------------------------------------------------------------------------------------------------------------------------------------------");
+                "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             lines.Add(
-                "--------------------------------------------------------------------------------------------------------------------------------------------------");
+                "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             string footer = String.Format(
-                "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:N0} {6,8:N4} {7,8:N4} {8,8} {9,8:N3} {10,25}",
+                "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:N0} {6,7:N0} {7,8:N4} {8,8:N4} {9,8} {10,8:N3} {11,25}",
                 "TOTAL:",
                 numBytes/(1024.0*1024.0),
                 numBytes/(1024.0*elapsed),
                 numSyscalls/elapsed,
                 numMessages/elapsed,
                 numPartials,
+                numGaps,
                 Math.Min(99, maxAsyncTime),
                 Math.Min(99, maxHandlerTime),
                 "",
@@ -400,6 +426,52 @@ namespace SpiderRock.DataFeed
             lines.Add(footer);
 
             return lines;
+        }
+
+        public static IEnumerable<string> GetSeqNumberGapStats(List<Channel> channelList, double elapsed)
+        {
+            if (channelList == null) yield break;
+
+            const string header = " message / source                                gaps      cumGaps";
+            var separator = new string('-', header.Length);
+
+            bool appendEmptyLine = false;
+
+            foreach (var channel in channelList)
+            {
+                switch (channel.ChannelType)
+                {
+                    case ChannelType.UdpRecv:
+                    case ChannelType.DblRecv:
+                        channel.RefreshSeqNumberGapStatistics();
+
+                        if (channel.seqNumberCounters.All(c => c.Gaps == 0)) continue;
+
+                        yield return string.Empty;
+
+                        yield return string.Format("--- [{0} ({1}) gaps] ---", channel.ChannelName, channel.ChannelType).PadRight(header.Length, '-');
+                        yield return header;
+                        yield return separator;
+
+                        foreach (var seqNumberCounter in channel
+                            .seqNumberCounters
+                            .Where(c => c.Gaps > 0)
+                            .OrderBy(c => c.MessageType.ToString())
+                            .ThenBy(c => (ushort)c.SourceId))
+                        {
+                            yield return string.Format("{0,-40} {1,12:N0} {2,12:N0}",
+                                seqNumberCounter.MessageType + " / " + seqNumberCounter.SourceId,
+                                seqNumberCounter.Gaps,
+                                seqNumberCounter.CumulativeGaps);
+                        }
+
+                        yield return separator;
+                        appendEmptyLine = true;
+                        break;
+                }
+            }
+
+            if (appendEmptyLine) yield return string.Empty;
         }
 
         public void CloseChannel()
@@ -461,6 +533,7 @@ namespace SpiderRock.DataFeed
             // --- write stats block ---
 
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.Cast<object>().ToArray());
+            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(Channels, elapsed.TotalSeconds).Cast<object>().ToArray());
         }
 
         public static void GetProcessStats(out long msgIn, out long msgOut, out long sysCallIn, out long sysCallOut)
@@ -481,6 +554,8 @@ namespace SpiderRock.DataFeed
             public long Count;
             public long LastCount;
             public long TotalCount;
+            public long Gaps;
+            public long TotalGaps;
         }
 
         #region Stats by message type
