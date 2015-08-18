@@ -43,7 +43,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
                     iep.ToString());
 
                 client = new UdpClient();
-
+                client.Client.ReceiveBufferSize *= 10;
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 client.ExclusiveAddressUse = false;
 
