@@ -11,11 +11,13 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             KeyErrors = new SRTraceSource("SpiderRock.KeyErrors");
 
+            Monitor = new SRTraceSource("SpiderRock.Monitor");
+
             NetTcp = new SRTraceSource("SpiderRock.Net.TCP");
             NetDbl = new SRTraceSource("SpiderRock.Net.DBL");
             NetUdp = new SRTraceSource("SpiderRock.Net.UDP");
-            NetSeqNumber = new SRTraceSource("SpiderRock.Net.SeqNumber");
             NetChannels = new SRTraceSource("SpiderRock.Net.Channels");
+            NetSeqNumber = new SRTraceSource("SpiderRock.Net.SeqNumber");
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
         }
@@ -29,6 +31,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             NetDbl.Flush();
             NetChannels.Flush();
             NetSeqNumber.Flush();
+            Monitor.Flush();
         }
 
         public static void AddGlobalTraceListener(TraceListener traceListener)
@@ -40,6 +43,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             NetDbl.Listeners.Add(traceListener);
             NetChannels.Listeners.Add(traceListener);
             NetSeqNumber.Listeners.Add(traceListener);
+            Monitor.Listeners.Add(traceListener);
         }
 
         public static SourceSwitch GlobalSwitch
@@ -53,12 +57,15 @@ namespace SpiderRock.DataFeed.Diagnostics
                 NetDbl.Switch = value;
                 NetChannels.Switch = value;
                 NetSeqNumber.Switch = value;
+                Monitor.Switch = value;
             }
         }
 
         public static SRTraceSource Default { get; private set; }
 
         public static SRTraceSource KeyErrors { get; private set; }
+
+        internal static SRTraceSource Monitor { get; private set; }
 
         public static SRTraceSource NetTcp { get; private set; }
         public static SRTraceSource NetDbl { get; private set; }
