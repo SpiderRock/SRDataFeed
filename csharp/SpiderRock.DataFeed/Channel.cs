@@ -533,7 +533,7 @@ namespace SpiderRock.DataFeed
             // --- write stats block ---
 
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.Cast<object>().ToArray());
-            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(Channels, elapsed.TotalSeconds).Cast<object>().ToArray());
+            SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(Channels, elapsed.TotalSeconds).Cast<object>().ToArray());
         }
 
         public static void GetProcessStats(out long msgIn, out long msgOut, out long sysCallIn, out long sysCallOut)

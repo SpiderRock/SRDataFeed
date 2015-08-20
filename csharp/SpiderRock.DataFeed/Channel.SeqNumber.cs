@@ -169,7 +169,7 @@ namespace SpiderRock.DataFeed
 
                 if (gaps > 10) return;
 
-                SRTrace.NetChannels.TraceWarning("{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
+                SRTrace.NetSeqNumber.TraceWarning("{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
                     MessageType, channel, channel.Id, SourceId, tmp, actual);
             }
 
