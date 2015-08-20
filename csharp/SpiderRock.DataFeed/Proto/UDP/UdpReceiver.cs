@@ -25,7 +25,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
         private double asyncRecvTime;
 
-        public UdpReceiver(IPEndPoint endPoint, IPAddress ifaddr, FrameHandler frameHandler)
+        public UdpReceiver(IPEndPoint endPoint, IPAddress ifaddr, FrameHandler frameHandler, int receiveBufferSize)
         {
             this.endPoint = endPoint;
             this.frameHandler = frameHandler;
@@ -43,10 +43,11 @@ namespace SpiderRock.DataFeed.Proto.UDP
                     iep.ToString());
 
                 client = new UdpClient();
-                client.Client.ReceiveBufferSize *= 10;
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
+                client.Client.ReceiveBufferSize = receiveBufferSize;
                 client.ExclusiveAddressUse = false;
 
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 client.Client.Bind(iep);
 
                 SRTrace.NetUdp.TraceInformation(

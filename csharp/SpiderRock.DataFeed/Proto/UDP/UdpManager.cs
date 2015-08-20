@@ -7,12 +7,14 @@ namespace SpiderRock.DataFeed.Proto.UDP
 {
     internal class UdpManager : IDisposable
     {
+        public int ReceiveBufferSize { get; set; }
         private readonly IPAddress ifaddr;
         private readonly List<UdpReceiver> udpReceivers = new List<UdpReceiver>();
         private bool disposed;
 
-        public UdpManager(IPAddress ifaddr)
+        public UdpManager(IPAddress ifaddr, int receiveBufferSize)
         {
+            ReceiveBufferSize = receiveBufferSize;
             this.ifaddr = ifaddr;
         }
 
@@ -35,7 +37,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                udpReceivers.Add(new UdpReceiver(endPoint, ifaddr, frameHandler));
+                udpReceivers.Add(new UdpReceiver(endPoint, ifaddr, frameHandler, ReceiveBufferSize));
             }
         }
 

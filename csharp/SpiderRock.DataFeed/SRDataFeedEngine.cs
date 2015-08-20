@@ -33,6 +33,7 @@ namespace SpiderRock.DataFeed
         {
             SysEnvironment = SysEnvironment.Beta;
             disposeTokenSource = new CancellationTokenSource();
+            ReceiveBufferSize = 20*1024*1024; // 20MB default
 
             InitializeFrameHandler();
         }
@@ -46,6 +47,15 @@ namespace SpiderRock.DataFeed
         public UdpChannel[] Channels { get; set; }
 
         public Protocol Protocol { get; set; }
+
+        /// <summary>
+        /// Size of the UDP receive buffer.  Set to 20MB by default.
+        /// </summary>
+        /// <remarks>
+        /// 20MB is an estimate based on (20K pkts/s * 1500 MTU * 5 seconds) / 10 msgs/s
+        /// plus some slack
+        /// </remarks>
+        public int ReceiveBufferSize { get; set; }
 
         public IEnumerable<IPEndPoint> CacheServers
         {
@@ -114,7 +124,7 @@ namespace SpiderRock.DataFeed
                     }
                     else
                     {
-                        udpManager = new UdpManager(IFAddress);
+                        udpManager = new UdpManager(IFAddress, ReceiveBufferSize);
 
                         foreach (UdpChannel udpChannel in Channels)
                         {
