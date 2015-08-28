@@ -15,9 +15,6 @@ namespace SpiderRock.DataFeed
     /// <summary>
     /// Represents the data source of market 
     /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
     public sealed partial class SRDataFeedEngine : IDisposable
     {
         private readonly object startLock = new object();
@@ -28,15 +25,38 @@ namespace SpiderRock.DataFeed
         private bool running;
         private bool disposed;
         private FrameHandler frameHandler;
+        private readonly ChannelFactory channelFactory;
+        private readonly ChannelStatsLogger channelStatsLogger;
 
         public SRDataFeedEngine()
         {
             SysEnvironment = SysEnvironment.Beta;
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
+            channelFactory = new ChannelFactory();
+            channelStatsLogger = new ChannelStatsLogger();
+
+            channelFactory.ChannelCreated += OnChannelCreated;
 
             InitializeFrameHandler();
         }
+
+        private void OnChannelCreated(object sender, ChannelCreatedEventArgs args)
+        {
+            channelStatsLogger.Register(args.Channel);
+            var channel = args.Channel;
+            channel.SequenceNumberGapsDetected += OnChannelSequenceNumberGapsDetected;
+            channel.Closed += (s, a) => channel.SequenceNumberGapsDetected -= OnChannelSequenceNumberGapsDetected;
+        }
+
+        private void OnChannelSequenceNumberGapsDetected(object sender, EventArgs args)
+        {
+            var handler = SequenceNumberGapsDetected;
+            if (handler == null) return;
+            handler(sender, args);
+        }
+
+        public event EventHandler SequenceNumberGapsDetected;
 
         public DblChannelThreadGroup[] DblChannelThreadGroups { get; set; }
 
@@ -112,7 +132,7 @@ namespace SpiderRock.DataFeed
                 {
                     if (Protocol == Protocol.DBL)
                     {
-                        var dblManager = new DblManager(IFAddress, "Default");
+                        var dblManager = new DblManager(IFAddress, "Default", channelFactory);
                         dblManagers.Add(dblManager);
 
                         foreach (UdpChannel udpChannel in Channels)
@@ -124,7 +144,7 @@ namespace SpiderRock.DataFeed
                     }
                     else
                     {
-                        udpManager = new UdpManager(IFAddress, ReceiveBufferSize);
+                        udpManager = new UdpManager(IFAddress, ReceiveBufferSize, channelFactory);
 
                         foreach (UdpChannel udpChannel in Channels)
                         {
@@ -137,7 +157,7 @@ namespace SpiderRock.DataFeed
 
                 foreach (var channelThreadGroup in DblChannelThreadGroups)
                 {
-                    var dblManager = new DblManager(IFAddress, channelThreadGroup.ToString());
+                    var dblManager = new DblManager(IFAddress, channelThreadGroup.ToString(), channelFactory);
                     dblManagers.Add(dblManager);
 
                     foreach (UdpChannel udpChannel in channelThreadGroup.Distinct())
@@ -146,6 +166,8 @@ namespace SpiderRock.DataFeed
                         dblManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
                     }
                 }
+
+                channelStatsLogger.StartWriterAsync(disposeTokenSource.Token);
 
                 running = true;
             }
@@ -177,7 +199,7 @@ namespace SpiderRock.DataFeed
 
             foreach (var cacheServerEndPoint in cacheServers)
             {
-                var client = new CacheClient(cacheServerEndPoint, frameHandler);
+                var client = new CacheClient(cacheServerEndPoint, frameHandler, channelFactory);
                 try
                 {
                     client.Connect();
@@ -219,7 +241,7 @@ namespace SpiderRock.DataFeed
                 cacheClient.SendRequest(requestList);
                 cacheClient.ReadResponse(disposedOrTimedout.Token);
 
-                Channel.WriteChannelStats();
+                channelStatsLogger.Write();
             }
 
             SRTrace.Default.TraceDebug("SRDataFeedEngine: cache request completed");
@@ -269,6 +291,8 @@ namespace SpiderRock.DataFeed
                 {
                     disposeTokenSource.Cancel();
                     if (!disposing) return;
+
+                    channelFactory.ChannelCreated -= OnChannelCreated;
 
                     if (udpManager != null)
                     {

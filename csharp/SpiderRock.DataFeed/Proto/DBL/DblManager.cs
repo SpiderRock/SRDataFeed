@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using SpiderRock.DataFeed.FrameHandling;
 using SpiderRock.DataFeed.Proto.DBL.Myricom;
@@ -10,10 +11,12 @@ namespace SpiderRock.DataFeed.Proto.DBL
     {
         private readonly DblDevice dblDevice;
         private readonly IPAddress ifAddr;
+        private readonly ChannelFactory channelFactory;
 
-        public DblManager(IPAddress ifAddr, string label)
+        public DblManager(IPAddress ifAddr, string label, ChannelFactory channelFactory)
         {
             this.ifAddr = ifAddr;
+            this.channelFactory = channelFactory;
 
             SRTrace.NetDbl.TraceInformation("DblManager [{0}]: initializing ({1})", ifAddr, label);
 
@@ -55,7 +58,7 @@ namespace SpiderRock.DataFeed.Proto.DBL
                 SRTrace.NetDbl.TraceInformation("DblAddListener [{0}]: endPoint={1,21}, isMulticast={2}", ifAddr,
                     endPoint.ToString(), true);
 
-                var recvChannel = new Channel(ChannelType.DblRecv, endPoint.ToString(), "any");
+                var recvChannel = channelFactory.GetOrCreate(ChannelType.DblRecv, endPoint.ToString(), "any");
 
                 string error;
 
@@ -63,6 +66,7 @@ namespace SpiderRock.DataFeed.Proto.DBL
                 {
                     SRTrace.NetDbl.TraceError("DblAddListener [{0}]: {1} [device={2}, port={3}]", ifAddr, error,
                         dblDevice.Handle, endPoint.Port);
+                    recvChannel.Close();
                 }
             }
             catch (Exception e)

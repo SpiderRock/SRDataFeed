@@ -23,15 +23,15 @@ namespace SpiderRock.DataFeed.Cache
         private Socket client;
         private CacheComplete cacheComplete;
 
-        unsafe public CacheClient(IPEndPoint endPoint, FrameHandler frameHandler)
+        unsafe public CacheClient(IPEndPoint endPoint, FrameHandler frameHandler, ChannelFactory channelFactory)
         {
             this.endPoint = endPoint;
 
             this.frameHandler = frameHandler;
             this.frameHandler.OnMessage(MessageType.CacheComplete, HandleCacheComplete);
 
-            sendChannel = new Channel(ChannelType.TcpSend, "tcp.init", endPoint.ToString());
-            recvChannel = new Channel(ChannelType.TcpRecv, "tpc.init", endPoint.ToString());
+            sendChannel = channelFactory.GetOrCreate(ChannelType.TcpSend, "tcp.init", endPoint.ToString());
+            recvChannel = channelFactory.GetOrCreate(ChannelType.TcpRecv, "tpc.init", endPoint.ToString());
 
             sendChannel.RemoteEp = endPoint;
             recvChannel.RemoteEp = endPoint;
@@ -60,8 +60,8 @@ namespace SpiderRock.DataFeed.Cache
                 {
                     frameHandler.OnMessage(MessageType.CacheComplete, null);
 
-                    sendChannel.CloseChannel();
-                    recvChannel.CloseChannel();
+                    sendChannel.Close();
+                    recvChannel.Close();
 
                     if (client.Connected)
                     {

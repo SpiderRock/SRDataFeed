@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using SpiderRock.DataFeed.Diagnostics;
 using SpiderRock.DataFeed.FrameHandling;
 
 namespace SpiderRock.DataFeed
 {
-    internal partial class Channel
+    public partial class Channel
     {
         private static readonly SeqNumberCounter[][][] SeqNumberCounterIndex =
             new SeqNumberCounter[ushort.MaxValue][][];
 
         private static long numSlotsSeqNumberCounters = ushort.MaxValue;
 
-        private SeqNumberCounter seqNumber;
-        private volatile SeqNumberCounter[] seqNumberCounters = new SeqNumberCounter[0];
-
         private readonly bool supressSeqNumberCheck;
+        internal volatile SeqNumberCounter[] SeqNumberCounters = new SeqNumberCounter[0];
+        private SeqNumberCounter seqNumber;
 
-        private long Gaps
+        internal long Gaps
         {
-            get { return seqNumberCounters.Sum(c => c.Gaps); }
+            get { return SeqNumberCounters.Sum(c => c.Gaps); }
         }
 
         private void AllocIndexSpaceForSeqNumberCounter(SourceId sourceId, MessageType messageType)
@@ -45,11 +45,11 @@ namespace SpiderRock.DataFeed
             lock (messageTypeIndex)
             {
                 SeqNumberCounter[] channelIndex = messageTypeIndex[messageType];
-                if (channelIndex != null && channelIndex.Length > Id) return;
+                if (channelIndex != null && channelIndex.Length > id) return;
 
                 SeqNumberCounter[] tmp = channelIndex;
 
-                messageTypeIndex[messageType] = channelIndex = new SeqNumberCounter[Math.Max(100, Id + 10)];
+                messageTypeIndex[messageType] = channelIndex = new SeqNumberCounter[Math.Max(100, id + 10)];
                 if (tmp != null) tmp.CopyTo(channelIndex, 0);
 
                 Interlocked.Add(ref numSlotsSeqNumberCounters, channelIndex.Length);
@@ -63,7 +63,7 @@ namespace SpiderRock.DataFeed
 
             try
             {
-                seqNumber = SeqNumberCounterIndex[sourceId][messageType][Id];
+                seqNumber = SeqNumberCounterIndex[sourceId][messageType][id];
                 seqNumber.AssertEqual(sequenceNumber);
             }
             catch (Exception)
@@ -77,34 +77,58 @@ namespace SpiderRock.DataFeed
             byte sequenceNumber)
         {
             var counter = new SeqNumberCounter(this, sourceId, messageType, sequenceNumber);
-            SeqNumberCounterIndex[sourceId][messageType][Id] = counter;
-            seqNumberCounters = seqNumberCounters.Union(new[] {counter}).ToArray();
+            SeqNumberCounterIndex[sourceId][messageType][id] = counter;
+            SeqNumberCounters = SeqNumberCounters.Union(new[] {counter}).ToArray();
             return counter;
         }
 
-        private void RefreshSeqNumberGapStatistics()
+        internal void RefreshSeqNumberGapStatistics()
         {
-            foreach (SeqNumberCounter seqNumberCounter in seqNumberCounters)
+            foreach (SeqNumberCounter seqNumberCounter in SeqNumberCounters)
             {
                 seqNumberCounter.RefreshStatistics();
             }
         }
 
-        private long GetGapsByMessageType(MessageType messageType)
+        internal long GetGapsByMessageType(MessageType messageType)
         {
-            return seqNumberCounters.Where(c => c.MessageType == messageType).Sum(c => c.Gaps);
+            return SeqNumberCounters.Where(c => c.MessageType == messageType).Sum(c => c.Gaps);
         }
 
-        private long GetCumulativeGapsByMessageType(MessageType messageType)
+        internal long GetCumulativeGapsByMessageType(MessageType messageType)
         {
-            return seqNumberCounters.Where(c => c.MessageType == messageType).Sum(c => c.CumulativeGaps);
+            return SeqNumberCounters.Where(c => c.MessageType == messageType).Sum(c => c.CumulativeGaps);
         }
 
-        private sealed class SeqNumberCounter : IEquatable<SeqNumberCounter>
+        private void BeginSequenceNumberGapsDetected()
         {
-            private long gaps;
-            private byte expected;
+            EventHandler handler = SequenceNumberGapsDetected;
+            if (handler != null)
+            {
+                handler.BeginInvoke(this, EventArgs.Empty, EndFireSequenceNumberGapsDetected, null);
+            }
+        }
+
+        private static void EndFireSequenceNumberGapsDetected(IAsyncResult iar)
+        {
+            var ar = (AsyncResult) iar;
+            var invokedMethod = (EventHandler) ar.AsyncDelegate;
+
+            try
+            {
+                invokedMethod.EndInvoke(iar);
+            }
+            catch (Exception e)
+            {
+                SRTrace.Default.TraceError(e, "SequenceNumberGapsDetected event handler failure");
+            }
+        }
+
+        internal sealed class SeqNumberCounter : IEquatable<SeqNumberCounter>
+        {
             private readonly Channel channel;
+            private byte expected;
+            private long gaps;
 
             public SeqNumberCounter(Channel channel, SourceId source, MessageType type, byte value)
             {
@@ -162,15 +186,18 @@ namespace SpiderRock.DataFeed
 
                 if (expected == actual) return;
 
-                var tmp = expected;
+                byte tmp = expected;
 
                 Interlocked.Increment(ref gaps);
                 expected = actual;
 
                 if (gaps > 10) return;
 
-                SRTrace.NetSeqNumber.TraceWarning("{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
-                    MessageType, channel, channel.Id, SourceId, tmp, actual);
+                SRTrace.NetSeqNumber.TraceWarning(
+                    "{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
+                    MessageType, channel, channel.id, SourceId, tmp, actual);
+
+                channel.BeginSequenceNumberGapsDetected();
             }
 
             public void RefreshStatistics()

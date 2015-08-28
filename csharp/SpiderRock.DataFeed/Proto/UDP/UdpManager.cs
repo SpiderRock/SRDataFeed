@@ -9,13 +9,15 @@ namespace SpiderRock.DataFeed.Proto.UDP
     {
         public int ReceiveBufferSize { get; set; }
         private readonly IPAddress ifaddr;
+        private readonly ChannelFactory channelFactory;
         private readonly List<UdpReceiver> udpReceivers = new List<UdpReceiver>();
         private bool disposed;
 
-        public UdpManager(IPAddress ifaddr, int receiveBufferSize)
+        public UdpManager(IPAddress ifaddr, int receiveBufferSize, ChannelFactory channelFactory)
         {
             ReceiveBufferSize = receiveBufferSize;
             this.ifaddr = ifaddr;
+            this.channelFactory = channelFactory;
         }
 
         public void Dispose()
@@ -37,7 +39,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                udpReceivers.Add(new UdpReceiver(endPoint, ifaddr, frameHandler, ReceiveBufferSize));
+                udpReceivers.Add(new UdpReceiver(endPoint, ifaddr, frameHandler, ReceiveBufferSize, channelFactory));
             }
         }
 

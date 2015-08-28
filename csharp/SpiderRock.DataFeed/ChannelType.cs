@@ -1,6 +1,6 @@
 namespace SpiderRock.DataFeed
 {
-    internal enum ChannelType
+    public enum ChannelType
     { 
         None = 0, 
 

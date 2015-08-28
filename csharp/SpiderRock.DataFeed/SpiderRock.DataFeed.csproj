@@ -57,6 +57,9 @@
   <ItemGroup>
     <Compile Include="Cache\CacheRequestException.cs" />
     <Compile Include="ChangedEventArgs.cs" />
+    <Compile Include="ChannelCreatedEventArgs.cs" />
+    <Compile Include="ChannelFactory.cs" />
+    <Compile Include="ChannelStatsLogger.cs" />
     <Compile Include="CreatedEventArgs.cs" />
     <Compile Include="FrameHandling\MessageHandler.cs" />
     <Compile Include="Layouts\IKeyLayoutEquatable.cs" />

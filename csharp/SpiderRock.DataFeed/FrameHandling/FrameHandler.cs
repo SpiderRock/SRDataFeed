@@ -144,7 +144,7 @@ namespace SpiderRock.DataFeed.FrameHandling
                             {
                                 SRTrace.Default.TraceWarning(
                                     "Received {0} from SysEnvironment {1} on {2} (channel.addr={3}, from.addr={4})",
-                                    header.msgtype, header.environment, channel, channel.ChannelAddr, channel.SourceAddr);
+                                    header.msgtype, header.environment, channel, channel.Address, channel.SourceAddress);
                             }
                         }
 
@@ -204,23 +204,23 @@ namespace SpiderRock.DataFeed.FrameHandling
 
                 var msg = new StringBuilder();
                 msg.AppendFormat(format, args);
-                switch (channel.ChannelType)
+                switch (channel.Type)
                 {
                     case ChannelType.UdpRecv:
                     case ChannelType.TcpRecv:
                         msg.AppendFormat(
                             " [offset={0}, ch={1} [{2}], remoteEP={3}, last.hdr=({4}), trailing.bytes=({5})]",
-                            offset, channel.ChannelAddr, channel, remoteEndPoint, channel.LastHeader, lastBytesStr);
+                            offset, channel.Address, channel, remoteEndPoint, channel.LastHeader, lastBytesStr);
                         break;
                     case ChannelType.DblRecv:
                         msg.AppendFormat(
                             " [offset={0}, ch={1} [{2}], remoteEP={3}, last.hdr=({4}), trailing.bytes=({5})]",
-                            offset, channel.ChannelAddr, channel, remoteEndPoint, thdLastHeader, lastBytesStr);
+                            offset, channel.Address, channel, remoteEndPoint, thdLastHeader, lastBytesStr);
                         break;
                     default:
                         msg.AppendFormat(
                             " [offset={0}, ch={1} [{2}], remoteEP={3}, ch.last.hdr=({4}), thd.last.hdr=({5}), trailing.bytes=({6})]",
-                            offset, channel.ChannelAddr, channel, remoteEndPoint, channel.LastHeader, thdLastHeader, lastBytesStr);
+                            offset, channel.Address, channel, remoteEndPoint, channel.LastHeader, thdLastHeader, lastBytesStr);
                         break;
                 }
 
