@@ -123,6 +123,7 @@ namespace SpiderRock.DataFeed
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine IFAddress: {0}", IFAddress);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Cache servers: {0}",
                     string.Join(", ", CacheServers.Select(ep => ep.ToString())));
+                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine ReceiveBufferSize: {0}", ReceiveBufferSize);
 
                 ClearContainerCaches();
 
