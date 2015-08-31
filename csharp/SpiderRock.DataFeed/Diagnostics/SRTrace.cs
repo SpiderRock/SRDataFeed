@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SpiderRock.DataFeed.Diagnostics
 {
@@ -20,6 +22,29 @@ namespace SpiderRock.DataFeed.Diagnostics
             NetSeqNumber = new SRTraceSource("SpiderRock.Net.SeqNumber");
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+
+            AutoFlush(CancellationToken.None);
+        }
+
+        private static async void AutoFlush(CancellationToken cancellationToken)
+        {
+            try
+            {
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(1000, cancellationToken);
+
+                    Flush();
+                }
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (Exception e)
+            {
+                Default.TraceError(e);
+                Default.Flush();
+            }
         }
 
         public static void Flush()
