@@ -41,7 +41,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             params object[] data)
         {
             TextWriter writer = GetWriter(source);
-            string ts = "[" + eventCache.DateTime.ToString(DateFormat) + "] ";
+            string ts = "[" + eventCache.DateTime.ToLocalTime().ToString(DateFormat) + "] ";
 
             lock (writer)
             {
@@ -60,7 +60,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             lock (writer)
             {
                 writer.Write("[");
-                writer.Write(eventCache.DateTime.ToString(DateFormat));
+                writer.Write(eventCache.DateTime.ToLocalTime().ToString(DateFormat));
                 writer.Write("] ");
 
                 writer.WriteLine(data.ToString());
@@ -80,7 +80,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             lock (writer)
             {
                 writer.Write("[");
-                writer.Write(eventCache.DateTime.ToString(DateFormat));
+                writer.Write(eventCache.DateTime.ToLocalTime().ToString(DateFormat));
                 writer.Write("] ");
 
                 if (eventType == Off)
@@ -105,7 +105,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             lock (writer)
             {
                 writer.Write("[");
-                writer.Write(eventCache.DateTime.ToString(DateFormat));
+                writer.Write(eventCache.DateTime.ToLocalTime().ToString(DateFormat));
                 writer.Write("] ");
 
                 if (eventType == Off)
