@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Runtime;
 using System.Threading;
 using SpiderRock.DataFeed.Cache;
 using SpiderRock.DataFeed.FrameHandling;
@@ -35,6 +36,8 @@ namespace SpiderRock.DataFeed
             SysEnvironment = SysEnvironment.Beta;
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
+            LatencyMode = GCLatencyMode.SustainedLowLatency;
+
             channelFactory = new ChannelFactory();
 
             InitializeFrameHandler();
@@ -75,6 +78,8 @@ namespace SpiderRock.DataFeed
         /// plus some slack
         /// </remarks>
         public int ReceiveBufferSize { get; set; }
+
+        public GCLatencyMode LatencyMode { get; set; }
 
         public IEnumerable<IPEndPoint> CacheServers
         {
@@ -118,11 +123,14 @@ namespace SpiderRock.DataFeed
 
                 SRFileTraceListener.SysEnvironment = SysEnvironment;
 
+                GCSettings.LatencyMode = LatencyMode;
+
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine SysEnvironment: {0}", SysEnvironment);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine IFAddress: {0}", IFAddress);
-                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Cache servers: {0}",
-                    string.Join(", ", CacheServers.Select(ep => ep.ToString())));
+                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Cache servers: {0}", string.Join(", ", CacheServers.Select(ep => ep.ToString())));
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine ReceiveBufferSize: {0}", ReceiveBufferSize);
+                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "IsServerGC: {0}", GCSettings.IsServerGC);
+                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "GCLatencyMode: {0}", GCSettings.LatencyMode);
 
                 channelStatisticsAggregator = new ChannelStatisticsAggregator();
                 processStatisticsAggregator = new ProcessStatisticsAggregator();
