@@ -26,7 +26,9 @@ namespace SpiderRock.DataFeed
         private bool disposed;
         private FrameHandler frameHandler;
         private readonly ChannelFactory channelFactory;
-        private readonly ChannelStatsLogger channelStatsLogger;
+
+        private ChannelStatisticsAggregator channelStatisticsAggregator;
+        private ProcessStatisticsAggregator processStatisticsAggregator;
 
         public SRDataFeedEngine()
         {
@@ -34,16 +36,13 @@ namespace SpiderRock.DataFeed
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
             channelFactory = new ChannelFactory();
-            channelStatsLogger = new ChannelStatsLogger();
-
-            channelFactory.ChannelCreated += OnChannelCreated;
 
             InitializeFrameHandler();
         }
 
         private void OnChannelCreated(object sender, ChannelCreatedEventArgs args)
         {
-            channelStatsLogger.Register(args.Channel);
+            channelStatisticsAggregator.Register(args.Channel);
             var channel = args.Channel;
             channel.SequenceNumberGapsDetected += OnChannelSequenceNumberGapsDetected;
             channel.Closed += (s, a) => channel.SequenceNumberGapsDetected -= OnChannelSequenceNumberGapsDetected;
@@ -125,6 +124,11 @@ namespace SpiderRock.DataFeed
                     string.Join(", ", CacheServers.Select(ep => ep.ToString())));
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine ReceiveBufferSize: {0}", ReceiveBufferSize);
 
+                channelStatisticsAggregator = new ChannelStatisticsAggregator();
+                processStatisticsAggregator = new ProcessStatisticsAggregator();
+
+                channelFactory.ChannelCreated += OnChannelCreated;
+
                 ClearContainerCaches();
 
                 Channels = Channels.Except(DblChannelThreadGroups.SelectMany(g => g)).Distinct().ToArray();
@@ -167,8 +171,6 @@ namespace SpiderRock.DataFeed
                         dblManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
                     }
                 }
-
-                channelStatsLogger.StartWriterAsync(disposeTokenSource.Token);
 
                 running = true;
             }
@@ -239,10 +241,13 @@ namespace SpiderRock.DataFeed
             using (var cacheClient = ConnectToCacheServer())
             {
                 cacheClient.Connect();
+
+                var timer = Stopwatch.StartNew();
+
                 cacheClient.SendRequest(requestList);
                 cacheClient.ReadResponse(disposedOrTimedout.Token);
 
-                channelStatsLogger.Write();
+                channelStatisticsAggregator.Flush(timer.Elapsed.TotalSeconds);
             }
 
             SRTrace.Default.TraceDebug("SRDataFeedEngine: cache request completed");
@@ -303,6 +308,18 @@ namespace SpiderRock.DataFeed
                     foreach (var dblManager in dblManagers)
                     {
                         dblManager.Dispose();
+                    }
+
+                    if (processStatisticsAggregator != null)
+                    {
+                        processStatisticsAggregator.Dispose();
+                        processStatisticsAggregator = null;
+                    }
+
+                    if (channelStatisticsAggregator != null)
+                    {
+                        channelStatisticsAggregator.Dispose();
+                        channelStatisticsAggregator = null;
                     }
 
                     SRTrace.Default.TraceEvent(TraceEventType.Stop, 0, "SRDataFeedEngine stopped");

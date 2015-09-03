@@ -2,21 +2,26 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using SpiderRock.DataFeed.Diagnostics;
 
-namespace SpiderRock.DataFeed
+namespace SpiderRock.DataFeed.Diagnostics
 {
-    internal class ChannelStatsLogger
+    internal class ChannelStatisticsAggregator : IDisposable
     {
-        private DateTime lastDttmUtc = DateTime.UtcNow;
-
         private static readonly TimeSpan StartTime = new TimeSpan(8, 30, 0);
         private static readonly TimeSpan EndTime = new TimeSpan(15, 0, 0);
 
         private readonly HashSet<Channel> channels = new HashSet<Channel>();
         private readonly Dictionary<string, int> dataFeedChannels = new Dictionary<string, int>();
+
+        public ChannelStatisticsAggregator()
+        {
+            SRTrace.Aggregate += Flush;
+        }
+
+        ~ChannelStatisticsAggregator()
+        {
+            InternalDispose();
+        }
 
         public void Register(Channel channel)
         {
@@ -26,11 +31,11 @@ namespace SpiderRock.DataFeed
             {
                 if (channels.Add(channel))
                 {
-                    SRTrace.NetChannels.TraceDebug("ChannelStatsLogger: channel {0} registered", channel);
+                    SRTrace.NetChannels.TraceDebug("ChannelStatisticsAggregator: channel {0} registered", channel);
                 }
                 else
                 {
-                    SRTrace.NetChannels.TraceWarning("ChannelStatsLogger: attempt to double register a channel");                    
+                    SRTrace.NetChannels.TraceWarning("ChannelStatisticsAggregator: attempt to double register a channel");                    
                 }
             }
         }
@@ -41,7 +46,7 @@ namespace SpiderRock.DataFeed
             {
                 if (!channels.Remove((Channel) sender))
                 {
-                    SRTrace.NetChannels.TraceWarning("ChannelStatsLogger: attempt to unregister non-existent channel");
+                    SRTrace.NetChannels.TraceWarning("ChannelStatisticsAggregator: attempt to unregister non-existent channel");
                 }
             }
         }
@@ -146,40 +151,17 @@ namespace SpiderRock.DataFeed
             return value;
         }
 
-        public async void StartWriterAsync(CancellationToken cancellationToken)
+        public void Flush(double elapsedSeconds)
         {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-
-                try
-                {
-                    Write();
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "WriteChannelStats Exception");
-                }
-            }
-        }
-
-        public void Write()
-        {
-            DateTime utcNow = DateTime.UtcNow;
-
-            TimeSpan elapsed = utcNow - lastDttmUtc;
-
-            lastDttmUtc = utcNow;
-
-            List<Channel> localList;
+            List<Channel> copyOfChannels;
 
             lock (channels)
             {
-                localList = new List<Channel>(channels);
+                copyOfChannels = new List<Channel>(channels);
             }
 
-            IEnumerable<string> channelLines = GetChannelStats(localList, elapsed.TotalSeconds);
-            IEnumerable<string> messageLines = GetMessageStats(localList, elapsed.TotalSeconds);
+            IEnumerable<string> channelLines = GetChannelStats(copyOfChannels, elapsedSeconds);
+            IEnumerable<string> messageLines = GetMessageStats(copyOfChannels, elapsedSeconds);
 
             var lines = new List<string> { "" };
 
@@ -388,6 +370,17 @@ namespace SpiderRock.DataFeed
             }
 
             if (appendEmptyLine) yield return string.Empty;
+        }
+
+        public void Dispose()
+        {
+            InternalDispose();
+            GC.SuppressFinalize(this);
+        }
+
+        private void InternalDispose()
+        {
+            SRTrace.Aggregate -= Flush;
         }
     }
 }
