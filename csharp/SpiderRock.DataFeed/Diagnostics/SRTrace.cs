@@ -7,13 +7,16 @@ namespace SpiderRock.DataFeed.Diagnostics
 {
     public static class SRTrace
     {
+        private static CancellationTokenSource aggregateEventCancellationTokenSource;
+        private static TimeSpan aggregateEventFrequency;
+
         static SRTrace()
         {
             Default = new SRTraceSource("SpiderRock");
 
             KeyErrors = new SRTraceSource("SpiderRock.KeyErrors");
 
-            Monitor = new SRTraceSource("SpiderRock.Monitor");
+            Process = new SRTraceSource("SpiderRock.Process");
 
             NetTcp = new SRTraceSource("SpiderRock.Net.TCP");
             NetDbl = new SRTraceSource("SpiderRock.Net.DBL");
@@ -24,6 +27,8 @@ namespace SpiderRock.DataFeed.Diagnostics
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 
             AutoFlush(CancellationToken.None);
+
+            AggregateEventFrequency = TimeSpan.FromMinutes(1);
         }
 
         private static async void AutoFlush(CancellationToken cancellationToken)
@@ -47,6 +52,48 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
         }
 
+        private static async void FireAggregate(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var timer = new Stopwatch();
+
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    timer.Restart();
+
+                    await Task.Delay(AggregateEventFrequency, cancellationToken);
+
+                    Aggregate(timer.Elapsed.TotalSeconds);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (Exception e)
+            {
+                Default.TraceError(e);
+                Default.Flush();
+            }
+        }
+
+        public static TimeSpan AggregateEventFrequency
+        {
+            get { return aggregateEventFrequency; }
+            set
+            {
+                if (aggregateEventCancellationTokenSource != null)
+                {
+                    aggregateEventCancellationTokenSource.Cancel();
+                }
+                aggregateEventCancellationTokenSource = new CancellationTokenSource();
+                aggregateEventFrequency = value;
+                FireAggregate(aggregateEventCancellationTokenSource.Token);
+            }
+        }
+
+        public static event Action<double> Aggregate = delegate { }; 
+
         public static void Flush()
         {
             Default.Flush();
@@ -56,7 +103,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             NetDbl.Flush();
             NetChannels.Flush();
             NetSeqNumber.Flush();
-            Monitor.Flush();
+            Process.Flush();
         }
 
         public static void AddGlobalTraceListener(TraceListener traceListener)
@@ -68,7 +115,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             NetDbl.Listeners.Add(traceListener);
             NetChannels.Listeners.Add(traceListener);
             NetSeqNumber.Listeners.Add(traceListener);
-            Monitor.Listeners.Add(traceListener);
+            Process.Listeners.Add(traceListener);
         }
 
         public static SourceSwitch GlobalSwitch
@@ -82,7 +129,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                 NetDbl.Switch = value;
                 NetChannels.Switch = value;
                 NetSeqNumber.Switch = value;
-                Monitor.Switch = value;
+                Process.Switch = value;
             }
         }
 
@@ -90,7 +137,7 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public static SRTraceSource KeyErrors { get; private set; }
 
-        internal static SRTraceSource Monitor { get; private set; }
+        internal static SRTraceSource Process { get; private set; }
 
         public static SRTraceSource NetTcp { get; private set; }
         public static SRTraceSource NetDbl { get; private set; }
