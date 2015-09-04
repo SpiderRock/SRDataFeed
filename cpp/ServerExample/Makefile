@@ -18,7 +18,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH)/../include/ 
 # General linker settings
-LINK_FLAGS = -L $(SRC_PATH)/../lib/ -ldbl -lSRDF
+LINK_FLAGS = -L $(SRC_PATH)/../lib/ -ldbl -lSRDF -lrt
 # Additional release-specific linker settings
 RLINK_FLAGS = 
 # Additional debug-specific linker settings
