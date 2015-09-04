@@ -19,7 +19,7 @@ namespace ServerExample
 
                 engine = new SRDataFeedEngine
                 {
-                    SysEnvironment = SysEnvironment.Stable,
+                    SysEnvironment = SysEnvironment.Beta,
 
                     // TODO: Substitute the address of the adapter
 
@@ -69,6 +69,25 @@ namespace ServerExample
                     //        UdpChannel.StkNbboQuote4
                     //    }
                     //},
+
+
+                    //////////////////////////////////////////////////////////
+                    // GC configuration 
+
+                    // By default, the engine optimizes GC for sustained low latency.
+                    // Together with the App.config settings (below) this can greatly
+                    // improve the responsiveness of the application by minimizing "jitter" 
+                    // at the expense of memory.  If memory is a consideration, then 
+                    // the engine and the App.config should be adjusted accordingly.
+
+                    //<configuration>
+                    //  <runtime>
+                    //    <gcServer enabled="true" />
+                    //    <gcConcurrent enabled="true" />
+                    //  </runtime>
+                    //</configuration>
+
+                    // Default: LatencyMode = GCLatencyMode.SustainedLowLatency
                 };
 
                 //////////////////////////////////
@@ -82,6 +101,9 @@ namespace ServerExample
                 SRTrace.GlobalSwitch = new SourceSwitch("SRTraceSource (All)") {Level = SourceLevels.All};
                 SRTrace.AddGlobalTraceListener(new SRFileTraceListener());
                 SRTrace.AddGlobalTraceListener(new SRConsoleTraceListener());
+
+                // The frequency with which summary tables are logged can be adjusted like so:
+                // Default: SRTrace.AggregateEventFrequency = TimeSpan.FromMinutes(1);
 
                 // The example above configures all trace sources uniformly.  However, each 
                 // trace source (SRTrace.Default, SRTrace.KeyErrors, SRTrace.NetChannels, 
