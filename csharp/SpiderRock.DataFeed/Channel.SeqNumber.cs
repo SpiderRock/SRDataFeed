@@ -127,6 +127,7 @@ namespace SpiderRock.DataFeed
         internal sealed class SeqNumberCounter : IEquatable<SeqNumberCounter>
         {
             private readonly Channel channel;
+            private uint assertions;
             private byte expected;
             private long gaps;
 
@@ -182,9 +183,16 @@ namespace SpiderRock.DataFeed
                 unchecked
                 {
                     expected += 1;
-                }
+                    assertions += 1;
 
-                if (expected == actual) return;
+                    if (expected == actual) return;
+
+                    if (assertions == 1 && expected == 0)
+                    {
+                        expected = actual;
+                        return;
+                    }
+                }
 
                 byte tmp = expected;
 
