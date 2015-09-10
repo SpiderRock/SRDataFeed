@@ -131,6 +131,7 @@ namespace SpiderRock.DataFeed
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine ReceiveBufferSize: {0}", ReceiveBufferSize);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "IsServerGC: {0}", GCSettings.IsServerGC);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "GCLatencyMode: {0}", GCSettings.LatencyMode);
+                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "Assembly: {0}", GetType().Assembly.FullName);
 
                 channelStatisticsAggregator = new ChannelStatisticsAggregator();
                 processStatisticsAggregator = new ProcessStatisticsAggregator();
