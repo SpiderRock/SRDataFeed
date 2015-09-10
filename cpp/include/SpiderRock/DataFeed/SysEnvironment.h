@@ -12,13 +12,12 @@ namespace SpiderRock
 		{
 			None = 0,
 			Stable = 1,
-			Current = 2,
-			UAT = 3
+			Beta = 2
 		};
 
 		inline bool IsValid(SysEnvironment env)
 		{
-			return static_cast<int>(env) <= 5; // Only 3 are relevant to this API but 5 exist
+			return static_cast<int>(env) <= 5; // Only 2 are relevant to this API but 5 exist
 		}
 	}
 }
