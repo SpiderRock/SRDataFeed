@@ -80,12 +80,7 @@ namespace ServerExample
                     // at the expense of memory.  If memory is a consideration, then 
                     // the engine and the App.config should be adjusted accordingly.
 
-                    //<configuration>
-                    //  <runtime>
-                    //    <gcServer enabled="true" />
-                    //    <gcConcurrent enabled="true" />
-                    //  </runtime>
-                    //</configuration>
+                    //<configuration><runtime><gcServer enabled="true" /></runtime></configuration>
 
                     // Default: LatencyMode = GCLatencyMode.SustainedLowLatency
                 };
