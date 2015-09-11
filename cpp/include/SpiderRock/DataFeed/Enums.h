@@ -103,7 +103,9 @@ namespace SpiderRock
 			CME=13,
 			CBOT=14,
 			NYMEX=15,
-			COMEX=16
+			COMEX=16,
+			ICE=17,
+			EDGO=18
 		};
 
  		enum class StkExch : Enum 
