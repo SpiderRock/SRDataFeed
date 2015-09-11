@@ -28,6 +28,8 @@ namespace SpiderRock
 			class impl;
 			std::unique_ptr<impl> impl_;
 
+			SpiderRock::Net::IPEndPoint GetIPEndPoint(DataChannel channel);
+
 		public:
 			SRDataFeedEngine(SysEnvironment environment, in_addr device_address);
 			~SRDataFeedEngine();
