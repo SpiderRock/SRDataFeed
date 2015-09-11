@@ -104,6 +104,32 @@ void SRDataFeedEngine::MakeCacheRequest(const IPEndPoint& end_point, initializer
 	cache_client.ReadResponse();
 }
 			
+IPEndPoint SRDataFeedEngine::GetIPEndPoint(DataChannel channel)
+{
+	int32_t envnum = 30 + static_cast<int32_t>(impl_->environment);
+	int32_t chnum = static_cast<int32_t>(channel);
+	int32_t ipport = 40000 + (envnum * 500) + chnum;
+
+	string ipaddr;
+
+	if (impl_->environment == SysEnvironment::Stable)
+	{
+		ipaddr = "233.74.249." + to_string(chnum);
+	}
+	else if (impl_->environment == SysEnvironment::Beta)
+	{
+		ipaddr = "233.117.185." + to_string(chnum);
+	}
+	else
+	{
+		throw std::runtime_error("Unsupported SysEnvironment " + std::to_string(static_cast<int>(impl_->environment)));
+	}
+
+	IPEndPoint ep(ipaddr, ipport);
+
+	return ep;
+}
+
 void SRDataFeedEngine::CreateThreadGroup(Protocol protocol, initializer_list<DataChannel> channels)
 {
 	unique_ptr<Receiver<Channel>> receiver;
@@ -125,9 +151,7 @@ void SRDataFeedEngine::CreateThreadGroup(Protocol protocol, initializer_list<Dat
 
 	for (auto c : channels)
 	{
-		uint16_t port = 40000 + (30 + static_cast<uint16_t>(impl_->environment)) * 500 + static_cast<uint16_t>(c);
-		string address = "233.74.249." + to_string(static_cast<uint16_t>(c));
-		IPEndPoint ep(address, port);
+		IPEndPoint ep = GetIPEndPoint(c);
 
 		shared_ptr<Channel> channel;
 		

@@ -86,9 +86,9 @@ int main()
 	try
 	{
 		in_addr ifaddr;
-		ifaddr.s_addr = inet_addr("10.37.200.95");
+		ifaddr.s_addr = inet_addr("local_interface");
 
-		SRDataFeedEngine engine(SysEnvironment::Stable, ifaddr);
+		SRDataFeedEngine engine(SysEnvironment::Beta, ifaddr);
 
 		engine.CreateThreadGroup(
 			SRDataFeedEngine::Protocol::UDP,
