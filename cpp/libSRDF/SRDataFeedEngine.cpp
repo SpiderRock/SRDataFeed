@@ -92,18 +92,40 @@ SRDataFeedEngine::~SRDataFeedEngine()
 {
 }
 
-void SRDataFeedEngine::MakeCacheRequest(const IPEndPoint& end_point, initializer_list<MessageType> message_types)
+void SRDataFeedEngine::MakeCacheRequest(initializer_list<MessageType> message_types)
 {
-	auto send_channel = make_shared<Channel>("tcp.send(" + end_point.label() + ")");
-	auto receive_channel = make_shared<Channel>("tcp.recv(" + end_point.label() + ")");
-	impl_->channels.push_back(send_channel);
-	impl_->channels.push_back(receive_channel);
+	int32_t ipport = 2340 + (static_cast<int32_t>(impl_->environment) * 1000);
 
-	CacheClient cache_client(impl_->environment, end_point, impl_->frame_handler, receive_channel, send_channel);
-	cache_client.SendRequest(message_types);
-	cache_client.ReadResponse();
+	initializer_list<IPEndPoint> endpoints =
+	{
+		IPEndPoint(string("198.102.4.145"), ipport),
+		IPEndPoint(string("198.102.4.146"), ipport)
+	};
+
+	for (auto ep : endpoints)
+	{
+		auto send_channel = make_shared<Channel>("tcp.send(" + ep.label() + ")");
+		auto receive_channel = make_shared<Channel>("tcp.recv(" + ep.label() + ")");
+
+		try
+		{
+			CacheClient cache_client(impl_->environment, ep, impl_->frame_handler, receive_channel, send_channel);
+			cache_client.SendRequest(message_types);
+			cache_client.ReadResponse();
+
+			break;
+		}
+		catch (const std::exception& e)
+		{
+			SR_TRACE_ERROR("cache request error", e.what());
+		}
+		catch (...)
+		{
+			SR_TRACE_ERROR("unknown cache request error");
+		}
+	}
 }
-			
+
 IPEndPoint SRDataFeedEngine::GetIPEndPoint(DataChannel channel)
 {
 	int32_t envnum = 30 + static_cast<int32_t>(impl_->environment);
