@@ -36,7 +36,7 @@ namespace SpiderRock
 			
 			enum class Protocol { DBL, UDP };
 
-			void MakeCacheRequest(const SpiderRock::Net::IPEndPoint& end_point, std::initializer_list<MessageType> message_types);
+			void MakeCacheRequest(std::initializer_list<MessageType> message_types);
 			void CreateThreadGroup(Protocol proto, std::initializer_list<DataChannel> channels);
 			void Start();
 
