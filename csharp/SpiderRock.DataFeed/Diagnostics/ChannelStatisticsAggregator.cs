@@ -11,7 +11,6 @@ namespace SpiderRock.DataFeed.Diagnostics
         private static readonly TimeSpan EndTime = new TimeSpan(15, 0, 0);
 
         private readonly HashSet<Channel> channels = new HashSet<Channel>();
-        private readonly Dictionary<string, int> dataFeedChannels = new Dictionary<string, int>();
 
         public ChannelStatisticsAggregator()
         {
@@ -240,7 +239,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                         error = "SLOW HANDLER";
                     }
 
-                    if (channel.MaxAsyncTime > 0.250 && dataFeedChannels.ContainsKey(channel.Address))
+                    if (channel.MaxAsyncTime > 0.250)
                     {
                         if (time > StartTime && time < EndTime)
                         {
