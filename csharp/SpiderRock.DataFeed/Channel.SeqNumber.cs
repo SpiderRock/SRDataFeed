@@ -84,9 +84,15 @@ namespace SpiderRock.DataFeed
 
         internal void RefreshSeqNumberGapStatistics()
         {
-            foreach (SeqNumberCounter seqNumberCounter in SeqNumberCounters)
+            switch (Type)
             {
-                seqNumberCounter.RefreshStatistics();
+                case ChannelType.UdpRecv:
+                case ChannelType.DblRecv:
+                    foreach (SeqNumberCounter seqNumberCounter in SeqNumberCounters)
+                    {
+                        seqNumberCounter.RefreshStatistics();
+                    }
+                    break;
             }
         }
 

@@ -160,22 +160,22 @@ namespace SpiderRock.DataFeed.Diagnostics
                 copyOfChannels = new List<Channel>(channels);
             }
 
-            IEnumerable<string> channelLines = GetChannelStats(copyOfChannels, elapsedSeconds);
-            IEnumerable<string> messageLines = GetMessageStats(copyOfChannels, elapsedSeconds);
+            foreach (var channel in copyOfChannels)
+            {
+                channel.RefreshSeqNumberGapStatistics();
+            }
 
-            var lines = new List<string> { "" };
+            var channelLines = new List<string> {""};
 
-            lines.AddRange(channelLines);
+            channelLines.AddRange(GetChannelStats(copyOfChannels, elapsedSeconds));
+            channelLines.Add("");
 
-            lines.Add("");
-
-            lines.AddRange(messageLines);
-
-            lines.Add("");
+            channelLines.AddRange(GetMessageStats(copyOfChannels, elapsedSeconds));
+            channelLines.Add("");
 
             // --- write stats block ---
 
-            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.Cast<object>().ToArray());
+            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, channelLines.Cast<object>().ToArray());
             SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(channels).Cast<object>().ToArray());
         }
 
@@ -341,8 +341,6 @@ namespace SpiderRock.DataFeed.Diagnostics
                 {
                     case ChannelType.UdpRecv:
                     case ChannelType.DblRecv:
-                        channel.RefreshSeqNumberGapStatistics();
-
                         if (channel.SeqNumberCounters.All(c => c.Gaps == 0)) continue;
 
                         yield return string.Empty;
