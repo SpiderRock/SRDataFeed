@@ -133,9 +133,8 @@ namespace SpiderRock.DataFeed
         internal sealed class SeqNumberCounter : IEquatable<SeqNumberCounter>
         {
             private readonly Channel channel;
-            private uint assertions;
             private byte expected;
-            private long gaps;
+            private volatile int gaps;
 
             public SeqNumberCounter(Channel channel, SourceId source, MessageType type, byte value)
             {
@@ -173,50 +172,42 @@ namespace SpiderRock.DataFeed
                 }
             }
 
-            public static bool operator ==(SeqNumberCounter left, SeqNumberCounter right)
-            {
-                return Equals(left, right);
-            }
-
-            public static bool operator !=(SeqNumberCounter left, SeqNumberCounter right)
-            {
-                return !Equals(left, right);
-            }
-
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void AssertEqual(byte actual)
             {
                 unchecked
                 {
                     expected += 1;
-                    assertions += 1;
 
-                    if (expected == actual) return;
+                    if (expected == actual)
+                    {
+                        return;
+                    }
 
-                    if (assertions == 1 && expected == 0)
+                    if (actual == 0 || expected == 0)
                     {
                         expected = actual;
                         return;
                     }
+
+                    byte tmp = expected;
+
+                    gaps += 1;
+                    expected = actual;
+
+                    if (gaps > 5) return;
+
+                    SRTrace.NetSeqNumber.TraceWarning(
+                        "{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
+                        MessageType, channel, channel.id, SourceId, tmp, actual);
+
+                    channel.BeginSequenceNumberGapsDetected();
                 }
-
-                byte tmp = expected;
-
-                Interlocked.Increment(ref gaps);
-                expected = actual;
-
-                if (gaps > 10) return;
-
-                SRTrace.NetSeqNumber.TraceWarning(
-                    "{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
-                    MessageType, channel, channel.id, SourceId, tmp, actual);
-
-                channel.BeginSequenceNumberGapsDetected();
             }
 
             public void RefreshStatistics()
             {
-                Gaps = Interlocked.Exchange(ref gaps, 0);
+                Gaps = gaps;
                 CumulativeGaps += Gaps;
             }
         }
