@@ -191,11 +191,9 @@ namespace SpiderRock.DataFeed
                     }
 
                     byte tmp = expected;
-
-                    gaps += 1;
                     expected = actual;
 
-                    if (gaps > 5) return;
+                    if (++gaps > 5) return;
 
                     SRTrace.NetSeqNumber.TraceWarning(
                         "{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
