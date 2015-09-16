@@ -206,6 +206,7 @@ namespace SpiderRock.DataFeed
             public void RefreshStatistics()
             {
                 Gaps = gaps;
+                gaps = 0;
                 CumulativeGaps += Gaps;
             }
         }
