@@ -11,7 +11,6 @@ namespace SpiderRock.DataFeed.Diagnostics
         private static readonly TimeSpan EndTime = new TimeSpan(15, 0, 0);
 
         private readonly HashSet<Channel> channels = new HashSet<Channel>();
-        private readonly Dictionary<string, int> dataFeedChannels = new Dictionary<string, int>();
 
         public ChannelStatisticsAggregator()
         {
@@ -51,7 +50,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
         }
 
-        private IEnumerable<string> GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
+        private static IEnumerable<string> GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
         {
             if (channelList == null) return null;
 
@@ -179,7 +178,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(channels).Cast<object>().ToArray());
         }
 
-        private IEnumerable<string> GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
+        private static IEnumerable<string> GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
         {
             var lines = new List<string>();
 
@@ -240,7 +239,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                         error = "SLOW HANDLER";
                     }
 
-                    if (channel.MaxAsyncTime > 0.250 && dataFeedChannels.ContainsKey(channel.Address))
+                    if (channel.MaxAsyncTime > 0.250)
                     {
                         if (time > StartTime && time < EndTime)
                         {
