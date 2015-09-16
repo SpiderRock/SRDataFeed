@@ -50,7 +50,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
         }
 
-        private IEnumerable<string> GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
+        private static IEnumerable<string> GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
         {
             if (channelList == null) return null;
 
@@ -178,7 +178,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(channels).Cast<object>().ToArray());
         }
 
-        private IEnumerable<string> GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
+        private static IEnumerable<string> GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
         {
             var lines = new List<string>();
 
