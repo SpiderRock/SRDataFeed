@@ -28,28 +28,33 @@ namespace SpiderRock
 			OptNbboQuote3 = 13,
 			OptNbboQuote4 = 14,
 
+			FutQuoteIce = 20,
 			FutQuoteCme = 21,
 			FutQuoteCbot = 22,
 			FutQuoteNymex = 23,
 			FutQuoteComex = 24,
+			FutQuoteCfe = 41,
 
-			CMEAdmin = 25,
+			CmeAdmin = 25,
+			IceAdmin = 26,
+			CfeAdmin = 27,
 
+			OptQuoteIce = 30,
 			OptQuoteCme = 31,
 			OptQuoteCbot = 32,
 			OptQuoteNymex = 33,
 			OptQuoteComex = 34,
 
-			FutQuoteCfe = 41,
-
 			IdxQuoteRut = 51,
 			IdxQuoteCboe = 52,
 
 			ImpliedQuoteNmsLoop = 61,
+
 			ImpliedQuoteCme = 62,
 			ImpliedQuoteCbot = 63,
 			ImpliedQuoteNymex = 64,
 			ImpliedQuoteComex = 65,
+			ImpliedQuoteIce = 66,
 
 			ImpliedQuoteNms1 = 71,
 			ImpliedQuoteNms2 = 72,
@@ -79,7 +84,12 @@ namespace SpiderRock
 			StkExchQuote1Edga = 141,
 			StkExchQuote2Edga = 142,
 			StkExchQuote3Edga = 143,
-			StkExchQuote4Edga = 144
+			StkExchQuote4Edga = 144,
+
+			CobExchQuoteIse = 150,
+			CobExchQuoteCboe = 151,
+			CobExchQuotePhlx = 152,
+			CobExchQuoteIce = 153
 		};
 	}
 }
