@@ -9,23 +9,22 @@ namespace SpiderRock.DataFeed
 {
     public class OptionKey : IComparable<OptionKey>, IEquatable<OptionKey>, IKeyLayoutEquatable<OptionKeyLayout>
     {
+        // ReSharper disable ImpureMethodCallOnReadonlyValueField
+
         private static SpinLock keyCacheLock = new SpinLock();
-        private static readonly Dictionary<OptionKeyLayout, OptionKey> KeyCache = new Dictionary<OptionKeyLayout, OptionKey>();
+
+        private static readonly Dictionary<OptionKeyLayout, OptionKey> KeyCache =
+            new Dictionary<OptionKeyLayout, OptionKey>();
 
         public static readonly OptionKey Empty = new OptionKey(new OptionKeyLayout());
 
-        private static RootLayout minRoot;
-        private static RootLayout maxRoot = new RootLayout("ZZZZZZ");
-
         internal readonly OptionKeyLayout Layout;
         private string expiration;
-        private FutureKey futureKey;
 
         private string osiKey;
 
         private string root;
         private RootKey rootKey;
-        private StockKey stockKey;
         private string stringKey;
         private string tabRecord, tabRecordCP;
 
@@ -61,7 +60,11 @@ namespace SpiderRock.DataFeed
 
         public char CallPutChar
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Layout.CallPut == CallPut.Call ? 'C' : 'P'; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                return Layout.CallPut == CallPut.Call ? 'C' : 'P';
+            }
         }
 
         public int StrikeInt
@@ -94,29 +97,7 @@ namespace SpiderRock.DataFeed
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return rootKey ??
-                       (rootKey = RootKey.GetCreateRootKey(new RootKeyLayout(Layout.AssetType, Layout.TickerSrc, Layout.Root)));
-            }
-        }
-
-        public StockKey StockKey
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return stockKey ??
-                       (stockKey = StockKey.GetCreateStockKey(new StockKeyLayout(Layout.AssetType, Layout.TickerSrc, new TickerLayout(Layout.Root))));
-            }
-        }
-
-        public FutureKey FutureKey
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return futureKey ??
-                       (futureKey =
-                           FutureKey.GetCreateFutureKey(new FutureKeyLayout(Layout.AssetType, Layout.TickerSrc, Layout.Root, Layout.Year, Layout.Month, Layout.Day)));
+                return rootKey ?? (rootKey = RootKey.GetCreateRootKey(Layout));
             }
         }
 
@@ -132,7 +113,11 @@ namespace SpiderRock.DataFeed
 
         public string Expiration
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return expiration ?? (expiration = string.Format("{0:D4}-{1:D2}-{2:D2}", Year, Month, Day)); }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                return expiration ?? (expiration = string.Format("{0:D4}-{1:D2}-{2:D2}", Year, Month, Day));
+            }
         }
 
         public bool IsExpired
@@ -146,7 +131,9 @@ namespace SpiderRock.DataFeed
             get
             {
                 return osiKey ??
-                       (osiKey = string.Format("{0}{1:D2}{2:D2}{3:D2}{4}{5:00000}{6:000}", Root.PadRight(6), Year%100, Month, Day, CallPutChar, StrikeInt/1000, StrikeInt%1000));
+                       (osiKey =
+                           string.Format("{0}{1:D2}{2:D2}{3:D2}{4}{5:00000}{6:000}", Root.PadRight(6), Year%100, Month,
+                               Day, CallPutChar, StrikeInt/1000, StrikeInt%1000));
             }
         }
 
@@ -156,7 +143,9 @@ namespace SpiderRock.DataFeed
             get
             {
                 return stringKey ??
-                       (stringKey = string.Format("{0}-{1}-{2}-{3:D4}-{4:D2}-{5:D2}-{6}-{7}", Root, TickerSrc, AssetType, Year, Month, Day, StrikeInt, CallPutChar));
+                       (stringKey =
+                           string.Format("{0}-{1}-{2}-{3:D4}-{4:D2}-{5:D2}-{6}-{7}", Root, TickerSrc, AssetType, Year,
+                               Month, Day, StrikeInt, CallPutChar));
             }
         }
 
@@ -171,7 +160,9 @@ namespace SpiderRock.DataFeed
             get
             {
                 return tabRecord ??
-                       (tabRecord = string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}\t{7}", Root, TickerSrc, AssetType, Year, Month, Day, StrikeInt, CallPutChar));
+                       (tabRecord =
+                           string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}\t{7}", Root, TickerSrc, AssetType,
+                               Year, Month, Day, StrikeInt, CallPutChar));
             }
         }
 
@@ -186,18 +177,10 @@ namespace SpiderRock.DataFeed
             get
             {
                 return tabRecordCP ??
-                       (tabRecordCP = string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}", Root, TickerSrc, AssetType, Year, Month, Day, StrikeInt));
+                       (tabRecordCP =
+                           string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}", Root, TickerSrc, AssetType, Year,
+                               Month, Day, StrikeInt));
             }
-        }
-
-        public static string MinRoot
-        {
-            get { return minRoot; }
-        }
-
-        public static string MaxRoot
-        {
-            get { return maxRoot; }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -205,11 +188,6 @@ namespace SpiderRock.DataFeed
         {
             if (other == null) return 1;
             return Layout.CompareTo(other.Layout);
-        }
-
-        public override int GetHashCode()
-        {
-            return Layout.GetHashCode();
         }
 
         public bool Equals(OptionKey other)
@@ -249,6 +227,11 @@ namespace SpiderRock.DataFeed
         }
 
         #endregion
+
+        public override int GetHashCode()
+        {
+            return Layout.GetHashCode();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static OptionKey GetCreateOptionKey(OptionKeyLayout key)
@@ -294,19 +277,6 @@ namespace SpiderRock.DataFeed
             }
 
             return Empty;
-        }
-
-        public static void SetRootBounds(string min, string max)
-        {
-            minRoot = new RootLayout(min);
-            maxRoot = new RootLayout(max);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ClearRootBounds()
-        {
-            minRoot = new RootLayout();
-            maxRoot = new RootLayout("ZZZZZZ");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

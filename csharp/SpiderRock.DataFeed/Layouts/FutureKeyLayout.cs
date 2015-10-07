@@ -5,14 +5,14 @@ using System.Runtime.InteropServices;
 namespace SpiderRock.DataFeed.Layouts
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    unsafe internal struct FutureKeyLayout : IEquatable<FutureKeyLayout>, IComparable<FutureKeyLayout>
+    internal unsafe struct FutureKeyLayout : IEquatable<FutureKeyLayout>, IComparable<FutureKeyLayout>
     {
-        public FutureKeyLayout(AssetType assetType, TickerSrc tickerSrc, RootLayout ccode, int year, int month,
-                               int day)
+        public FutureKeyLayout(AssetType assetType, TickerSrc tickerSrc, CCodeLayout ccode, int year, int month,
+            int day)
         {
             unchecked
             {
-                rootKey = new RootKeyLayout(assetType, tickerSrc, ccode);
+                ccodeKey = new CCodeKeyLayout(assetType, tickerSrc, ccode);
                 this.year = (byte) (year - 1900);
                 this.month = (byte) month;
                 this.day = (byte) day;
@@ -24,8 +24,8 @@ namespace SpiderRock.DataFeed.Layouts
         {
             fixed (FutureKeyLayout* pfself = &this)
             {
-                var pself = (long*)pfself;
-                var pother = (long*)&other;
+                var pself = (long*) pfself;
+                var pother = (long*) &other;
                 return *(pself) == *(pother) && *(pself + 1) == *(pother + 1);
             }
         }
@@ -57,6 +57,7 @@ namespace SpiderRock.DataFeed.Layouts
                     int hashCode = *p;
                     hashCode = (hashCode*397) ^ *(p + 1);
                     hashCode = (hashCode*397) ^ *(p + 2);
+                    hashCode = (hashCode*397) ^ *(p + 3);
                     return hashCode;
                 }
             }
@@ -64,13 +65,13 @@ namespace SpiderRock.DataFeed.Layouts
 
         public bool IsEmpty
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return rootKey.IsEmpty; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ccodeKey.IsEmpty; }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void TrimEnd()
         {
-            rootKey.TrimEnd();
+            ccodeKey.TrimEnd();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -86,31 +87,25 @@ namespace SpiderRock.DataFeed.Layouts
         }
 
         // ReSharper disable FieldCanBeMadeReadOnly.Local
-        private RootKeyLayout rootKey;
+        private CCodeKeyLayout ccodeKey;
         private byte year;
         private byte month;
         private byte day;
-        private fixed byte chars[5];
         // ReSharper restore FieldCanBeMadeReadOnly.Local
 
         public AssetType AssetType
         {
-            get { return rootKey.AssetType; }
+            get { return ccodeKey.AssetType; }
         }
 
         public TickerSrc TickerSrc
         {
-            get { return rootKey.TickerSrc; }
+            get { return ccodeKey.TickerSrc; }
         }
 
-        public RootLayout CCode
+        public CCodeLayout CCode
         {
-            get { return rootKey.Root; }
-        }
-
-        public RootKeyLayout RootKey
-        {
-            get { return rootKey; }
+            get { return ccodeKey.CCode; }
         }
 
         public int Year

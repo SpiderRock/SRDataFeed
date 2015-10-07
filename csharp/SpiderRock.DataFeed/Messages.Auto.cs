@@ -18,6 +18,272 @@ namespace SpiderRock.DataFeed
 	#region Core
 
 	/// <summary>
+	/// CCodeDefinition:110
+	/// </summary>
+	/// <remarks>
+	/// Live Future Market Data 
+	/// --- CCodeDefinition ---
+	/// </remarks>
+
+    public partial class CCodeDefinition
+    {
+		public CCodeDefinition()
+		{
+		}
+		
+		public CCodeDefinition(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public CCodeDefinition(CCodeDefinition source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal CCodeDefinition(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as CCodeDefinition);
+		}
+		
+		public bool Equals(CCodeDefinition other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(CCodeDefinition target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+ 			target.Invalidate();
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			Invalidate();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.CCodeDefinition};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private CCodeKey ccode;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				ccode = other.ccode;
+				
+			}
+			
+			
+			public CCodeKey Ccode
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ccode ?? (ccode = CCodeKey.GetCreateCCodeKey(body.ccode)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ccode = value.Layout; ccode = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				ccode = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.ccode = ccode;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.ccode = ccode;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // CCodeDefinition.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public CCodeKeyLayout ccode;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	ccode.Equals(other.ccode);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = ccode.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // CCodeDefinition.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public FutExch futexch;
+			public StockKeyLayout ticker;
+			public SettleTime settleTime;
+			public int positionLimit;
+			public float contractSize;
+			public double minTickSize;
+			public FixedString6Layout clearingCode;
+			public FixedString6Layout ricCode;
+			public FixedString6Layout bbgRoot;
+			public YellowKey bbgGroup;
+			public FixedString48Layout description;
+			public DateTimeLayout lastUpdate;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		private volatile int usn;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedStockKey ticker;
+ 		private CachedFixedLengthString<FixedString6Layout> clearingCode;
+ 		private CachedFixedLengthString<FixedString6Layout> ricCode;
+ 		private CachedFixedLengthString<FixedString6Layout> bbgRoot;
+ 		private CachedFixedLengthString<FixedString48Layout> description;
+		
+
+
+		/// <summary>listing exchange</summary>
+        public FutExch Futexch { get { return body.futexch; } set { body.futexch = value; } }
+             
+		/// <summary>master underlying</summary>
+        public StockKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+ 
+		
+        public SettleTime SettleTime { get { return body.settleTime; } set { body.settleTime = value; } }
+ 
+		/// <summary>max contract limit</summary>
+        public int PositionLimit { get { return body.positionLimit; } set { body.positionLimit = value; } }
+ 
+		
+        public float ContractSize { get { return body.contractSize; } set { body.contractSize = value; } }
+ 
+		
+        public double MinTickSize { get { return body.minTickSize; } set { body.minTickSize = value; } }
+ 
+		/// <summary>GMI/Clearing code</summary>
+        public string ClearingCode { get { return CacheVar.AllocIfNull(ref clearingCode).Get(ref body.clearingCode, usn); } set { CacheVar.AllocIfNull(ref clearingCode).Set(value); body.clearingCode = value; } }
+ 
+		/// <summary>RIC Code</summary>
+        public string RicCode { get { return CacheVar.AllocIfNull(ref ricCode).Get(ref body.ricCode, usn); } set { CacheVar.AllocIfNull(ref ricCode).Set(value); body.ricCode = value; } }
+ 
+		/// <summary>Bloomberg root</summary>
+        public string BbgRoot { get { return CacheVar.AllocIfNull(ref bbgRoot).Get(ref body.bbgRoot, usn); } set { CacheVar.AllocIfNull(ref bbgRoot).Set(value); body.bbgRoot = value; } }
+ 
+		/// <summary>Bloomberg Yellow Key</summary>
+        public YellowKey BbgGroup { get { return body.bbgGroup; } set { body.bbgGroup = value; } }
+ 
+		
+        public string Description { get { return CacheVar.AllocIfNull(ref description).Get(ref body.description, usn); } set { CacheVar.AllocIfNull(ref description).Set(value); body.description = value; } }
+ 
+		
+        public DateTime LastUpdate { get { return body.lastUpdate; } set { body.lastUpdate = value; } }
+
+		
+		#endregion	
+
+    } // CCodeDefinition
+
+
+	/// <summary>
 	/// FutureBookQuote:111
 	/// </summary>
 	/// <remarks>
@@ -83,8 +349,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -405,8 +669,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -689,8 +951,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -952,8 +1212,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -1419,8 +1677,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -1709,8 +1965,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -1949,8 +2203,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -2283,8 +2535,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -2557,8 +2807,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -2847,8 +3095,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -3144,8 +3390,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -3448,8 +3692,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -3646,6 +3888,335 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
+	/// RootDefinition:100
+	/// </summary>
+	/// <remarks>
+	/// --- RootDefinition ---
+	/// </remarks>
+
+    public partial class RootDefinition
+    {
+		public RootDefinition()
+		{
+		}
+		
+		public RootDefinition(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public RootDefinition(RootDefinition source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal RootDefinition(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as RootDefinition);
+		}
+		
+		public bool Equals(RootDefinition other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(RootDefinition target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+ 
+			if (UnderlyingList != null)
+			{
+				target.UnderlyingList = new UnderlyingItem[UnderlyingList.Length];
+				for (int i = 0; i < UnderlyingList.Length; i++)
+				{
+					var src = UnderlyingList[i];
+					
+					var dest = new UnderlyingItem();
+					dest.Ticker = src.Ticker;
+ 					dest.Spc = src.Spc;
+
+					target.UnderlyingList[i] = dest;
+				}
+			}
+ 			target.Invalidate();
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			Invalidate();
+ 			body = new BodyLayout();
+ 			UnderlyingList = null;
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.RootDefinition};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private RootKey root;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				root = other.root;
+				
+			}
+			
+			
+			public RootKey Root
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return root ?? (root = RootKey.GetCreateRootKey(body.root)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.root = value.Layout; root = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				root = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.root = root;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.root = root;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // RootDefinition.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public RootKeyLayout root;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	root.Equals(other.root);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = root.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // RootDefinition.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 		
+		#region Repeats 
+		
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        public class UnderlyingItem
+        {
+            public const int Length = 20;
+
+            public UnderlyingItem() { }
+            
+            public UnderlyingItem(StockKey ticker, float spc)
+            {
+                this.Ticker = ticker;
+                this.Spc = spc;
+            }
+
+            public StockKey Ticker { get; internal set; }
+			public float Spc { get; internal set; }
+        }
+
+        public UnderlyingItem[] UnderlyingList { get; set; }
+
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public StockKeyLayout ticker;
+			public FixedString8Layout osiRoot;
+			public RootKeyLayout ccode;
+			public ExpirationMap expirationMap;
+			public OptionType optionType;
+			public Multihedge multihedge;
+			public ExerciseTime exerciseTime;
+			public ExerciseType exerciseType;
+			public TimeMetric timeMetric;
+			public PricingModel pricingModel;
+			public VolumeTier volumeTier;
+			public int positionLimit;
+			public FixedString8Layout exchanges;
+			public float strikeRatio;
+			public float cashOnExercise;
+			public float sharesPerCn;
+			public AdjConvention adjConvention;
+			public DateTimeLayout lastUpdate;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		private volatile int usn;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedStockKey ticker;
+ 		private CachedFixedLengthString<FixedString8Layout> osiRoot;
+ 		private CachedRootKey ccode;
+ 		private CachedFixedLengthString<FixedString8Layout> exchanges;
+		
+
+            
+		/// <summary>master underlying</summary>
+        public StockKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+ 
+		/// <summary>long version of the root.  the short version is used in the RootKey (for example RYAAY1, not RYAA1)</summary>
+        public string OsiRoot { get { return CacheVar.AllocIfNull(ref osiRoot).Get(ref body.osiRoot, usn); } set { CacheVar.AllocIfNull(ref osiRoot).Set(value); body.osiRoot = value; } }
+             
+		
+        public RootKey Ccode { get { return CacheVar.AllocIfNull(ref ccode).Get(ref body.ccode, usn); } set { CacheVar.AllocIfNull(ref ccode).Set(value); body.ccode = value.Layout; } }
+ 
+		
+        public ExpirationMap ExpirationMap { get { return body.expirationMap; } set { body.expirationMap = value; } }
+ 
+		/// <summary>indicator for option type</summary>
+        public OptionType OptionType { get { return body.optionType; } set { body.optionType = value; } }
+ 
+		/// <summary>indicates type of multihedge</summary>
+        public Multihedge Multihedge { get { return body.multihedge; } set { body.multihedge = value; } }
+ 
+		/// <summary>Exercise time deadline</summary>
+        public ExerciseTime ExerciseTime { get { return body.exerciseTime; } set { body.exerciseTime = value; } }
+ 
+		/// <summary>Exercise style</summary>
+        public ExerciseType ExerciseType { get { return body.exerciseType; } set { body.exerciseType = value; } }
+ 
+		/// <summary>trading time metric - 232 trading days or 365</summary>
+        public TimeMetric TimeMetric { get { return body.timeMetric; } set { body.timeMetric = value; } }
+ 
+		
+        public PricingModel PricingModel { get { return body.pricingModel; } set { body.pricingModel = value; } }
+ 
+		
+        public VolumeTier VolumeTier { get { return body.volumeTier; } set { body.volumeTier = value; } }
+ 
+		/// <summary>max contract limit</summary>
+        public int PositionLimit { get { return body.positionLimit; } set { body.positionLimit = value; } }
+ 
+		/// <summary>exchange codes</summary>
+        public string Exchanges { get { return CacheVar.AllocIfNull(ref exchanges).Get(ref body.exchanges, usn); } set { CacheVar.AllocIfNull(ref exchanges).Set(value); body.exchanges = value; } }
+ 
+		/// <summary>note: effective strike = strike * strikeRatio - cashOnExercise</summary>
+        public float StrikeRatio { get { return body.strikeRatio; } set { body.strikeRatio = value; } }
+ 
+		/// <summary>note: cashOnExercise is positive if it decreases the effective strike price</summary>
+        public float CashOnExercise { get { return body.cashOnExercise; } set { body.cashOnExercise = value; } }
+ 
+		/// <summary>note: always 100 if underlying list is in use</summary>
+        public float SharesPerCn { get { return body.sharesPerCn; } set { body.sharesPerCn = value; } }
+ 
+		
+        public AdjConvention AdjConvention { get { return body.adjConvention; } set { body.adjConvention = value; } }
+ 
+		
+        public DateTime LastUpdate { get { return body.lastUpdate; } set { body.lastUpdate = value; } }
+
+		
+		#endregion	
+
+    } // RootDefinition
+
+
+	/// <summary>
 	/// StockBookQuote:121
 	/// </summary>
 	/// <remarks>
@@ -3713,8 +4284,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -4007,8 +4576,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -4233,8 +4800,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -4471,8 +5036,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -4699,8 +5262,6 @@ namespace SpiderRock.DataFeed
  			body = new BodyLayout();
 
         }
-		
-
 
 		public long TimeRcvd { get; internal set; }
 		
@@ -5012,14 +5573,14 @@ namespace SpiderRock.DataFeed
         {
             public const int Length = 2;
 
-            public ushort msgtype;
-
             public MsgTypeItem() { }
             
             public MsgTypeItem(ushort msgtype)
             {
-                this.msgtype = msgtype;
+                this.Msgtype = msgtype;
             }
+
+            public ushort Msgtype { get; internal set; }
         }
 
         public MsgTypeItem[] MsgTypeList { get; set; }
