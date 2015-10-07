@@ -9,8 +9,8 @@ namespace SpiderRock.DataFeed.Layouts
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal unsafe struct RootLayout :
-        IEquatable<RootLayout>, 
-        IEquatable<string>, 
+        IEquatable<RootLayout>,
+        IEquatable<string>,
         IComparable<RootLayout>
     {
         // ReSharper disable InconsistentNaming
@@ -38,7 +38,7 @@ namespace SpiderRock.DataFeed.Layouts
 
                 if (StringCache.TryGetValue(optionRoot, out value)) return value;
 
-                StringCache[optionRoot] = value = new string((sbyte*) &optionRoot, 0, optionRoot.Length, Encoding.ASCII);
+                StringCache[optionRoot] = value = new string((sbyte*)&optionRoot, 0, optionRoot.Length, Encoding.ASCII);
             }
             finally
             {
@@ -74,15 +74,15 @@ namespace SpiderRock.DataFeed.Layouts
             {
                 fixed (byte* pfchars = chars)
                 {
-                    if (*(pfchars + 4) == 0)
+                    if (pfchars[4] == 0)
                     {
-                        if (*(pfchars + 3) != 0) return 4;
-                        if (*(pfchars + 2) != 0) return 3;
-                        if (*(pfchars + 1) != 0) return 2;
+                        if (pfchars[3] != 0) return 4;
+                        if (pfchars[2] != 0) return 3;
+                        if (pfchars[1] != 0) return 2;
                         if (*pfchars != 0) return 1;
                         return 0;
                     }
-                    if (*(pfchars + 5) == 0) return 5;
+                    if (pfchars[5] == 0) return 5;
                     return MAX_LENGTH;
                 }
             }
@@ -113,17 +113,27 @@ namespace SpiderRock.DataFeed.Layouts
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(RootLayout other)
         {
-            fixed (byte* pfchars = chars)
+            unchecked
             {
-                var pother = (byte*) &other;
-                return *((int*) pfchars) == *((int*) pother) &&
-                       *((int*) (pfchars + 2)) == *((int*) (pother + 2));
+                // ReSharper disable once NonReadonlyFieldInGetHashCode
+                fixed (byte* pfchars = chars)
+                {
+                    var p = (int*) pfchars;
+                    var o = (int*) &other;
+
+                    if (!(*p).Equals(*o)) return false;
+
+                    var p2 = (short*) (p + 1);
+                    var o2 = (short*) (o + 1);
+
+                    return (*p2).Equals(*o2);
+                }
             }
         }
 
         public override bool Equals(object obj)
         {
-            return obj is RootLayout && Equals((RootLayout) obj);
+            return obj is RootLayout && Equals((RootLayout)obj);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -142,16 +152,12 @@ namespace SpiderRock.DataFeed.Layouts
         {
             unchecked
             {
-                // ReSharper disable NonReadonlyFieldInGetHashCode
+                // ReSharper disable once NonReadonlyFieldInGetHashCode
                 fixed (byte* pfchars = chars)
-                    // ReSharper restore NonReadonlyFieldInGetHashCode
                 {
-                    var p = (int*) pfchars;
-                    int hashCode = *p;
-                    hashCode = (hashCode*397) ^ *(p + 1);
-                    hashCode = (hashCode*397) ^ *(p + 2);
-                    hashCode = (hashCode*397) ^ *(p + 3);
-                    return hashCode;
+                    var p = (short*) pfchars;
+                    var p2 = (int*) (p + 1);
+                    return ((*p)*397) ^ (*p2);
                 }
             }
         }
@@ -190,7 +196,7 @@ namespace SpiderRock.DataFeed.Layouts
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator RootLayout(string value)
         {
-            return string.IsNullOrEmpty(value) ? new RootLayout() : new RootLayout {Value = value};
+            return string.IsNullOrEmpty(value) ? new RootLayout() : new RootLayout { Value = value };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -242,23 +248,23 @@ namespace SpiderRock.DataFeed.Layouts
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(string value)
         {
-			unchecked
-			{
-				fixed (byte* charsPtr = chars)
+            unchecked
+            {
+                fixed (byte* charsPtr = chars)
                 fixed (char* valuePtr = value)
-				{
-					int i = 0;
-                    while (i < MAX_LENGTH) 
-					{
-						byte mine = *(charsPtr + i); 
-						byte theirs = (byte) *(valuePtr + i);
-						if (mine != theirs) return false;
-						if (mine == 0 || theirs == 0) break;
-						++i;
-					}
-					return i == value.Length;
-				}
-			}
+                {
+                    int i = 0;
+                    while (i < MAX_LENGTH)
+                    {
+                        byte mine = *(charsPtr + i);
+                        byte theirs = (byte) *(valuePtr + i);
+                        if (mine != theirs) return false;
+                        if (mine == 0 || theirs == 0) break;
+                        ++i;
+                    }
+                    return i == value.Length;
+                }
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -272,11 +278,11 @@ namespace SpiderRock.DataFeed.Layouts
                     int i = 0;
                     while (i < MAX_LENGTH)
                     {
-                        var ch = (char)(*(charsPtr + i));
+                        var ch = (char) (*(charsPtr + i));
                         if (ch == '\0') break;
                         targetPtr[i++] = ch;
                     }
-                    var targetIntPtr = (int*)targetPtr;
+                    var targetIntPtr = (int*) targetPtr;
                     targetIntPtr[-1] = i;
                     targetPtr[i] = '\0';
                 }
