@@ -61,11 +61,6 @@ namespace SpiderRock.DataFeed
             get { return Layout.Day; }
         }
 
-        public RootKey RootKey
-        {
-            get { return RootKey.GetCreateRootKey(new RootKeyLayout(Layout.AssetType, Layout.TickerSrc, Layout.CCode)); }
-        }
-
         public DateTime Date
         {
             get { return new DateTime(Layout.Year, Layout.Month, Layout.Day); }

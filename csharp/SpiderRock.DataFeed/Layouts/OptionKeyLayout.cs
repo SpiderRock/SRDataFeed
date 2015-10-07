@@ -133,6 +133,12 @@ namespace SpiderRock.DataFeed.Layouts
             return !left.Equals(right);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator RootKeyLayout(OptionKeyLayout value)
+        {
+            return value.rootKey;
+        }
+
         // ReSharper disable FieldCanBeMadeReadOnly.Local
         private RootKeyLayout rootKey;
         private byte year;

@@ -10,13 +10,14 @@ namespace SpiderRock.DataFeed
 {
     public partial struct MessageType
     {
-        private static readonly MessageType Lowest = 102;
+        private static readonly MessageType Lowest = 100;
         private static readonly MessageType Highest = 504;
 
         public static readonly MessageType None = 0;
         public static readonly MessageType Max = 1000;
 
-		public static readonly MessageType FutureBookQuote = 111;
+		public static readonly MessageType CCodeDefinition = 110;
+ 		public static readonly MessageType FutureBookQuote = 111;
  		public static readonly MessageType FuturePrint = 115;
  		public static readonly MessageType FutureSettlementMark = 375;
  		public static readonly MessageType LiveSurfaceAtm = 356;
@@ -28,6 +29,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType OptionPrint = 106;
  		public static readonly MessageType OptionRiskFactor = 379;
  		public static readonly MessageType OptionSettlementMark = 374;
+ 		public static readonly MessageType RootDefinition = 100;
  		public static readonly MessageType StockBookQuote = 121;
  		public static readonly MessageType StockCloseMark = 125;
  		public static readonly MessageType StockCloseQuote = 123;
@@ -42,7 +44,8 @@ namespace SpiderRock.DataFeed
 		{
 			var isCore = CreateSizedArray<bool>();
 			
-			isCore[FutureBookQuote] = true;
+			isCore[CCodeDefinition] = true;
+ 			isCore[FutureBookQuote] = true;
  			isCore[FuturePrint] = true;
  			isCore[FutureSettlementMark] = true;
  			isCore[LiveSurfaceAtm] = true;
@@ -54,6 +57,7 @@ namespace SpiderRock.DataFeed
  			isCore[OptionPrint] = true;
  			isCore[OptionRiskFactor] = true;
  			isCore[OptionSettlementMark] = true;
+ 			isCore[RootDefinition] = true;
  			isCore[StockBookQuote] = true;
  			isCore[StockCloseMark] = true;
  			isCore[StockCloseQuote] = true;
@@ -79,7 +83,8 @@ namespace SpiderRock.DataFeed
 		{
 			var names = CreateSizedArray<string>();
 
-			names[CacheComplete] = "CacheComplete";
+			names[CCodeDefinition] = "CCodeDefinition";
+ 			names[CacheComplete] = "CacheComplete";
  			names[FutureBookQuote] = "FutureBookQuote";
  			names[FuturePrint] = "FuturePrint";
  			names[FutureSettlementMark] = "FutureSettlementMark";
@@ -93,6 +98,7 @@ namespace SpiderRock.DataFeed
  			names[OptionPrint] = "OptionPrint";
  			names[OptionRiskFactor] = "OptionRiskFactor";
  			names[OptionSettlementMark] = "OptionSettlementMark";
+ 			names[RootDefinition] = "RootDefinition";
  			names[StockBookQuote] = "StockBookQuote";
  			names[StockCloseMark] = "StockCloseMark";
  			names[StockCloseQuote] = "StockCloseQuote";

@@ -13,6 +13,51 @@ using SpiderRock.DataFeed.Layouts;
 
 namespace SpiderRock.DataFeed
 {
+    public partial class CCodeDefinition
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "ccode\tfutexch\tticker_tk\tticker_ts\tticker_at\tsettleTime\tpositionLimit\tcontractSize\tminTickSize\tclearingCode\tricCode\tbbgRoot\tbbgGroup\tdescription\tlastUpdate";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Ccode);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(Futexch);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Ticker.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SettleTime);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PositionLimit);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ContractSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinTickSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClearingCode);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(RicCode);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BbgRoot);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BbgGroup);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Description);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(LastUpdate);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     internal partial class CacheComplete
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
@@ -835,6 +880,63 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(Volume);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
+    public partial class RootDefinition
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "root_rt\troot_ts\troot_at\tticker_tk\tticker_ts\tticker_at\tosiRoot\tccode_rt\tccode_ts\tccode_at\texpirationMap\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tvolumeTier\tpositionLimit\texchanges\tstrikeRatio\tcashOnExercise\tsharesPerCn\tadjConvention\tlastUpdate\tUnderlying";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Root.TabRecord);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(Ticker.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OsiRoot);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Ccode.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExpirationMap);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OptionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Multihedge);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExerciseTime);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExerciseType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TimeMetric);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PricingModel);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(VolumeTier);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PositionLimit);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Exchanges);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StrikeRatio);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CashOnExercise);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SharesPerCn);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AdjConvention);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(LastUpdate);
 
 				return recordBuilder.ToString();
 			}
