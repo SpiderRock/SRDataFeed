@@ -8,9 +8,10 @@ namespace SpiderRock.DataFeed.Layouts
     internal struct OptionKeyLayout : IEquatable<OptionKeyLayout>, IComparable<OptionKeyLayout>
     {
         public static readonly int NowIndex = DateTime.Today.Year * 10000 + DateTime.Today.Month * 100 + DateTime.Today.Day;
+        private const int HighPrecision = 2;
 
         public OptionKeyLayout(AssetType assetType, TickerSrc tickerSrc, RootLayout root, int year, int month,
-                               int day, double strike, CallPut callPut)
+            int day, double strike, CallPut callPut)
         {
             unchecked
             {
@@ -18,8 +19,16 @@ namespace SpiderRock.DataFeed.Layouts
                 this.year = (byte)(year - 1900);
                 this.month = (byte)month;
                 this.day = (byte)day;
-                this.strike = (int)(strike * 1000);
-                this.callPut = callPut;
+                flags = (byte)callPut;
+                if (strike < 1D)
+                {
+                    this.strike = (int)(strike * 1000000D + 0.5);
+                    flags = (byte)(flags | HighPrecision);
+                }
+                else
+                {
+                    this.strike = (int)(strike * 1000D + 0.5);
+                }
             }
         }
 
@@ -130,7 +139,7 @@ namespace SpiderRock.DataFeed.Layouts
         private byte month;
         private byte day;
         private int strike;
-        private CallPut callPut;
+        private byte flags;
         // ReSharper restore FieldCanBeMadeReadOnly.Local
 
         public AssetType AssetType
@@ -171,8 +180,28 @@ namespace SpiderRock.DataFeed.Layouts
 
         public double Strike
         {
-            get { return Math.Round(0.001 * strike, 3); }
-            set { strike = (int) (value*1000); }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                return (flags & HighPrecision) == HighPrecision
+                    ? Math.Round(0.000001 * strike, 6)
+                    : Math.Round(0.001 * strike, 3);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                if (strike < 1D)
+                {
+                    strike = (int)(value * 1000000D + 0.5);
+                    flags = (byte)(flags | HighPrecision);
+                }
+                else
+                {
+                    strike = (int)(value * 1000D + 0.5);
+                    flags = (byte)(flags & ~HighPrecision);
+                }
+            }
         }
 
         public int StrikeInt
@@ -183,8 +212,10 @@ namespace SpiderRock.DataFeed.Layouts
 
         public CallPut CallPut
         {
-            get { return callPut; }
-            set { callPut = value; }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return (CallPut)(0x01 & flags); }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set { flags = (byte)((flags & 0xFE) | (byte)value); }
         }
     }
 }
