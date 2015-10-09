@@ -890,7 +890,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "root_rt\troot_ts\troot_at\tticker_tk\tticker_ts\tticker_at\tosiRoot\tccode_rt\tccode_ts\tccode_at\texpirationMap\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tvolumeTier\tpositionLimit\texchanges\tstrikeRatio\tcashOnExercise\tsharesPerCn\tadjConvention\tlastUpdate\tUnderlying";
+		public const string TabHeader = "root_rt\troot_ts\troot_at\tticker_tk\tticker_ts\tticker_at\tosiRoot\tccode\texpirationMap\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tvolumeTier\tpositionLimit\texchanges\tstrikeRatio\tcashOnExercise\tsharesPerCn\tadjConvention\tlastUpdate\tUnderlying";
 
 		public string TabRecord
         {
@@ -906,7 +906,7 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(OsiRoot);
 				recordBuilder.Append("\t");
-				recordBuilder.Append(Ccode.TabRecord);
+				recordBuilder.Append(Ccode);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(ExpirationMap);
 				recordBuilder.Append("\t");
