@@ -45,10 +45,17 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             lock (writer)
             {
-                foreach (object o in data)
+                try
                 {
-                    writer.Write(ts);
-                    writer.WriteLine(o.ToString());
+                    foreach (object o in data)
+                    {
+                        writer.Write(ts);
+                        writer.WriteLine(o.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    writer.WriteLine(string.Format("TraceDataException: {0} {1} {2} {3} {4}", ex.ToString(), eventCache.ToString(), source, eventType.ToString(), id));
                 }
             }
         }
