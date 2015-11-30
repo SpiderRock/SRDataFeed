@@ -16,7 +16,15 @@ namespace SpiderRock
 { 
 	namespace DataFeed
 	{
-		enum class CalcSource : Enum 
+		enum class AdjConvention : Enum 
+		{
+			Original=0,
+			OSI=1,
+			SpcOnly=2,
+			OSIAlt=3
+		};
+
+ 		enum class CalcSource : Enum 
 		{
 			None=0,
 			Tick=1,
@@ -30,17 +38,36 @@ namespace SpiderRock
 			Put=1
 		};
 
+ 		enum class ExerciseTime : Enum 
+		{
+			None=0,
+			PM=1,
+			AM=2
+		};
+
+ 		enum class ExerciseType : Enum 
+		{
+			None=0,
+			American=1,
+			European=2
+		};
+
+ 		enum class ExpirationMap : Enum 
+		{
+			None=0,
+			ExactMatch=1,
+			UnderlyerMap=2
+		};
+
  		enum class FitType : Enum 
 		{
 			None=0,
-			Ci=1,
-			Ii=2,
-			CiCs=3,
-			IiCs=4,
-			CiCm=5,
-			IiCm=6,
-			CiCsCm=7,
-			IiCsCm=8
+			InitAtm=1,
+			LoBound=2,
+			HiBound=3,
+			MidGap=4,
+			MidGapW=5,
+			MidGapN=6
 		};
 
  		enum class FutExch : Enum 
@@ -52,6 +79,13 @@ namespace SpiderRock
 			COMEX=4,
 			NYMEX=5,
 			ICE=6
+		};
+
+ 		enum class IdxSrc : Enum 
+		{
+			Unknown=0,
+			Indication=1,
+			Quote=2
 		};
 
  		enum class LiveSurfaceType : Enum 
@@ -85,6 +119,15 @@ namespace SpiderRock
 			AfterHours=7
 		};
 
+ 		enum class Multihedge : Enum 
+		{
+			None=0,
+			Simple=1,
+			Complex=2,
+			AllCash=3,
+			Binary=4
+		};
+
  		enum class OptExch : Enum 
 		{
 			None=0,
@@ -106,6 +149,41 @@ namespace SpiderRock
 			COMEX=16,
 			ICE=17,
 			EDGO=18
+		};
+
+ 		enum class OptionType : Enum 
+		{
+			None=0,
+			Equity=1,
+			Index=2,
+			Future=3,
+			Binary=4,
+			MapError=99
+		};
+
+ 		enum class PricingGroup : Enum 
+		{
+			Default=0,
+			Gelber=1,
+			User=2
+		};
+
+ 		enum class PricingModel : Enum 
+		{
+			None=0,
+			Equity=1,
+			FutureMarginAppr=2,
+			FutureCashAppr=3,
+			FutureMarginExact=4,
+			FutureCashExact=5,
+			Eurodollar=6
+		};
+
+ 		enum class SettleTime : Enum 
+		{
+			None=0,
+			PM=1,
+			AM=2
 		};
 
  		enum class StkExch : Enum 
@@ -134,6 +212,34 @@ namespace SpiderRock
 			None=0,
 			Up=1,
 			Down=2
+		};
+
+ 		enum class TimeMetric : Enum 
+		{
+			None=0,
+			D252=1,
+			D365=2
+		};
+
+ 		enum class VolumeTier : Enum 
+		{
+			None=0,
+			Top50=1
+		};
+
+ 		enum class YellowKey : Enum 
+		{
+			None=0,
+			Govt=1,
+			Corp=2,
+			Mtge=3,
+			MMkt=4,
+			Muni=5,
+			Pfd=6,
+			Equity=7,
+			Comdty=8,
+			Index=9,
+			Curncy=10
 		};
 
  		enum class YesNo : Enum 
