@@ -55,7 +55,14 @@ namespace SpiderRock.DataFeed
         {
             var handler = SequenceNumberGapsDetected;
             if (handler == null) return;
-            handler(sender, args);
+            try
+            {
+                handler(sender, args);
+            }
+            catch (Exception e)
+            {
+                SRTrace.Default.TraceError(e, "Failure in SequenceNumberGapsDetected handler");
+            }
         }
 
         public event EventHandler SequenceNumberGapsDetected;
