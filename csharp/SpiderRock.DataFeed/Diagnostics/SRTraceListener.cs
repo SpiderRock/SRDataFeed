@@ -2,13 +2,13 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace SpiderRock.DataFeed.Diagnostics
 {
     public abstract class SRTraceListener : TraceListener
     {
         private const TraceEventType Off = 0;
-        private const string DateFormat = "HH:mm:ss.fff";
         private const string EventTypeFormat = "{0,-6} : ";
 
         private static readonly string[] EventTypeMap;
@@ -30,106 +30,86 @@ namespace SpiderRock.DataFeed.Diagnostics
             EventTypeMap[(int) TraceEventType.Transfer] = "Info";
         }
 
-        public override bool IsThreadSafe
-        {
-            get { return true; }
-        }
+        private TextWriter writer;
 
         protected abstract TextWriter GetWriter(string source);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string GetTimestamp(TraceEventCache eventCache)
+        {
+            return "[" + eventCache.DateTime.ToLocalTime().ToString("HH:mm:ss.fff") + "] ";
+        }
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id,
             params object[] data)
         {
-            TextWriter writer = GetWriter(source);
-            string ts = "[" + eventCache.DateTime.ToLocalTime().ToString(DateFormat) + "] ";
+            writer = GetWriter(source);
 
-            lock (writer)
+            string ts = GetTimestamp(eventCache);
+
+            foreach (object o in data)
             {
-                try
-                {
-                    foreach (object o in data)
-                    {
-                        writer.Write(ts);
-                        writer.WriteLine(o.ToString());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    writer.WriteLine(string.Format("TraceDataException: {0} {1} {2} {3} {4}", ex.ToString(), eventCache.ToString(), source, eventType.ToString(), id));
-                }
+                writer.Write(ts);
+                writer.WriteLine(o.ToString());
             }
         }
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id,
             object data)
         {
-            TextWriter writer = GetWriter(source);
-            lock (writer)
-            {
-                writer.Write("[");
-                writer.Write(eventCache.DateTime.ToLocalTime().ToString(DateFormat));
-                writer.Write("] ");
+            writer = GetWriter(source);
 
-                writer.WriteLine(data.ToString());
-            }
+            writer.Write(GetTimestamp(eventCache));
+            writer.WriteLine(data.ToString());
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id)
         {
-            throw new NotSupportedException(GetType().Name + 
-                ".TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id) overload not supported");
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id,
             string message)
         {
-            TextWriter writer = GetWriter(source);
-            lock (writer)
+            writer = GetWriter(source);
+
+            writer.Write(GetTimestamp(eventCache));
+
+            if (eventType == Off)
             {
-                writer.Write("[");
-                writer.Write(eventCache.DateTime.ToLocalTime().ToString(DateFormat));
-                writer.Write("] ");
-
-                if (eventType == Off)
-                {
-                    writer.WriteLine(message);
-                    return;
-                }
-
-                writer.Write(EventTypeFormat, EventTypeMap[(int) eventType]);
                 writer.WriteLine(message);
+                return;
             }
+
+            writer.Write(EventTypeFormat, EventTypeMap[(int) eventType]);
+            writer.WriteLine(message);
         }
 
         public override void Flush()
         {
+            if (writer == null) return;
+            writer.Flush();
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id,
             string format, params object[] args)
         {
-            TextWriter writer = GetWriter(source);
-            lock (writer)
+            writer = GetWriter(source);
+
+            writer.Write(GetTimestamp(eventCache));
+
+            if (eventType == Off)
             {
-                writer.Write("[");
-                writer.Write(eventCache.DateTime.ToLocalTime().ToString(DateFormat));
-                writer.Write("] ");
-
-                if (eventType == Off)
-                {
-                    writer.WriteLine(format, args);
-                    return;
-                }
-
-                writer.Write(EventTypeFormat, EventTypeMap[(int) eventType]);
                 writer.WriteLine(format, args);
+                return;
             }
+
+            writer.Write(EventTypeFormat, EventTypeMap[(int) eventType]);
+            writer.WriteLine(format, args);
         }
 
         public override void TraceTransfer(TraceEventCache eventCache, string source, int id, string message,
             Guid relatedActivityId)
         {
-            throw new NotSupportedException(GetType().Name + ".TraceTransfer() not supported");
         }
 
         public override void Write(string message)

@@ -342,7 +342,6 @@ namespace SpiderRock.DataFeed
                     }
 
                     SRTrace.Default.TraceEvent(TraceEventType.Stop, 0, "SRDataFeedEngine stopped");
-                    SRTrace.Flush();
                 }
                 catch (Exception e)
                 {

@@ -34,6 +34,10 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public void TraceError(Exception error, string format, params object[] args)
         {
+            if (error == null) throw new ArgumentNullException("error");
+            if (format == null) throw new ArgumentNullException("format");
+            if (args == null) throw new ArgumentNullException("args");
+
             if (messageBuilder == null)
             {
                 messageBuilder = new StringBuilder(1024);

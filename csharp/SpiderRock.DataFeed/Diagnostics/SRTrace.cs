@@ -26,34 +26,14 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
 
-            AutoFlush(CancellationToken.None);
-
             AggregateEventFrequency = TimeSpan.FromMinutes(1);
-        }
 
-        private static async void AutoFlush(CancellationToken cancellationToken)
-        {
-            try
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    await Task.Delay(1000, cancellationToken);
-
-                    Flush();
-                }
-            }
-            catch (TaskCanceledException)
-            {
-            }
-            catch (Exception e)
-            {
-                Default.TraceError(e);
-                Default.Flush();
-            }
+            Trace.AutoFlush = true;
         }
 
         private static async void FireAggregate(CancellationToken cancellationToken)
         {
+            // ReSharper disable once EmptyGeneralCatchClause
             try
             {
                 var timer = new Stopwatch();
@@ -64,16 +44,25 @@ namespace SpiderRock.DataFeed.Diagnostics
 
                     await Task.Delay(AggregateEventFrequency, cancellationToken);
 
-                    Aggregate(timer.Elapsed.TotalSeconds);
+                    foreach (var aggregate in Aggregate.GetInvocationList())
+                    {
+                        var handler = (Action<double>) aggregate;
+                        try
+                        {
+                            handler(timer.Elapsed.TotalSeconds);
+                        }
+                        catch (Exception e)
+                        {
+                            Default.TraceError(e);
+                        }
+                    }
                 }
             }
             catch (TaskCanceledException)
             {
             }
-            catch (Exception e)
+            catch
             {
-                Default.TraceError(e);
-                Default.Flush();
             }
         }
 
@@ -93,18 +82,6 @@ namespace SpiderRock.DataFeed.Diagnostics
         }
 
         public static event Action<double> Aggregate = delegate { }; 
-
-        public static void Flush()
-        {
-            Default.Flush();
-            KeyErrors.Flush();
-            NetTcp.Flush();
-            NetUdp.Flush();
-            NetDbl.Flush();
-            NetChannels.Flush();
-            NetSeqNumber.Flush();
-            Process.Flush();
-        }
 
         public static void AddGlobalTraceListener(TraceListener traceListener)
         {
