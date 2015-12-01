@@ -30,7 +30,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
         private readonly DblChannel[] channelSet = new DblChannel[256];
         private Task receiveWorker;
         private Thread receiveWorkerThread;
-        private CancellationTokenSource disposeTokenSource;
+        private CancellationTokenSource lifetime;
 
         internal DblDevice(IPAddress addr, string source)
         {
@@ -58,9 +58,9 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
 
             Handle = device;
 
-            disposeTokenSource = new CancellationTokenSource();
-            receiveWorker = Task.Factory.StartNew(() => ReceiveWorker(disposeTokenSource.Token), disposeTokenSource.Token);
-            WorkerMonitor(disposeTokenSource.Token);
+            lifetime = new CancellationTokenSource();
+            receiveWorker = Task.Factory.StartNew(() => ReceiveWorker(lifetime.Token), lifetime.Token);
+            WorkerMonitor(lifetime.Token);
         }
 
         public void Close()
@@ -69,7 +69,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
 
             if (receiveWorker != null)
             {
-                disposeTokenSource.Cancel();
+                lifetime.Cancel();
                 receiveWorker.Wait(100);
             }
 

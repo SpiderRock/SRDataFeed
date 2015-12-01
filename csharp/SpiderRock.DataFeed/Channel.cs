@@ -9,7 +9,7 @@ namespace SpiderRock.DataFeed
     {
         private static int idGenerator;
         private readonly int id;
-        private readonly CancellationTokenSource channelLife;
+        private readonly CancellationTokenSource lifetime;
 
         internal Channel(ChannelType channelType, string channelAddr, string sourceAddr)
         {
@@ -29,9 +29,9 @@ namespace SpiderRock.DataFeed
 
             id = Interlocked.Increment(ref idGenerator);
 
-            channelLife = new CancellationTokenSource();
+            lifetime = new CancellationTokenSource();
 
-            SeqNumberGapMonitor(channelLife.Token);
+            SeqNumberGapMonitor(lifetime.Token);
         }
 
         ~Channel()
@@ -112,7 +112,7 @@ namespace SpiderRock.DataFeed
 
         internal void Close()
         {
-            if (channelLife.IsCancellationRequested) return;
+            if (lifetime.IsCancellationRequested) return;
 
             EventHandler closed = Closed;
             if (closed != null)
@@ -120,7 +120,7 @@ namespace SpiderRock.DataFeed
                 closed(this, EventArgs.Empty);
             }
 
-            channelLife.Cancel();
+            lifetime.Cancel();
         }
 
         public class Statistics

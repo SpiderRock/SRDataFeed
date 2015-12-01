@@ -1,30 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace SpiderRock.DataFeed
+﻿namespace SpiderRock.DataFeed
 {
-    public sealed class DblChannelThreadGroup : IEnumerable<UdpChannel>
+    public class DblChannelThreadGroup : ChannelThreadGroup
     {
-        private readonly HashSet<UdpChannel> channels = new HashSet<UdpChannel>();
-
-        public IEnumerator<UdpChannel> GetEnumerator()
+        public override Protocol Proto
         {
-            return channels.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public bool Add(UdpChannel channel)
-        {
-            return channels.Add(channel);
-        }
-
-        public override string ToString()
-        {
-            return "DblChannelThreadGroup: " + string.Join(", ", channels);
+            get { return Protocol.DBL; }
         }
     }
 }

@@ -1,0 +1,168 @@
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using SpiderRock.DataFeed.Diagnostics;
+using SpiderRock.DataFeed.FrameHandling;
+
+namespace SpiderRock.DataFeed.Proto.UDP
+{
+    internal sealed class UdpDevice : IDisposable, IEquatable<UdpDevice>
+    {
+        public IPAddress IFAddress { get; private set; }
+        public int Handle { get; private set; }
+
+        private readonly object channelsLock = new object();
+        private volatile UdpChannel[] channels = new UdpChannel[0];
+        private readonly CancellationTokenSource lifetime;
+        private static int handleGenerator;
+        private readonly FrameHandler frameHandler;
+        private readonly int receiveBufferSize;
+        private readonly ChannelFactory channelFactory;
+
+        private Thread receiveWorkerThread;
+        private int numReadExceptions;
+
+        internal UdpDevice(IPAddress addr, FrameHandler frameHandler, int receiveBufferSize, ChannelFactory channelFactory)
+        {
+            if (addr == null) throw new ArgumentNullException("addr");
+            if (frameHandler == null) throw new ArgumentNullException("frameHandler");
+            if (channelFactory == null) throw new ArgumentNullException("channelFactory");
+
+            IFAddress = addr;
+
+            this.frameHandler = frameHandler;
+            this.receiveBufferSize = receiveBufferSize;
+            this.channelFactory = channelFactory;
+
+            lifetime = new CancellationTokenSource();
+        }
+
+        public bool Equals(UdpDevice other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Handle == other.Handle;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj is UdpDevice && Equals((UdpDevice) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Handle;
+        }
+
+        public static bool operator ==(UdpDevice left, UdpDevice right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(UdpDevice left, UdpDevice right)
+        {
+            return !Equals(left, right);
+        }
+
+        ~UdpDevice()
+        {
+            Close();
+        }
+
+        public void Open()
+        {
+            if (Handle > 0) return;
+
+            Handle = Interlocked.Increment(ref handleGenerator);
+        }
+
+        public void Close()
+        {
+            if (Handle == 0 || (lifetime.IsCancellationRequested && receiveWorkerThread == null)) return;
+
+            if (!lifetime.IsCancellationRequested)
+            {
+                lifetime.Cancel();
+            }
+
+            if (receiveWorkerThread != null)
+            {
+                if (!receiveWorkerThread.Join(100))
+                {
+                    SRTrace.NetUdp.TraceWarning("UdpDevice.ReceiveWorker did not exit within 100ms");
+                }
+                receiveWorkerThread = null;
+            }
+
+            Handle = 0;
+        }
+
+        public void Join(IPEndPoint groupEndPoint)
+        {
+            if (Handle == 0)
+            {
+                throw new InvalidOperationException("UdpDevice not open");
+            }
+
+            lock (channelsLock)
+            {
+                if (channels.Length > 0 && channels.Any(ch => ch.Equals(groupEndPoint)))
+                {
+                    return;
+                }
+
+                var channel = new UdpChannel(
+                    this,
+                    groupEndPoint,
+                    channelFactory.GetOrCreate(ChannelType.UdpRecv, groupEndPoint.ToString(), "any"),
+                    receiveBufferSize,
+                    frameHandler);
+
+                channel.Join();
+
+                channels = channels.Union(new[] {channel}).ToArray();
+            }
+
+            if (receiveWorkerThread != null) return;
+
+            receiveWorkerThread = new Thread(ReceiveWorker) {IsBackground = true};
+            receiveWorkerThread.Start();
+        }
+
+        private void ReceiveWorker()
+        {
+            while (!lifetime.IsCancellationRequested)
+            {
+                var currentChannels = channels;
+
+                for (int i = 0; i < currentChannels.Length; i++)
+                {
+                    try
+                    {
+                        currentChannels[i].Handle();
+                    }
+                    catch (Exception e)
+                    {
+                        if (lifetime.IsCancellationRequested) break;
+
+                        numReadExceptions += 1;
+
+                        if (numReadExceptions < 100)
+                        {
+                            SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: exception reading socket", Handle);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            Close();
+            GC.SuppressFinalize(this);
+        }
+    }
+}
