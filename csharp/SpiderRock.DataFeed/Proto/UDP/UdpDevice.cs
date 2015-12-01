@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -63,16 +64,6 @@ namespace SpiderRock.DataFeed.Proto.UDP
         public override int GetHashCode()
         {
             return Handle;
-        }
-
-        public static bool operator ==(UdpDevice left, UdpDevice right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(UdpDevice left, UdpDevice right)
-        {
-            return !Equals(left, right);
         }
 
         ~UdpDevice()
@@ -213,7 +204,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
             }
             catch (Exception e)
             {
-                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: ReadWorker exited due to fatal exception", Handle);
+                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: ReadWorker failed", Handle);
             }
         }
 
@@ -221,19 +212,21 @@ namespace SpiderRock.DataFeed.Proto.UDP
         {
             try
             {
-                SRTrace.NetUdp.TraceDebug(
-                    "UdpDevice [{0}]: ReadWorker state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10})",
-                    Handle,
-                    readLoopState,
-                    readLoopCount,
-                    readSpinCount,
-                    spinYieldAttempt,
-                    spinYieldSwitch,
-                    spinSleep0,
-                    readErrorCount,
-                    receiveWorkerThread != null ? receiveWorkerThread.ThreadState : ThreadState.Unstarted,
-                    receiveWorkerThread != null && receiveWorkerThread.IsAlive,
-                    IFAddress);
+                SRTrace.NetUdp.TraceData(
+                    TraceEventType.Verbose, 0,
+                    string.Format(
+                        "UdpDevice [{0}]: ReadWorker state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10})",
+                        Handle,
+                        readLoopState,
+                        readLoopCount,
+                        readSpinCount,
+                        spinYieldAttempt,
+                        spinYieldSwitch,
+                        spinSleep0,
+                        readErrorCount,
+                        receiveWorkerThread != null ? receiveWorkerThread.ThreadState : System.Threading.ThreadState.Unstarted,
+                        receiveWorkerThread != null && receiveWorkerThread.IsAlive,
+                        IFAddress));
 
                 readLoopCount = 0;
                 readSpinCount = 0;
@@ -244,7 +237,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
             }
             catch (Exception e)
             {
-                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: worker monitor exception", Handle);
+                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: ReadWorker state logger failure", Handle);
             }
         }
 
