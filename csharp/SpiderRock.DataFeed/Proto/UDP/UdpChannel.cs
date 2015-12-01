@@ -131,12 +131,12 @@ namespace SpiderRock.DataFeed.Proto.UDP
             return groupEndPoint.ToString();
         }
 
-        public void Handle()
+        public bool Handle()
         {
             if (client.Available == 0)
             {
                 NumZeroLengthRecv += 1;
-                return;
+                return false;
             }
             EndPoint remoteEndPointRef = remoteEndPoint;
             var recvLength = client.Client.ReceiveFrom(buffer, buffer.Length, SocketFlags.None, ref remoteEndPointRef);
@@ -156,6 +156,8 @@ namespace SpiderRock.DataFeed.Proto.UDP
             {
                 NumParseErrors += 1;
             }
+
+            return true;
         }
     }
 }

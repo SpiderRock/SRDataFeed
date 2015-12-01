@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using SpiderRock.DataFeed.Diagnostics;
 using SpiderRock.DataFeed.FrameHandling;
 
@@ -21,7 +22,14 @@ namespace SpiderRock.DataFeed.Proto.UDP
         private readonly ChannelFactory channelFactory;
 
         private Thread receiveWorkerThread;
-        private int numReadExceptions;
+
+        private ReadLoopState readLoopState;
+        private int readLoopCount;
+        private int readErrorCount;
+        private int spinSleep0;
+        private int spinYieldAttempt;
+        private int spinYieldSwitch;
+        private long readSpinCount;
 
         internal UdpDevice(IPAddress addr, FrameHandler frameHandler, int receiveBufferSize, ChannelFactory channelFactory)
         {
@@ -77,6 +85,8 @@ namespace SpiderRock.DataFeed.Proto.UDP
             if (Handle > 0) return;
 
             Handle = Interlocked.Increment(ref handleGenerator);
+
+            SRTrace.Aggregate += WorkerMonitor;
         }
 
         public void Close()
@@ -98,6 +108,8 @@ namespace SpiderRock.DataFeed.Proto.UDP
             }
 
             Handle = 0;
+
+            SRTrace.Aggregate -= WorkerMonitor;
         }
 
         public void Join(IPEndPoint groupEndPoint)
@@ -134,28 +146,99 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
         private void ReceiveWorker()
         {
-            while (!lifetime.IsCancellationRequested)
+            try
             {
-                var currentChannels = channels;
+                int spinMissCount = 0;
 
-                for (int i = 0; i < currentChannels.Length; i++)
+                while (!lifetime.IsCancellationRequested)
                 {
-                    try
-                    {
-                        currentChannels[i].Handle();
-                    }
-                    catch (Exception e)
-                    {
-                        if (lifetime.IsCancellationRequested) break;
+                    var currentChannels = channels;
 
-                        numReadExceptions += 1;
-
-                        if (numReadExceptions < 100)
+                    for (int i = 0; i < currentChannels.Length; i++)
+                    {
+                        try
                         {
-                            SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: exception reading socket", Handle);
+                            if (!currentChannels[i].Handle())
+                            {
+                                ++readSpinCount; // one spin count is roughly 1us
+
+                                ++spinMissCount;
+
+                                if (spinMissCount > 200)
+                                {
+                                    ++spinSleep0;
+
+                                    Thread.Sleep(0);
+                                }
+                                else if (spinMissCount > 40)
+                                {
+                                    ++spinYieldAttempt;
+
+                                    if (Thread.Yield())
+                                    {
+                                        ++spinYieldSwitch;
+                                    }
+                                }
+
+                                continue;
+                            }
+
+                            spinMissCount = 0;
+
+                            readLoopCount += 1;
+                            readLoopState = ReadLoopState.ReadDone;
+                        }
+                        catch (Exception e)
+                        {
+                            if (lifetime.IsCancellationRequested) break;
+
+                            readErrorCount += 1;
+
+                            if (readErrorCount > 0 && readErrorCount <= 5 || readErrorCount%100 == 0)
+                            {
+                                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: receive worker exception", Handle);
+                            }
                         }
                     }
                 }
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (Exception e)
+            {
+                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: receive worker fatal exception", Handle);
+            }
+        }
+
+        private void WorkerMonitor(double elapsed)
+        {
+            try
+            {
+                SRTrace.NetUdp.TraceDebug(
+                    "ReadWorker [{0:D2}]: state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10})",
+                    Handle,
+                    readLoopState,
+                    readLoopCount,
+                    readSpinCount,
+                    spinYieldAttempt,
+                    spinYieldSwitch,
+                    spinSleep0,
+                    readErrorCount,
+                    receiveWorkerThread != null ? receiveWorkerThread.ThreadState : ThreadState.Unstarted,
+                    receiveWorkerThread != null && receiveWorkerThread.IsAlive,
+                    IFAddress);
+
+                readLoopCount = 0;
+                readSpinCount = 0;
+
+                spinSleep0 = 0;
+                spinYieldSwitch = 0;
+                spinYieldAttempt = 0;
+            }
+            catch (Exception e)
+            {
+                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: worker monitor exception", Handle);
             }
         }
 
