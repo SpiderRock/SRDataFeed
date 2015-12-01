@@ -86,7 +86,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
             Handle = Interlocked.Increment(ref handleGenerator);
 
-            SRTrace.Aggregate += WorkerMonitor;
+            SRTrace.Aggregate += ReadWorkerState;
         }
 
         public void Close()
@@ -102,14 +102,14 @@ namespace SpiderRock.DataFeed.Proto.UDP
             {
                 if (!receiveWorkerThread.Join(100))
                 {
-                    SRTrace.NetUdp.TraceWarning("UdpDevice.ReceiveWorker did not exit within 100ms");
+                    SRTrace.NetUdp.TraceWarning("UdpDevice[{0}]: ReadWorker did not exit within 100ms", Handle);
                 }
                 receiveWorkerThread = null;
             }
 
             Handle = 0;
 
-            SRTrace.Aggregate -= WorkerMonitor;
+            SRTrace.Aggregate -= ReadWorkerState;
         }
 
         public void Join(IPEndPoint groupEndPoint)
@@ -140,15 +140,18 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
             if (receiveWorkerThread != null) return;
 
-            receiveWorkerThread = new Thread(ReceiveWorker) {IsBackground = true};
+            receiveWorkerThread = new Thread(ReadWorker) {IsBackground = true};
             receiveWorkerThread.Start();
         }
 
-        private void ReceiveWorker()
+        private void ReadWorker()
         {
             try
             {
+                SRTrace.NetUdp.TraceDebug("UdpDevice [{0}]: ReadWorker running", Handle);
+
                 int spinMissCount = 0;
+                readLoopState = ReadLoopState.LoopStarting;
 
                 while (!lifetime.IsCancellationRequested)
                 {
@@ -196,27 +199,30 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
                             if (readErrorCount > 0 && readErrorCount <= 5 || readErrorCount%100 == 0)
                             {
-                                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: receive worker exception", Handle);
+                                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: ReadWorker exception", Handle);
                             }
                         }
                     }
                 }
+
+                SRTrace.NetUdp.TraceDebug("UdpDevice [{0}]: ReadWorker done", Handle);
             }
             catch (TaskCanceledException)
             {
+                SRTrace.NetUdp.TraceDebug("UdpDevice [{0}]: ReadWorker done", Handle);
             }
             catch (Exception e)
             {
-                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: receive worker fatal exception", Handle);
+                SRTrace.NetUdp.TraceError(e, "UdpDevice [{0}]: ReadWorker exited due to fatal exception", Handle);
             }
         }
 
-        private void WorkerMonitor(double elapsed)
+        private void ReadWorkerState(double elapsed)
         {
             try
             {
                 SRTrace.NetUdp.TraceDebug(
-                    "ReadWorker [{0:D2}]: state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10})",
+                    "UdpDevice [{0}]: ReadWorker state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10})",
                     Handle,
                     readLoopState,
                     readLoopCount,
