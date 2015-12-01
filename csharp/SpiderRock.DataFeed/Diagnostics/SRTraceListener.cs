@@ -87,7 +87,14 @@ namespace SpiderRock.DataFeed.Diagnostics
         public override void Flush()
         {
             if (writer == null) return;
-            writer.Flush();
+            try
+            {
+                writer.Flush();
+            }
+            catch (ObjectDisposedException)
+            {
+                writer = null;
+            }
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id,
