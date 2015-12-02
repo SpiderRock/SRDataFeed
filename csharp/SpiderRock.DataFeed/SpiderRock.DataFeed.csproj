@@ -67,6 +67,7 @@
     <Compile Include="Layouts\CCodeKeyLayout.cs" />
     <Compile Include="Layouts\CCodeLayout.cs" />
     <Compile Include="Layouts\IKeyLayoutEquatable.cs" />
+    <Compile Include="PropertyValueCaching\CachedCCodeKey.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="SRDataFeedEngine.Auto.cs" />
     <Compile Include="DblChannelThreadGroup.cs" />

@@ -152,30 +152,37 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public void Flush(double elapsedSeconds)
         {
-            List<Channel> copyOfChannels;
-
-            lock (channels)
+            try
             {
-                copyOfChannels = new List<Channel>(channels);
-            }
+                List<Channel> copyOfChannels;
 
-            foreach (var channel in copyOfChannels)
+                lock (channels)
+                {
+                    copyOfChannels = new List<Channel>(channels);
+                }
+
+                foreach (var channel in copyOfChannels)
+                {
+                    channel.RefreshSeqNumberGapStatistics();
+                }
+
+                var channelLines = new List<string> {""};
+
+                channelLines.AddRange(GetChannelStats(copyOfChannels, elapsedSeconds));
+                channelLines.Add("");
+
+                channelLines.AddRange(GetMessageStats(copyOfChannels, elapsedSeconds));
+                channelLines.Add("");
+
+                // --- write stats block ---
+
+                SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, channelLines.Cast<object>().ToArray());
+                SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(channels).Cast<object>().ToArray());
+            }
+            catch (Exception e)
             {
-                channel.RefreshSeqNumberGapStatistics();
+                SRTrace.Default.TraceError(e, "ChannelStatisticsAggregator failure");
             }
-
-            var channelLines = new List<string> {""};
-
-            channelLines.AddRange(GetChannelStats(copyOfChannels, elapsedSeconds));
-            channelLines.Add("");
-
-            channelLines.AddRange(GetMessageStats(copyOfChannels, elapsedSeconds));
-            channelLines.Add("");
-
-            // --- write stats block ---
-
-            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, channelLines.Cast<object>().ToArray());
-            SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(channels).Cast<object>().ToArray());
         }
 
         private static IEnumerable<string> GetChannelStats(IEnumerable<Channel> channelList, double elapsed)

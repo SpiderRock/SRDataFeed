@@ -133,10 +133,9 @@ namespace SpiderRock.DataFeed
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "GCLatencyMode: {0}", GCSettings.LatencyMode);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "Assembly: {0}", GetType().Assembly.FullName);
 
-                channelStatisticsAggregator = new ChannelStatisticsAggregator();
                 processStatisticsAggregator = new ProcessStatisticsAggregator();
 
-                channelFactory.ChannelCreated += OnChannelCreated;
+                InitializeChannelStatsAggregator();
 
                 ClearContainerCaches();
 
@@ -247,6 +246,8 @@ namespace SpiderRock.DataFeed
 
             var disposedOrTimedout = CancellationTokenSource.CreateLinkedTokenSource(disposeTokenSource.Token, timeoutTokenSource.Token);
 
+            InitializeChannelStatsAggregator();
+
             using (var cacheClient = ConnectToCacheServer())
             {
                 cacheClient.Connect();
@@ -262,6 +263,15 @@ namespace SpiderRock.DataFeed
             SRTrace.Default.TraceDebug("SRDataFeedEngine: cache request completed");
 
             return !timeoutTokenSource.IsCancellationRequested;
+        }
+
+        private void InitializeChannelStatsAggregator()
+        {
+            if (channelStatisticsAggregator == null)
+            {
+                channelStatisticsAggregator = new ChannelStatisticsAggregator();
+                channelFactory.ChannelCreated += OnChannelCreated;
+            }
         }
 
         private IPEndPoint GetIPEndPoint(UdpChannel channel)
@@ -332,7 +342,6 @@ namespace SpiderRock.DataFeed
                     }
 
                     SRTrace.Default.TraceEvent(TraceEventType.Stop, 0, "SRDataFeedEngine stopped");
-                    SRTrace.Flush();
                 }
                 catch (Exception e)
                 {

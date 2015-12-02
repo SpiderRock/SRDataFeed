@@ -4123,7 +4123,7 @@ namespace SpiderRock.DataFeed
 		{
 			public StockKeyLayout ticker;
 			public FixedString8Layout osiRoot;
-			public RootKeyLayout ccode;
+			public CCodeKeyLayout ccode;
 			public ExpirationMap expirationMap;
 			public OptionType optionType;
 			public Multihedge multihedge;
@@ -4151,7 +4151,7 @@ namespace SpiderRock.DataFeed
 		
  		private CachedStockKey ticker;
  		private CachedFixedLengthString<FixedString8Layout> osiRoot;
- 		private CachedRootKey ccode;
+ 		private CachedCCodeKey ccode;
  		private CachedFixedLengthString<FixedString8Layout> exchanges;
 		
 
@@ -4163,7 +4163,7 @@ namespace SpiderRock.DataFeed
         public string OsiRoot { get { return CacheVar.AllocIfNull(ref osiRoot).Get(ref body.osiRoot, usn); } set { CacheVar.AllocIfNull(ref osiRoot).Set(value); body.osiRoot = value; } }
              
 		
-        public RootKey Ccode { get { return CacheVar.AllocIfNull(ref ccode).Get(ref body.ccode, usn); } set { CacheVar.AllocIfNull(ref ccode).Set(value); body.ccode = value.Layout; } }
+        public CCodeKey Ccode { get { return CacheVar.AllocIfNull(ref ccode).Get(ref body.ccode, usn); } set { CacheVar.AllocIfNull(ref ccode).Set(value); body.ccode = value.Layout; } }
  
 		
         public ExpirationMap ExpirationMap { get { return body.expirationMap; } set { body.expirationMap = value; } }

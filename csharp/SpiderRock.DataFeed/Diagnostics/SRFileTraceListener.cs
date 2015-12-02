@@ -22,6 +22,11 @@ namespace SpiderRock.DataFeed.Diagnostics
         {
         }
 
+        public override bool IsThreadSafe
+        {
+            get { return false; }
+        }
+
         public SRFileTraceListener(Func<string, string> logFilePathFactory)
         {
             this.logFilePathFactory = logFilePathFactory;
@@ -32,6 +37,7 @@ namespace SpiderRock.DataFeed.Diagnostics
         protected override TextWriter GetWriter(string source)
         {
             TextWriter writer;
+            // ReSharper disable once InconsistentlySynchronizedField
             if (writersBySource.TryGetValue(source, out writer))
             {
                 return writer;
@@ -50,7 +56,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                     logFile.Directory.Create();
                 }
 
-                var streamWriter = new StreamWriter(logFile.FullName) {AutoFlush = true};
+                var streamWriter = new StreamWriter(logFile.FullName);
                 writersBySource[source] = writer = streamWriter;
             }
 
