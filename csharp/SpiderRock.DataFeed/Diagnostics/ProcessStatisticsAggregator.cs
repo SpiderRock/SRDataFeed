@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace SpiderRock.DataFeed.Diagnostics
 {
@@ -7,7 +8,7 @@ namespace SpiderRock.DataFeed.Diagnostics
     {
         private static readonly object Header =
             string.Format(
-                "{0,10} {1,8} {2,8} {3,8} {4,16} {5,16} {6,16} {7,16} {8,16} {9,16} {10,16} {11,16} {12,16} {13,16} {14,16} {15,16} {16,16} {17,16} {18,16} {19,16} {20,16} {21,16} {22,16} {23,16} {24,16} {25,16} {26,16}",
+                "{0,10} {1,8} {2,8} {3,8} {4,16} {5,16} {6,16} {7,16} {8,16} {9,16} {10,16} {11,16} {12,16} {13,16} {14,16} {15,16} {16,16} {17,16} {18,16} {19,16} {20,16} {21,16} {22,16} {23,16} {24,16} {25,16} {26,16} {27,16}",
                 "TimeDelta",
                 "SysFrac",
                 "UsrFrac",
@@ -34,10 +35,13 @@ namespace SpiderRock.DataFeed.Diagnostics
                 "ContendRate",
                 "CurQueueLen",
                 "LogicalThrds",
-                "PhysicalThrds");
+                "PhysicalThrds",
+                "ThreadPoolReq");
 
         private readonly Process process;
         private readonly string processName;
+        private readonly object threadPoolWorkQueue;
+        private readonly FieldInfo numOutstandingThreadRequestsField;
 
         private PerformanceCounter committedMemory;
         private PerformanceCounter contentionRate;
@@ -54,13 +58,49 @@ namespace SpiderRock.DataFeed.Diagnostics
         private double lastUpt;
 
         private int numMonitorLinesWritten;
-
         public ProcessStatisticsAggregator()
         {
             process = Process.GetCurrentProcess();
             processName = process.ProcessName;
 
             SRTrace.Aggregate += OnAggregate;
+
+            try
+            {
+                var threadPoolGlobalsType = Type.GetType("System.Threading.ThreadPoolGlobals");
+
+                if (threadPoolGlobalsType == null)
+                {
+                    SRTrace.Process.TraceWarning("ProcessStatisticsAggregator: ThreadPoolGlobals type not found");
+                    return;
+                }
+
+                var workQueueField = threadPoolGlobalsType.GetField("workQueue",
+                    BindingFlags.Static | BindingFlags.Public);
+
+                if (workQueueField == null)
+                {
+                    SRTrace.Process.TraceWarning(
+                        "ProcessStatisticsAggregator: ThreadPoolGlobals.workQueue field not found");
+                    return;
+                }
+
+                threadPoolWorkQueue = workQueueField.GetValue(null);
+
+                numOutstandingThreadRequestsField = threadPoolWorkQueue
+                    .GetType()
+                    .GetField("numOutstandingThreadRequests", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (numOutstandingThreadRequestsField == null)
+                {
+                    SRTrace.Process.TraceWarning(
+                        "ProcessStatisticsAggregator: ThreadPoolWorkQueue.numOutstandingThreadRequestsField field not found");
+                }
+            }
+            catch (Exception e)
+            {
+                SRTrace.Process.TraceError(e, "ProcessStatisticsAggregator.ctor failure");
+            }
         }
 
         ~ProcessStatisticsAggregator()
@@ -160,7 +200,7 @@ namespace SpiderRock.DataFeed.Diagnostics
 
                 object dataLine =
                     string.Format(
-                        "{0,10:N0} {1,8:N3} {2,8:N3} {3,8:N3} {4,16:N0} {5,16:N0} {6,16:N0} {7,16:N0} {8,16:N0} {9,16:N0} {10,16:N0} {11,16:N0} {12,16:N0} {13,16:N0} {14,16:N0} {15,16:N0} {16,16:N0} {17,16:N0} {18,16:N0} {19,16:N0} {20,16:N0} {21,16:N0} {22,16:N0} {23,16:N3} {24,16:N0} {25,16:N0} {26,16:N0}",
+                        "{0,10:N0} {1,8:N3} {2,8:N3} {3,8:N3} {4,16:N0} {5,16:N0} {6,16:N0} {7,16:N0} {8,16:N0} {9,16:N0} {10,16:N0} {11,16:N0} {12,16:N0} {13,16:N0} {14,16:N0} {15,16:N0} {16,16:N0} {17,16:N0} {18,16:N0} {19,16:N0} {20,16:N0} {21,16:N0} {22,16:N0} {23,16:N3} {24,16:N0} {25,16:N0} {26,16:N0} {27,16:N0}",
                         elapsedSeconds,
                         elapsedSeconds > 0.01 ? ppt/elapsedSeconds : 0,
                         elapsedSeconds > 0.01 ? upt/elapsedSeconds : 0,
@@ -187,7 +227,8 @@ namespace SpiderRock.DataFeed.Diagnostics
                         contentionRate != null ? contentionRate.NextValue() : 0,
                         currentQueueLen != null ? currentQueueLen.NextValue() : 0,
                         numLogicalThreads != null ? numLogicalThreads.NextValue() : 0,
-                        numPhysicalThreads != null ? numPhysicalThreads.NextValue() : 0
+                        numPhysicalThreads != null ? numPhysicalThreads.NextValue() : 0,
+                        GetNumberOfOutstandingThreadPoolRequests()
                         );
 
                 SRTrace.Process.TraceData(TraceEventType.Verbose, 0,
@@ -197,6 +238,12 @@ namespace SpiderRock.DataFeed.Diagnostics
             {
                 SRTrace.Default.TraceError(e, "ProcessStatisticsAggregator failure");
             }
+        }
+
+        private int GetNumberOfOutstandingThreadPoolRequests()
+        {
+            if (threadPoolWorkQueue == null || numOutstandingThreadRequestsField == null) return -1;
+            return (int) numOutstandingThreadRequestsField.GetValue(threadPoolWorkQueue);
         }
 
         public void Dispose()
