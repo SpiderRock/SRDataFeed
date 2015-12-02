@@ -22,7 +22,7 @@ namespace SpiderRock.DataFeed
         private readonly object disposeLock = new object();
         private readonly CancellationTokenSource disposeTokenSource;
         private readonly List<DblManager> dblManagers = new List<DblManager>();
-        private UdpManager udpManager;
+        private readonly List<UdpDevice> udpDevices = new List<UdpDevice>();
         private bool running;
         private bool disposed;
         private FrameHandler frameHandler;
@@ -55,12 +55,19 @@ namespace SpiderRock.DataFeed
         {
             var handler = SequenceNumberGapsDetected;
             if (handler == null) return;
-            handler(sender, args);
+            try
+            {
+                handler(sender, args);
+            }
+            catch (Exception e)
+            {
+                SRTrace.Default.TraceError(e, "Failure in SequenceNumberGapsDetected handler");
+            }
         }
 
         public event EventHandler SequenceNumberGapsDetected;
 
-        public DblChannelThreadGroup[] DblChannelThreadGroups { get; set; }
+        public ChannelThreadGroup[] ChannelThreadGroups { get; set; }
 
         public SysEnvironment SysEnvironment { get; set; }
 
@@ -114,9 +121,9 @@ namespace SpiderRock.DataFeed
                 }
 
                 Channels = Channels ?? new UdpChannel[0];
-                DblChannelThreadGroups = DblChannelThreadGroups ?? new DblChannelThreadGroup[0];
+                ChannelThreadGroups = ChannelThreadGroups ?? new ChannelThreadGroup[0];
 
-                if (Channels.Length == 0 && DblChannelThreadGroups.Length == 0)
+                if (Channels.Length == 0 && ChannelThreadGroups.Length == 0)
                 {
                     throw new InvalidOperationException("No channels are configured");
                 }
@@ -139,7 +146,7 @@ namespace SpiderRock.DataFeed
 
                 ClearContainerCaches();
 
-                Channels = Channels.Except(DblChannelThreadGroups.SelectMany(g => g)).Distinct().ToArray();
+                Channels = Channels.Except(ChannelThreadGroups.SelectMany(g => g)).Distinct().ToArray();
 
                 if (Channels.Length > 0)
                 {
@@ -157,26 +164,45 @@ namespace SpiderRock.DataFeed
                     }
                     else
                     {
-                        udpManager = new UdpManager(IFAddress, ReceiveBufferSize, channelFactory);
+                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, ThreadPriority.Normal);
+                        udpDevice.Open();
+                        udpDevices.Add(udpDevice);
 
                         foreach (UdpChannel udpChannel in Channels)
                         {
                             SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}",
                                 udpChannel);
-                            udpManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
+                            udpDevice.Join(GetIPEndPoint(udpChannel));
                         }
                     }
                 }
 
-                foreach (var channelThreadGroup in DblChannelThreadGroups)
+                foreach (var channelThreadGroup in ChannelThreadGroups)
                 {
-                    var dblManager = new DblManager(IFAddress, channelThreadGroup.ToString(), channelFactory);
-                    dblManagers.Add(dblManager);
-
-                    foreach (UdpChannel udpChannel in channelThreadGroup.Distinct())
+                    if (channelThreadGroup.Proto == Protocol.DBL)
                     {
-                        SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}", udpChannel);
-                        dblManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
+                        var dblManager = new DblManager(IFAddress, channelThreadGroup.ToString(), channelFactory);
+                        dblManagers.Add(dblManager);
+
+                        foreach (UdpChannel udpChannel in channelThreadGroup)
+                        {
+                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}",
+                                udpChannel);
+                            dblManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
+                        }
+                    }
+                    else
+                    {
+                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, channelThreadGroup.Priority);
+                        udpDevice.Open();
+                        udpDevices.Add(udpDevice);
+
+                        foreach (UdpChannel udpChannel in channelThreadGroup)
+                        {
+                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}",
+                                udpChannel);
+                            udpDevice.Join(GetIPEndPoint(udpChannel));
+                        }
                     }
                 }
 
@@ -319,15 +345,17 @@ namespace SpiderRock.DataFeed
 
                     channelFactory.ChannelCreated -= OnChannelCreated;
 
-                    if (udpManager != null)
+                    foreach (var udpDevice in udpDevices)
                     {
-                        udpManager.Dispose();
+                        udpDevice.Dispose();
                     }
+                    udpDevices.Clear();
 
                     foreach (var dblManager in dblManagers)
                     {
                         dblManager.Dispose();
                     }
+                    dblManagers.Clear();
 
                     if (processStatisticsAggregator != null)
                     {

@@ -34,9 +34,10 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public void TraceError(Exception error, string format, params object[] args)
         {
-            if (error == null) throw new ArgumentNullException("error");
-            if (format == null) throw new ArgumentNullException("format");
-            if (args == null) throw new ArgumentNullException("args");
+            if (format == null)
+            {
+                throw new ArgumentNullException("format");
+            }
 
             if (messageBuilder == null)
             {
@@ -48,7 +49,10 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
             messageBuilder.AppendFormat(format, args);
             messageBuilder.AppendLine(":");
-            messageBuilder.Append(error);
+            if (error != null)
+            {
+                messageBuilder.Append(error);
+            }
 
             TraceEvent(TraceEventType.Error, 0, messageBuilder.ToString());
         }

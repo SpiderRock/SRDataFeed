@@ -60,6 +60,8 @@
     <Compile Include="ChangedEventArgs.cs" />
     <Compile Include="ChannelCreatedEventArgs.cs" />
     <Compile Include="ChannelFactory.cs" />
+    <Compile Include="ChannelThreadGroup.cs" />
+    <Compile Include="DblChannelThreadGroup.cs" />
     <Compile Include="Diagnostics\ChannelStatisticsAggregator.cs" />
     <Compile Include="CreatedEventArgs.cs" />
     <Compile Include="Diagnostics\ProcessStatisticsAggregator.cs" />
@@ -69,8 +71,11 @@
     <Compile Include="Layouts\IKeyLayoutEquatable.cs" />
     <Compile Include="PropertyValueCaching\CachedCCodeKey.cs" />
     <Compile Include="Protocol.cs" />
+    <Compile Include="Proto\UDP\ReadLoopState.cs" />
+    <Compile Include="Proto\UDP\UdpDevice.cs" />
+    <Compile Include="Proto\UDP\UdpChannel.cs" />
     <Compile Include="SRDataFeedEngine.Auto.cs" />
-    <Compile Include="DblChannelThreadGroup.cs" />
+    <Compile Include="UdpChannelThreadGroup.cs" />
     <Compile Include="SRDataFeedEngine.cs" />
     <Compile Include="Proto\DBL\Myricom\MyricomAdapter.cs" />
     <Compile Include="Diagnostics\SRTrace.cs" />
@@ -90,7 +95,6 @@
     <Compile Include="SysEnvironment.cs" />
     <Compile Include="Messages.Tab.Auto.cs" />
     <Compile Include="ChannelType.cs" />
-    <Compile Include="Proto\UDP\IntClass.cs" />
     <Compile Include="Enums.Auto.cs" />
     <Compile Include="DateKey.cs" />
     <Compile Include="FutureKey.cs" />
@@ -123,14 +127,12 @@
     <Compile Include="Layouts\TimeSpanLayout.cs" />
     <Compile Include="FrameHandling\Formatter.Auto.cs" />
     <Compile Include="Cache\CacheClient.cs" />
-    <Compile Include="Proto\UDP\UdpManager.cs" />
     <Compile Include="FrameHandling\Header.cs" />
     <Compile Include="FrameHandling\HeaderBits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CallPut.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="Proto\DBL\DblManager.cs" />
-    <Compile Include="Proto\UDP\UdpReceiver.cs" />
     <Compile Include="TickerSrc.cs" />
     <Compile Include="UdpChannel.cs" />
     <Compile Include="UpdatedEventArgs.cs" />

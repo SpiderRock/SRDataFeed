@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
+using System.Threading.Tasks;
 using SpiderRock.DataFeed.Diagnostics;
 using SpiderRock.DataFeed.FrameHandling;
 
@@ -22,6 +22,36 @@ namespace SpiderRock.DataFeed
         internal long Gaps
         {
             get { return SeqNumberCounters.Sum(c => c.Gaps); }
+        }
+
+        private async void SeqNumberGapMonitor(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var gaps = SeqNumberCounters.Sum(c => c.Value);
+
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(1000, cancellationToken);
+
+                    var tmp = SeqNumberCounters.Sum(c => c.Value);
+                    if (tmp == gaps) continue;
+
+                    gaps = tmp;
+
+                    var sequenceNumberGapsDetected = SequenceNumberGapsDetected;
+                    if (sequenceNumberGapsDetected == null) continue;
+
+                    sequenceNumberGapsDetected(this, EventArgs.Empty);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            catch (Exception e)
+            {
+                SRTrace.Default.TraceError(e, "SeqNumberGapMonitor failure");
+            }
         }
 
         private void AllocIndexSpaceForSeqNumberCounter(SourceId sourceId, MessageType messageType)
@@ -106,30 +136,6 @@ namespace SpiderRock.DataFeed
             return SeqNumberCounters.Where(c => c.MessageType == messageType).Sum(c => c.CumulativeGaps);
         }
 
-        private void BeginSequenceNumberGapsDetected()
-        {
-            EventHandler handler = SequenceNumberGapsDetected;
-            if (handler != null)
-            {
-                handler.BeginInvoke(this, EventArgs.Empty, EndFireSequenceNumberGapsDetected, null);
-            }
-        }
-
-        private static void EndFireSequenceNumberGapsDetected(IAsyncResult iar)
-        {
-            var ar = (AsyncResult) iar;
-            var invokedMethod = (EventHandler) ar.AsyncDelegate;
-
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch (Exception e)
-            {
-                SRTrace.Default.TraceError(e, "SequenceNumberGapsDetected event handler failure");
-            }
-        }
-
         internal sealed class SeqNumberCounter : IEquatable<SeqNumberCounter>
         {
             private readonly Channel channel;
@@ -149,6 +155,7 @@ namespace SpiderRock.DataFeed
 
             public long Gaps { get; private set; }
             public long CumulativeGaps { get; private set; }
+            public long Value { get { return unchecked(CumulativeGaps + gaps); } }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool Equals(SeqNumberCounter other)
@@ -198,8 +205,6 @@ namespace SpiderRock.DataFeed
                     SRTrace.NetSeqNumber.TraceWarning(
                         "{0} sequence number gap on {1} (Id={2}) from {3}: expected {4}, received {5}",
                         MessageType, channel, channel.id, SourceId, tmp, actual);
-
-                    channel.BeginSequenceNumberGapsDetected();
                 }
             }
 

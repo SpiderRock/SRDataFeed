@@ -63,6 +63,22 @@ namespace SpiderRock.DataFeed.Diagnostics
             return writer;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+            {
+                lock (writersBySource)
+                {
+                    foreach (var value in writersBySource.Values)
+                    {
+                        value.Close();
+                    }
+                    writersBySource.Clear();
+                }
+            }
+        }
+
         public static string BuildPath(DirectoryInfo baseDirectory, string source)
         {
             if (source == null) throw new ArgumentNullException("source");

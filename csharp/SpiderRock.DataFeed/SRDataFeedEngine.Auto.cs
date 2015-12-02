@@ -643,6 +643,162 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class IndexQuoteContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<IndexQuote> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<IndexQuote> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<IndexQuote> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<IndexQuote>> Created;
+            public event EventHandler<ChangedEventArgs<IndexQuote>> Changed;
+            public event EventHandler<UpdatedEventArgs<IndexQuote>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<IndexQuote> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<IndexQuote>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<IndexQuote> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<IndexQuote>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<IndexQuote> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<IndexQuote>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(IndexQuote obj)
+            {
+                EventHandler<CreatedEventArgs<IndexQuote>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<IndexQuote> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "IndexQuote.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(IndexQuote obj)
+            {
+                EventHandler<ChangedEventArgs<IndexQuote>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<IndexQuote> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "IndexQuote.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(IndexQuote current, IndexQuote previous)
+            {
+                try
+                {
+                    UpdatedEventArgs<IndexQuote> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "IndexQuote.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<IndexQuote.PKeyLayout, IndexQuote> objectsByKey = new Dictionary<IndexQuote.PKeyLayout, IndexQuote>();
+            
+            [ThreadStatic] private static IndexQuote decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            {
+                if (hdr.keylen != sizeof(IndexQuote.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(IndexQuote.PKeyLayout))));
+                }           
+                
+                IndexQuote.PKeyLayout pkey = *(IndexQuote.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                IndexQuote item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new IndexQuote(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null);
+                            }
+                            FireChangedEventIfSubscribed(item);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new IndexQuote();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class LiveSurfaceAtmContainerCache
         {
             #region Events
@@ -881,7 +1037,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionCloseMark.PKeyLayout, OptionCloseMark> objectsByKey = new Dictionary<OptionCloseMark.PKeyLayout, OptionCloseMark>();
+            private readonly Dictionary<OptionCloseMark.PKeyLayout, OptionCloseMark> objectsByKey = new Dictionary<OptionCloseMark.PKeyLayout, OptionCloseMark>(1000000);
             
             [ThreadStatic] private static OptionCloseMark decodeTarget;
 
@@ -1037,7 +1193,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote> objectsByKey = new Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote>();
+            private readonly Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote> objectsByKey = new Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote>(1000000);
             
             [ThreadStatic] private static OptionCloseQuote decodeTarget;
 
@@ -1193,7 +1349,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionImpliedQuote.PKeyLayout, OptionImpliedQuote> objectsByKey = new Dictionary<OptionImpliedQuote.PKeyLayout, OptionImpliedQuote>();
+            private readonly Dictionary<OptionImpliedQuote.PKeyLayout, OptionImpliedQuote> objectsByKey = new Dictionary<OptionImpliedQuote.PKeyLayout, OptionImpliedQuote>(1000000);
             
             [ThreadStatic] private static OptionImpliedQuote decodeTarget;
 
@@ -1349,7 +1505,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote> objectsByKey = new Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote>();
+            private readonly Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote> objectsByKey = new Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote>(1000000);
             
             [ThreadStatic] private static OptionNbboQuote decodeTarget;
 
@@ -1505,7 +1661,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark> objectsByKey = new Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark>();
+            private readonly Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark> objectsByKey = new Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark>(1000000);
             
             [ThreadStatic] private static OptionOpenMark decodeTarget;
 
@@ -1661,7 +1817,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionPrint.PKeyLayout, OptionPrint> objectsByKey = new Dictionary<OptionPrint.PKeyLayout, OptionPrint>();
+            private readonly Dictionary<OptionPrint.PKeyLayout, OptionPrint> objectsByKey = new Dictionary<OptionPrint.PKeyLayout, OptionPrint>(300000);
             
             [ThreadStatic] private static OptionPrint decodeTarget;
 
@@ -2441,7 +2597,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<StockCloseMark.PKeyLayout, StockCloseMark> objectsByKey = new Dictionary<StockCloseMark.PKeyLayout, StockCloseMark>();
+            private readonly Dictionary<StockCloseMark.PKeyLayout, StockCloseMark> objectsByKey = new Dictionary<StockCloseMark.PKeyLayout, StockCloseMark>(9000);
             
             [ThreadStatic] private static StockCloseMark decodeTarget;
 
@@ -2992,6 +3148,7 @@ namespace SpiderRock.DataFeed
          private readonly FutureBookQuoteContainerCache futureBookQuoteContainerCache = new FutureBookQuoteContainerCache();
          private readonly FuturePrintContainerCache futurePrintContainerCache = new FuturePrintContainerCache();
          private readonly FutureSettlementMarkContainerCache futureSettlementMarkContainerCache = new FutureSettlementMarkContainerCache();
+         private readonly IndexQuoteContainerCache indexQuoteContainerCache = new IndexQuoteContainerCache();
          private readonly LiveSurfaceAtmContainerCache liveSurfaceAtmContainerCache = new LiveSurfaceAtmContainerCache();
          private readonly OptionCloseMarkContainerCache optionCloseMarkContainerCache = new OptionCloseMarkContainerCache();
          private readonly OptionCloseQuoteContainerCache optionCloseQuoteContainerCache = new OptionCloseQuoteContainerCache();
@@ -3019,6 +3176,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.FutureBookQuote, futureBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FuturePrint, futurePrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FutureSettlementMark, futureSettlementMarkContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.IndexQuote, indexQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.LiveSurfaceAtm, liveSurfaceAtmContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionCloseMark, optionCloseMarkContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionCloseQuote, optionCloseQuoteContainerCache.OnMessage);
@@ -3044,6 +3202,7 @@ namespace SpiderRock.DataFeed
              futureBookQuoteContainerCache.Clear();
              futurePrintContainerCache.Clear();
              futureSettlementMarkContainerCache.Clear();
+             indexQuoteContainerCache.Clear();
              liveSurfaceAtmContainerCache.Clear();
              optionCloseMarkContainerCache.Clear();
              optionCloseQuoteContainerCache.Clear();
@@ -3136,6 +3295,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { futureSettlementMarkContainerCache.Updated += value; } }
             remove  { lock (eventLock) { futureSettlementMarkContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<IndexQuote>> IndexQuoteCreated
+        {
+            add     { lock (eventLock) { indexQuoteContainerCache.Created += value; } }
+            remove  { lock (eventLock) { indexQuoteContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<IndexQuote>> IndexQuoteChanged
+        {
+            add     { lock (eventLock) { indexQuoteContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { indexQuoteContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<IndexQuote>> IndexQuoteUpdated
+        {
+            add     { lock (eventLock) { indexQuoteContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { indexQuoteContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<LiveSurfaceAtm>> LiveSurfaceAtmCreated

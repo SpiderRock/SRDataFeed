@@ -1,4 +1,4 @@
-﻿namespace SpiderRock.DataFeed.Proto.DBL.Myricom
+﻿namespace SpiderRock.DataFeed.Proto.UDP
 {
     internal enum ReadLoopState
     {

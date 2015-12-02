@@ -283,11 +283,42 @@ namespace SpiderRock.DataFeed
         }
     }
 
+    public partial class IndexQuote
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "ticker_tk\tticker_ts\tticker_at\tpriceSource\tidxBid\tidxAsk\tidxPrice\ttimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Ticker.TabRecord);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(PriceSource);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IdxBid);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IdxAsk);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IdxPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class LiveSurfaceAtm
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\texType\taxisVol\tcAtm\tpAtm\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tsdivLoEMA\tsdivHiEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\ttimestamp";
+		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tpricingGroup\tpricingAccnt\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\texType\taxisVol\tcAtm\tpAtm\tminAtmVol\tmaxAtmVol\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tsdivLoEMA\tsdivHiEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\ttimestamp";
 
 		public string TabRecord
         {
@@ -299,6 +330,10 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(pkey.Fkey.TabRecord);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(pkey.SurfaceType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.PricingGroup);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.PricingAccnt);
 				recordBuilder.Append("\t");
 
 				recordBuilder.Append(Ticker.TabRecord);
@@ -322,6 +357,10 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(CAtm);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PAtm);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinAtmVol);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MaxAtmVol);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AdjDI);
 				recordBuilder.Append("\t");

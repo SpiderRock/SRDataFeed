@@ -25,20 +25,17 @@ namespace SpiderRock.DataFeed
         {
             var key = new Key(channelType, channelAddr);
             Channel channel;
-            if (!channelsByKey.TryGetValue(key, out channel))
+            lock (channelsByKey)
             {
-                lock (channelsByKey)
+                if (!channelsByKey.TryGetValue(key, out channel))
                 {
-                    if (!channelsByKey.TryGetValue(key, out channel))
+                    channel = new Channel(channelType, channelAddr, sourceAddr);
+                    channel.Closed += RemoveClosedChannel;
+                    channelsByKey[key] = channel;
+                    var channelCreated = ChannelCreated;
+                    if (channelCreated != null)
                     {
-                        channel = new Channel(channelType, channelAddr, sourceAddr);
-                        channel.Closed += RemoveClosedChannel;
-                        channelsByKey[key] = channel;
-                        var channelCreated = ChannelCreated;
-                        if (channelCreated != null)
-                        {
-                            channelCreated(this, new ChannelCreatedEventArgs(channel));
-                        }
+                        channelCreated(this, new ChannelCreatedEventArgs(channel));
                     }
                 }
             }

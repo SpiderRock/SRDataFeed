@@ -250,7 +250,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                     {
                         if (time > StartTime && time < EndTime)
                         {
-                            error = "SLOW DATA FEED";
+                            error = "JITTER";
                         }
                     }
 

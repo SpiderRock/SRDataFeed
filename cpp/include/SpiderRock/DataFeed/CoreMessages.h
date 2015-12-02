@@ -21,7 +21,88 @@ namespace SpiderRock {
 
 namespace DataFeed {
 
-class FutureBookQuote
+class CCodeDefinition
+{
+public:
+	class Key
+	{
+		CCodeKey ccode_;
+		
+	public:
+		inline CCodeKey ccode() const { return ccode_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = std::hash<CCodeKey>()(k.ccode_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ccode_ == b.ccode_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		FutExch futexch;
+		StockKey ticker;
+		SettleTime settleTime;
+		Int positionLimit;
+		Float contractSize;
+		Double minTickSize;
+		String<6> clearingCode;
+		String<6> ricCode;
+		String<6> bbgRoot;
+		YellowKey bbgGroup;
+		String<48> description;
+		DateTime lastUpdate;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline FutExch futexch() const { return layout_.futexch; }
+	inline const StockKey& ticker() const { return layout_.ticker; }
+	inline SettleTime settleTime() const { return layout_.settleTime; }
+	inline Int positionLimit() const { return layout_.positionLimit; }
+	inline Float contractSize() const { return layout_.contractSize; }
+	inline Double minTickSize() const { return layout_.minTickSize; }
+	inline const String<6>& clearingCode() const { return layout_.clearingCode; }
+	inline const String<6>& ricCode() const { return layout_.ricCode; }
+	inline const String<6>& bbgRoot() const { return layout_.bbgRoot; }
+	inline YellowKey bbgGroup() const { return layout_.bbgGroup; }
+	inline const String<48>& description() const { return layout_.description; }
+	inline DateTime lastUpdate() const { return layout_.lastUpdate; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<CCodeDefinition::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
+ class FutureBookQuote
 {
 public:
 	class Key
@@ -306,6 +387,73 @@ public:
 
 };
 
+ class IndexQuote
+{
+public:
+	class Key
+	{
+		StockKey ticker_;
+		
+	public:
+		inline const StockKey& ticker() const { return ticker_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = StockKey()(k.ticker_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ticker_ == b.ticker_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		IdxSrc priceSource;
+		Double idxBid;
+		Double idxAsk;
+		Double idxPrice;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline IdxSrc priceSource() const { return layout_.priceSource; }
+	inline Double idxBid() const { return layout_.idxBid; }
+	inline Double idxAsk() const { return layout_.idxAsk; }
+	inline Double idxPrice() const { return layout_.idxPrice; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<IndexQuote::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
  class LiveSurfaceAtm
 {
 public:
@@ -313,15 +461,21 @@ public:
 	{
 		FutureKey fkey_;
 		LiveSurfaceType surfaceType_;
+		PricingGroup pricingGroup_;
+		String<16> pricingAccnt_;
 		
 	public:
 		inline const FutureKey& fkey() const { return fkey_; }
 		inline LiveSurfaceType surfaceType() const { return surfaceType_; }
+		inline PricingGroup pricingGroup() const { return pricingGroup_; }
+		inline const String<16>& pricingAccnt() const { return pricingAccnt_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = FutureKey()(k.fkey_);
 			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.surfaceType_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.pricingGroup_));
+			hash_code = (hash_code * 397) ^ String<16>()(k.pricingAccnt_);
 
 			return hash_code;
 		}
@@ -330,7 +484,9 @@ public:
 		{
 			return
 				a.fkey_ == b.fkey_
-				&& a.surfaceType_ == b.surfaceType_;
+				&& a.surfaceType_ == b.surfaceType_
+				&& a.pricingGroup_ == b.pricingGroup_
+				&& a.pricingAccnt_ == b.pricingAccnt_;
 		}
 	};
 	
@@ -350,6 +506,8 @@ private:
 		Float axisVol;
 		Float cAtm;
 		Float pAtm;
+		Float minAtmVol;
+		Float maxAtmVol;
 		Float adjDI;
 		Float adjD8;
 		Float adjD7;
@@ -425,6 +583,8 @@ public:
 	inline Float axisVol() const { return layout_.axisVol; }
 	inline Float cAtm() const { return layout_.cAtm; }
 	inline Float pAtm() const { return layout_.pAtm; }
+	inline Float minAtmVol() const { return layout_.minAtmVol; }
+	inline Float maxAtmVol() const { return layout_.maxAtmVol; }
 	inline Float adjDI() const { return layout_.adjDI; }
 	inline Float adjD8() const { return layout_.adjD8; }
 	inline Float adjD7() const { return layout_.adjD7; }
@@ -1236,6 +1396,119 @@ public:
 		layout_ = *reinterpret_cast<OptionSettlementMark::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
+
+	}
+
+};
+
+ class RootDefinition
+{
+public:
+	class Key
+	{
+		RootKey root_;
+		
+	public:
+		inline const RootKey& root() const { return root_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = RootKey()(k.root_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.root_ == b.root_;
+		}
+	};
+	
+	class Underlying
+	{
+		StockKey ticker_;
+		Float spc_;
+		
+	public:
+		inline const StockKey& ticker() const { return ticker_; }
+		inline Float spc() const { return spc_; }
+		inline void ticker(const StockKey& value) { ticker_ = value; }
+		inline void spc(Float value) { spc_ = value; }
+	};
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		StockKey ticker;
+		String<8> osiRoot;
+		CCodeKey ccode;
+		ExpirationMap expirationMap;
+		OptionType optionType;
+		Multihedge multihedge;
+		ExerciseTime exerciseTime;
+		ExerciseType exerciseType;
+		TimeMetric timeMetric;
+		PricingModel pricingModel;
+		VolumeTier volumeTier;
+		Int positionLimit;
+		String<8> exchanges;
+		Float strikeRatio;
+		Float cashOnExercise;
+		Float sharesPerCn;
+		AdjConvention adjConvention;
+		DateTime lastUpdate;
+	};
+	
+	Header header_;
+	Layout layout_;
+	vector<Underlying>underlying_;
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline const StockKey& ticker() const { return layout_.ticker; }
+	inline const String<8>& osiRoot() const { return layout_.osiRoot; }
+	inline CCodeKey ccode() const { return layout_.ccode; }
+	inline ExpirationMap expirationMap() const { return layout_.expirationMap; }
+	inline OptionType optionType() const { return layout_.optionType; }
+	inline Multihedge multihedge() const { return layout_.multihedge; }
+	inline ExerciseTime exerciseTime() const { return layout_.exerciseTime; }
+	inline ExerciseType exerciseType() const { return layout_.exerciseType; }
+	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
+	inline PricingModel pricingModel() const { return layout_.pricingModel; }
+	inline VolumeTier volumeTier() const { return layout_.volumeTier; }
+	inline Int positionLimit() const { return layout_.positionLimit; }
+	inline const String<8>& exchanges() const { return layout_.exchanges; }
+	inline Float strikeRatio() const { return layout_.strikeRatio; }
+	inline Float cashOnExercise() const { return layout_.cashOnExercise; }
+	inline Float sharesPerCn() const { return layout_.sharesPerCn; }
+	inline AdjConvention adjConvention() const { return layout_.adjConvention; }
+	inline DateTime lastUpdate() const { return layout_.lastUpdate; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<RootDefinition::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+		// Underlying Repeat Section
+		auto underlying_count = *reinterpret_cast<uint16_t*>(ptr);
+		ptr += sizeof(underlying_count);
+
+		for (int i = 0; i < underlying_count; i++)
+		{
+			underlying_.push_back(*reinterpret_cast<Underlying*>(ptr));
+			ptr += sizeof(Underlying);
+		}
 
 	}
 

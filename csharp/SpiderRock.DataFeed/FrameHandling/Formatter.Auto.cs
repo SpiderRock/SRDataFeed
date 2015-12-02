@@ -76,6 +76,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, IndexQuote dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(IndexQuote.PKeyLayout) + sizeof(IndexQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding IndexQuote");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((IndexQuote.PKeyLayout*) src); src += sizeof(IndexQuote.PKeyLayout);
+ 				dest.body = *((IndexQuote.BodyLayout*) src); src += sizeof(IndexQuote.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, LiveSurfaceAtm dest, byte* max)
 		{
 			unchecked

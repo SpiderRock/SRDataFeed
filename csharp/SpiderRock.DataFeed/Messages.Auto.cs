@@ -1143,6 +1143,234 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
+	/// IndexQuote:137
+	/// </summary>
+	/// <remarks>
+	/// IndexQuote - usually from live index feed handler
+	/// </remarks>
+
+    public partial class IndexQuote
+    {
+		public IndexQuote()
+		{
+		}
+		
+		public IndexQuote(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public IndexQuote(IndexQuote source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal IndexQuote(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as IndexQuote);
+		}
+		
+		public bool Equals(IndexQuote other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(IndexQuote target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.IndexQuote};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private StockKey ticker;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				ticker = other.ticker;
+				
+			}
+			
+			
+			public StockKey Ticker
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				ticker = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.ticker = ticker;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.ticker = ticker;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // IndexQuote.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public StockKeyLayout ticker;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	ticker.Equals(other.ticker);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = ticker.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // IndexQuote.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public IdxSrc priceSource;
+			public double idxBid;
+			public double idxAsk;
+			public double idxPrice;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { }
+		
+		
+
+
+		/// <summary>price source of the quote (indication print or quote message)</summary>
+        public IdxSrc PriceSource { get { return body.priceSource; } set { body.priceSource = value; } }
+ 
+		/// <summary>index bid value (if from quote, otherwise idxPrice)</summary>
+        public double IdxBid { get { return body.idxBid; } set { body.idxBid = value; } }
+ 
+		/// <summary>index ask value (if from quote, otherwise idxPrice)</summary>
+        public double IdxAsk { get { return body.idxAsk; } set { body.idxAsk = value; } }
+ 
+		/// <summary>index price</summary>
+        public double IdxPrice { get { return body.idxPrice; } set { body.idxPrice = value; } }
+ 
+		/// <summary>index price timestamp</summary>
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // IndexQuote
+
+
+	/// <summary>
 	/// LiveSurfaceAtm:356
 	/// </summary>
 	/// <remarks>
@@ -1231,6 +1459,7 @@ namespace SpiderRock.DataFeed
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
 			private FutureKey fkey;
+ 			private string pricingAccnt;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -1242,6 +1471,7 @@ namespace SpiderRock.DataFeed
 				if (other == null) throw new ArgumentNullException("other");
 				body = other.body;
 				fkey = other.fkey;
+ 				pricingAccnt = other.pricingAccnt;
 				
 			}
 			
@@ -1257,11 +1487,24 @@ namespace SpiderRock.DataFeed
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.surfaceType; }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.surfaceType = value; }
 			}
+ 			
+			public PricingGroup PricingGroup
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.pricingGroup; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.pricingGroup = value; }
+			}
+ 			
+			public string PricingAccnt
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return pricingAccnt ?? (pricingAccnt = body.pricingAccnt); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.pricingAccnt = value; pricingAccnt = value; }
+			}
 
 			public void Clear()
 			{
 				body = new PKeyLayout();
 				fkey = null;
+ 				pricingAccnt = null;
 
 			}
 
@@ -1270,6 +1513,7 @@ namespace SpiderRock.DataFeed
 			{
 				target.body = body;
 				target.fkey = fkey;
+ 				target.pricingAccnt = pricingAccnt;
 
 			}
 			
@@ -1278,6 +1522,7 @@ namespace SpiderRock.DataFeed
 			{
 				var target = new PKey(body);
 				target.fkey = fkey;
+ 				target.pricingAccnt = pricingAccnt;
 
 				return target;
 			}
@@ -1308,12 +1553,16 @@ namespace SpiderRock.DataFeed
         {
 			public FutureKeyLayout fkey;
  			public LiveSurfaceType surfaceType;
+ 			public PricingGroup pricingGroup;
+ 			public FixedString16Layout pricingAccnt;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
             {
                 return	fkey.Equals(other.fkey) &&
-					 	surfaceType.Equals(other.surfaceType);
+					 	surfaceType.Equals(other.surfaceType) &&
+					 	pricingGroup.Equals(other.pricingGroup) &&
+					 	pricingAccnt.Equals(other.pricingAccnt);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1329,6 +1578,8 @@ namespace SpiderRock.DataFeed
 					// ReSharper disable NonReadonlyFieldInGetHashCode
 					var hashCode = fkey.GetHashCode();
  					hashCode = (hashCode*397) ^ ((int) surfaceType);
+ 					hashCode = (hashCode*397) ^ ((int) pricingGroup);
+ 					hashCode = (hashCode*397) ^ (pricingAccnt.GetHashCode());
 
                     return hashCode;
 					// ReSharper restore NonReadonlyFieldInGetHashCode
@@ -1357,6 +1608,8 @@ namespace SpiderRock.DataFeed
 			public float axisVol;
 			public float cAtm;
 			public float pAtm;
+			public float minAtmVol;
+			public float maxAtmVol;
 			public float adjDI;
 			public float adjD8;
 			public float adjD7;
@@ -1454,6 +1707,12 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>put atm vol (xAxis = 0)</summary>
         public float PAtm { get { return body.pAtm; } set { body.pAtm = value; } }
+ 
+		
+        public float MinAtmVol { get { return body.minAtmVol; } set { body.minAtmVol = value; } }
+ 
+		
+        public float MaxAtmVol { get { return body.maxAtmVol; } set { body.maxAtmVol = value; } }
  
 		/// <summary>h (x-axis step size; usually 0.5) [xAxis = (effStrike / fwdEffUPrc - 1.0) / volRT; fwdEffUPrc = effUPrc * exp(lsa.years * lsa.rate) - lsa.ddiv; volRT = axisVol * sqrt(max(1.0/252.0, lsa.years))]</summary>
         public float AdjDI { get { return body.adjDI; } set { body.adjDI = value; } }
