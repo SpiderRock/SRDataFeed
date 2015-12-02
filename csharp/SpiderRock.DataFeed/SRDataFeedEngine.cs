@@ -121,7 +121,7 @@ namespace SpiderRock.DataFeed
                 }
 
                 Channels = Channels ?? new UdpChannel[0];
-                ChannelThreadGroups = ChannelThreadGroups ?? new UdpChannelThreadGroup[0];
+                ChannelThreadGroups = ChannelThreadGroups ?? new ChannelThreadGroup[0];
 
                 if (Channels.Length == 0 && ChannelThreadGroups.Length == 0)
                 {
@@ -164,7 +164,7 @@ namespace SpiderRock.DataFeed
                     }
                     else
                     {
-                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory);
+                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, ThreadPriority.Normal);
                         udpDevice.Open();
                         udpDevices.Add(udpDevice);
 
@@ -193,7 +193,7 @@ namespace SpiderRock.DataFeed
                     }
                     else
                     {
-                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory);
+                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, channelThreadGroup.Priority);
                         udpDevice.Open();
                         udpDevices.Add(udpDevice);
 

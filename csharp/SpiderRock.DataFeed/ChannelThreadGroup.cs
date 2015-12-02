@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SpiderRock.DataFeed
 {
@@ -7,7 +8,14 @@ namespace SpiderRock.DataFeed
     {
         private readonly HashSet<UdpChannel> channels = new HashSet<UdpChannel>();
 
+        protected ChannelThreadGroup()
+        {
+            Priority = ThreadPriority.Normal;
+        }
+
         public abstract Protocol Proto { get; }
+
+        public ThreadPriority Priority { get; set; }
 
         public IEnumerator<UdpChannel> GetEnumerator()
         {

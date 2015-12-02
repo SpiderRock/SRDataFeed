@@ -21,6 +21,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
         private readonly FrameHandler frameHandler;
         private readonly int receiveBufferSize;
         private readonly ChannelFactory channelFactory;
+        private readonly ThreadPriority priority;
 
         private Thread receiveWorkerThread;
 
@@ -32,7 +33,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
         private int spinYieldSwitch;
         private long readSpinCount;
 
-        internal UdpDevice(IPAddress addr, FrameHandler frameHandler, int receiveBufferSize, ChannelFactory channelFactory)
+        internal UdpDevice(IPAddress addr, FrameHandler frameHandler, int receiveBufferSize, ChannelFactory channelFactory, ThreadPriority priority)
         {
             if (addr == null) throw new ArgumentNullException("addr");
             if (frameHandler == null) throw new ArgumentNullException("frameHandler");
@@ -43,6 +44,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
             this.frameHandler = frameHandler;
             this.receiveBufferSize = receiveBufferSize;
             this.channelFactory = channelFactory;
+            this.priority = priority;
 
             lifetime = new CancellationTokenSource();
         }
@@ -131,7 +133,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
             if (receiveWorkerThread != null) return;
 
-            receiveWorkerThread = new Thread(ReadWorker) {IsBackground = true};
+            receiveWorkerThread = new Thread(ReadWorker) {IsBackground = true, Priority = priority};
             receiveWorkerThread.Start();
         }
 
@@ -215,7 +217,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
                 SRTrace.NetUdp.TraceData(
                     TraceEventType.Verbose, 0,
                     string.Format(
-                        "UdpDevice [{0}]: ReadWorker state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6} (MBUS/{10})",
+                        "UdpDevice [{0}]: ReadWorker state={1,14}, loopCount={2,12:N0}, spinCount={3,12:N0}, yieldAttempt={4,12:N0}, yieldSwitch={5,12:N0}, sleep0={6,12:N0}, errorCount={7,12:N0}, threadState={8,12}, isAlive={9,6}, priority={10,12} (MBUS/{11})",
                         Handle,
                         readLoopState,
                         readLoopCount,
@@ -226,6 +228,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
                         readErrorCount,
                         receiveWorkerThread != null ? receiveWorkerThread.ThreadState : System.Threading.ThreadState.Unstarted,
                         receiveWorkerThread != null && receiveWorkerThread.IsAlive,
+                        receiveWorkerThread != null ? receiveWorkerThread.Priority.ToString() : string.Empty,
                         IFAddress));
 
                 readLoopCount = 0;
