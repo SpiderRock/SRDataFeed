@@ -68,7 +68,34 @@ namespace SpiderRock.DataFeed
 		
 		#endregion
 
-        public static T[] CreateSizedArray<T>(Func<MessageType, T> factory = null)
+        public static IEnumerable<MessageType> Core
+        {
+            get
+            {
+                for (int i = 0; i < isCore.Length; i++)
+                {
+                    if (isCore[i])
+                    {
+                        yield return i;
+                    }
+                }
+            }
+        }
+
+        public static MessageType FromName(string value)
+        {
+            for (int i = 0; i < names.Length; i++)
+            {
+                if (string.Equals(names[i], value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return i;
+                }
+            }
+
+            throw new ArgumentOutOfRangeException("value", value, "Argument is not a valid MessageType name");
+        }
+
+        internal static T[] CreateSizedArray<T>(Func<MessageType, T> factory = null)
         {
             var arr = new T[Max + 1];
             if (factory == null) return arr;
