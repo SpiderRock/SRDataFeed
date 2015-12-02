@@ -8,4 +8,4 @@
 [assembly: AssemblyCopyright("Copyright ©  2015, SpiderRock Technology")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("6.0.3.*")]
+[assembly: AssemblyVersion("6.0.4.*")]
