@@ -12,14 +12,14 @@ namespace SpiderRock.DataFeed
 
 	public enum AdjConvention : byte { Original=0,OSI=1,SpcOnly=2,OSIAlt=3 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2,Close=3 };		
- 	public enum CallOrPut : byte { Call=0,Put=1 };		
+ 	public enum CallPut : byte { Call=0,Put=1 };		
  	public enum ExerciseTime : byte { None=0,PM=1,AM=2 };		
  	public enum ExerciseType : byte { None=0,American=1,European=2 };		
  	public enum ExpirationMap : byte { None=0,ExactMatch=1,UnderlyerMap=2 };		
  	public enum FitType : byte { None=0,InitAtm=1,LoBound=2,HiBound=3,MidGap=4,MidGapW=5,MidGapN=6 };		
  	public enum FutExch : byte { None=0,CFE=1,CME=2,CBT=3,COMEX=4,NYMEX=5,ICE=6 };		
  	public enum IdxSrc : byte { Unknown=0,Indication=1,Quote=2 };		
- 	public enum LiveSurfaceType : byte { None=0,Live=1,Hist=2,PriorDay=3 };		
+ 	public enum LiveSurfaceType : byte { None=0,Live=1,Hist=2,PriorDay=3,Skew=4 };		
  	public enum MarkSource : byte { None=0,NbboMid=1,SRVol=2,LoBound=3,HiBound=4,SRPricer=5,SRQuote=6 };		
  	public enum MarketStatus : byte { None=0,PreOpen=1,PreCross=2,Cross=3,Open=4,Closed=5,Halted=6,AfterHours=7 };		
  	public enum Multihedge : byte { None=0,Simple=1,Complex=2,AllCash=3,Binary=4 };		

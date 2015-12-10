@@ -1649,7 +1649,7 @@ namespace SpiderRock.DataFeed
 			public float fitAvgAbsErr;
 			public float fitMaxPrcErr;
 			public float fitErrXX;
-			public CallOrPut fitErrCP;
+			public CallPut fitErrCP;
 			public float fitErrBid;
 			public float fitErrAsk;
 			public float fitErrPrc;
@@ -1717,7 +1717,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>h (x-axis step size; usually 0.5) [xAxis = (effStrike / fwdEffUPrc - 1.0) / volRT; fwdEffUPrc = effUPrc * exp(lsa.years * lsa.rate) - lsa.ddiv; volRT = axisVol * sqrt(max(1.0/252.0, lsa.years))]</summary>
         public float AdjDI { get { return body.adjDI; } set { body.adjDI = value; } }
  
-		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]</summary>
+		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]; Note: there is an implied intercept points (xAxis=0; skew=0) between adjD1 and adjU1</summary>
         public float AdjD8 { get { return body.adjD8; } set { body.adjD8 = value; } }
  
 		/// <summary>dn 7 steps</summary>
@@ -1832,7 +1832,7 @@ namespace SpiderRock.DataFeed
         public float FitErrXX { get { return body.fitErrXX; } set { body.fitErrXX = value; } }
  
 		/// <summary>okey_cp of the option with the largest fit error in this expiration</summary>
-        public CallOrPut FitErrCP { get { return body.fitErrCP; } set { body.fitErrCP = value; } }
+        public CallPut FitErrCP { get { return body.fitErrCP; } set { body.fitErrCP = value; } }
  
 		/// <summary>bid of the option with the largest fit error</summary>
         public float FitErrBid { get { return body.fitErrBid; } set { body.fitErrBid = value; } }
