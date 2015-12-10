@@ -11,6 +11,7 @@ namespace SpiderRock.DataFeed
     // ReSharper disable InconsistentNaming
 
 	public enum AdjConvention : byte { Original=0,OSI=1,SpcOnly=2,OSIAlt=3 };		
+ 	public enum AssetType : byte { None=0,EQT=1,IDX=2,BND=3,CUR=4,COM=5,FUT=6,SYN=7 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2,Close=3 };		
  	public enum CallPut : byte { Call=0,Put=1 };		
  	public enum ExerciseTime : byte { None=0,PM=1,AM=2 };		
@@ -30,6 +31,8 @@ namespace SpiderRock.DataFeed
  	public enum SettleTime : byte { None=0,PM=1,AM=2 };		
  	public enum StkExch : byte { None=0,AMEX=1,NQBX=2,NSX=3,FNRA=4,ISE=5,EDGA=6,EDGX=7,CHX=8,NYSE=9,ARCA=10,NSDQ=11,CBSX=12,PSX=13,BTSY=14,BATS=15,CBIDX=16 };		
  	public enum StockTick : byte { None=0,Up=1,Down=2 };		
+ 	public enum SysEnvironment : byte { None=0,Stable=1,Beta=2 };		
+ 	public enum TickerSrc : byte { None=0,SR=1,NMS=2,CME=3,ICE=4,CFE=5,CBOT=6,COIN=7,NYMEX=8,COMEX=9,RUT=10,CBOE=11,KET=12,ISE=13,ARCA=14,NYSE=15 };		
  	public enum TimeMetric : byte { None=0,D252=1,D365=2 };		
  	public enum VolumeTier : byte { None=0,Top50=1 };		
  	public enum YellowKey : byte { None=0,Govt=1,Corp=2,Mtge=3,MMkt=4,Muni=5,Pfd=6,Equity=7,Comdty=8,Index=9,Curncy=10 };		
