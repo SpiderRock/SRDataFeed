@@ -54,6 +54,7 @@ public:
 	MessageEventSource<StockBookQuote::Key, StockBookQuote> stockbookquote;
 	MessageEventSource<StockCloseMark::Key, StockCloseMark> stockclosemark;
 	MessageEventSource<StockCloseQuote::Key, StockCloseQuote> stockclosequote;
+	MessageEventSource<StockExchImbalance::Key, StockExchImbalance> stockexchimbalance;
 	MessageEventSource<StockOpenMark::Key, StockOpenMark> stockopenmark;
 	MessageEventSource<StockPrint::Key, StockPrint> stockprint;			
 
@@ -90,6 +91,7 @@ SRDataFeedEngine::SRDataFeedEngine(SysEnvironment environment, in_addr device_ad
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockbookquote, { MessageType::StockBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockclosemark, { MessageType::StockCloseMark });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockclosequote, { MessageType::StockCloseQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->stockexchimbalance, { MessageType::StockExchImbalance });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockopenmark, { MessageType::StockOpenMark });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockprint, { MessageType::StockPrint });
 }
@@ -230,6 +232,7 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<RootDefin
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockCloseMark>> observer) { impl_->stockclosemark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockCloseQuote>> observer) { impl_->stockclosequote.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockOpenMark>> observer) { impl_->stockopenmark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
 
@@ -251,6 +254,7 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<RootDefin
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockCloseMark>> observer) { impl_->stockclosemark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockCloseQuote>> observer) { impl_->stockclosequote.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockOpenMark>> observer) { impl_->stockopenmark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
 
@@ -272,5 +276,6 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<RootDefin
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockCloseMark>> observer) { impl_->stockclosemark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockCloseQuote>> observer) { impl_->stockclosequote.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockOpenMark>> observer) { impl_->stockopenmark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }

@@ -34,6 +34,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType StockBookQuote = 121;
  		public static readonly MessageType StockCloseMark = 125;
  		public static readonly MessageType StockCloseQuote = 123;
+ 		public static readonly MessageType StockExchImbalance = 127;
  		public static readonly MessageType StockOpenMark = 124;
  		public static readonly MessageType StockPrint = 122;
 
@@ -63,6 +64,7 @@ namespace SpiderRock.DataFeed
  			isCore[StockBookQuote] = true;
  			isCore[StockCloseMark] = true;
  			isCore[StockCloseQuote] = true;
+ 			isCore[StockExchImbalance] = true;
  			isCore[StockOpenMark] = true;
  			isCore[StockPrint] = true;
 
@@ -105,6 +107,7 @@ namespace SpiderRock.DataFeed
  			names[StockBookQuote] = "StockBookQuote";
  			names[StockCloseMark] = "StockCloseMark";
  			names[StockCloseQuote] = "StockCloseQuote";
+ 			names[StockExchImbalance] = "StockExchImbalance";
  			names[StockOpenMark] = "StockOpenMark";
  			names[StockPrint] = "StockPrint";
 

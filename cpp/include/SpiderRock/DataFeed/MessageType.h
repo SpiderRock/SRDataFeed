@@ -40,6 +40,7 @@ namespace SpiderRock
 			StockBookQuote = 121,
 			StockCloseMark = 125,
 			StockCloseQuote = 123,
+			StockExchImbalance = 127,
 			StockOpenMark = 124,
 			StockPrint = 122,
 			

@@ -2827,6 +2827,162 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class StockExchImbalanceContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<StockExchImbalance> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<StockExchImbalance> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<StockExchImbalance> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<StockExchImbalance>> Created;
+            public event EventHandler<ChangedEventArgs<StockExchImbalance>> Changed;
+            public event EventHandler<UpdatedEventArgs<StockExchImbalance>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<StockExchImbalance> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<StockExchImbalance>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<StockExchImbalance> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<StockExchImbalance>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<StockExchImbalance> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<StockExchImbalance>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(StockExchImbalance obj)
+            {
+                EventHandler<CreatedEventArgs<StockExchImbalance>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<StockExchImbalance> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockExchImbalance.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(StockExchImbalance obj)
+            {
+                EventHandler<ChangedEventArgs<StockExchImbalance>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<StockExchImbalance> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockExchImbalance.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(StockExchImbalance current, StockExchImbalance previous)
+            {
+                try
+                {
+                    UpdatedEventArgs<StockExchImbalance> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockExchImbalance.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<StockExchImbalance.PKeyLayout, StockExchImbalance> objectsByKey = new Dictionary<StockExchImbalance.PKeyLayout, StockExchImbalance>();
+            
+            [ThreadStatic] private static StockExchImbalance decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            {
+                if (hdr.keylen != sizeof(StockExchImbalance.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(StockExchImbalance.PKeyLayout))));
+                }           
+                
+                StockExchImbalance.PKeyLayout pkey = *(StockExchImbalance.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                StockExchImbalance item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new StockExchImbalance(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null);
+                            }
+                            FireChangedEventIfSubscribed(item);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new StockExchImbalance();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class StockOpenMarkContainerCache
         {
             #region Events
@@ -3162,6 +3318,7 @@ namespace SpiderRock.DataFeed
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
          private readonly StockCloseMarkContainerCache stockCloseMarkContainerCache = new StockCloseMarkContainerCache();
          private readonly StockCloseQuoteContainerCache stockCloseQuoteContainerCache = new StockCloseQuoteContainerCache();
+         private readonly StockExchImbalanceContainerCache stockExchImbalanceContainerCache = new StockExchImbalanceContainerCache();
          private readonly StockOpenMarkContainerCache stockOpenMarkContainerCache = new StockOpenMarkContainerCache();
          private readonly StockPrintContainerCache stockPrintContainerCache = new StockPrintContainerCache();
 
@@ -3190,6 +3347,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockCloseMark, stockCloseMarkContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockCloseQuote, stockCloseQuoteContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.StockExchImbalance, stockExchImbalanceContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockOpenMark, stockOpenMarkContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockPrint, stockPrintContainerCache.OnMessage);
 
@@ -3216,6 +3374,7 @@ namespace SpiderRock.DataFeed
              stockBookQuoteContainerCache.Clear();
              stockCloseMarkContainerCache.Clear();
              stockCloseQuoteContainerCache.Clear();
+             stockExchImbalanceContainerCache.Clear();
              stockOpenMarkContainerCache.Clear();
              stockPrintContainerCache.Clear();
 
@@ -3547,6 +3706,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { stockCloseQuoteContainerCache.Updated += value; } }
             remove  { lock (eventLock) { stockCloseQuoteContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<StockExchImbalance>> StockExchImbalanceCreated
+        {
+            add     { lock (eventLock) { stockExchImbalanceContainerCache.Created += value; } }
+            remove  { lock (eventLock) { stockExchImbalanceContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<StockExchImbalance>> StockExchImbalanceChanged
+        {
+            add     { lock (eventLock) { stockExchImbalanceContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { stockExchImbalanceContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<StockExchImbalance>> StockExchImbalanceUpdated
+        {
+            add     { lock (eventLock) { stockExchImbalanceContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { stockExchImbalanceContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<StockOpenMark>> StockOpenMarkCreated

@@ -12,6 +12,8 @@ namespace SpiderRock.DataFeed
 
 	public enum AdjConvention : byte { Original=0,OSI=1,SpcOnly=2,OSIAlt=3 };		
  	public enum AssetType : byte { None=0,EQT=1,IDX=2,BND=3,CUR=4,COM=5,FUT=6,SYN=7 };		
+ 	public enum AuctionType : byte { None=0,Open=1,Market=2,Halt=3,Closing=4,RegulatoryImbalance=5 };		
+ 	public enum BuySell : byte { None=0,Buy=1,Sell=2 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2,Close=3 };		
  	public enum CallPut : byte { Call=0,Put=1 };		
  	public enum ExerciseTime : byte { None=0,PM=1,AM=2 };		
