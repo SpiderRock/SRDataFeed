@@ -83,7 +83,6 @@
     <Compile Include="Diagnostics\SRFileTraceListener.cs" />
     <Compile Include="Diagnostics\SRTraceListener.cs" />
     <Compile Include="Diagnostics\SRTraceSource.cs" />
-    <Compile Include="AssetType.cs" />
     <Compile Include="Proto\DBL\Myricom\DblChannel.cs" />
     <Compile Include="Proto\DBL\Myricom\DblDevice.cs" />
     <Compile Include="Proto\DBL\Myricom\DblException.cs" />
@@ -92,7 +91,7 @@
     <Compile Include="Proto\DBL\Myricom\ReadLoopState.cs" />
     <Compile Include="FrameHandling\SourceId.cs" />
     <Compile Include="Channel.SeqNumber.cs" />
-    <Compile Include="SysEnvironment.cs" />
+    <Compile Include="SysEnvironmentExtensions.cs" />
     <Compile Include="Messages.Tab.Auto.cs" />
     <Compile Include="ChannelType.cs" />
     <Compile Include="Enums.Auto.cs" />
@@ -130,10 +129,8 @@
     <Compile Include="FrameHandling\Header.cs" />
     <Compile Include="FrameHandling\HeaderBits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CallPut.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="Proto\DBL\DblManager.cs" />
-    <Compile Include="TickerSrc.cs" />
     <Compile Include="UdpChannel.cs" />
     <Compile Include="UpdatedEventArgs.cs" />
   </ItemGroup>

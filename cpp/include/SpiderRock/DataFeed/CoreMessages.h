@@ -1749,6 +1749,89 @@ public:
 
 };
 
+ class StockExchImbalance
+{
+public:
+	class Key
+	{
+		StockKey ticker_;
+		StkExch exch_;
+		
+	public:
+		inline const StockKey& ticker() const { return ticker_; }
+		inline StkExch exch() const { return exch_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = StockKey()(k.ticker_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exch_));
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ticker_ == b.ticker_
+				&& a.exch_ == b.exch_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		Float referencePx;
+		Int pairedQty;
+		Int totalImbalanceQty;
+		Int marketImbalanceQty;
+		DateTime auctionTime;
+		AuctionType auctionType;
+		BuySell imbalanceSide;
+		Float continuousBookClrPx;
+		Float closingOnlyClrPx;
+		Float ssrFillingPx;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline Float referencePx() const { return layout_.referencePx; }
+	inline Int pairedQty() const { return layout_.pairedQty; }
+	inline Int totalImbalanceQty() const { return layout_.totalImbalanceQty; }
+	inline Int marketImbalanceQty() const { return layout_.marketImbalanceQty; }
+	inline DateTime auctionTime() const { return layout_.auctionTime; }
+	inline AuctionType auctionType() const { return layout_.auctionType; }
+	inline BuySell imbalanceSide() const { return layout_.imbalanceSide; }
+	inline Float continuousBookClrPx() const { return layout_.continuousBookClrPx; }
+	inline Float closingOnlyClrPx() const { return layout_.closingOnlyClrPx; }
+	inline Float ssrFillingPx() const { return layout_.ssrFillingPx; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<StockExchImbalance::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
  class StockOpenMark
 {
 public:

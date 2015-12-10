@@ -24,6 +24,23 @@ namespace SpiderRock
 			OSIAlt=3
 		};
 
+ 		enum class AuctionType : Enum 
+		{
+			None=0,
+			Open=1,
+			Market=2,
+			Halt=3,
+			Closing=4,
+			RegulatoryImbalance=5
+		};
+
+ 		enum class BuySell : Enum 
+		{
+			None=0,
+			Buy=1,
+			Sell=2
+		};
+
  		enum class CalcSource : Enum 
 		{
 			None=0,
@@ -93,7 +110,8 @@ namespace SpiderRock
 			None=0,
 			Live=1,
 			Hist=2,
-			PriorDay=3
+			PriorDay=3,
+			Skew=4
 		};
 
  		enum class MarkSource : Enum 

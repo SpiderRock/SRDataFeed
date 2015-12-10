@@ -1109,6 +1109,51 @@ namespace SpiderRock.DataFeed
         }
     }
 
+    public partial class StockExchImbalance
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "ticker_tk\tticker_ts\tticker_at\texch\treferencePx\tpairedQty\ttotalImbalanceQty\tmarketImbalanceQty\tauctionTime\tauctionType\timbalanceSide\tcontinuousBookClrPx\tclosingOnlyClrPx\tssrFillingPx\ttimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Ticker.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.Exch);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(ReferencePx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PairedQty);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TotalImbalanceQty);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MarketImbalanceQty);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(AuctionTime);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ImbalanceSide);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ContinuousBookClrPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClosingOnlyClrPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SsrFillingPx);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class StockOpenMark
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;

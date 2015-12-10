@@ -1649,7 +1649,7 @@ namespace SpiderRock.DataFeed
 			public float fitAvgAbsErr;
 			public float fitMaxPrcErr;
 			public float fitErrXX;
-			public CallOrPut fitErrCP;
+			public CallPut fitErrCP;
 			public float fitErrBid;
 			public float fitErrAsk;
 			public float fitErrPrc;
@@ -1717,7 +1717,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>h (x-axis step size; usually 0.5) [xAxis = (effStrike / fwdEffUPrc - 1.0) / volRT; fwdEffUPrc = effUPrc * exp(lsa.years * lsa.rate) - lsa.ddiv; volRT = axisVol * sqrt(max(1.0/252.0, lsa.years))]</summary>
         public float AdjDI { get { return body.adjDI; } set { body.adjDI = value; } }
  
-		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]</summary>
+		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]; Note: there is an implied intercept points (xAxis=0; skew=0) between adjD1 and adjU1</summary>
         public float AdjD8 { get { return body.adjD8; } set { body.adjD8 = value; } }
  
 		/// <summary>dn 7 steps</summary>
@@ -1832,7 +1832,7 @@ namespace SpiderRock.DataFeed
         public float FitErrXX { get { return body.fitErrXX; } set { body.fitErrXX = value; } }
  
 		/// <summary>okey_cp of the option with the largest fit error in this expiration</summary>
-        public CallOrPut FitErrCP { get { return body.fitErrCP; } set { body.fitErrCP = value; } }
+        public CallPut FitErrCP { get { return body.fitErrCP; } set { body.fitErrCP = value; } }
  
 		/// <summary>bid of the option with the largest fit error</summary>
         public float FitErrBid { get { return body.fitErrBid; } set { body.fitErrBid = value; } }
@@ -5227,6 +5227,267 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // StockCloseQuote
+
+
+	/// <summary>
+	/// StockExchImbalance:127
+	/// </summary>
+	/// <remarks>
+	/// --- StockExchImbal ---
+	/// </remarks>
+
+    public partial class StockExchImbalance
+    {
+		public StockExchImbalance()
+		{
+		}
+		
+		public StockExchImbalance(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public StockExchImbalance(StockExchImbalance source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal StockExchImbalance(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as StockExchImbalance);
+		}
+		
+		public bool Equals(StockExchImbalance other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(StockExchImbalance target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.StockExchImbalance};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private StockKey ticker;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				ticker = other.ticker;
+				
+			}
+			
+			
+			public StockKey Ticker
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
+			}
+ 			
+			public StkExch Exch
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.exch; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.exch = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				ticker = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.ticker = ticker;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.ticker = ticker;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // StockExchImbalance.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public StockKeyLayout ticker;
+ 			public StkExch exch;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	ticker.Equals(other.ticker) &&
+					 	exch.Equals(other.exch);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = ticker.GetHashCode();
+ 					hashCode = (hashCode*397) ^ ((int) exch);
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // StockExchImbalance.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public float referencePx;
+			public int pairedQty;
+			public int totalImbalanceQty;
+			public int marketImbalanceQty;
+			public DateTimeLayout auctionTime;
+			public AuctionType auctionType;
+			public BuySell imbalanceSide;
+			public float continuousBookClrPx;
+			public float closingOnlyClrPx;
+			public float ssrFillingPx;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { }
+		
+		
+
+
+		/// <summary>The last sale if the last sale is at or between the current best quote.  Otherwise, it's the bid price if last sale is lower than bid price, or the offer price if last sale is higher than offer price.</summary>
+        public float ReferencePx { get { return body.referencePx; } set { body.referencePx = value; } }
+ 
+		/// <summary>Paired off quantity at the referencePx point.</summary>
+        public int PairedQty { get { return body.pairedQty; } set { body.pairedQty = value; } }
+ 
+		/// <summary>Total imbalance quantity at the referencePx point.</summary>
+        public int TotalImbalanceQty { get { return body.totalImbalanceQty; } set { body.totalImbalanceQty = value; } }
+ 
+		/// <summary>Total market order imbalance at the referencePx.</summary>
+        public int MarketImbalanceQty { get { return body.marketImbalanceQty; } set { body.marketImbalanceQty = value; } }
+ 
+		/// <summary>Auction time with seconds resolution in CST</summary>
+        public DateTime AuctionTime { get { return body.auctionTime; } set { body.auctionTime = value; } }
+ 
+		
+        public AuctionType AuctionType { get { return body.auctionType; } set { body.auctionType = value; } }
+ 
+		/// <summary>Side of the imbalance.</summary>
+        public BuySell ImbalanceSide { get { return body.imbalanceSide; } set { body.imbalanceSide = value; } }
+ 
+		/// <summary>Price closest to last sale where imbalance is zero.</summary>
+        public float ContinuousBookClrPx { get { return body.continuousBookClrPx; } set { body.continuousBookClrPx = value; } }
+ 
+		/// <summary>Indicative price against closing only order only.</summary>
+        public float ClosingOnlyClrPx { get { return body.closingOnlyClrPx; } set { body.closingOnlyClrPx = value; } }
+ 
+		/// <summary>SSR Filling Price.  This price is the price at which sell short interest will be filed in the matching in the event a sell short restriction is in effect for the security.</summary>
+        public float SsrFillingPx { get { return body.ssrFillingPx; } set { body.ssrFillingPx = value; } }
+ 
+		/// <summary>Source time (from the exchange) in CST</summary>
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // StockExchImbalance
 
 
 	/// <summary>

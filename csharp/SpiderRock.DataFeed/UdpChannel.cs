@@ -22,6 +22,7 @@
         CmeAdmin = 25,
         IceAdmin = 26,
         CfeAdmin = 27,
+        EqtAdmin = 28,
 
         OptQuoteIce = 30,
         OptQuoteCme = 31,
@@ -31,6 +32,7 @@
 
         IdxQuoteRut = 51,
         IdxQuoteCboe = 52,
+        IdxQuoteCboeNew = 53,
 
         ImpliedQuoteNmsLoop = 61,
 
@@ -73,6 +75,8 @@
         CobExchQuoteIse = 150,
         CobExchQuoteCboe = 151,
         CobExchQuotePhlx = 152,
-        CobExchQuoteIce = 153
+        CobExchQuoteIce = 153,
+
+        ImbalanceArca = 170
     }
 }

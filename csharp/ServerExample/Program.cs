@@ -47,9 +47,9 @@ namespace ServerExample
                     }
 
                     // Alternatively, it's possible to assign sets of channels to 
-                    // dedicated threads by creating channel thread groups:
+                    // dedicated threads by creating channel thread groups.
 
-                    //DblChannelThreadGroups = new[]
+                    //ChannelThreadGroups = new[]
                     //{
                     //    new DblChannelThreadGroup
                     //    {
@@ -67,7 +67,13 @@ namespace ServerExample
 
                     //        UdpChannel.StkNbboQuote3,
                     //        UdpChannel.StkNbboQuote4
+                    //    },
+
+                    //    new UdpChannelThreadGroup
+                    //    {
+                    //        UdpChannel.ImpliedQuoteNmsLoop
                     //    }
+
                     //},
 
 
@@ -149,7 +155,7 @@ namespace ServerExample
                 engine.StartWith(MessageType.OptionNbboQuote, MessageType.StockBookQuote);
 
                 // Alternatively, start without cache data
-                engine.Start();
+                // engine.Start();
 
                 Console.ReadLine();
             }

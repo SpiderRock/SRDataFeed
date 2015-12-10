@@ -3,13 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace SpiderRock.DataFeed
 {
-    public enum SysEnvironment : byte
-    {
-        None = 0,
-        Stable = 1,
-        Beta = 2
-    }
-
     public static class SysEnvironmentExtensions
     {
         private static readonly bool[] SysEnvironments = new bool[byte.MaxValue];

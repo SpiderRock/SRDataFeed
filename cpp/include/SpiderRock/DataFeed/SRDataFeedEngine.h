@@ -58,6 +58,7 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockCloseMark>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockCloseQuote>> observer);
+			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockExchImbalance>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockOpenMark>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockPrint>> observer);
 			
@@ -79,6 +80,7 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockCloseMark>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockCloseQuote>> observer);
+			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockExchImbalance>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockOpenMark>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockPrint>> observer);
 			
@@ -100,6 +102,7 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockCloseMark>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockCloseQuote>> observer);
+			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockExchImbalance>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockOpenMark>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockPrint>> observer);			
 		};
