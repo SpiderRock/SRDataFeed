@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerExample", "ServerExample\ServerExample.csproj", "{5F79B2DD-37DF-421B-A57A-FAC5D30D1542}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiderRock.DataFeed", "SpiderRock.DataFeed\SpiderRock.DataFeed.csproj", "{8F80FD2A-9838-480C-A50B-90051556C37D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark", "Benchmark\Benchmark.csproj", "{463E82A2-FD4B-44F8-9625-B3A65AE41A48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8F80FD2A-9838-480C-A50B-90051556C37D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F80FD2A-9838-480C-A50B-90051556C37D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F80FD2A-9838-480C-A50B-90051556C37D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{463E82A2-FD4B-44F8-9625-B3A65AE41A48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{463E82A2-FD4B-44F8-9625-B3A65AE41A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{463E82A2-FD4B-44F8-9625-B3A65AE41A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{463E82A2-FD4B-44F8-9625-B3A65AE41A48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
