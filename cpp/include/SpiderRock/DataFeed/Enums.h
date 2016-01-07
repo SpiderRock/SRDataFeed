@@ -16,12 +16,16 @@ namespace SpiderRock
 { 
 	namespace DataFeed
 	{
-		enum class AdjConvention : Enum 
+		enum class AssetType : Enum 
 		{
-			Original=0,
-			OSI=1,
-			SpcOnly=2,
-			OSIAlt=3
+			None=0,
+			EQT=1,
+			IDX=2,
+			BND=3,
+			CUR=4,
+			COM=5,
+			FUT=6,
+			SYN=7
 		};
 
  		enum class AuctionType : Enum 
@@ -49,31 +53,10 @@ namespace SpiderRock
 			Close=3
 		};
 
- 		enum class CallOrPut : Enum 
+ 		enum class CallPut : Enum 
 		{
 			Call=0,
 			Put=1
-		};
-
- 		enum class ExerciseTime : Enum 
-		{
-			None=0,
-			PM=1,
-			AM=2
-		};
-
- 		enum class ExerciseType : Enum 
-		{
-			None=0,
-			American=1,
-			European=2
-		};
-
- 		enum class ExpirationMap : Enum 
-		{
-			None=0,
-			ExactMatch=1,
-			UnderlyerMap=2
 		};
 
  		enum class FitType : Enum 
@@ -111,7 +94,11 @@ namespace SpiderRock
 			Live=1,
 			Hist=2,
 			PriorDay=3,
-			Skew=4
+			Skew=4,
+			Interp=5,
+			Test1=6,
+			Test2=7,
+			Test3=8
 		};
 
  		enum class MarkSource : Enum 
@@ -137,15 +124,6 @@ namespace SpiderRock
 			AfterHours=7
 		};
 
- 		enum class Multihedge : Enum 
-		{
-			None=0,
-			Simple=1,
-			Complex=2,
-			AllCash=3,
-			Binary=4
-		};
-
  		enum class OptExch : Enum 
 		{
 			None=0,
@@ -169,39 +147,11 @@ namespace SpiderRock
 			EDGO=18
 		};
 
- 		enum class OptionType : Enum 
-		{
-			None=0,
-			Equity=1,
-			Index=2,
-			Future=3,
-			Binary=4,
-			MapError=99
-		};
-
  		enum class PricingGroup : Enum 
 		{
 			Default=0,
 			Gelber=1,
 			User=2
-		};
-
- 		enum class PricingModel : Enum 
-		{
-			None=0,
-			Equity=1,
-			FutureMarginAppr=2,
-			FutureCashAppr=3,
-			FutureMarginExact=4,
-			FutureCashExact=5,
-			Eurodollar=6
-		};
-
- 		enum class SettleTime : Enum 
-		{
-			None=0,
-			PM=1,
-			AM=2
 		};
 
  		enum class StkExch : Enum 
@@ -232,32 +182,50 @@ namespace SpiderRock
 			Down=2
 		};
 
- 		enum class TimeMetric : Enum 
+ 		enum class SurfaceResult : Enum 
 		{
 			None=0,
-			D252=1,
-			D365=2
+			OK=1,
+			Init=2,
+			Cache=3,
+			PrevDay=4,
+			NullExpIdx=5,
+			NoStrikes=6,
+			NoBaseCurve=7,
+			BadBootAtm=8,
+			NoGoodStrikes=9,
+			BadAtmVol=10,
+			Bootstrap=11,
+			NoUPrc=12,
+			NoIVols=13,
+			NoModelPts=14
 		};
 
- 		enum class VolumeTier : Enum 
+ 		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			Top50=1
+			Stable=1,
+			Beta=2
 		};
 
- 		enum class YellowKey : Enum 
+ 		enum class TickerSrc : Enum 
 		{
 			None=0,
-			Govt=1,
-			Corp=2,
-			Mtge=3,
-			MMkt=4,
-			Muni=5,
-			Pfd=6,
-			Equity=7,
-			Comdty=8,
-			Index=9,
-			Curncy=10
+			SR=1,
+			NMS=2,
+			CME=3,
+			ICE=4,
+			CFE=5,
+			CBOT=6,
+			COIN=7,
+			NYMEX=8,
+			COMEX=9,
+			RUT=10,
+			CBOE=11,
+			KET=12,
+			ISE=13,
+			ARCA=14,
+			NYSE=15
 		};
 
  		enum class YesNo : Enum 

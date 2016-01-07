@@ -16,21 +16,6 @@ namespace SpiderRock.DataFeed.FrameHandling
     {
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, CCodeDefinition dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(CCodeDefinition.PKeyLayout) + sizeof(CCodeDefinition.BodyLayout) > max) throw new IOException("Max exceeded decoding CCodeDefinition");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((CCodeDefinition.PKeyLayout*) src); src += sizeof(CCodeDefinition.PKeyLayout);
- 				dest.body = *((CCodeDefinition.BodyLayout*) src); src += sizeof(CCodeDefinition.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, FutureBookQuote dest, byte* max)
 		{
 			unchecked
@@ -220,38 +205,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 				dest.header = *((Header*) src); src += sizeof(Header);
 				dest.pkey.body = *((OptionSettlementMark.PKeyLayout*) src); src += sizeof(OptionSettlementMark.PKeyLayout);
  				dest.body = *((OptionSettlementMark.BodyLayout*) src); src += sizeof(OptionSettlementMark.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, RootDefinition dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(RootDefinition.PKeyLayout) + sizeof(RootDefinition.BodyLayout) > max) throw new IOException("Max exceeded decoding RootDefinition");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((RootDefinition.PKeyLayout*) src); src += sizeof(RootDefinition.PKeyLayout);
- 				dest.body = *((RootDefinition.BodyLayout*) src); src += sizeof(RootDefinition.BodyLayout);
- 
-				// UnderlyingItem Repeat Section
-
-				if (src + sizeof(ushort) > max) throw new IOException("Max exceeded decoding RootDefinition.Underlying length");
-				ushort size = *((ushort*) src); src += sizeof(ushort);
-				if (src + size * RootDefinition.UnderlyingItem.Length > max) throw new IOException("Max exceeded decoding RootDefinition.Underlying items");
-
-				dest.UnderlyingList = new RootDefinition.UnderlyingItem[size];
-				
-				for (int i = 0; i < size; i++)
-				{
-					var item = new RootDefinition.UnderlyingItem();
-					item.Ticker = StockKey.GetCreateStockKey(*((StockKeyLayout*) src)); src += sizeof(StockKeyLayout);
- 					item.Spc = *((float*) src); src += sizeof(float);
-
-					dest.UnderlyingList[i] = item;
-				}
 			
 				return src;
 			}
