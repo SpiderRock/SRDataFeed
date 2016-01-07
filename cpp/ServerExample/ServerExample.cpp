@@ -20,7 +20,6 @@ using SpiderRock::Net::IPEndPoint;
 
 using SpiderRock::DataFeed::SRDataFeedEngine;
 using SpiderRock::DataFeed::DataChannel;
-using SpiderRock::DataFeed::SysEnvironment;
 
 using SpiderRock::DataFeed::UpdateEventObserver;
 using SpiderRock::DataFeed::ChangeEventObserver;
@@ -88,7 +87,7 @@ int main()
 		in_addr ifaddr;
 		ifaddr.s_addr = inet_addr("local_interface");
 
-		SRDataFeedEngine engine(SysEnvironment::Beta, ifaddr);
+		SRDataFeedEngine engine(ifaddr);
 
 		engine.CreateThreadGroup(
 			SRDataFeedEngine::Protocol::UDP,

@@ -1,0 +1,97 @@
+#include "stdafx.h"
+
+#include <iostream>
+#include <memory>
+#include <string>
+#include <time.h>
+
+#ifdef _WINDOWS_
+#	include <tchar.h>
+#else
+#	include <netdb.h>
+#endif
+
+#include <chrono>
+#include <thread>
+
+#include "SRDataFeed.h"
+
+using SpiderRock::Net::IPEndPoint;
+using SpiderRock::DataFeed::SRDataFeedEngine;
+using SpiderRock::DataFeed::DataChannel;
+using SpiderRock::DataFeed::ChangeEventObserver;
+using SpiderRock::DataFeed::StockExchImbalance;
+using SpiderRock::DataFeed::Ticker;
+using SpiderRock::DataFeed::MessageType;
+
+using namespace std;
+
+class Observer : public ChangeEventObserver<StockExchImbalance>
+{
+public:
+	void OnChange(const StockExchImbalance& obj)
+	{
+		cout 
+			<< "ticker:" << *obj.pkey().ticker().ticker().str() 
+			<< ", exch:" << static_cast<int>(obj.pkey().exch()) 
+			<< ", referencePx:" << obj.referencePx() 
+			<< ", pariedQty:" << obj.pairedQty() 
+			<< ", totalImbalanceQty:" << obj.totalImbalanceQty() 
+			<< ", marketImbalanceQty:" << obj.marketImbalanceQty() 
+			<< ", auctionTime:" << obj.auctionTime() 
+			<< ", auctionType:" << static_cast<int>(obj.auctionType())
+			<< ", imbalanceSide:" << static_cast<int>(obj.imbalanceSide())
+			<< ", continuousBookClrPx:" << obj.continuousBookClrPx() 
+			<< ", closingOnlyClrPx:" << obj.closingOnlyClrPx() 
+			<< ", ssrFillingPx:" << obj.ssrFillingPx() 
+			<< ", timestamp:" << obj.timestamp() 
+			<< endl;
+	}
+};
+
+#ifdef _WINDOWS_
+int _tmain(int argc, _TCHAR* argv[])
+#else
+int main()
+#endif
+{
+	try
+	{
+		in_addr ifaddr;
+		ifaddr.s_addr = inet_addr("local_interface");
+
+		SRDataFeedEngine engine(ifaddr);
+
+		engine.CreateThreadGroup(
+			SRDataFeedEngine::Protocol::UDP,
+			{
+				DataChannel::ImbalanceArca
+			});
+
+		auto observer = make_shared<Observer>();
+		engine.RegisterObserver(dynamic_pointer_cast<ChangeEventObserver<StockExchImbalance>>(observer));
+
+		engine.Start();
+
+		auto start = clock();
+
+		engine.MakeCacheRequest(
+			{
+				MessageType::StockExchImbalance 
+			}
+		);
+
+		cout << "Cache request time: " << ((double)clock() - start) / CLOCKS_PER_SEC << "s" << endl;
+
+		this_thread::sleep_for(chrono::milliseconds(5000));
+
+		cout << endl << "Exiting..." << endl;
+	}
+	catch (const runtime_error& e)
+	{
+		cerr << e.what() << endl;
+	}
+
+	return 0;
+}
+
