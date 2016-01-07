@@ -16,7 +16,6 @@
 #include "DataChannel.h"
 #include "EventObserver.h"
 #include "CoreMessages.h"
-#include "SysEnvironment.h"
 #include "SpiderRock/Net/IPEndPoint.h"
 
 namespace SpiderRock

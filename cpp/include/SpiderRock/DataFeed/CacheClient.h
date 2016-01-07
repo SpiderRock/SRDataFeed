@@ -14,7 +14,6 @@
 #	include <arpa/inet.h>
 #endif
 
-#include "SpiderRock/DataFeed/SysEnvironment.h"
 #include "SpiderRock/DataFeed/MessageType.h"
 #include "SpiderRock/DataFeed/MessageHandler.h"
 #include "SpiderRock/DataFeed/FrameHandler.h"

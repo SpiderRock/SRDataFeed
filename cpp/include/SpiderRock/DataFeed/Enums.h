@@ -10,12 +10,13 @@
 
 #include "stdafx.h"
 
-#include "Fields.h"
-
 namespace SpiderRock
 { 
 	namespace DataFeed
 	{
+		typedef uint8_t Enum;
+		typedef uint8_t Flag;
+
 		enum class AssetType : Enum 
 		{
 			None=0,
