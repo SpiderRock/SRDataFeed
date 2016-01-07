@@ -30,7 +30,7 @@ namespace SpiderRock
 			SpiderRock::Net::IPEndPoint GetIPEndPoint(DataChannel channel);
 
 		public:
-			SRDataFeedEngine(SysEnvironment environment, in_addr device_address);
+			SRDataFeedEngine(in_addr device_address);
 			~SRDataFeedEngine();
 			
 			enum class Protocol { DBL, UDP };
