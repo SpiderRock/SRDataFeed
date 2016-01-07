@@ -89,7 +89,7 @@ namespace SRStreamBenchmark
                 SRTrace.AddGlobalTraceListener(new SRFileTraceListener());
                 SRTrace.AddGlobalTraceListener(new SRConsoleTraceListener());
 
-                using (var engine = new SRDataFeedEngine {SysEnvironment = SysEnvironment.Beta})
+                using (var engine = new SRDataFeedEngine())
                 {
                     engine.IFAddress = ifAddr;
                     engine.Protocol = proto;

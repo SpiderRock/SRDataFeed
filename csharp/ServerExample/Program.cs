@@ -19,8 +19,6 @@ namespace ServerExample
 
                 engine = new SRDataFeedEngine
                 {
-                    SysEnvironment = SysEnvironment.Beta,
-
                     // TODO: Substitute the address of the adapter
 
                     IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
