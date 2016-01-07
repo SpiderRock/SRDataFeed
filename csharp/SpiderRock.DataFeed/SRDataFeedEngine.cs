@@ -27,13 +27,14 @@ namespace SpiderRock.DataFeed
         private bool disposed;
         private FrameHandler frameHandler;
         private readonly ChannelFactory channelFactory;
+        private readonly SysEnvironment sysEnvironment;
 
         private ChannelStatisticsAggregator channelStatisticsAggregator;
         private ProcessStatisticsAggregator processStatisticsAggregator;
 
         public SRDataFeedEngine()
         {
-            SysEnvironment = SysEnvironment.Beta;
+            sysEnvironment = SysEnvironment.Beta;
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
             LatencyMode = GCLatencyMode.SustainedLowLatency;
@@ -69,8 +70,6 @@ namespace SpiderRock.DataFeed
 
         public ChannelThreadGroup[] ChannelThreadGroups { get; set; }
 
-        public SysEnvironment SysEnvironment { get; set; }
-
         public IPAddress IFAddress { get; set; }
 
         public UdpChannel[] Channels { get; set; }
@@ -92,7 +91,7 @@ namespace SpiderRock.DataFeed
         {
             get
             {
-                var cacheServerPort = 2340 + ((int) SysEnvironment*1000);
+                var cacheServerPort = 2340 + ((int) sysEnvironment*1000);
                 yield return new IPEndPoint(IPAddress.Parse("198.102.4.145"), cacheServerPort);
                 yield return new IPEndPoint(IPAddress.Parse("198.102.4.146"), cacheServerPort);
             }
@@ -110,7 +109,7 @@ namespace SpiderRock.DataFeed
             {
                 if (running) return;
 
-                if (SysEnvironment == SysEnvironment.None)
+                if (sysEnvironment == SysEnvironment.None)
                 {
                     throw new InvalidOperationException("Required SysEnvironment property set to an invalid value None");
                 }
@@ -128,11 +127,11 @@ namespace SpiderRock.DataFeed
                     throw new InvalidOperationException("No channels are configured");
                 }
 
-                SRFileTraceListener.SysEnvironment = SysEnvironment;
+                SRFileTraceListener.SysEnvironment = sysEnvironment;
 
                 GCSettings.LatencyMode = LatencyMode;
 
-                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine SysEnvironment: {0}", SysEnvironment);
+                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine SysEnvironment: {0}", sysEnvironment);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine IFAddress: {0}", IFAddress);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Cache servers: {0}", string.Join(", ", CacheServers.Select(ep => ep.ToString())));
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine ReceiveBufferSize: {0}", ReceiveBufferSize);
@@ -302,18 +301,18 @@ namespace SpiderRock.DataFeed
 
         private IPEndPoint GetIPEndPoint(UdpChannel channel)
         {
-            int envNumber = 30 + (int) SysEnvironment;
+            int envNumber = 30 + (int) sysEnvironment;
             int channelNumber = (int) channel;
 
             int ipPort = 40000 + (envNumber*500) + channelNumber;
 
             string ipAddress;
 
-            if (SysEnvironment == SysEnvironment.Stable)
+            if (sysEnvironment == SysEnvironment.Stable)
             {
                 ipAddress = string.Format("233.74.249.{0}", channelNumber);
             }
-            else if (SysEnvironment == SysEnvironment.Beta)
+            else if (sysEnvironment == SysEnvironment.Beta)
             {
                 ipAddress = string.Format("233.117.185.{0}", channelNumber);
             }
@@ -321,7 +320,7 @@ namespace SpiderRock.DataFeed
             {
                 throw new NotSupportedException(
                     string.Format("GetIPEndPoint() does not support SysEnvironment {0}",
-                        SysEnvironment));
+                        sysEnvironment));
             }
 
             return new IPEndPoint(IPAddress.Parse(ipAddress), ipPort);

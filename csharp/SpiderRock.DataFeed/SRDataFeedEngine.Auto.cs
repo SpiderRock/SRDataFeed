@@ -3014,7 +3014,7 @@ namespace SpiderRock.DataFeed
         {
             if (frameHandler == null)
             {
-                frameHandler = new FrameHandler(SysEnvironment);
+                frameHandler = new FrameHandler(sysEnvironment);
                 frameHandler.OnMessage(MessageType.FutureBookQuote, futureBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FuturePrint, futurePrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FutureSettlementMark, futureSettlementMarkContainerCache.OnMessage);
