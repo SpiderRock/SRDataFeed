@@ -19,162 +19,6 @@ namespace SpiderRock.DataFeed
     {
         #region Container cache definitions
 
-        private sealed class CCodeDefinitionContainerCache
-        {
-            #region Events
-            
-            [ThreadStatic] private static CreatedEventArgs<CCodeDefinition> createdEventArgs;
-            [ThreadStatic] private static ChangedEventArgs<CCodeDefinition> changedEventArgs;
-            [ThreadStatic] private static UpdatedEventArgs<CCodeDefinition> updatedEventArgs;
-
-            public event EventHandler<CreatedEventArgs<CCodeDefinition>> Created;
-            public event EventHandler<ChangedEventArgs<CCodeDefinition>> Changed;
-            public event EventHandler<UpdatedEventArgs<CCodeDefinition>> Updated;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static CreatedEventArgs<CCodeDefinition> GetCreatedEventArgs()
-            {
-                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<CCodeDefinition>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static ChangedEventArgs<CCodeDefinition> GetChangedEventArgs()
-            {
-                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<CCodeDefinition>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static UpdatedEventArgs<CCodeDefinition> GetUpdatedEventArgs()
-            {
-                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<CCodeDefinition>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(CCodeDefinition obj)
-            {
-                EventHandler<CreatedEventArgs<CCodeDefinition>> created = Created;
-                if (created == null) return;
-                try
-                {
-                    CreatedEventArgs<CCodeDefinition> args = GetCreatedEventArgs();
-                    args.Created = obj;
-                    created(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "CCodeDefinition.FireCreatedEventIfSubscribed exception");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(CCodeDefinition obj)
-            {
-                EventHandler<ChangedEventArgs<CCodeDefinition>> changed = Changed;
-                if (changed == null) return;
-                try
-                {
-                    ChangedEventArgs<CCodeDefinition> args = GetChangedEventArgs();
-                    args.Changed = obj;
-                    changed(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "CCodeDefinition.FireChangedEventIfSubscribed exception");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(CCodeDefinition current, CCodeDefinition previous)
-            {
-                try
-                {
-                    UpdatedEventArgs<CCodeDefinition> args = GetUpdatedEventArgs();
-                    args.Current = current;
-                    args.Previous = previous;
-                    Updated(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "CCodeDefinition.FireUpdatedEvent exception");
-                }
-            }
-
-            #endregion
-            
-            private readonly Dictionary<CCodeDefinition.PKeyLayout, CCodeDefinition> objectsByKey = new Dictionary<CCodeDefinition.PKeyLayout, CCodeDefinition>();
-            
-            [ThreadStatic] private static CCodeDefinition decodeTarget;
-
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
-            {
-                if (hdr.keylen != sizeof(CCodeDefinition.PKeyLayout))
-                {
-                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(CCodeDefinition.PKeyLayout))));
-                }           
-                
-                CCodeDefinition.PKeyLayout pkey = *(CCodeDefinition.PKeyLayout*)(ptr + offset + sizeof(Header)); 
-                CCodeDefinition item;        
-                
-                if (!objectsByKey.TryGetValue(pkey, out item))
-                {       
-                    lock (objectsByKey)
-                    {
-                        if (!objectsByKey.TryGetValue(pkey, out item))
-                        {       
-                            item = new CCodeDefinition(pkey) {TimeRcvd = timestamp};
-                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-                            
-                            FireCreatedEventIfSubscribed(item);
-                            if (Updated != null)
-                            {
-                                FireUpdatedEvent(item, null);
-                            }
-                            FireChangedEventIfSubscribed(item);
-
-                            item.header.bits &= ~HeaderBits.FromCache;
-                            
-                            objectsByKey[pkey] = item;
-                            
-                            return;                                         
-                        }   
-                    }   
-                }
-                
-                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
-
-                item.TimeRcvd = timestamp;
-                item.Invalidate();
-
-                if (Updated != null)
-                {
-                    if (decodeTarget == null) decodeTarget = new CCodeDefinition();
-                    
-                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
-
-                    decodeTarget.Invalidate();
-                    item.pkey.CopyTo(decodeTarget.pkey);
-                    
-                    FireUpdatedEvent(decodeTarget, item);
-                    
-                    decodeTarget.CopyTo(item);                                                                              
-                }
-                else
-                {
-                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-                }
-
-                FireChangedEventIfSubscribed(item);         
-            }
-            
-            public void Clear()
-            {
-                lock (objectsByKey)
-                {
-                    objectsByKey.Clear();
-                }
-            }
-        }   
- 
         private sealed class FutureBookQuoteContainerCache
         {
             #region Events
@@ -2203,162 +2047,6 @@ namespace SpiderRock.DataFeed
             }
         }   
  
-        private sealed class RootDefinitionContainerCache
-        {
-            #region Events
-            
-            [ThreadStatic] private static CreatedEventArgs<RootDefinition> createdEventArgs;
-            [ThreadStatic] private static ChangedEventArgs<RootDefinition> changedEventArgs;
-            [ThreadStatic] private static UpdatedEventArgs<RootDefinition> updatedEventArgs;
-
-            public event EventHandler<CreatedEventArgs<RootDefinition>> Created;
-            public event EventHandler<ChangedEventArgs<RootDefinition>> Changed;
-            public event EventHandler<UpdatedEventArgs<RootDefinition>> Updated;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static CreatedEventArgs<RootDefinition> GetCreatedEventArgs()
-            {
-                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<RootDefinition>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static ChangedEventArgs<RootDefinition> GetChangedEventArgs()
-            {
-                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<RootDefinition>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static UpdatedEventArgs<RootDefinition> GetUpdatedEventArgs()
-            {
-                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<RootDefinition>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(RootDefinition obj)
-            {
-                EventHandler<CreatedEventArgs<RootDefinition>> created = Created;
-                if (created == null) return;
-                try
-                {
-                    CreatedEventArgs<RootDefinition> args = GetCreatedEventArgs();
-                    args.Created = obj;
-                    created(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "RootDefinition.FireCreatedEventIfSubscribed exception");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(RootDefinition obj)
-            {
-                EventHandler<ChangedEventArgs<RootDefinition>> changed = Changed;
-                if (changed == null) return;
-                try
-                {
-                    ChangedEventArgs<RootDefinition> args = GetChangedEventArgs();
-                    args.Changed = obj;
-                    changed(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "RootDefinition.FireChangedEventIfSubscribed exception");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(RootDefinition current, RootDefinition previous)
-            {
-                try
-                {
-                    UpdatedEventArgs<RootDefinition> args = GetUpdatedEventArgs();
-                    args.Current = current;
-                    args.Previous = previous;
-                    Updated(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "RootDefinition.FireUpdatedEvent exception");
-                }
-            }
-
-            #endregion
-            
-            private readonly Dictionary<RootDefinition.PKeyLayout, RootDefinition> objectsByKey = new Dictionary<RootDefinition.PKeyLayout, RootDefinition>();
-            
-            [ThreadStatic] private static RootDefinition decodeTarget;
-
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
-            {
-                if (hdr.keylen != sizeof(RootDefinition.PKeyLayout))
-                {
-                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(RootDefinition.PKeyLayout))));
-                }           
-                
-                RootDefinition.PKeyLayout pkey = *(RootDefinition.PKeyLayout*)(ptr + offset + sizeof(Header)); 
-                RootDefinition item;        
-                
-                if (!objectsByKey.TryGetValue(pkey, out item))
-                {       
-                    lock (objectsByKey)
-                    {
-                        if (!objectsByKey.TryGetValue(pkey, out item))
-                        {       
-                            item = new RootDefinition(pkey) {TimeRcvd = timestamp};
-                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-                            
-                            FireCreatedEventIfSubscribed(item);
-                            if (Updated != null)
-                            {
-                                FireUpdatedEvent(item, null);
-                            }
-                            FireChangedEventIfSubscribed(item);
-
-                            item.header.bits &= ~HeaderBits.FromCache;
-                            
-                            objectsByKey[pkey] = item;
-                            
-                            return;                                         
-                        }   
-                    }   
-                }
-                
-                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
-
-                item.TimeRcvd = timestamp;
-                item.Invalidate();
-
-                if (Updated != null)
-                {
-                    if (decodeTarget == null) decodeTarget = new RootDefinition();
-                    
-                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
-
-                    decodeTarget.Invalidate();
-                    item.pkey.CopyTo(decodeTarget.pkey);
-                    
-                    FireUpdatedEvent(decodeTarget, item);
-                    
-                    decodeTarget.CopyTo(item);                                                                              
-                }
-                else
-                {
-                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-                }
-
-                FireChangedEventIfSubscribed(item);         
-            }
-            
-            public void Clear()
-            {
-                lock (objectsByKey)
-                {
-                    objectsByKey.Clear();
-                }
-            }
-        }   
- 
         private sealed class StockBookQuoteContainerCache
         {
             #region Events
@@ -3300,8 +2988,7 @@ namespace SpiderRock.DataFeed
         
         #region Container cache declarations
         
-        private readonly CCodeDefinitionContainerCache cCodeDefinitionContainerCache = new CCodeDefinitionContainerCache();
-         private readonly FutureBookQuoteContainerCache futureBookQuoteContainerCache = new FutureBookQuoteContainerCache();
+        private readonly FutureBookQuoteContainerCache futureBookQuoteContainerCache = new FutureBookQuoteContainerCache();
          private readonly FuturePrintContainerCache futurePrintContainerCache = new FuturePrintContainerCache();
          private readonly FutureSettlementMarkContainerCache futureSettlementMarkContainerCache = new FutureSettlementMarkContainerCache();
          private readonly IndexQuoteContainerCache indexQuoteContainerCache = new IndexQuoteContainerCache();
@@ -3314,7 +3001,6 @@ namespace SpiderRock.DataFeed
          private readonly OptionPrintContainerCache optionPrintContainerCache = new OptionPrintContainerCache();
          private readonly OptionRiskFactorContainerCache optionRiskFactorContainerCache = new OptionRiskFactorContainerCache();
          private readonly OptionSettlementMarkContainerCache optionSettlementMarkContainerCache = new OptionSettlementMarkContainerCache();
-         private readonly RootDefinitionContainerCache rootDefinitionContainerCache = new RootDefinitionContainerCache();
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
          private readonly StockCloseMarkContainerCache stockCloseMarkContainerCache = new StockCloseMarkContainerCache();
          private readonly StockCloseQuoteContainerCache stockCloseQuoteContainerCache = new StockCloseQuoteContainerCache();
@@ -3329,8 +3015,7 @@ namespace SpiderRock.DataFeed
             if (frameHandler == null)
             {
                 frameHandler = new FrameHandler(SysEnvironment);
-                frameHandler.OnMessage(MessageType.CCodeDefinition, cCodeDefinitionContainerCache.OnMessage);
-                 frameHandler.OnMessage(MessageType.FutureBookQuote, futureBookQuoteContainerCache.OnMessage);
+                frameHandler.OnMessage(MessageType.FutureBookQuote, futureBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FuturePrint, futurePrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FutureSettlementMark, futureSettlementMarkContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.IndexQuote, indexQuoteContainerCache.OnMessage);
@@ -3343,7 +3028,6 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.OptionPrint, optionPrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionRiskFactor, optionRiskFactorContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionSettlementMark, optionSettlementMarkContainerCache.OnMessage);
-                 frameHandler.OnMessage(MessageType.RootDefinition, rootDefinitionContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockCloseMark, stockCloseMarkContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockCloseQuote, stockCloseQuoteContainerCache.OnMessage);
@@ -3356,8 +3040,7 @@ namespace SpiderRock.DataFeed
         
         private void ClearContainerCaches()
         {
-            cCodeDefinitionContainerCache.Clear();
-             futureBookQuoteContainerCache.Clear();
+            futureBookQuoteContainerCache.Clear();
              futurePrintContainerCache.Clear();
              futureSettlementMarkContainerCache.Clear();
              indexQuoteContainerCache.Clear();
@@ -3370,7 +3053,6 @@ namespace SpiderRock.DataFeed
              optionPrintContainerCache.Clear();
              optionRiskFactorContainerCache.Clear();
              optionSettlementMarkContainerCache.Clear();
-             rootDefinitionContainerCache.Clear();
              stockBookQuoteContainerCache.Clear();
              stockCloseMarkContainerCache.Clear();
              stockCloseQuoteContainerCache.Clear();
@@ -3384,24 +3066,6 @@ namespace SpiderRock.DataFeed
 
         private readonly object eventLock = new object();
         
-        public event EventHandler<CreatedEventArgs<CCodeDefinition>> CCodeDefinitionCreated
-        {
-            add     { lock (eventLock) { cCodeDefinitionContainerCache.Created += value; } }
-            remove  { lock (eventLock) { cCodeDefinitionContainerCache.Created -= value; } }
-        }
-        
-        public event EventHandler<ChangedEventArgs<CCodeDefinition>> CCodeDefinitionChanged
-        {
-            add     { lock (eventLock) { cCodeDefinitionContainerCache.Changed += value; } }
-            remove  { lock (eventLock) { cCodeDefinitionContainerCache.Changed -= value; } }
-        }
-        
-        public event EventHandler<UpdatedEventArgs<CCodeDefinition>> CCodeDefinitionUpdated
-        {
-            add     { lock (eventLock) { cCodeDefinitionContainerCache.Updated += value; } }
-            remove  { lock (eventLock) { cCodeDefinitionContainerCache.Updated -= value; } }
-        }
-         
         public event EventHandler<CreatedEventArgs<FutureBookQuote>> FutureBookQuoteCreated
         {
             add     { lock (eventLock) { futureBookQuoteContainerCache.Created += value; } }
@@ -3634,24 +3298,6 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { optionSettlementMarkContainerCache.Updated += value; } }
             remove  { lock (eventLock) { optionSettlementMarkContainerCache.Updated -= value; } }
-        }
-         
-        public event EventHandler<CreatedEventArgs<RootDefinition>> RootDefinitionCreated
-        {
-            add     { lock (eventLock) { rootDefinitionContainerCache.Created += value; } }
-            remove  { lock (eventLock) { rootDefinitionContainerCache.Created -= value; } }
-        }
-        
-        public event EventHandler<ChangedEventArgs<RootDefinition>> RootDefinitionChanged
-        {
-            add     { lock (eventLock) { rootDefinitionContainerCache.Changed += value; } }
-            remove  { lock (eventLock) { rootDefinitionContainerCache.Changed -= value; } }
-        }
-        
-        public event EventHandler<UpdatedEventArgs<RootDefinition>> RootDefinitionUpdated
-        {
-            add     { lock (eventLock) { rootDefinitionContainerCache.Updated += value; } }
-            remove  { lock (eventLock) { rootDefinitionContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<StockBookQuote>> StockBookQuoteCreated

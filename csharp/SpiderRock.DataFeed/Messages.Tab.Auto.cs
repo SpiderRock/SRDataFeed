@@ -13,51 +13,6 @@ using SpiderRock.DataFeed.Layouts;
 
 namespace SpiderRock.DataFeed
 {
-    public partial class CCodeDefinition
-    {
-		[ThreadStatic] private static StringBuilder recordBuilder;
-
-		public const string TabHeader = "ccode\tfutexch\tticker_tk\tticker_ts\tticker_at\tsettleTime\tpositionLimit\tcontractSize\tminTickSize\tclearingCode\tricCode\tbbgRoot\tbbgGroup\tdescription\tlastUpdate";
-
-		public string TabRecord
-        {
-            get
-			{
-				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
-				else						recordBuilder.Clear();
-
-				recordBuilder.Append(pkey.Ccode);
-				recordBuilder.Append("\t");
-
-				recordBuilder.Append(Futexch);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Ticker.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(SettleTime);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(PositionLimit);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(ContractSize);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(MinTickSize);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(ClearingCode);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(RicCode);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(BbgRoot);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(BbgGroup);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Description);
-				recordBuilder.Append("\t");
-				recordBuilder.AppendInTabRecordFormat(LastUpdate);
-
-				return recordBuilder.ToString();
-			}
-        }
-    }
-
     internal partial class CacheComplete
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
@@ -318,7 +273,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tpricingGroup\tpricingAccnt\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\texType\taxisVol\tcAtm\tpAtm\tminAtmVol\tmaxAtmVol\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tsdivLoEMA\tsdivHiEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\ttimestamp";
+		public const string TabHeader = "fkey_rt\tfkey_ts\tfkey_at\tfkey_yr\tfkey_mn\tfkey_dy\tsurfaceType\tpricingGroup\tpricingAccnt\tticker_tk\tticker_ts\tticker_at\tuBid\tuAsk\tyears\trate\tsdiv\tddiv\texType\taxisVolRT\taxisFUPrc\tcAtm\tpAtm\tminAtmVol\tmaxAtmVol\tadjDI\tadjD8\tadjD7\tadjD6\tadjD5\tadjD4\tadjD3\tadjD2\tadjD1\tadjU1\tadjU2\tadjU3\tadjU4\tadjU5\tadjU6\tadjU7\tadjU8\tadjUI\tslope\tcmult\tpwidth\tvwidth\tsdivEMA\tsdivLoEMA\tsdivHiEMA\tatmMAC\tcprMAC\tcAtmMove\tpAtmMove\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tfitType\tsFKey_rt\tsFKey_ts\tsFKey_at\tsFKey_yr\tsFKey_mn\tsFKey_dy\tsType\tsTimestamp\tcounter\tsurfaceResult\ttimestamp";
 
 		public string TabRecord
         {
@@ -352,7 +307,9 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(ExType);
 				recordBuilder.Append("\t");
-				recordBuilder.Append(AxisVol);
+				recordBuilder.Append(AxisVolRT);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AxisFUPrc);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(CAtm);
 				recordBuilder.Append("\t");
@@ -459,6 +416,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.AppendInTabRecordFormat(STimestamp);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Counter);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SurfaceResult);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 
@@ -919,63 +878,6 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(Volume);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
-
-				return recordBuilder.ToString();
-			}
-        }
-    }
-
-    public partial class RootDefinition
-    {
-		[ThreadStatic] private static StringBuilder recordBuilder;
-
-		public const string TabHeader = "root_rt\troot_ts\troot_at\tticker_tk\tticker_ts\tticker_at\tosiRoot\tccode\texpirationMap\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tvolumeTier\tpositionLimit\texchanges\tstrikeRatio\tcashOnExercise\tsharesPerCn\tadjConvention\tlastUpdate\tUnderlying";
-
-		public string TabRecord
-        {
-            get
-			{
-				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
-				else						recordBuilder.Clear();
-
-				recordBuilder.Append(pkey.Root.TabRecord);
-				recordBuilder.Append("\t");
-
-				recordBuilder.Append(Ticker.TabRecord);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(OsiRoot);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Ccode);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(ExpirationMap);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(OptionType);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Multihedge);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(ExerciseTime);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(ExerciseType);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(TimeMetric);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(PricingModel);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(VolumeTier);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(PositionLimit);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Exchanges);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(StrikeRatio);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(CashOnExercise);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(SharesPerCn);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(AdjConvention);
-				recordBuilder.Append("\t");
-				recordBuilder.AppendInTabRecordFormat(LastUpdate);
 
 				return recordBuilder.ToString();
 			}

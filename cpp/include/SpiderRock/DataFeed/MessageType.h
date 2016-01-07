@@ -22,7 +22,6 @@ namespace SpiderRock
 		{
 			None = 0,
 			
-			CCodeDefinition = 110,
 			FutureBookQuote = 111,
 			FuturePrint = 115,
 			FutureSettlementMark = 375,
@@ -36,7 +35,6 @@ namespace SpiderRock
 			OptionPrint = 106,
 			OptionRiskFactor = 379,
 			OptionSettlementMark = 374,
-			RootDefinition = 100,
 			StockBookQuote = 121,
 			StockCloseMark = 125,
 			StockCloseQuote = 123,

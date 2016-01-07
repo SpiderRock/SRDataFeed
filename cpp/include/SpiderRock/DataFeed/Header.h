@@ -3,7 +3,6 @@
 #include "stdafx.h"
 
 #include "Fields.h"
-#include "SysEnvironment.h"
 #include "MessageType.h"
 
 namespace SpiderRock
