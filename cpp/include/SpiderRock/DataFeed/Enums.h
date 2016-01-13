@@ -26,7 +26,9 @@ namespace SpiderRock
 			CUR=4,
 			COM=5,
 			FUT=6,
-			SYN=7
+			SYN=7,
+			WAR=8,
+			FLX=9
 		};
 
  		enum class AuctionType : Enum 
@@ -145,7 +147,8 @@ namespace SpiderRock
 			NYMEX=15,
 			COMEX=16,
 			ICE=17,
-			EDGO=18
+			EDGO=18,
+			MCRY=19
 		};
 
  		enum class PricingGroup : Enum 
