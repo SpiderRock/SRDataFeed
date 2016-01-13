@@ -65,6 +65,8 @@ namespace SpiderRock
 		template<class _Tkey, class _Tmessage>
 		void MessageEventSource<_Tkey, _Tmessage>::Handle(Header* header, uint64_t timestamp)
 		{
+			static _Tmessage nullMessage;
+
 			if (header->key_length != sizeof(_Tkey))
 			{
 				throw std::runtime_error(
@@ -95,6 +97,11 @@ namespace SpiderRock
 					if (on_change_observers_.size() > 0)
 					{
 						for (const auto& obs : on_change_observers_) obs->OnChange(received);
+					}
+
+					if (on_update_observers_.size() > 0)
+					{
+						for (const auto& obs : on_update_observers_) obs->OnUpdate(received, nullMessage);
 					}
 
 					received.header().bits = ~HeaderBits::FromCache & received.header().bits;
