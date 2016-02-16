@@ -304,7 +304,7 @@ namespace SpiderRock.DataFeed
             int envNumber = 30 + (int) sysEnvironment;
             int channelNumber = (int) channel;
 
-            int ipPort = 40000 + (envNumber*500) + channelNumber;
+            int ipPort = 22000 + (envNumber*250) + channelNumber;
 
             string ipAddress;
 
