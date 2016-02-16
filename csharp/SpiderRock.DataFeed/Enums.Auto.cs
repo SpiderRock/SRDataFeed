@@ -10,7 +10,7 @@ namespace SpiderRock.DataFeed
 {
     // ReSharper disable InconsistentNaming
 
-	public enum AssetType : byte { None=0,EQT=1,IDX=2,BND=3,CUR=4,COM=5,FUT=6,SYN=7,WAR=8,FLX=9 };		
+	public enum AssetType : byte { None=0,EQT=1,IDX=2,BND=3,CUR=4,COM=5,FUT=6,SYN=7,WAR=8,FLX=9,MUT=10 };		
  	public enum AuctionType : byte { None=0,Open=1,Market=2,Halt=3,Closing=4,RegulatoryImbalance=5 };		
  	public enum BuySell : byte { None=0,Buy=1,Sell=2 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2,Close=3 };		
