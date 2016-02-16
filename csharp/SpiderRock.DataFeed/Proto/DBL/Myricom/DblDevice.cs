@@ -11,8 +11,6 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
         public IPAddress IFAddress { get; private set; }
         public IntPtr Handle { get; private set; }
 
-        public Timer Monitor { get; set; }
-
         private int readLoopCount;        
         private int readErrorCount;
 
