@@ -134,7 +134,7 @@ IPEndPoint SRDataFeedEngine::GetIPEndPoint(DataChannel channel)
 {
 	int32_t envnum = 30 + static_cast<int32_t>(impl_->environment);
 	int32_t chnum = static_cast<int32_t>(channel);
-	int32_t ipport = 40000 + (envnum * 500) + chnum;
+	int32_t ipport = 22000 + (envnum * 250) + chnum;
 
 	string ipaddr;
 

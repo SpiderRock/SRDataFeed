@@ -28,7 +28,8 @@ namespace SpiderRock
 			FUT=6,
 			SYN=7,
 			WAR=8,
-			FLX=9
+			FLX=9,
+			MUT=10
 		};
 
  		enum class AuctionType : Enum 
