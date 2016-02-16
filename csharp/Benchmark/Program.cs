@@ -67,7 +67,7 @@ namespace SRStreamBenchmark
                                              string.Join(", ", Enum.GetNames(typeof (UdpChannel))));
                 }
 
-                var cacheArg = parsed.First(arg => arg.Name == "-cache");
+                var cacheArg = parsed.FirstOrDefault(arg => arg.Name == "-cache");
                 if (cacheArg != null)
                 {
                     try
