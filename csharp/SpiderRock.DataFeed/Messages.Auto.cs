@@ -235,7 +235,7 @@ namespace SpiderRock.DataFeed
 			public ushort askOrders4;
 			public int bidPrintQuan;
 			public int askPrintQuan;
-			public int timestamp;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -328,8 +328,8 @@ namespace SpiderRock.DataFeed
 		
         public int AskPrintQuan { get { return body.askPrintQuan; } set { body.askPrintQuan = value; } }
  
-		/// <summary>milliseconds since midnight</summary>
-        public int Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	
@@ -545,7 +545,7 @@ namespace SpiderRock.DataFeed
 			public double clsPrice;
 			public double minPrice;
 			public double maxPrice;
-			public DateTimeLayout timestamp;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -608,8 +608,8 @@ namespace SpiderRock.DataFeed
 		/// <summary>maximum print price within session hours</summary>
         public double MaxPrice { get { return body.maxPrice; } set { body.maxPrice = value; } }
  
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	
@@ -1071,7 +1071,7 @@ namespace SpiderRock.DataFeed
 			public double idxBid;
 			public double idxAsk;
 			public double idxPrice;
-			public DateTimeLayout timestamp;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -1096,7 +1096,7 @@ namespace SpiderRock.DataFeed
         public double IdxPrice { get { return body.idxPrice; } set { body.idxPrice = value; } }
  
 		/// <summary>index price timestamp</summary>
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	
@@ -2677,6 +2677,7 @@ namespace SpiderRock.DataFeed
 			public ushort cumAskSize2;
 			public int bidTime;
 			public int askTime;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -2735,6 +2736,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>last ask price change (milliseconds since midnight)</summary>
         public int AskTime { get { return body.askTime; } set { body.askTime = value; } }
+ 
+		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	
@@ -3236,9 +3240,6 @@ namespace SpiderRock.DataFeed
 			public ushort prtOrders;
 			public int prtVolume;
 			public int cxlVolume;
-			public float lastPrice;
-			public int lastSize;
-			public DateTimeLayout lastTime;
 			public ushort bidCount;
 			public ushort askCount;
 			public int bidVolume;
@@ -3248,7 +3249,7 @@ namespace SpiderRock.DataFeed
 			public ushort ebsz;
 			public ushort easz;
 			public float eage;
-			public DateTimeLayout timestamp;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -3278,15 +3279,6 @@ namespace SpiderRock.DataFeed
 		/// <summary>day print/cancel volume (num of contracts printed and then cancelled)</summary>
         public int CxlVolume { get { return body.cxlVolume; } set { body.cxlVolume = value; } }
  
-		
-        public float LastPrice { get { return body.lastPrice; } set { body.lastPrice = value; } }
- 
-		
-        public int LastSize { get { return body.lastSize; } set { body.lastSize = value; } }
- 
-		
-        public DateTime LastTime { get { return body.lastTime; } set { body.lastTime = value; } }
- 
 		/// <summary>number of bid prints</summary>
         public ushort BidCount { get { return body.bidCount; } set { body.bidCount = value; } }
  
@@ -3314,8 +3306,8 @@ namespace SpiderRock.DataFeed
 		/// <summary>age of prevailing quote at time of print</summary>
         public float Eage { get { return body.eage; } set { body.eage = value; } }
  
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	
@@ -4101,7 +4093,7 @@ namespace SpiderRock.DataFeed
 			public float expWidth;
 			public int bidPrintQuan;
 			public int askPrintQuan;
-			public int timestamp;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -4173,8 +4165,8 @@ namespace SpiderRock.DataFeed
 		
         public int AskPrintQuan { get { return body.askPrintQuan; } set { body.askPrintQuan = value; } }
  
-		/// <summary>number of milliseconds since midnight</summary>
-        public int Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	
@@ -4633,7 +4625,7 @@ namespace SpiderRock.DataFeed
 		
         public StkExch AskExch { get { return body.askExch; } set { body.askExch = value; } }
  
-		/// <summary>milliseconds since midnight</summary>
+		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
 
 		
@@ -4852,7 +4844,7 @@ namespace SpiderRock.DataFeed
 			public float continuousBookClrPx;
 			public float closingOnlyClrPx;
 			public float ssrFillingPx;
-			public DateTimeLayout timestamp;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -4894,8 +4886,8 @@ namespace SpiderRock.DataFeed
 		/// <summary>SSR Filling Price.  This price is the price at which sell short interest will be filed in the matching in the event a sell short restriction is in effect for the security.</summary>
         public float SsrFillingPx { get { return body.ssrFillingPx; } set { body.ssrFillingPx = value; } }
  
-		/// <summary>Source time (from the exchange) in CST</summary>
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+		/// <summary>PTP timestamp</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	
@@ -5344,7 +5336,7 @@ namespace SpiderRock.DataFeed
 			public float expV3;
 			public float expV4;
 			public float expV5;
-			public DateTimeLayout timestamp;
+			public long netTimestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -5428,8 +5420,8 @@ namespace SpiderRock.DataFeed
 		/// <summary>exp average [move*move] (w=1/256)</summary>
         public float ExpV5 { get { return body.expV5; } set { body.expV5 = value; } }
  
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
 		#endregion	

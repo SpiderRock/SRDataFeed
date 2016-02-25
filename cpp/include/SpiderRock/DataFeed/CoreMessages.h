@@ -77,7 +77,7 @@ private:
 		UShort askOrders4;
 		Int bidPrintQuan;
 		Int askPrintQuan;
-		Int timestamp;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -119,7 +119,7 @@ public:
 	inline UShort askOrders4() const { return layout_.askOrders4; }
 	inline Int bidPrintQuan() const { return layout_.bidPrintQuan; }
 	inline Int askPrintQuan() const { return layout_.askPrintQuan; }
-	inline Int timestamp() const { return layout_.timestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -180,7 +180,7 @@ private:
 		Double clsPrice;
 		Double minPrice;
 		Double maxPrice;
-		DateTime timestamp;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -212,7 +212,7 @@ public:
 	inline Double clsPrice() const { return layout_.clsPrice; }
 	inline Double minPrice() const { return layout_.minPrice; }
 	inline Double maxPrice() const { return layout_.maxPrice; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -339,7 +339,7 @@ private:
 		Double idxBid;
 		Double idxAsk;
 		Double idxPrice;
-		DateTime timestamp;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -358,7 +358,7 @@ public:
 	inline Double idxBid() const { return layout_.idxBid; }
 	inline Double idxAsk() const { return layout_.idxAsk; }
 	inline Double idxPrice() const { return layout_.idxPrice; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -902,6 +902,7 @@ private:
 		UShort cumAskSize2;
 		Int bidTime;
 		Int askTime;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -932,6 +933,7 @@ public:
 	inline UShort cumAskSize2() const { return layout_.cumAskSize2; }
 	inline Int bidTime() const { return layout_.bidTime; }
 	inline Int askTime() const { return layout_.askTime; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -1082,9 +1084,6 @@ private:
 		UShort prtOrders;
 		Int prtVolume;
 		Int cxlVolume;
-		Float lastPrice;
-		Int lastSize;
-		DateTime lastTime;
 		UShort bidCount;
 		UShort askCount;
 		Int bidVolume;
@@ -1094,7 +1093,7 @@ private:
 		UShort ebsz;
 		UShort easz;
 		Float eage;
-		DateTime timestamp;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -1115,9 +1114,6 @@ public:
 	inline UShort prtOrders() const { return layout_.prtOrders; }
 	inline Int prtVolume() const { return layout_.prtVolume; }
 	inline Int cxlVolume() const { return layout_.cxlVolume; }
-	inline Float lastPrice() const { return layout_.lastPrice; }
-	inline Int lastSize() const { return layout_.lastSize; }
-	inline DateTime lastTime() const { return layout_.lastTime; }
 	inline UShort bidCount() const { return layout_.bidCount; }
 	inline UShort askCount() const { return layout_.askCount; }
 	inline Int bidVolume() const { return layout_.bidVolume; }
@@ -1127,7 +1123,7 @@ public:
 	inline UShort ebsz() const { return layout_.ebsz; }
 	inline UShort easz() const { return layout_.easz; }
 	inline Float eage() const { return layout_.eage; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -1373,7 +1369,7 @@ private:
 		Float expWidth;
 		Int bidPrintQuan;
 		Int askPrintQuan;
-		Int timestamp;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -1408,7 +1404,7 @@ public:
 	inline Float expWidth() const { return layout_.expWidth; }
 	inline Int bidPrintQuan() const { return layout_.bidPrintQuan; }
 	inline Int askPrintQuan() const { return layout_.askPrintQuan; }
-	inline Int timestamp() const { return layout_.timestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -1602,7 +1598,7 @@ private:
 		Float continuousBookClrPx;
 		Float closingOnlyClrPx;
 		Float ssrFillingPx;
-		DateTime timestamp;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -1627,7 +1623,7 @@ public:
 	inline Float continuousBookClrPx() const { return layout_.continuousBookClrPx; }
 	inline Float closingOnlyClrPx() const { return layout_.closingOnlyClrPx; }
 	inline Float ssrFillingPx() const { return layout_.ssrFillingPx; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -1760,7 +1756,7 @@ private:
 		Float expV3;
 		Float expV4;
 		Float expV5;
-		DateTime timestamp;
+		Long netTimestamp;
 	};
 	
 	Header header_;
@@ -1799,7 +1795,7 @@ public:
 	inline Float expV3() const { return layout_.expV3; }
 	inline Float expV4() const { return layout_.expV4; }
 	inline Float expV5() const { return layout_.expV5; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
