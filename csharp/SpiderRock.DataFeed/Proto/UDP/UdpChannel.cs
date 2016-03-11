@@ -146,7 +146,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
             var asyncElapsed = (handlerBegin - handlerEnd)/Frequency;
 
-            var roffset = frameHandler.OnFrame(buffer, recvLength, RecvChannel);
+            var roffset = frameHandler.OnFrame(buffer, recvLength, 0, RecvChannel);
 
             handlerEnd = Stopwatch.GetTimestamp();
 

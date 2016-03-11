@@ -50,7 +50,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(FutureBookQuote obj)
+            private void FireCreatedEventIfSubscribed(FutureBookQuote obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<FutureBookQuote>> created = Created;
                 if (created == null) return;
@@ -58,6 +58,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<FutureBookQuote> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -67,7 +68,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(FutureBookQuote obj)
+            private void FireChangedEventIfSubscribed(FutureBookQuote obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<FutureBookQuote>> changed = Changed;
                 if (changed == null) return;
@@ -75,6 +76,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<FutureBookQuote> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -84,13 +86,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(FutureBookQuote current, FutureBookQuote previous)
+            private void FireUpdatedEvent(FutureBookQuote current, FutureBookQuote previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<FutureBookQuote> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -105,7 +108,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static FutureBookQuote decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(FutureBookQuote.PKeyLayout))
                 {
@@ -124,12 +127,12 @@ namespace SpiderRock.DataFeed
                             item = new FutureBookQuote(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -154,7 +157,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -163,7 +166,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -206,7 +209,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(FuturePrint obj)
+            private void FireCreatedEventIfSubscribed(FuturePrint obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<FuturePrint>> created = Created;
                 if (created == null) return;
@@ -214,6 +217,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<FuturePrint> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -223,7 +227,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(FuturePrint obj)
+            private void FireChangedEventIfSubscribed(FuturePrint obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<FuturePrint>> changed = Changed;
                 if (changed == null) return;
@@ -231,6 +235,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<FuturePrint> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -240,13 +245,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(FuturePrint current, FuturePrint previous)
+            private void FireUpdatedEvent(FuturePrint current, FuturePrint previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<FuturePrint> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -261,7 +267,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static FuturePrint decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(FuturePrint.PKeyLayout))
                 {
@@ -280,12 +286,12 @@ namespace SpiderRock.DataFeed
                             item = new FuturePrint(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -310,7 +316,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -319,7 +325,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -362,7 +368,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(FutureSettlementMark obj)
+            private void FireCreatedEventIfSubscribed(FutureSettlementMark obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<FutureSettlementMark>> created = Created;
                 if (created == null) return;
@@ -370,6 +376,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<FutureSettlementMark> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -379,7 +386,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(FutureSettlementMark obj)
+            private void FireChangedEventIfSubscribed(FutureSettlementMark obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<FutureSettlementMark>> changed = Changed;
                 if (changed == null) return;
@@ -387,6 +394,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<FutureSettlementMark> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -396,13 +404,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(FutureSettlementMark current, FutureSettlementMark previous)
+            private void FireUpdatedEvent(FutureSettlementMark current, FutureSettlementMark previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<FutureSettlementMark> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -417,7 +426,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static FutureSettlementMark decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(FutureSettlementMark.PKeyLayout))
                 {
@@ -436,12 +445,12 @@ namespace SpiderRock.DataFeed
                             item = new FutureSettlementMark(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -466,7 +475,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -475,7 +484,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -518,7 +527,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(IndexQuote obj)
+            private void FireCreatedEventIfSubscribed(IndexQuote obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<IndexQuote>> created = Created;
                 if (created == null) return;
@@ -526,6 +535,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<IndexQuote> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -535,7 +545,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(IndexQuote obj)
+            private void FireChangedEventIfSubscribed(IndexQuote obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<IndexQuote>> changed = Changed;
                 if (changed == null) return;
@@ -543,6 +553,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<IndexQuote> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -552,13 +563,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(IndexQuote current, IndexQuote previous)
+            private void FireUpdatedEvent(IndexQuote current, IndexQuote previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<IndexQuote> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -573,7 +585,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static IndexQuote decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(IndexQuote.PKeyLayout))
                 {
@@ -592,12 +604,12 @@ namespace SpiderRock.DataFeed
                             item = new IndexQuote(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -622,7 +634,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -631,7 +643,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -674,7 +686,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(LiveSurfaceAtm obj)
+            private void FireCreatedEventIfSubscribed(LiveSurfaceAtm obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<LiveSurfaceAtm>> created = Created;
                 if (created == null) return;
@@ -682,6 +694,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<LiveSurfaceAtm> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -691,7 +704,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(LiveSurfaceAtm obj)
+            private void FireChangedEventIfSubscribed(LiveSurfaceAtm obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<LiveSurfaceAtm>> changed = Changed;
                 if (changed == null) return;
@@ -699,6 +712,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<LiveSurfaceAtm> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -708,13 +722,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(LiveSurfaceAtm current, LiveSurfaceAtm previous)
+            private void FireUpdatedEvent(LiveSurfaceAtm current, LiveSurfaceAtm previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<LiveSurfaceAtm> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -729,7 +744,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static LiveSurfaceAtm decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(LiveSurfaceAtm.PKeyLayout))
                 {
@@ -748,12 +763,12 @@ namespace SpiderRock.DataFeed
                             item = new LiveSurfaceAtm(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -778,7 +793,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -787,7 +802,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -830,7 +845,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionCloseMark obj)
+            private void FireCreatedEventIfSubscribed(OptionCloseMark obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionCloseMark>> created = Created;
                 if (created == null) return;
@@ -838,6 +853,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionCloseMark> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -847,7 +863,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionCloseMark obj)
+            private void FireChangedEventIfSubscribed(OptionCloseMark obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionCloseMark>> changed = Changed;
                 if (changed == null) return;
@@ -855,6 +871,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionCloseMark> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -864,13 +881,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionCloseMark current, OptionCloseMark previous)
+            private void FireUpdatedEvent(OptionCloseMark current, OptionCloseMark previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionCloseMark> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -885,7 +903,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionCloseMark decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionCloseMark.PKeyLayout))
                 {
@@ -904,12 +922,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionCloseMark(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -934,7 +952,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -943,7 +961,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -986,7 +1004,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionCloseQuote obj)
+            private void FireCreatedEventIfSubscribed(OptionCloseQuote obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionCloseQuote>> created = Created;
                 if (created == null) return;
@@ -994,6 +1012,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionCloseQuote> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -1003,7 +1022,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionCloseQuote obj)
+            private void FireChangedEventIfSubscribed(OptionCloseQuote obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionCloseQuote>> changed = Changed;
                 if (changed == null) return;
@@ -1011,6 +1030,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionCloseQuote> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -1020,13 +1040,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionCloseQuote current, OptionCloseQuote previous)
+            private void FireUpdatedEvent(OptionCloseQuote current, OptionCloseQuote previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionCloseQuote> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -1041,7 +1062,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionCloseQuote decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionCloseQuote.PKeyLayout))
                 {
@@ -1060,12 +1081,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionCloseQuote(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -1090,7 +1111,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -1099,7 +1120,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -1142,7 +1163,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionImpliedQuote obj)
+            private void FireCreatedEventIfSubscribed(OptionImpliedQuote obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionImpliedQuote>> created = Created;
                 if (created == null) return;
@@ -1150,6 +1171,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionImpliedQuote> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -1159,7 +1181,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionImpliedQuote obj)
+            private void FireChangedEventIfSubscribed(OptionImpliedQuote obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionImpliedQuote>> changed = Changed;
                 if (changed == null) return;
@@ -1167,6 +1189,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionImpliedQuote> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -1176,13 +1199,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionImpliedQuote current, OptionImpliedQuote previous)
+            private void FireUpdatedEvent(OptionImpliedQuote current, OptionImpliedQuote previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionImpliedQuote> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -1197,7 +1221,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionImpliedQuote decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionImpliedQuote.PKeyLayout))
                 {
@@ -1216,12 +1240,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionImpliedQuote(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -1246,7 +1270,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -1255,7 +1279,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -1298,7 +1322,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionNbboQuote obj)
+            private void FireCreatedEventIfSubscribed(OptionNbboQuote obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionNbboQuote>> created = Created;
                 if (created == null) return;
@@ -1306,6 +1330,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionNbboQuote> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -1315,7 +1340,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionNbboQuote obj)
+            private void FireChangedEventIfSubscribed(OptionNbboQuote obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionNbboQuote>> changed = Changed;
                 if (changed == null) return;
@@ -1323,6 +1348,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionNbboQuote> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -1332,13 +1358,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionNbboQuote current, OptionNbboQuote previous)
+            private void FireUpdatedEvent(OptionNbboQuote current, OptionNbboQuote previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionNbboQuote> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -1353,7 +1380,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionNbboQuote decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionNbboQuote.PKeyLayout))
                 {
@@ -1372,12 +1399,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionNbboQuote(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -1402,7 +1429,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -1411,7 +1438,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -1454,7 +1481,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionOpenMark obj)
+            private void FireCreatedEventIfSubscribed(OptionOpenMark obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionOpenMark>> created = Created;
                 if (created == null) return;
@@ -1462,6 +1489,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionOpenMark> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -1471,7 +1499,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionOpenMark obj)
+            private void FireChangedEventIfSubscribed(OptionOpenMark obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionOpenMark>> changed = Changed;
                 if (changed == null) return;
@@ -1479,6 +1507,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionOpenMark> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -1488,13 +1517,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionOpenMark current, OptionOpenMark previous)
+            private void FireUpdatedEvent(OptionOpenMark current, OptionOpenMark previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionOpenMark> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -1509,7 +1539,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionOpenMark decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionOpenMark.PKeyLayout))
                 {
@@ -1528,12 +1558,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionOpenMark(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -1558,7 +1588,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -1567,7 +1597,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -1610,7 +1640,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionPrint obj)
+            private void FireCreatedEventIfSubscribed(OptionPrint obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionPrint>> created = Created;
                 if (created == null) return;
@@ -1618,6 +1648,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionPrint> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -1627,7 +1658,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionPrint obj)
+            private void FireChangedEventIfSubscribed(OptionPrint obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionPrint>> changed = Changed;
                 if (changed == null) return;
@@ -1635,6 +1666,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionPrint> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -1644,13 +1676,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionPrint current, OptionPrint previous)
+            private void FireUpdatedEvent(OptionPrint current, OptionPrint previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionPrint> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -1665,7 +1698,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionPrint decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionPrint.PKeyLayout))
                 {
@@ -1684,12 +1717,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionPrint(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -1714,7 +1747,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -1723,7 +1756,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -1766,7 +1799,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionRiskFactor obj)
+            private void FireCreatedEventIfSubscribed(OptionRiskFactor obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionRiskFactor>> created = Created;
                 if (created == null) return;
@@ -1774,6 +1807,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionRiskFactor> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -1783,7 +1817,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionRiskFactor obj)
+            private void FireChangedEventIfSubscribed(OptionRiskFactor obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionRiskFactor>> changed = Changed;
                 if (changed == null) return;
@@ -1791,6 +1825,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionRiskFactor> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -1800,13 +1835,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionRiskFactor current, OptionRiskFactor previous)
+            private void FireUpdatedEvent(OptionRiskFactor current, OptionRiskFactor previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionRiskFactor> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -1821,7 +1857,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionRiskFactor decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionRiskFactor.PKeyLayout))
                 {
@@ -1840,12 +1876,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionRiskFactor(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -1870,7 +1906,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -1879,7 +1915,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -1922,7 +1958,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionSettlementMark obj)
+            private void FireCreatedEventIfSubscribed(OptionSettlementMark obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<OptionSettlementMark>> created = Created;
                 if (created == null) return;
@@ -1930,6 +1966,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<OptionSettlementMark> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -1939,7 +1976,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionSettlementMark obj)
+            private void FireChangedEventIfSubscribed(OptionSettlementMark obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<OptionSettlementMark>> changed = Changed;
                 if (changed == null) return;
@@ -1947,6 +1984,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<OptionSettlementMark> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -1956,13 +1994,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionSettlementMark current, OptionSettlementMark previous)
+            private void FireUpdatedEvent(OptionSettlementMark current, OptionSettlementMark previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<OptionSettlementMark> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -1977,7 +2016,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static OptionSettlementMark decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(OptionSettlementMark.PKeyLayout))
                 {
@@ -1996,12 +2035,12 @@ namespace SpiderRock.DataFeed
                             item = new OptionSettlementMark(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -2026,7 +2065,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -2035,7 +2074,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -2078,7 +2117,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(StockBookQuote obj)
+            private void FireCreatedEventIfSubscribed(StockBookQuote obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<StockBookQuote>> created = Created;
                 if (created == null) return;
@@ -2086,6 +2125,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<StockBookQuote> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -2095,7 +2135,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(StockBookQuote obj)
+            private void FireChangedEventIfSubscribed(StockBookQuote obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<StockBookQuote>> changed = Changed;
                 if (changed == null) return;
@@ -2103,6 +2143,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<StockBookQuote> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -2112,13 +2153,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(StockBookQuote current, StockBookQuote previous)
+            private void FireUpdatedEvent(StockBookQuote current, StockBookQuote previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<StockBookQuote> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -2133,7 +2175,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static StockBookQuote decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(StockBookQuote.PKeyLayout))
                 {
@@ -2152,12 +2194,12 @@ namespace SpiderRock.DataFeed
                             item = new StockBookQuote(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -2182,7 +2224,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -2191,7 +2233,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -2234,7 +2276,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(StockCloseMark obj)
+            private void FireCreatedEventIfSubscribed(StockCloseMark obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<StockCloseMark>> created = Created;
                 if (created == null) return;
@@ -2242,6 +2284,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<StockCloseMark> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -2251,7 +2294,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(StockCloseMark obj)
+            private void FireChangedEventIfSubscribed(StockCloseMark obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<StockCloseMark>> changed = Changed;
                 if (changed == null) return;
@@ -2259,6 +2302,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<StockCloseMark> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -2268,13 +2312,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(StockCloseMark current, StockCloseMark previous)
+            private void FireUpdatedEvent(StockCloseMark current, StockCloseMark previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<StockCloseMark> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -2289,7 +2334,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static StockCloseMark decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(StockCloseMark.PKeyLayout))
                 {
@@ -2308,12 +2353,12 @@ namespace SpiderRock.DataFeed
                             item = new StockCloseMark(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -2338,7 +2383,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -2347,7 +2392,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -2390,7 +2435,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(StockCloseQuote obj)
+            private void FireCreatedEventIfSubscribed(StockCloseQuote obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<StockCloseQuote>> created = Created;
                 if (created == null) return;
@@ -2398,6 +2443,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<StockCloseQuote> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -2407,7 +2453,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(StockCloseQuote obj)
+            private void FireChangedEventIfSubscribed(StockCloseQuote obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<StockCloseQuote>> changed = Changed;
                 if (changed == null) return;
@@ -2415,6 +2461,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<StockCloseQuote> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -2424,13 +2471,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(StockCloseQuote current, StockCloseQuote previous)
+            private void FireUpdatedEvent(StockCloseQuote current, StockCloseQuote previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<StockCloseQuote> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -2445,7 +2493,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static StockCloseQuote decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(StockCloseQuote.PKeyLayout))
                 {
@@ -2464,12 +2512,12 @@ namespace SpiderRock.DataFeed
                             item = new StockCloseQuote(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -2494,7 +2542,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -2503,7 +2551,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -2546,7 +2594,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(StockExchImbalance obj)
+            private void FireCreatedEventIfSubscribed(StockExchImbalance obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<StockExchImbalance>> created = Created;
                 if (created == null) return;
@@ -2554,6 +2602,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<StockExchImbalance> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -2563,7 +2612,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(StockExchImbalance obj)
+            private void FireChangedEventIfSubscribed(StockExchImbalance obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<StockExchImbalance>> changed = Changed;
                 if (changed == null) return;
@@ -2571,6 +2620,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<StockExchImbalance> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -2580,13 +2630,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(StockExchImbalance current, StockExchImbalance previous)
+            private void FireUpdatedEvent(StockExchImbalance current, StockExchImbalance previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<StockExchImbalance> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -2601,7 +2652,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static StockExchImbalance decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(StockExchImbalance.PKeyLayout))
                 {
@@ -2620,12 +2671,12 @@ namespace SpiderRock.DataFeed
                             item = new StockExchImbalance(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -2650,7 +2701,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -2659,7 +2710,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -2702,7 +2753,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(StockOpenMark obj)
+            private void FireCreatedEventIfSubscribed(StockOpenMark obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<StockOpenMark>> created = Created;
                 if (created == null) return;
@@ -2710,6 +2761,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<StockOpenMark> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -2719,7 +2771,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(StockOpenMark obj)
+            private void FireChangedEventIfSubscribed(StockOpenMark obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<StockOpenMark>> changed = Changed;
                 if (changed == null) return;
@@ -2727,6 +2779,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<StockOpenMark> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -2736,13 +2789,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(StockOpenMark current, StockOpenMark previous)
+            private void FireUpdatedEvent(StockOpenMark current, StockOpenMark previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<StockOpenMark> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -2757,7 +2811,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static StockOpenMark decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(StockOpenMark.PKeyLayout))
                 {
@@ -2776,12 +2830,12 @@ namespace SpiderRock.DataFeed
                             item = new StockOpenMark(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -2806,7 +2860,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -2815,7 +2869,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()
@@ -2858,7 +2912,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(StockPrint obj)
+            private void FireCreatedEventIfSubscribed(StockPrint obj, Channel channel)
             {
                 EventHandler<CreatedEventArgs<StockPrint>> created = Created;
                 if (created == null) return;
@@ -2866,6 +2920,7 @@ namespace SpiderRock.DataFeed
                 {
                     CreatedEventArgs<StockPrint> args = GetCreatedEventArgs();
                     args.Created = obj;
+                    args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
@@ -2875,7 +2930,7 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(StockPrint obj)
+            private void FireChangedEventIfSubscribed(StockPrint obj, Channel channel)
             {
                 EventHandler<ChangedEventArgs<StockPrint>> changed = Changed;
                 if (changed == null) return;
@@ -2883,6 +2938,7 @@ namespace SpiderRock.DataFeed
                 {
                     ChangedEventArgs<StockPrint> args = GetChangedEventArgs();
                     args.Changed = obj;
+                    args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
@@ -2892,13 +2948,14 @@ namespace SpiderRock.DataFeed
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(StockPrint current, StockPrint previous)
+            private void FireUpdatedEvent(StockPrint current, StockPrint previous, Channel channel)
             {
                 try
                 {
                     UpdatedEventArgs<StockPrint> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
+                    args.Channel = channel;                    
                     Updated(this, args);
                 }
                 catch (Exception e)
@@ -2913,7 +2970,7 @@ namespace SpiderRock.DataFeed
             
             [ThreadStatic] private static StockPrint decodeTarget;
 
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
                 if (hdr.keylen != sizeof(StockPrint.PKeyLayout))
                 {
@@ -2932,12 +2989,12 @@ namespace SpiderRock.DataFeed
                             item = new StockPrint(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
-                            FireCreatedEventIfSubscribed(item);
+                            FireCreatedEventIfSubscribed(item, channel);
                             if (Updated != null)
                             {
-                                FireUpdatedEvent(item, null);
+                                FireUpdatedEvent(item, null, channel);
                             }
-                            FireChangedEventIfSubscribed(item);
+                            FireChangedEventIfSubscribed(item, channel);
 
                             item.header.bits &= ~HeaderBits.FromCache;
                             
@@ -2962,7 +3019,7 @@ namespace SpiderRock.DataFeed
                     decodeTarget.Invalidate();
                     item.pkey.CopyTo(decodeTarget.pkey);
                     
-                    FireUpdatedEvent(decodeTarget, item);
+                    FireUpdatedEvent(decodeTarget, item, channel);
                     
                     decodeTarget.CopyTo(item);                                                                              
                 }
@@ -2971,7 +3028,7 @@ namespace SpiderRock.DataFeed
                     unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                 }
 
-                FireChangedEventIfSubscribed(item);         
+                FireChangedEventIfSubscribed(item, channel);         
             }
             
             public void Clear()

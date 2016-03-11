@@ -47,7 +47,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
         {
             IntPtr device;
             var addr = new DblLibrary.InetAddress(IFAddress);
-            int openResult = DblLibrary.dbl_open(ref addr, DblLibrary.OpenMode.ThreadSafe, out device);
+            int openResult = DblLibrary.dbl_open(ref addr, DblLibrary.OpenMode.ThreadSafe | DblLibrary.OpenMode.HwTimestamping, out device);
 
             if (openResult != 0)
             {
@@ -232,7 +232,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
 
                         try
                         {
-                            int roffset = dblChannel.Handler(rbuffer, (int) info.msgLength, dblChannel.ChannelStats);
+                            int roffset = dblChannel.Handler(rbuffer, (int) info.msgLength, info.timestamp, dblChannel.ChannelStats);
 
                             if (roffset < 0)
                             {

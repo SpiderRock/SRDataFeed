@@ -142,7 +142,7 @@ namespace SpiderRock.DataFeed.Cache
             }
         }
 
-        unsafe private void HandleCacheComplete(byte* ptr, int maxptr, int offset, Header hdr, long timestamp)
+        unsafe private void HandleCacheComplete(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
         {
             cacheComplete = new CacheComplete();
             unchecked { Formatter.Default.Decode(ptr + offset, cacheComplete, ptr + maxptr); }
@@ -182,7 +182,7 @@ namespace SpiderRock.DataFeed.Cache
 
                 double stTime = Stopwatch.GetTimestamp();
 
-                roffset = frameHandler.OnFrame(rbuffer, rlength, recvChannel);
+                roffset = frameHandler.OnFrame(rbuffer, rlength, 0, recvChannel);
 
                 double enTime = Stopwatch.GetTimestamp();
                 double handlerElapsed = (enTime - stTime)/Stopwatch.Frequency;

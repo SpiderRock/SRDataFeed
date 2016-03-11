@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,6 +10,8 @@ namespace SpiderRock.DataFeed.FrameHandling
 {
     internal sealed unsafe class FrameHandler
     {
+        private static readonly long NanosecondsUpToUnixEpoch = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks)*100;
+
         private sealed class ErrorCounter
         {
             private int counter;
@@ -73,14 +74,12 @@ namespace SpiderRock.DataFeed.FrameHandling
         [ThreadStatic]
         private static Header thdLastHeader;
 
-        public int OnFrame(byte[] buffer, int length, Channel channel)
+        public int OnFrame(byte[] buffer, int length, long netTimestamp, Channel channel)
         {
             int offset = 0;
 
             try
             {
-                long ts = Stopwatch.GetTimestamp();
-
                 fixed (byte* ptr = buffer)
                 {
                     while (offset + sizeof(Header) <= length)
@@ -114,7 +113,7 @@ namespace SpiderRock.DataFeed.FrameHandling
 
                                 if (handler != null)
                                 {
-                                    handler(ptr, buffer.Length, offset, header, ts);
+                                    handler(ptr, buffer.Length, offset, header, netTimestamp, channel);
                                 }
                                 else if (unknownMessageTypeErrors[header.msgtype].TryIncrement())
                                 {
@@ -185,9 +184,9 @@ namespace SpiderRock.DataFeed.FrameHandling
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int OnFrame(byte[] buffer, int length, object channel)
+        public int OnFrame(byte[] buffer, int length, long netTimestamp, object channel)
         {
-            return OnFrame(buffer, length, (channel as Channel));
+            return OnFrame(buffer, length, netTimestamp, (channel as Channel));
         }
 
         private static void LogError(Channel channel, byte[] buffer, int offset, Exception e, string format, params object[] args)

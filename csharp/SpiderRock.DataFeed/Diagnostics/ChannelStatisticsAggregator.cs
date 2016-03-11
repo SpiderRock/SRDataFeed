@@ -12,6 +12,11 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         private readonly HashSet<Channel> channels = new HashSet<Channel>();
 
+        private static string latencyTableHeader;
+        private static string latencyTableTitle;
+        private static string latencyTableSeparator;
+        private static string latencyRowFormat;
+
         public ChannelStatisticsAggregator()
         {
             SRTrace.Aggregate += Flush;
@@ -21,6 +26,8 @@ namespace SpiderRock.DataFeed.Diagnostics
         {
             InternalDispose();
         }
+
+        public bool EnableLatencyAggregation { get; set; }
 
         public void Register(Channel channel)
         {
@@ -50,10 +57,51 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
         }
 
-        private static IEnumerable<string> GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
+        private static TValue GetOrCreate<TKey, TValue>(Dictionary<TKey, TValue> dict, TKey key) where TValue : new()
         {
-            if (channelList == null) return null;
+            TValue value;
 
+            if (!dict.TryGetValue(key, out value))
+            {
+                value = new TValue();
+                dict[key] = value;
+            }
+
+            return value;
+        }
+
+        public void Flush(double elapsedSeconds)
+        {
+            try
+            {
+                List<Channel> copyOfChannels;
+
+                lock (channels)
+                {
+                    copyOfChannels = new List<Channel>(channels);
+                }
+
+                foreach (var channel in copyOfChannels)
+                {
+                    channel.RefreshSeqNumberGapStatistics();
+                }
+
+                GetMessageStats(copyOfChannels, elapsedSeconds);
+
+                GetChannelStats(copyOfChannels, elapsedSeconds);
+
+                GetSeqNumberGapStats(copyOfChannels);
+
+                GetLatencyStats(copyOfChannels);
+            }
+            catch (Exception e)
+            {
+                SRTrace.Default.TraceError(e, "ChannelStatisticsAggregator failure");
+            }
+        }
+
+        private void GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
+        {
             if (elapsed < 1.0) elapsed = 1.0;
 
             var aggregate = new Dictionary<string, Channel.Statistics>();
@@ -100,7 +148,7 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             // --- compose aggregate list ---
 
-            var lines = new List<string>();
+            var lines = new List<object>();
 
             foreach (var kv in aggregate)
             {
@@ -134,60 +182,13 @@ namespace SpiderRock.DataFeed.Diagnostics
             lines.Add(String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}", "TOTAL:",
                 numMessages, numMessages / elapsed, numSenders, numGaps, totalGaps, totalMessages));
 
-            return lines;
+            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, string.Empty);
+            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
-        private static TValue GetOrCreate<TKey, TValue>(Dictionary<TKey, TValue> dict, TKey key) where TValue : new()
+        private void GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
         {
-            TValue value;
-
-            if (!dict.TryGetValue(key, out value))
-            {
-                value = new TValue();
-                dict[key] = value;
-            }
-
-            return value;
-        }
-
-        public void Flush(double elapsedSeconds)
-        {
-            try
-            {
-                List<Channel> copyOfChannels;
-
-                lock (channels)
-                {
-                    copyOfChannels = new List<Channel>(channels);
-                }
-
-                foreach (var channel in copyOfChannels)
-                {
-                    channel.RefreshSeqNumberGapStatistics();
-                }
-
-                var channelLines = new List<string> {""};
-
-                channelLines.AddRange(GetChannelStats(copyOfChannels, elapsedSeconds));
-                channelLines.Add("");
-
-                channelLines.AddRange(GetMessageStats(copyOfChannels, elapsedSeconds));
-                channelLines.Add("");
-
-                // --- write stats block ---
-
-                SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, channelLines.Cast<object>().ToArray());
-                SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, GetSeqNumberGapStats(channels).Cast<object>().ToArray());
-            }
-            catch (Exception e)
-            {
-                SRTrace.Default.TraceError(e, "ChannelStatisticsAggregator failure");
-            }
-        }
-
-        private static IEnumerable<string> GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
-        {
-            var lines = new List<string>();
+            var lines = new List<object>();
 
             if (elapsed < 1.0) elapsed = 1.0;
 
@@ -329,17 +330,20 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             lines.Add(footer);
 
-            return lines;
+            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, string.Empty);
+            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
-        private static IEnumerable<string> GetSeqNumberGapStats(IEnumerable<Channel> channelList)
+        private void GetSeqNumberGapStats(IEnumerable<Channel> channelList)
         {
-            if (channelList == null) yield break;
+            if (channelList == null) return;
 
             const string header = " message / source                                gaps      cumGaps";
             var separator = new string('-', header.Length);
 
             bool appendEmptyLine = false;
+
+            var lines = new List<object>();
 
             foreach (var channel in channelList)
             {
@@ -349,11 +353,11 @@ namespace SpiderRock.DataFeed.Diagnostics
                     case ChannelType.DblRecv:
                         if (channel.SeqNumberCounters.All(c => c.Gaps == 0)) continue;
 
-                        yield return string.Empty;
+                        lines.Add(string.Empty);
 
-                        yield return string.Format("--- [{0} ({1}) gaps] ---", channel.Name, channel.Type).PadRight(header.Length, '-');
-                        yield return header;
-                        yield return separator;
+                        lines.Add(string.Format("--- [{0} ({1}) gaps] ---", channel.Name, channel.Type).PadRight(header.Length, '-'));
+                        lines.Add(header);
+                        lines.Add(separator);
 
                         foreach (var seqNumberCounter in channel
                             .SeqNumberCounters
@@ -361,19 +365,90 @@ namespace SpiderRock.DataFeed.Diagnostics
                             .OrderBy(c => c.MessageType.ToString())
                             .ThenBy(c => (ushort)c.SourceId))
                         {
-                            yield return string.Format("{0,-40} {1,12:N0} {2,12:N0}",
+                            lines.Add(string.Format("{0,-40} {1,12:N0} {2,12:N0}",
                                 seqNumberCounter.MessageType + " / " + seqNumberCounter.SourceId,
                                 seqNumberCounter.Gaps,
-                                seqNumberCounter.CumulativeGaps);
+                                seqNumberCounter.CumulativeGaps));
                         }
 
-                        yield return separator;
+                        lines.Add(separator);
                         appendEmptyLine = true;
                         break;
                 }
             }
 
-            if (appendEmptyLine) yield return string.Empty;
+            if (appendEmptyLine) lines.Add(string.Empty);
+
+            SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, string.Empty);
+            SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
+        }
+
+        private void GetLatencyStats(IEnumerable<Channel> channelList)
+        {
+            if (!EnableLatencyAggregation) return;
+
+            const int width = 10;
+            const int columns = 7;
+
+            var lines = new List<string>();
+
+            if (latencyTableHeader == null)
+            {
+                var headerFormat = "{0,-50}{1,15}{2,15}{3,15}" +
+                                   string.Join("", Enumerable.Range(4, columns).Select(i => "{" + i + "," + width + "}"));
+
+                latencyRowFormat = "{0,-50}{1,15:N3}{2,15:N3}{3,15:N3}" +
+                                   string.Join("", Enumerable.Range(4, columns).Select(i => "{" + i + "," + width + ":P0}"));
+
+                latencyTableHeader = string.Format(headerFormat,
+                    "type / channel", "base (ms)", "avg (ms)", "max (ms)", "< 10µs", "< 100µs", "< 1ms", "< 10ms", "< 100ms", "< 1s", ">= 1s");
+
+                latencyTableTitle = "--- [channel latency] ".PadRight(latencyTableHeader.Length, '-');
+                latencyTableSeparator = new string('-', latencyTableHeader.Length);
+            }
+
+            foreach (var channel in channelList)
+            {
+                foreach (var latencyStatistics in channel.Latencies)
+                {
+                    if (latencyStatistics == null) continue;
+                    if (latencyStatistics.Total == 0) continue;
+                    if (latencyStatistics.Period++ == 0) continue;
+
+                    lines.Add(string.Format(latencyRowFormat,
+                        latencyStatistics.Type + " / " + channel.Name,
+
+                        latencyStatistics.Base/1000,
+                        latencyStatistics.Sum/100/latencyStatistics.Total,
+                        (latencyStatistics.Max - latencyStatistics.Base)/1000,
+
+                        latencyStatistics.BucketMicro10/(double) latencyStatistics.Total,
+                        latencyStatistics.BucketMicro100/(double) latencyStatistics.Total,
+
+                        latencyStatistics.BucketMilli1/(double) latencyStatistics.Total,
+                        latencyStatistics.BucketMilli10/(double) latencyStatistics.Total,
+                        latencyStatistics.BucketMilli100/(double) latencyStatistics.Total,
+
+                        latencyStatistics.BucketSec1/(double) latencyStatistics.Total,
+                        latencyStatistics.BucketSecOther/(double) latencyStatistics.Total
+                        ));
+
+                    latencyStatistics.Reset();
+                }
+            }
+
+            if (lines.Count == 0) return;
+
+            lines.Sort();
+
+            lines.Insert(0, latencyTableTitle);
+            lines.Insert(1, latencyTableHeader);
+            lines.Insert(2, latencyTableSeparator);
+
+            lines.Add(latencyTableSeparator);
+
+            SRTrace.NetLatency.TraceData(TraceEventType.Verbose, 0, string.Empty);
+            SRTrace.NetLatency.TraceData(TraceEventType.Verbose, 0, lines.Cast<object>().ToArray());
         }
 
         public void Dispose()

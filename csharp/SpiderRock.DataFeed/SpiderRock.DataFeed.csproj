@@ -58,6 +58,7 @@
     <Compile Include="Cache\CacheRequestException.cs" />
     <Compile Include="CCodeKey.cs" />
     <Compile Include="ChangedEventArgs.cs" />
+    <Compile Include="Channel.Latency.cs" />
     <Compile Include="ChannelCreatedEventArgs.cs" />
     <Compile Include="ChannelFactory.cs" />
     <Compile Include="ChannelThreadGroup.cs" />

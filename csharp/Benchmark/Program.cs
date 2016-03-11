@@ -105,6 +105,13 @@ namespace SRStreamBenchmark
                         engine.StartWith(cache);
                     }
 
+                    if (parsed.Any(arg => arg.Name == "-latency"))
+                    {
+                        engine.TrackStockQuoteLatency();
+                        engine.TrackOptionQuoteLatency();
+                        engine.TrackFutureQuoteLatency();
+                    }
+
                     Console.WriteLine("****************************************************************");
                     Console.WriteLine("*                                                              *");
                     Console.WriteLine("*                                                              *");
@@ -119,7 +126,7 @@ namespace SRStreamBenchmark
             {
                 Console.Error.WriteLine("Invalid usage: {0}", e.Message);
                 Console.Error.WriteLine(
-                    "Usage: -ifAddr IPv4Address -channels UdpChannel1 UdpChannel2 ... [-freq SECONDS] [-proto UDP|DBL] [-recvBuf MBs] -cache MessageType1 MessageType2 ...");
+                    "Usage: -ifAddr IPv4Address -channels UdpChannel1 UdpChannel2 ... [-freq SECONDS] [-proto UDP|DBL] [-recvBuf MBs] -cache MessageType1 MessageType2 ... [-latency]");
             }
             catch (Exception e)
             {

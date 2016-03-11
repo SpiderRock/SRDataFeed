@@ -57,10 +57,13 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
             Broadcast = 10
         }
 
+        [Flags]
         public enum OpenMode
         {
             Default = 0,
-            ThreadSafe = 1
+            ThreadSafe = 1,
+            Disabled = 2,
+            HwTimestamping = 4
         }
 
         public enum RecvMode
@@ -110,10 +113,11 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
         {
             public IntPtr channel;
             public IntPtr context;
-            public IntPtr unused;
+            public IntPtr unused1;
             public SocketAddress fmAddress;
             public SocketAddress toAddress;
             public uint msgLength;
+            public int unused2;
             public long timestamp;
         }
 

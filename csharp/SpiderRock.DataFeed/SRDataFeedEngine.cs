@@ -219,6 +219,100 @@ namespace SpiderRock.DataFeed
             }
         }
 
+        public void TrackStockQuoteLatency()
+        {
+            if (channelStatisticsAggregator == null)
+            {
+                throw new InvalidOperationException("Start() or StartWith() must preceed the invocation of this method");
+            }
+
+            channelStatisticsAggregator.EnableLatencyAggregation = true;
+
+            StockBookQuoteChanged +=
+                (sender, args) =>
+                {
+                    var changed = args.Changed;
+                    UpdateChannelLatency(MessageType.StockBookQuote, args.Channel, changed.NetTimestamp, changed.TimeRcvd);
+                };
+        }
+
+        public void TrackOptionQuoteLatency()
+        {
+            if (channelStatisticsAggregator == null)
+            {
+                throw new InvalidOperationException("Start() or StartWith() must preceed the invocation of this method");
+            }
+
+            channelStatisticsAggregator.EnableLatencyAggregation = true;
+
+            OptionNbboQuoteChanged +=
+                (sender, args) =>
+                {
+                    var changed = args.Changed;
+                    UpdateChannelLatency(MessageType.OptionNbboQuote, args.Channel, changed.NetTimestamp, changed.TimeRcvd);
+                };
+        }
+
+        public void TrackFutureQuoteLatency()
+        {
+            if (channelStatisticsAggregator == null)
+            {
+                throw new InvalidOperationException("Start() or StartWith() must preceed the invocation of this method");
+            }
+
+            channelStatisticsAggregator.EnableLatencyAggregation = true;
+
+            FutureBookQuoteChanged +=
+                (sender, args) =>
+                {
+                    var changed = args.Changed;
+                    UpdateChannelLatency(MessageType.FutureBookQuote, args.Channel, changed.NetTimestamp, changed.TimeRcvd);
+                };
+        }
+
+        private static void UpdateChannelLatency(MessageType messageType, Channel channel, long netTimestamp, long clnTimestamp)
+        {
+            unchecked
+            {
+                if (netTimestamp == 0) return;
+
+                var latencyStatistics = channel.Latencies[messageType];
+
+                if (latencyStatistics == null)
+                {
+                    lock (channel.Latencies)
+                    {
+                        latencyStatistics = channel.Latencies[messageType];
+                        if (latencyStatistics == null)
+                        {
+                            latencyStatistics = new Channel.LatencyStatistics(messageType);
+                            channel.Latencies[messageType] = latencyStatistics;
+                        }
+                    }
+                }
+
+                var netLatency = (clnTimestamp - netTimestamp)/1000;
+
+                latencyStatistics.Total += 1;
+                latencyStatistics.Base = (int) Math.Min(netLatency, latencyStatistics.Base);
+
+                var relLatency = Math.Abs(netLatency - latencyStatistics.Base);
+                latencyStatistics.Max = (int) Math.Max(relLatency, latencyStatistics.Max);
+
+                latencyStatistics.Sum += relLatency;
+
+                if (relLatency <= 10)           latencyStatistics.BucketMicro10 += 1;
+                else if (relLatency <= 100)     latencyStatistics.BucketMicro100 += 1;
+
+                else if (relLatency <= 1000)    latencyStatistics.BucketMilli1 += 1;
+                else if (relLatency <= 10000)   latencyStatistics.BucketMilli10 += 1;
+                else if (relLatency <= 100000)  latencyStatistics.BucketMilli100 += 1;
+
+                else if (relLatency <= 1000000) latencyStatistics.BucketSec1 += 1;
+                else                            latencyStatistics.BucketSecOther += 1;
+            }
+        }
+
         public void StartWith(TimeSpan timeout, params MessageType[] requestList)
         {
             Start();
