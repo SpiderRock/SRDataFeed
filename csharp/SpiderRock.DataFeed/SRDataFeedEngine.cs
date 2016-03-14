@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime;
@@ -38,6 +39,8 @@ namespace SpiderRock.DataFeed
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
             LatencyMode = GCLatencyMode.SustainedLowLatency;
+            LogBaseDirectory = @"C:\SRLog";
+            LogToConsole = true;
 
             channelFactory = new ChannelFactory();
 
@@ -76,6 +79,10 @@ namespace SpiderRock.DataFeed
 
         public Protocol Protocol { get; set; }
 
+        public string LogBaseDirectory { get; set; }
+
+        public bool LogToConsole { get; set; }
+
         /// <summary>
         /// Size of the UDP receive buffer.  Set to 20MB by default.
         /// </summary>
@@ -108,6 +115,16 @@ namespace SpiderRock.DataFeed
             lock (startLock)
             {
                 if (running) return;
+
+                if (LogToConsole)
+                {
+                    SRTrace.AddGlobalListener(new SRConsoleTraceListener());
+                }
+
+                if (!string.IsNullOrWhiteSpace(LogBaseDirectory))
+                {
+                    SRTrace.AddGlobalListener(new SRFileTraceListener(new DirectoryInfo(LogBaseDirectory)));
+                }
 
                 if (sysEnvironment == SysEnvironment.None)
                 {

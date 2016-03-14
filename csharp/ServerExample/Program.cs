@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
 using SpiderRock.DataFeed;
-using SpiderRock.DataFeed.Diagnostics;
 
 namespace ServerExample
 {
@@ -42,7 +40,7 @@ namespace ServerExample
 
                         UdpChannel.StkNbboQuote3,
                         UdpChannel.StkNbboQuote4
-                    }
+                    },
 
                     // Alternatively, it's possible to assign sets of channels to 
                     // dedicated threads by creating channel thread groups.
@@ -74,6 +72,11 @@ namespace ServerExample
 
                     //},
 
+                    //////////////////////////////////////////////////////////
+                    // Logging
+
+                    // Default: LogBaseDirectory = @"C:\SRLog"
+                    // Default: LogToConsole = true
 
                     //////////////////////////////////////////////////////////
                     // GC configuration 
@@ -94,12 +97,9 @@ namespace ServerExample
 
                 // SpiderRock uses .NET's native tracing mechanisms from the 
                 // System.Diagnostics namespace so any built-in TraceListener can be 
-                // used along with a few SpiderRock's custom ones: SRFileTraceListener and 
-                // SRConsoleTraceListener.
+                // used along with a few SpiderRock's custom ones.
 
-                SRTrace.GlobalSwitch = new SourceSwitch("SRTraceSource (All)") {Level = SourceLevels.All};
-                SRTrace.AddGlobalTraceListener(new SRFileTraceListener());
-                SRTrace.AddGlobalTraceListener(new SRConsoleTraceListener());
+                // Default: SRTrace.GlobalSwitch = new SourceSwitch("SRTraceSource (All)") {Level = SourceLevels.All};
 
                 // The frequency with which summary tables are logged can be adjusted like so:
                 // Default: SRTrace.AggregateEventFrequency = TimeSpan.FromMinutes(1);

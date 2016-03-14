@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SpiderRock.DataFeed.Diagnostics
 {
-    public class SRConsoleTraceListener : SRTraceListener
+    internal class SRConsoleTraceListener : SRTraceListener, IEquatable<SRConsoleTraceListener>
     {
         public override bool IsThreadSafe
         {
@@ -18,6 +18,22 @@ namespace SpiderRock.DataFeed.Diagnostics
         public override void Flush()
         {
             Console.Out.Flush();
+        }
+
+        public override bool Equals(object other)
+        {
+            return Equals(other as SRConsoleTraceListener);
+        }
+
+        public bool Equals(SRConsoleTraceListener other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return GetType().GetHashCode();
         }
     }
 }

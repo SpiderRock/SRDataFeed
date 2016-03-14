@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +11,7 @@ namespace SpiderRock.DataFeed.Diagnostics
     {
         private static CancellationTokenSource aggregateEventCancellationTokenSource;
         private static TimeSpan aggregateEventFrequency;
+        private static readonly HashSet<TraceListener> GlobalTraceListeners = new HashSet<TraceListener>();
 
         static SRTrace()
         {
@@ -30,6 +33,9 @@ namespace SpiderRock.DataFeed.Diagnostics
             AggregateEventFrequency = TimeSpan.FromMinutes(1);
 
             Trace.AutoFlush = true;
+
+            GlobalSwitch = new SourceSwitch("SRTraceSource (All)") {Level = SourceLevels.All};
+            AddGlobalListener(new SRConsoleTraceListener());
         }
 
         private static async void FireAggregate(CancellationToken cancellationToken)
@@ -84,11 +90,11 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public static event Action<double> Aggregate = delegate { }; 
 
-        public static void AddGlobalTraceListener(TraceListener traceListener)
+        public static void AddGlobalListener(TraceListener traceListener)
         {
-            lock (Default)
+            lock (GlobalTraceListeners)
             {
-                if (Default.Listeners.Contains(traceListener)) return;
+                if (!GlobalTraceListeners.Add(traceListener)) return;
 
                 Default.Listeners.Add(traceListener);
                 KeyErrors.Listeners.Add(traceListener);
@@ -99,6 +105,35 @@ namespace SpiderRock.DataFeed.Diagnostics
                 NetLatency.Listeners.Add(traceListener);
                 NetSeqNumber.Listeners.Add(traceListener);
                 Process.Listeners.Add(traceListener);
+            }
+        }
+
+        public static void RemoveGlobalListener(TraceListener traceListener)
+        {
+            lock (GlobalTraceListeners)
+            {
+                if (!GlobalTraceListeners.Remove(traceListener)) return;
+
+                Default.Listeners.Remove(traceListener);
+                KeyErrors.Listeners.Remove(traceListener);
+                NetTcp.Listeners.Remove(traceListener);
+                NetUdp.Listeners.Remove(traceListener);
+                NetDbl.Listeners.Remove(traceListener);
+                NetChannels.Listeners.Remove(traceListener);
+                NetLatency.Listeners.Remove(traceListener);
+                NetSeqNumber.Listeners.Remove(traceListener);
+                Process.Listeners.Remove(traceListener);
+            }
+        }
+
+        public static TraceListener[] GlobalListeners
+        {
+            get
+            {
+                lock (GlobalTraceListeners)
+                {
+                    return GlobalTraceListeners.ToArray();
+                }
             }
         }
 

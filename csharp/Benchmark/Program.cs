@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using SpiderRock.DataFeed;
-using SpiderRock.DataFeed.Diagnostics;
 
 namespace SRBenchmark
 {
@@ -83,11 +81,6 @@ namespace SRBenchmark
                                                  string.Join(", ", MessageType.Core));
                     }
                 }
-
-                SRTrace.AggregateEventFrequency = TimeSpan.FromSeconds(freq);
-                SRTrace.GlobalSwitch = new SourceSwitch("SRTraceSource (All)") {Level = SourceLevels.All};
-                SRTrace.AddGlobalTraceListener(new SRFileTraceListener());
-                SRTrace.AddGlobalTraceListener(new SRConsoleTraceListener());
 
                 using (var engine = new SRDataFeedEngine())
                 {

@@ -377,6 +377,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                 }
             }
 
+            if (lines.Count == 0) return;
             if (appendEmptyLine) lines.Add(string.Empty);
 
             SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, string.Empty);

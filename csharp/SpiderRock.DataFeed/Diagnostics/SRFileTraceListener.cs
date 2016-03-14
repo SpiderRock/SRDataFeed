@@ -5,21 +5,22 @@ using System.IO;
 
 namespace SpiderRock.DataFeed.Diagnostics
 {
-    public class SRFileTraceListener : SRTraceListener
+    internal class SRFileTraceListener : SRTraceListener, IEquatable<SRFileTraceListener>
     {
-        private readonly Func<string, string> logFilePathFactory;
+        public const string DefaultBaseDirectory = @"C:\SRLog";
 
         private readonly Dictionary<string, TextWriter> writersBySource =
             new Dictionary<string, TextWriter>();
 
         public SRFileTraceListener()
-            : this(new DirectoryInfo(@"C:\SRLog"))
+            : this(new DirectoryInfo(DefaultBaseDirectory))
         {
         }
 
         public SRFileTraceListener(DirectoryInfo baseDirectory)
-            : this(source => BuildPath(baseDirectory, source))
         {
+            if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
+            BaseDirectory = baseDirectory;
         }
 
         public override bool IsThreadSafe
@@ -27,16 +28,14 @@ namespace SpiderRock.DataFeed.Diagnostics
             get { return false; }
         }
 
-        public SRFileTraceListener(Func<string, string> logFilePathFactory)
-        {
-            this.logFilePathFactory = logFilePathFactory;
-        }
+        public DirectoryInfo BaseDirectory { get; private set; }
 
         internal static SysEnvironment SysEnvironment { get; set; }
 
         protected override TextWriter GetWriter(string source)
         {
             TextWriter writer;
+
             // ReSharper disable once InconsistentlySynchronizedField
             if (writersBySource.TryGetValue(source, out writer))
             {
@@ -50,7 +49,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                     return writer;
                 }
 
-                var logFile = new FileInfo(logFilePathFactory(source));
+                var logFile = new FileInfo(BuildPath(BaseDirectory, source));
                 if (logFile.Directory != null)
                 {
                     logFile.Directory.Create();
@@ -91,6 +90,27 @@ namespace SpiderRock.DataFeed.Diagnostics
                 process.StartTime.ToString("yyyy-MM-dd"),
                 process.ProcessName + "p." + process.Id,
                 source.ToLowerInvariant() + "." + process.StartTime.ToString("HH.mm.ss") + ".log");
+        }
+
+        public override bool Equals(object other)
+        {
+            return Equals(other as SRFileTraceListener);
+        }
+
+        public bool Equals(SRFileTraceListener other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(BaseDirectory.FullName, other.BaseDirectory.FullName,
+                StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (GetType().GetHashCode()*397) ^ BaseDirectory.FullName.ToUpperInvariant().GetHashCode();
+            }
         }
     }
 }
