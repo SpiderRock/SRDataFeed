@@ -178,6 +178,8 @@ namespace SpiderRock.DataFeed
 
                 foreach (var channelThreadGroup in ChannelThreadGroups)
                 {
+                    SRTrace.Default.TraceEvent(TraceEventType.Start, 0, channelThreadGroup.ToString());
+
                     if (channelThreadGroup.Proto == Protocol.DBL)
                     {
                         var dblManager = new DblManager(IFAddress, channelThreadGroup.ToString(), channelFactory);
