@@ -291,25 +291,7 @@ namespace SpiderRock.DataFeed
                     }
                 }
 
-                var netLatency = (clnTimestamp - netTimestamp)/1000;
-
-                latencyStatistics.Total += 1;
-                latencyStatistics.Base = (int) Math.Min(netLatency, latencyStatistics.Base);
-
-                var relLatency = Math.Abs(netLatency - latencyStatistics.Base);
-                latencyStatistics.Max = (int) Math.Max(relLatency, latencyStatistics.Max);
-
-                latencyStatistics.Sum += relLatency;
-
-                if (relLatency <= 10)           latencyStatistics.BucketMicro10 += 1;
-                else if (relLatency <= 100)     latencyStatistics.BucketMicro100 += 1;
-
-                else if (relLatency <= 1000)    latencyStatistics.BucketMilli1 += 1;
-                else if (relLatency <= 10000)   latencyStatistics.BucketMilli10 += 1;
-                else if (relLatency <= 100000)  latencyStatistics.BucketMilli100 += 1;
-
-                else if (relLatency <= 1000000) latencyStatistics.BucketSec1 += 1;
-                else                            latencyStatistics.BucketSecOther += 1;
+                latencyStatistics.Update(netTimestamp, clnTimestamp);
             }
         }
 

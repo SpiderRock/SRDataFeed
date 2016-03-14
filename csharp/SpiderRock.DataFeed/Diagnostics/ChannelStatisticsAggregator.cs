@@ -412,26 +412,26 @@ namespace SpiderRock.DataFeed.Diagnostics
                 foreach (var latencyStatistics in channel.Latencies)
                 {
                     if (latencyStatistics == null) continue;
-                    if (latencyStatistics.Total == 0) continue;
+                    if (latencyStatistics.Count == 0) continue;
                     if (latencyStatistics.Period++ == 0) continue;
 
                     lines.Add(string.Format(latencyRowFormat,
                         latencyStatistics.Type + " / " + channel.Name,
 
                         latencyStatistics.Base/1000,
-                        latencyStatistics.Sum/100/latencyStatistics.Total,
-                        (latencyStatistics.Max - latencyStatistics.Base)/1000,
+                        latencyStatistics.Sum/1000/latencyStatistics.Count,
+                        latencyStatistics.Max/1000,
 
-                        latencyStatistics.BucketMicro10/(double) latencyStatistics.Total,
-                        latencyStatistics.BucketMicro100/(double) latencyStatistics.Total,
+                        latencyStatistics.BucketMicro10/(double) latencyStatistics.Count,
+                        latencyStatistics.BucketMicro100/(double) latencyStatistics.Count,
 
-                        latencyStatistics.BucketMilli1/(double) latencyStatistics.Total,
-                        latencyStatistics.BucketMilli10/(double) latencyStatistics.Total,
-                        latencyStatistics.BucketMilli100/(double) latencyStatistics.Total,
+                        latencyStatistics.BucketMilli1/(double) latencyStatistics.Count,
+                        latencyStatistics.BucketMilli10/(double) latencyStatistics.Count,
+                        latencyStatistics.BucketMilli100/(double) latencyStatistics.Count,
 
-                        latencyStatistics.BucketSec1/(double) latencyStatistics.Total,
-                        latencyStatistics.BucketSecOther/(double) latencyStatistics.Total
-                        ));
+                        latencyStatistics.BucketSec1/(double) latencyStatistics.Count,
+                        latencyStatistics.BucketSecOther/(double) latencyStatistics.Count
+                        ) + "\tbase drift (ms): " + ((latencyStatistics.Base - latencyStatistics.LastBase)/1000).ToString("N3"));
 
                     latencyStatistics.Reset();
                 }
