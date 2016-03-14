@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using SpiderRock.DataFeed;
+using SpiderRock.DataFeed.Diagnostics;
 
 namespace SRBenchmark
 {
@@ -81,6 +82,8 @@ namespace SRBenchmark
                                                  string.Join(", ", MessageType.Core));
                     }
                 }
+
+                SRTrace.AggregateEventFrequency = TimeSpan.FromSeconds(freq);
 
                 using (var engine = new SRDataFeedEngine())
                 {
