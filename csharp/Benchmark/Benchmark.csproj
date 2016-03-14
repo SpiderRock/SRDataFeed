@@ -7,8 +7,8 @@
     <ProjectGuid>{463E82A2-FD4B-44F8-9625-B3A65AE41A48}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SRStreamBenchmark</RootNamespace>
-    <AssemblyName>SRStreamBenchmark</AssemblyName>
+    <RootNamespace>SRBenchmark</RootNamespace>
+    <AssemblyName>SRBenchmark</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

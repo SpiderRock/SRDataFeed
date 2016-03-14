@@ -6,7 +6,7 @@ using System.Net;
 using SpiderRock.DataFeed;
 using SpiderRock.DataFeed.Diagnostics;
 
-namespace SRStreamBenchmark
+namespace SRBenchmark
 {
     internal class Program
     {
