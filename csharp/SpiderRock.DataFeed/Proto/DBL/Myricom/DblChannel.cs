@@ -1,19 +1,38 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SpiderRock.DataFeed.Proto.DBL.Myricom
 {
     internal sealed class DblChannel
     {
-        public DblReadHandler Handler;
+        private static readonly double Frequency = Stopwatch.Frequency;
 
-        public IPEndPoint EndPoint;
-        public object ChannelStats;
+        private readonly DblReadHandler handler;
+        private readonly Channel recvChannel;
 
-        public DblChannel(DblReadHandler handler, IPEndPoint endPoint, object channelStats)
+        private long handlerBegin;
+        private long handlerEnd = Stopwatch.GetTimestamp();
+
+        public DblChannel(DblReadHandler handler, Channel recvChannel)
         {
-            Handler = handler;
-            EndPoint = endPoint;
-            ChannelStats = channelStats;
+            this.handler = handler;
+            this.recvChannel = recvChannel;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int Handle(byte[] buffer, int length, long netTimestamp)
+        {
+            handlerBegin = Stopwatch.GetTimestamp();
+
+            var asyncElapsed = (handlerBegin - handlerEnd)/Frequency;
+
+            var roffset = handler(buffer, length, netTimestamp, recvChannel);
+
+            handlerEnd = Stopwatch.GetTimestamp();
+
+            recvChannel.IncrementTimeCounters(asyncElapsed, (handlerEnd - handlerBegin)/Frequency, roffset > 0);
+
+            return roffset;
         }
     }
 }

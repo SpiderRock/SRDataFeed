@@ -77,7 +77,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
             IFAddress = null;
         }
 
-        public bool AddListener(IPEndPoint endPoint, bool isMulticast, DblReadHandler handler, object channelStats, out string error)
+        public bool AddListener(IPEndPoint endPoint, bool isMulticast, DblReadHandler handler, Channel channelStats, out string error)
         {
             if (Handle == IntPtr.Zero)
             {
@@ -89,7 +89,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
             {              
                 lock (this)
                 {
-                    channelSet[nextChannel] = new DblChannel(handler, endPoint, channelStats);
+                    channelSet[nextChannel] = new DblChannel(handler, channelStats);
                     var context = new IntPtr(nextChannel);
 
                     nextChannel += 1;
@@ -232,7 +232,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
 
                         try
                         {
-                            int roffset = dblChannel.Handler(rbuffer, (int) info.msgLength, info.timestamp, dblChannel.ChannelStats);
+                            int roffset = dblChannel.Handle(rbuffer, (int) info.msgLength, info.timestamp);
 
                             if (roffset < 0)
                             {
