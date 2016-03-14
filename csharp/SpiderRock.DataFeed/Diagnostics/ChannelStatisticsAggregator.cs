@@ -388,17 +388,18 @@ namespace SpiderRock.DataFeed.Diagnostics
             if (!EnableLatencyAggregation) return;
 
             const int width = 10;
-            const int columns = 7;
 
             var lines = new List<string>();
 
             if (latencyTableHeader == null)
             {
                 var headerFormat = "{0,-50}{1,15}{2,15}{3,15}" +
-                                   string.Join("", Enumerable.Range(4, columns).Select(i => "{" + i + "," + width + "}"));
+                                   string.Join("", Enumerable.Range(4, 7).Select(i => "{" + i + "," + width + "}"));
 
                 latencyRowFormat = "{0,-50}{1,15:N3}{2,15:N3}{3,15:N3}" +
-                                   string.Join("", Enumerable.Range(4, columns).Select(i => "{" + i + "," + width + ":P0}"));
+                                   string.Join("", Enumerable.Range(4, 5).Select(i => "{" + i + "," + width + ":P0}")) +
+                                   "{9," + width + ":N0}" +
+                                   "{10," + width + ":N0}";
 
                 latencyTableHeader = string.Format(headerFormat,
                     "type / channel", "base (ms)", "avg (ms)", "max (ms)", "< 10µs", "< 100µs", "< 1ms", "< 10ms", "< 100ms", "< 1s", ">= 1s");
@@ -429,8 +430,8 @@ namespace SpiderRock.DataFeed.Diagnostics
                         latencyStatistics.BucketMilli10/(double) latencyStatistics.Count,
                         latencyStatistics.BucketMilli100/(double) latencyStatistics.Count,
 
-                        latencyStatistics.BucketSec1/(double) latencyStatistics.Count,
-                        latencyStatistics.BucketSecOther/(double) latencyStatistics.Count
+                        latencyStatistics.BucketSec1,
+                        latencyStatistics.BucketSecOther
                         ) + "\tbase drift (ms): " + ((latencyStatistics.Base - latencyStatistics.LastBase)/1000).ToString("N3"));
 
                     latencyStatistics.Reset();
