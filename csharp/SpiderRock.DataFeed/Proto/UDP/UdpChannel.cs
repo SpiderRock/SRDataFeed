@@ -9,6 +9,8 @@ namespace SpiderRock.DataFeed.Proto.UDP
 {
     internal sealed class UdpChannel : IDisposable, IEquatable<UdpChannel>, IEquatable<IPEndPoint>
     {
+        private static readonly long NanosecondsUpToUnixEpoch = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks) * 100;
+
         private static readonly double Frequency = Stopwatch.Frequency;
         private readonly byte[] buffer = new byte[1500];
 
@@ -146,7 +148,9 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
             var asyncElapsed = (handlerBegin - handlerEnd)/Frequency;
 
-            var roffset = frameHandler.OnFrame(buffer, recvLength, 0, RecvChannel);
+            var netTimestamp = unchecked(DateTime.UtcNow.Ticks*100 - NanosecondsUpToUnixEpoch);
+
+            var roffset = frameHandler.OnFrame(buffer, recvLength, netTimestamp, RecvChannel);
 
             handlerEnd = Stopwatch.GetTimestamp();
 
