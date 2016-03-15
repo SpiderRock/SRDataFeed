@@ -39,8 +39,8 @@ namespace SpiderRock.DataFeed
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
             LatencyMode = GCLatencyMode.SustainedLowLatency;
-            LogBaseDirectory = @"C:\SRLog";
             LogToConsole = true;
+            LogToFile = true;
 
             channelFactory = new ChannelFactory();
 
@@ -83,6 +83,8 @@ namespace SpiderRock.DataFeed
 
         public bool LogToConsole { get; set; }
 
+        public bool LogToFile { get; set; }
+
         /// <summary>
         /// Size of the UDP receive buffer.  Set to 20MB by default.
         /// </summary>
@@ -116,15 +118,26 @@ namespace SpiderRock.DataFeed
             {
                 if (running) return;
 
-                if (LogToConsole)
+                if (!LogToConsole)
                 {
-                    SRTrace.AddGlobalListener(new SRConsoleTraceListener());
+                    SRTrace.RemoveGlobalListenersWhere(gl => gl is SRConsoleTraceListener);
                 }
 
-                if (!string.IsNullOrWhiteSpace(LogBaseDirectory))
+                var logBaseDir = string.IsNullOrWhiteSpace(LogBaseDirectory) ? @"C:\SRLog" : LogBaseDirectory;
+
+                if (LogToFile)
                 {
-                    SRTrace.AddGlobalListener(new SRFileTraceListener(new DirectoryInfo(LogBaseDirectory)));
+                    SRTrace.AddGlobalListener(new SRFileTraceListener(sysEnvironment, new DirectoryInfo(logBaseDir)));
+
+                    SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine file logging is enabled [BaseDirectory={0}]", logBaseDir);
                 }
+                else
+                {
+                    SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine file logging is disabled");
+                }
+
+                SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine console logging is {0}",
+                    LogToConsole ? "enabled" : "disabled");
 
                 if (sysEnvironment == SysEnvironment.None)
                 {
@@ -143,8 +156,6 @@ namespace SpiderRock.DataFeed
                 {
                     throw new InvalidOperationException("No channels are configured");
                 }
-
-                SRFileTraceListener.SysEnvironment = sysEnvironment;
 
                 GCSettings.LatencyMode = LatencyMode;
 
@@ -173,7 +184,7 @@ namespace SpiderRock.DataFeed
 
                         foreach (UdpChannel udpChannel in Channels)
                         {
-                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}",
+                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine UDP/DBL Channel: {0}",
                                 udpChannel);
                             dblManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
                         }
@@ -186,7 +197,7 @@ namespace SpiderRock.DataFeed
 
                         foreach (UdpChannel udpChannel in Channels)
                         {
-                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}",
+                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine UDP Channel: {0}",
                                 udpChannel);
                             udpDevice.Join(GetIPEndPoint(udpChannel));
                         }

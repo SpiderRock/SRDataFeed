@@ -7,19 +7,13 @@ namespace SpiderRock.DataFeed.Diagnostics
 {
     internal class SRFileTraceListener : SRTraceListener, IEquatable<SRFileTraceListener>
     {
-        public const string DefaultBaseDirectory = @"C:\SRLog";
-
         private readonly Dictionary<string, TextWriter> writersBySource =
             new Dictionary<string, TextWriter>();
 
-        public SRFileTraceListener()
-            : this(new DirectoryInfo(DefaultBaseDirectory))
-        {
-        }
-
-        public SRFileTraceListener(DirectoryInfo baseDirectory)
+        public SRFileTraceListener(SysEnvironment sysEnvironment, DirectoryInfo baseDirectory)
         {
             if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
+            SysEnvironment = sysEnvironment;
             BaseDirectory = baseDirectory;
         }
 
@@ -30,7 +24,7 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public DirectoryInfo BaseDirectory { get; private set; }
 
-        internal static SysEnvironment SysEnvironment { get; set; }
+        public SysEnvironment SysEnvironment { get; private set; }
 
         protected override TextWriter GetWriter(string source)
         {
@@ -78,7 +72,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
         }
 
-        public static string BuildPath(DirectoryInfo baseDirectory, string source)
+        public string BuildPath(DirectoryInfo baseDirectory, string source)
         {
             if (source == null) throw new ArgumentNullException("source");
 

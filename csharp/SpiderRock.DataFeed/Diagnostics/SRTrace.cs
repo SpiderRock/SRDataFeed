@@ -11,7 +11,7 @@ namespace SpiderRock.DataFeed.Diagnostics
     {
         private static CancellationTokenSource aggregateEventCancellationTokenSource;
         private static TimeSpan aggregateEventFrequency;
-        private static readonly HashSet<TraceListener> GlobalTraceListeners = new HashSet<TraceListener>();
+        private static readonly HashSet<TraceListener> GlobalTraceListenerSet = new HashSet<TraceListener>();
 
         static SRTrace()
         {
@@ -92,9 +92,9 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public static void AddGlobalListener(TraceListener traceListener)
         {
-            lock (GlobalTraceListeners)
+            lock (GlobalTraceListenerSet)
             {
-                if (!GlobalTraceListeners.Add(traceListener)) return;
+                if (!GlobalTraceListenerSet.Add(traceListener)) return;
 
                 Default.Listeners.Add(traceListener);
                 KeyErrors.Listeners.Add(traceListener);
@@ -110,9 +110,9 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public static void RemoveGlobalListener(TraceListener traceListener)
         {
-            lock (GlobalTraceListeners)
+            lock (GlobalTraceListenerSet)
             {
-                if (!GlobalTraceListeners.Remove(traceListener)) return;
+                if (!GlobalTraceListenerSet.Remove(traceListener)) return;
 
                 Default.Listeners.Remove(traceListener);
                 KeyErrors.Listeners.Remove(traceListener);
@@ -126,13 +126,27 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
         }
 
+        public static void RemoveGlobalListenersWhere(Func<TraceListener, bool> predicate)
+        {
+            lock (GlobalTraceListenerSet)
+            {
+                foreach (var globalTraceListener in GlobalListeners)
+                {
+                    if (predicate(globalTraceListener))
+                    {
+                        RemoveGlobalListener(globalTraceListener);
+                    }
+                }
+            }
+        }
+
         public static TraceListener[] GlobalListeners
         {
             get
             {
-                lock (GlobalTraceListeners)
+                lock (GlobalTraceListenerSet)
                 {
-                    return GlobalTraceListeners.ToArray();
+                    return GlobalTraceListenerSet.ToArray();
                 }
             }
         }
