@@ -10,8 +10,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 {
     internal sealed unsafe class FrameHandler
     {
-        private static readonly long NanosecondsUpToUnixEpoch = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks)*100;
-
         private sealed class ErrorCounter
         {
             private int counter;
