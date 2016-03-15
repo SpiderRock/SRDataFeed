@@ -417,6 +417,8 @@ namespace SpiderRock.DataFeed.Diagnostics
                     if (latencyStatistics.Count == 0) continue;
                     if (latencyStatistics.Period++ == 0) continue;
 
+                    var baseDrift = latencyStatistics.Base - latencyStatistics.LastBase;
+
                     lines.Add(string.Format(latencyRowFormat,
                         latencyStatistics.Type + " / " + channel.Name,
 
@@ -433,7 +435,7 @@ namespace SpiderRock.DataFeed.Diagnostics
 
                         latencyStatistics.BucketSec1,
                         latencyStatistics.BucketSecOther
-                        ) + "\tbase drift (ms): " + ((latencyStatistics.Base - latencyStatistics.LastBase)/1000).ToString("N3"));
+                        ) + string.Format("\tbase drift (ms): {0,8:N3} ({1,5:P0})", baseDrift/1000, Math.Abs(baseDrift/latencyStatistics.LastBase)));
 
                     latencyStatistics.Reset();
                 }
