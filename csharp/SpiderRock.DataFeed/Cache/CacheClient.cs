@@ -125,7 +125,7 @@ namespace SpiderRock.DataFeed.Cache
                 length = (int)(Formatter.Default.Encode(msg, sendBufferPtr, sendBufferPtr + sendBuffer.Length) - sendBufferPtr);
             }
 
-            sendChannel.Syscalls += 1;
+            sendChannel.Frames += 1;
 
             long stTime = Stopwatch.GetTimestamp();
 
@@ -134,7 +134,7 @@ namespace SpiderRock.DataFeed.Cache
             double enTime = Stopwatch.GetTimestamp();
             double handlerElapsed = (enTime - stTime)/Stopwatch.Frequency;
 
-            sendChannel.IncrementTimeCounters(0, handlerElapsed, length > 1500);
+            sendChannel.IncrementTimeCounters(0, handlerElapsed, false);
 
             if (sent != length)
             {
@@ -187,7 +187,7 @@ namespace SpiderRock.DataFeed.Cache
                 double enTime = Stopwatch.GetTimestamp();
                 double handlerElapsed = (enTime - stTime)/Stopwatch.Frequency;
 
-                recvChannel.IncrementTimeCounters(0, handlerElapsed, roffset > 0);
+                recvChannel.IncrementTimeCounters(0, handlerElapsed, false);
 
                 if (roffset >= 0) continue;
 

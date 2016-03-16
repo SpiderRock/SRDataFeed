@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using SpiderRock.DataFeed.FrameHandling;
 
@@ -48,9 +49,9 @@ namespace SpiderRock.DataFeed
         public string Address { get; private set; }
 
         public long Errors { get; internal set; }
-        public long Partials { get; internal set; }
+        public long Large { get; internal set; }
         public IPEndPoint RemoteEp { get; internal set; }
-        public long Syscalls { get; internal set; }
+        public long Frames { get; internal set; }
         public long Bytes { get; internal set; }
         public double MaxAsyncTime { get; internal set; }
         public double MaxHandlerTime { get; internal set; }
@@ -62,8 +63,8 @@ namespace SpiderRock.DataFeed
         internal long LastBytes { get; set; }
         internal long LastErrors { get; set; }
         internal long LastMessages { get; set; }
-        internal long LastPartials { get; set; }
-        internal long LastSyscalls { get; set; }
+        internal long LastLarge { get; set; }
+        internal long LastFrames { get; set; }
         internal double LastSumAsyncTime { get; set; }
         internal double LastSumHandlerTime { get; set; }
         internal string LastError { get; set; }
@@ -77,13 +78,14 @@ namespace SpiderRock.DataFeed
             return Name + " [" + Type + "]";
         }
 
-        internal void IncrementTimeCounters(double asyncElapsed, double handlerElapsed, bool isPartial,
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void IncrementTimeCounters(double asyncElapsed, double handlerElapsed, bool isLarge,
             bool errFlag = false)
         {
-            Syscalls += 1;
+            Frames += 1;
 
             if (errFlag) Errors += 1;
-            if (isPartial) Partials += 1;
+            if (isLarge) Large += 1;
 
             MaxAsyncTime = Math.Max(MaxAsyncTime, asyncElapsed);
             MaxHandlerTime = Math.Max(MaxHandlerTime, handlerElapsed);
@@ -92,6 +94,7 @@ namespace SpiderRock.DataFeed
             SumHandlerTime += handlerElapsed;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void IncrementMsgCount(int msgtype, int msglen)
         {
             Bytes += msglen;

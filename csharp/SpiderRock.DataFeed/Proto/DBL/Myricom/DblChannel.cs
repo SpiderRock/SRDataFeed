@@ -30,7 +30,7 @@ namespace SpiderRock.DataFeed.Proto.DBL.Myricom
 
             handlerEnd = Stopwatch.GetTimestamp();
 
-            recvChannel.IncrementTimeCounters(asyncElapsed, (handlerEnd - handlerBegin)/Frequency, roffset > 0);
+            recvChannel.IncrementTimeCounters(asyncElapsed, (handlerEnd - handlerBegin)/Frequency, length >= 1000);
 
             return roffset;
         }

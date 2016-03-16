@@ -173,19 +173,14 @@ namespace SpiderRock.DataFeed.Diagnostics
             int insertPos = 0;
 
             lines.Insert(insertPos++, string.Empty);
-            lines.Insert(insertPos++,
-                "--- [messages] ----------------------------------------------------------------------------------------------------------");
-            lines.Insert(insertPos++,
-                "channel  (msg)                               msgCount    msgRate/s   numSources      numGaps      cumGaps        cumCount");
-            lines.Insert(insertPos,
-                "-------------------------------------------------------------------------------------------------------------------------");
+            lines.Insert(insertPos++, "--- [messages] ----------------------------------------------------------------------------------------------------------");
+            lines.Insert(insertPos++, "channel  (msg)                               msgCount    msgRate/s   numSources      numGaps      cumGaps        cumCount");
+            lines.Insert(insertPos, "-------------------------------------------------------------------------------------------------------------------------");
 
-            lines.Add(
-                "-------------------------------------------------------------------------------------------------------------------------");
-            lines.Add(String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}", "TOTAL:",
-                numMessages, numMessages / elapsed, numSenders, numGaps, totalGaps, totalMessages));
-            lines.Add(
-                "-------------------------------------------------------------------------------------------------------------------------");
+            lines.Add("-------------------------------------------------------------------------------------------------------------------------");
+            lines.Add(String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}", "TOTAL:", numMessages, numMessages / elapsed, numSenders, numGaps, totalGaps, totalMessages));
+            lines.Add("-------------------------------------------------------------------------------------------------------------------------");
+
             lines.Add(string.Empty);
 
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
@@ -198,9 +193,9 @@ namespace SpiderRock.DataFeed.Diagnostics
             if (elapsed < 1.0) elapsed = 1.0;
 
             long numBytes = 0;
-            long numSyscalls = 0;
+            long numFrames = 0;
             long numMessages = 0;
-            long numPartials = 0;
+            long numLarge = 0;
             long numGaps = 0;
 
             double maxAsyncTime = 0;
@@ -218,14 +213,14 @@ namespace SpiderRock.DataFeed.Diagnostics
                 long newBytes = channel.Bytes - channel.LastBytes;
                 channel.LastBytes = channel.Bytes;
 
-                long newSyscalls = channel.Syscalls - channel.LastSyscalls;
-                channel.LastSyscalls = channel.Syscalls;
+                long newFrames = channel.Frames - channel.LastFrames;
+                channel.LastFrames = channel.Frames;
 
                 long newMessages = channel.Messages - channel.LastMessages;
                 channel.LastMessages = channel.Messages;
 
-                long newPartials = channel.Partials - channel.LastPartials;
-                channel.LastPartials = channel.Partials;
+                long newLarge = channel.Large - channel.LastLarge;
+                channel.LastLarge = channel.Large;
 
                 long newGaps = channel.Gaps;
 
@@ -243,7 +238,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                 if (channel.Type == ChannelType.TcpRecv)
                 {
                     newGaps = 0;
-                    if (newBytes == 0 && newSyscalls == 0 && newMessages == 0) continue;
+                    if (newBytes == 0 && newFrames == 0 && newMessages == 0) continue;
                 }
                 else if (channel.Type == ChannelType.DblRecv || channel.Type == ChannelType.UdpRecv)
                 {
@@ -274,21 +269,21 @@ namespace SpiderRock.DataFeed.Diagnostics
                 }
 
                 numBytes += newBytes;
-                numSyscalls += newSyscalls;
+                numFrames += newFrames;
                 numMessages += newMessages;
-                numPartials += newPartials;
+                numLarge += newLarge;
                 numGaps += newGaps;
 
                 // write channel incremental stats to log file                           
 
                 string msg = string.Format(
-                    "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:N0} {6,7:N0} {7,8:N4} {8,8:N4} {9,8:N3} {10,8:N3} {11,35} {12,25}  {13,-20}",
+                    "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:P0} {6,7:N0} {7,8:N4} {8,8:N4} {9,8:N3} {10,8:N3} {11,35} {12,25}  {13,-20}",
                     channel.Type,
                     newBytes / (1024.0 * 1024.0),
                     newBytes / (1024.0 * elapsed),
-                    newSyscalls / elapsed,
+                    newFrames / elapsed,
                     newMessages / elapsed,
-                    newPartials,
+                    newLarge / (double) newFrames,
                     newGaps,
                     Math.Min(99, channel.MaxAsyncTime),
                     Math.Min(99, channel.MaxHandlerTime),
@@ -310,36 +305,28 @@ namespace SpiderRock.DataFeed.Diagnostics
             int insertPos = 0;
 
             lines.Insert(insertPos++, string.Empty);
-            lines.Insert(insertPos++,
-                "--- [channel stats] ------------------------------------------------------------------------------------------------------------------------------------------------");
-            lines.Insert(insertPos++,
-                " channel   mbytes   kbytes/s syscalls/s messages/s   parts    gaps  maxWait  maxProc  sumWait  sumProc                       channel.label            source.address");
-            lines.Insert(insertPos,
-                "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            lines.Insert(insertPos++,   "--- [channel stats] ------------------------------------------------------------------------------------------------------------------------------------------------");
+            lines.Insert(insertPos++,   " channel   mbytes   kbytes/s   frames/s messages/s   large    gaps  maxWait  maxProc  sumWait  sumProc                       channel.label            source.address");
+            lines.Insert(insertPos,     "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-            lines.Add(
-                "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-
-            string footer = String.Format(
-                "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:N0} {6,7:N0} {7,8:N4} {8,8:N4} {9,8} {10,8:N3} {11,25}",
+            lines.Add("--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            lines.Add(string.Format(
+                "{0,8} {1,8:N1} {2,10:N0} {3,10:N1} {4,10:N1} {5,7:P0} {6,7:N0} {7,8:N4} {8,8:N4} {9,8} {10,8:N3} {11,25}",
                 "TOTAL:",
                 numBytes / (1024.0 * 1024.0),
                 numBytes / (1024.0 * elapsed),
-                numSyscalls / elapsed,
+                numFrames / elapsed,
                 numMessages / elapsed,
-                numPartials,
+                numLarge / numFrames,
                 numGaps,
                 Math.Min(99, maxAsyncTime),
                 Math.Min(99, maxHandlerTime),
                 "",
                 Math.Min(99, sumHandlerTime),
                 ""
-                );
+                ));
+            lines.Add("--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-            lines.Add(footer);
-
-            lines.Add(
-                "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
             lines.Add(string.Empty);
 
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
@@ -349,7 +336,7 @@ namespace SpiderRock.DataFeed.Diagnostics
         {
             if (channelList == null) return;
 
-            var header = string.Format("{0,-60}{1,12}{2,12}", "channel / message / source", "gaps", "cumGaps");
+            var header = string.Format("{0,-60}{1,12}{2,12}", "channel / message / source", "# gaps", "# cumGaps");
             var separator = new string('-', header.Length);
             var lines = new List<object>();
 
@@ -359,10 +346,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                 {
                     case ChannelType.UdpRecv:
                     case ChannelType.DblRecv:
-                        foreach (var seqNumberCounter in channel
-                            .SeqNumberCounters
-                            .OrderBy(c => c.MessageType.ToString())
-                            .ThenBy(c => (ushort) c.SourceId))
+                        foreach (var seqNumberCounter in channel.SeqNumberCounters)
                         {
                             lines.Add(string.Format("{0,-60}{1,12:N0}{2,12:N0}",
                                 string.Format("{0,-21} / {1,-20} / {2,-5}", channel.Address, seqNumberCounter.MessageType, seqNumberCounter.SourceId),

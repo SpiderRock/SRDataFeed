@@ -154,7 +154,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
 
             handlerEnd = Stopwatch.GetTimestamp();
 
-            RecvChannel.IncrementTimeCounters(asyncElapsed, (handlerEnd - handlerBegin)/Frequency, roffset > 0);
+            RecvChannel.IncrementTimeCounters(asyncElapsed, (handlerEnd - handlerBegin)/Frequency, recvLength >= 1000);
 
             if (roffset < 0)
             {

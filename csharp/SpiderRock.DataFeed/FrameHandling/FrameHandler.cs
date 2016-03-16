@@ -157,8 +157,6 @@ namespace SpiderRock.DataFeed.FrameHandling
                 if (offset == length) return 0;
                 if (offset == 0) return length;
 
-                channel.Partials += 1;
-
                 // copy residual to beginning of buffer            
                 Buffer.BlockCopy(buffer, offset, buffer, 0, length - offset);
 
