@@ -170,19 +170,24 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             lines.Sort();
 
-            lines.Insert(0,
+            int insertPos = 0;
+
+            lines.Insert(insertPos++, string.Empty);
+            lines.Insert(insertPos++,
                 "--- [messages] ----------------------------------------------------------------------------------------------------------");
-            lines.Insert(1,
+            lines.Insert(insertPos++,
                 "channel  (msg)                               msgCount    msgRate/s   numSources      numGaps      cumGaps        cumCount");
-            lines.Insert(2,
+            lines.Insert(insertPos,
                 "-------------------------------------------------------------------------------------------------------------------------");
 
             lines.Add(
                 "-------------------------------------------------------------------------------------------------------------------------");
             lines.Add(String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}", "TOTAL:",
                 numMessages, numMessages / elapsed, numSenders, numGaps, totalGaps, totalMessages));
+            lines.Add(
+                "-------------------------------------------------------------------------------------------------------------------------");
+            lines.Add(string.Empty);
 
-            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, string.Empty);
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
@@ -302,11 +307,14 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             lines.Sort();
 
-            lines.Insert(0,
+            int insertPos = 0;
+
+            lines.Insert(insertPos++, string.Empty);
+            lines.Insert(insertPos++,
                 "--- [channel stats] ------------------------------------------------------------------------------------------------------------------------------------------------");
-            lines.Insert(1,
+            lines.Insert(insertPos++,
                 " channel   mbytes   kbytes/s syscalls/s messages/s   parts    gaps  maxWait  maxProc  sumWait  sumProc                       channel.label            source.address");
-            lines.Insert(2,
+            lines.Insert(insertPos,
                 "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             lines.Add(
@@ -330,7 +338,10 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             lines.Add(footer);
 
-            SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, string.Empty);
+            lines.Add(
+                "--------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            lines.Add(string.Empty);
+
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
@@ -338,11 +349,8 @@ namespace SpiderRock.DataFeed.Diagnostics
         {
             if (channelList == null) return;
 
-            const string header = " message / source                                gaps      cumGaps";
+            var header = string.Format("{0,-60}{1,12}{2,12}", "channel / message / source", "gaps", "cumGaps");
             var separator = new string('-', header.Length);
-
-            bool appendEmptyLine = false;
-
             var lines = new List<object>();
 
             foreach (var channel in channelList)
@@ -351,36 +359,33 @@ namespace SpiderRock.DataFeed.Diagnostics
                 {
                     case ChannelType.UdpRecv:
                     case ChannelType.DblRecv:
-                        if (channel.SeqNumberCounters.All(c => c.Gaps == 0)) continue;
-
-                        lines.Add(string.Empty);
-
-                        lines.Add(string.Format("--- [{0} ({1}) gaps] ---", channel.Name, channel.Type).PadRight(header.Length, '-'));
-                        lines.Add(header);
-                        lines.Add(separator);
-
                         foreach (var seqNumberCounter in channel
                             .SeqNumberCounters
-                            .Where(c => c.Gaps > 0)
                             .OrderBy(c => c.MessageType.ToString())
-                            .ThenBy(c => (ushort)c.SourceId))
+                            .ThenBy(c => (ushort) c.SourceId))
                         {
-                            lines.Add(string.Format("{0,-40} {1,12:N0} {2,12:N0}",
-                                seqNumberCounter.MessageType + " / " + seqNumberCounter.SourceId,
+                            lines.Add(string.Format("{0,-60}{1,12:N0}{2,12:N0}",
+                                string.Format("{0,-21} / {1,-20} / {2,-5}", channel.Address, seqNumberCounter.MessageType, seqNumberCounter.SourceId),
                                 seqNumberCounter.Gaps,
                                 seqNumberCounter.CumulativeGaps));
                         }
-
-                        lines.Add(separator);
-                        appendEmptyLine = true;
                         break;
                 }
             }
 
             if (lines.Count == 0) return;
-            if (appendEmptyLine) lines.Add(string.Empty);
 
-            SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, string.Empty);
+            lines.Sort();
+
+            int insertPos = 0;
+
+            lines.Insert(insertPos++, string.Empty);
+            lines.Insert(insertPos++, "--- [channel seqno gaps] ---".PadRight(header.Length, '-'));
+            lines.Insert(insertPos++, header);
+            lines.Insert(insertPos, separator);
+            lines.Add(separator);
+            lines.Add(string.Empty);
+
             SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
@@ -445,13 +450,14 @@ namespace SpiderRock.DataFeed.Diagnostics
 
             lines.Sort();
 
-            lines.Insert(0, latencyTableTitle);
-            lines.Insert(1, latencyTableHeader);
-            lines.Insert(2, latencyTableSeparator);
-
+            int insertPos = 0;
+            lines.Insert(insertPos++, string.Empty);
+            lines.Insert(insertPos++, latencyTableTitle);
+            lines.Insert(insertPos++, latencyTableHeader);
+            lines.Insert(insertPos, latencyTableSeparator);
             lines.Add(latencyTableSeparator);
+            lines.Add(string.Empty);
 
-            SRTrace.NetLatency.TraceData(TraceEventType.Verbose, 0, string.Empty);
             SRTrace.NetLatency.TraceData(TraceEventType.Verbose, 0, lines.Cast<object>().ToArray());
         }
 
