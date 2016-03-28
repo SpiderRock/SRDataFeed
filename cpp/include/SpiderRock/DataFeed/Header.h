@@ -44,7 +44,7 @@ namespace SpiderRock
 			Byte key_length;
 
 			Header() :
-				environment(SysEnvironment::Stable),
+				environment(SysEnvironment::None),
 				message_type(MessageType::None),
 				bits(HeaderBits::None),
 				source_id(0),
