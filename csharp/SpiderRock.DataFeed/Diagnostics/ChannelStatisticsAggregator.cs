@@ -92,7 +92,10 @@ namespace SpiderRock.DataFeed.Diagnostics
 
                 GetSeqNumberGapStats(copyOfChannels);
 
-                GetLatencyStats(copyOfChannels);
+                if (EnableLatencyAggregation)
+                {
+                    GetLatencyStats(copyOfChannels);
+                }
             }
             catch (Exception e)
             {
@@ -100,7 +103,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             }
         }
 
-        private void GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
+        private static void GetMessageStats(IEnumerable<Channel> channelList, double elapsed)
         {
             if (elapsed < 1.0) elapsed = 1.0;
 
@@ -186,7 +189,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
-        private void GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
+        private static void GetChannelStats(IEnumerable<Channel> channelList, double elapsed)
         {
             var lines = new List<object>();
 
@@ -332,7 +335,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             SRTrace.NetChannels.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
-        private void GetSeqNumberGapStats(IEnumerable<Channel> channelList)
+        private static void GetSeqNumberGapStats(IEnumerable<Channel> channelList)
         {
             if (channelList == null) return;
 
@@ -373,10 +376,8 @@ namespace SpiderRock.DataFeed.Diagnostics
             SRTrace.NetSeqNumber.TraceData(TraceEventType.Verbose, 0, lines.ToArray());
         }
 
-        private void GetLatencyStats(IEnumerable<Channel> channelList)
+        private static void GetLatencyStats(IEnumerable<Channel> channelList)
         {
-            if (!EnableLatencyAggregation) return;
-
             const int width = 10;
 
             var lines = new List<string>();
