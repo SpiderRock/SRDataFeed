@@ -26,7 +26,7 @@ namespace SpiderRock.DataFeed
  	public enum StkExch : byte { None=0,AMEX=1,NQBX=2,NSX=3,FNRA=4,ISE=5,EDGA=6,EDGX=7,CHX=8,NYSE=9,ARCA=10,NSDQ=11,CBSX=12,PSX=13,BTSY=14,BATS=15,CBIDX=16 };		
  	public enum StockTick : byte { None=0,Up=1,Down=2 };		
  	public enum SurfaceResult : byte { None=0,OK=1,Init=2,Cache=3,PrevDay=4,NullExpIdx=5,NoStrikes=6,NoBaseCurve=7,BadBootAtm=8,NoGoodStrikes=9,BadAtmVol=10,Bootstrap=11,NoUPrc=12,NoIVols=13,NoModelPts=14 };		
- 	public enum SysEnvironment : byte { None=0,Stable=1,Beta=2 };		
+ 	public enum SysEnvironment : byte { None=0,Red=1,Blue=2 };		
  	public enum TickerSrc : byte { None=0,SR=1,NMS=2,CME=3,ICE=4,CFE=5,CBOT=6,COIN=7,NYMEX=8,COMEX=9,RUT=10,CBOE=11,KET=12,ISE=13,ARCA=14,NYSE=15 };		
  	public enum YesNo : byte { None=0,Yes=1,No=2 };		
 

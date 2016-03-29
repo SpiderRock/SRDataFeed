@@ -69,7 +69,7 @@ public:
 };
 
 SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
-	: impl_{ new impl(SysEnvironment::Beta, device_address) }
+	: impl_{ new impl(SysEnvironment::Blue, device_address) }
 {
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote, { MessageType::FutureBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
@@ -138,11 +138,11 @@ IPEndPoint SRDataFeedEngine::GetIPEndPoint(DataChannel channel)
 
 	string ipaddr;
 
-	if (impl_->environment == SysEnvironment::Stable)
+	if (impl_->environment == SysEnvironment::Red)
 	{
 		ipaddr = "233.74.249." + to_string(chnum);
 	}
-	else if (impl_->environment == SysEnvironment::Beta)
+	else if (impl_->environment == SysEnvironment::Blue)
 	{
 		ipaddr = "233.117.185." + to_string(chnum);
 	}

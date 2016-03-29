@@ -209,8 +209,8 @@ namespace SpiderRock
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			Stable=1,
-			Beta=2
+			Red=1,
+			Blue=2
 		};
 
  		enum class TickerSrc : Enum 
