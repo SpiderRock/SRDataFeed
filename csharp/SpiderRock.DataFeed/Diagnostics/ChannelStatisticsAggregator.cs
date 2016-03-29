@@ -351,10 +351,13 @@ namespace SpiderRock.DataFeed.Diagnostics
                     case ChannelType.DblRecv:
                         foreach (var seqNumberCounter in channel.SeqNumberCounters)
                         {
+                            var cumulativeGaps = seqNumberCounter.CumulativeGaps;
+                            if (cumulativeGaps == 0) continue;
+
                             lines.Add(string.Format("{0,-60}{1,12:N0}{2,12:N0}",
                                 string.Format("{0,-21} / {1,-20} / {2,-5}", channel.Address, seqNumberCounter.MessageType, seqNumberCounter.SourceId),
                                 seqNumberCounter.Gaps,
-                                seqNumberCounter.CumulativeGaps));
+                                cumulativeGaps));
                         }
                         break;
                 }
