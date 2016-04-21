@@ -3139,12 +3139,6 @@ namespace SpiderRock.DataFeed
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
 			}
- 			
-			public OptExch Exch
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.exch; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.exch = value; }
-			}
 
 			public void Clear()
 			{
@@ -3195,13 +3189,11 @@ namespace SpiderRock.DataFeed
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
 			public OptionKeyLayout okey;
- 			public OptExch exch;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
             {
-                return	okey.Equals(other.okey) &&
-					 	exch.Equals(other.exch);
+                return	okey.Equals(other.okey);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3216,7 +3208,6 @@ namespace SpiderRock.DataFeed
                 {
 					// ReSharper disable NonReadonlyFieldInGetHashCode
 					var hashCode = okey.GetHashCode();
- 					hashCode = (hashCode*397) ^ ((int) exch);
 
                     return hashCode;
 					// ReSharper restore NonReadonlyFieldInGetHashCode
@@ -3234,6 +3225,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
+			public OptExch exch;
 			public float prtPrice;
 			public int prtSize;
 			public byte prtType;
@@ -3261,6 +3253,9 @@ namespace SpiderRock.DataFeed
 		
 
 
+		
+        public OptExch Exch { get { return body.exch; } set { body.exch = value; } }
+ 
 		/// <summary>print price</summary>
         public float PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
  

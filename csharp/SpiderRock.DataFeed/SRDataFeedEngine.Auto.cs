@@ -1058,7 +1058,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote> objectsByKey = new Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote>(1000000);
+            private readonly Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote> objectsByKey = new Dictionary<OptionCloseQuote.PKeyLayout, OptionCloseQuote>();
             
             [ThreadStatic] private static OptionCloseQuote decodeTarget;
 
@@ -1376,7 +1376,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote> objectsByKey = new Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote>(1000000);
+            private readonly Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote> objectsByKey = new Dictionary<OptionNbboQuote.PKeyLayout, OptionNbboQuote>();
             
             [ThreadStatic] private static OptionNbboQuote decodeTarget;
 
@@ -1535,7 +1535,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark> objectsByKey = new Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark>(1000000);
+            private readonly Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark> objectsByKey = new Dictionary<OptionOpenMark.PKeyLayout, OptionOpenMark>();
             
             [ThreadStatic] private static OptionOpenMark decodeTarget;
 
@@ -1694,7 +1694,7 @@ namespace SpiderRock.DataFeed
 
             #endregion
             
-            private readonly Dictionary<OptionPrint.PKeyLayout, OptionPrint> objectsByKey = new Dictionary<OptionPrint.PKeyLayout, OptionPrint>(300000);
+            private readonly Dictionary<OptionPrint.PKeyLayout, OptionPrint> objectsByKey = new Dictionary<OptionPrint.PKeyLayout, OptionPrint>();
             
             [ThreadStatic] private static OptionPrint decodeTarget;
 

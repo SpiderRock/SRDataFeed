@@ -734,9 +734,9 @@ namespace SpiderRock.DataFeed
 
 				recordBuilder.Append(pkey.Okey.TabRecord);
 				recordBuilder.Append("\t");
-				recordBuilder.Append(pkey.Exch);
-				recordBuilder.Append("\t");
 
+				recordBuilder.Append(Exch);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtPrice);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtSize);

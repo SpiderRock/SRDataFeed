@@ -1051,16 +1051,13 @@ public:
 	class Key
 	{
 		OptionKey okey_;
-		OptExch exch_;
 		
 	public:
 		inline const OptionKey& okey() const { return okey_; }
-		inline OptExch exch() const { return exch_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = OptionKey()(k.okey_);
-			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exch_));
 
 			return hash_code;
 		}
@@ -1068,8 +1065,7 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.okey_ == b.okey_
-				&& a.exch_ == b.exch_;
+				a.okey_ == b.okey_;
 		}
 	};
 	
@@ -1078,6 +1074,7 @@ private:
 	struct Layout
 	{
 		Key pkey;
+		OptExch exch;
 		Float prtPrice;
 		Int prtSize;
 		Byte prtType;
@@ -1108,6 +1105,7 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
+	inline OptExch exch() const { return layout_.exch; }
 	inline Float prtPrice() const { return layout_.prtPrice; }
 	inline Int prtSize() const { return layout_.prtSize; }
 	inline Byte prtType() const { return layout_.prtType; }
