@@ -32,7 +32,7 @@ namespace SpiderRock
 			MUT=10
 		};
 
- 		enum class AuctionType : Enum 
+ 		enum class AuctionReason : Enum 
 		{
 			None=0,
 			Open=1,
@@ -156,7 +156,8 @@ namespace SpiderRock
 		{
 			Default=0,
 			Gelber=1,
-			User=2
+			User=2,
+			Test=3
 		};
 
  		enum class StkExch : Enum 

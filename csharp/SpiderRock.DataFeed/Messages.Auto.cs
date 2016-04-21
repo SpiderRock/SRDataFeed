@@ -4839,7 +4839,7 @@ namespace SpiderRock.DataFeed
 			public int totalImbalanceQty;
 			public int marketImbalanceQty;
 			public DateTimeLayout auctionTime;
-			public AuctionType auctionType;
+			public AuctionReason auctionType;
 			public BuySell imbalanceSide;
 			public float continuousBookClrPx;
 			public float closingOnlyClrPx;
@@ -4872,7 +4872,7 @@ namespace SpiderRock.DataFeed
         public DateTime AuctionTime { get { return body.auctionTime; } set { body.auctionTime = value; } }
  
 		
-        public AuctionType AuctionType { get { return body.auctionType; } set { body.auctionType = value; } }
+        public AuctionReason AuctionType { get { return body.auctionType; } set { body.auctionType = value; } }
  
 		/// <summary>Side of the imbalance.</summary>
         public BuySell ImbalanceSide { get { return body.imbalanceSide; } set { body.imbalanceSide = value; } }

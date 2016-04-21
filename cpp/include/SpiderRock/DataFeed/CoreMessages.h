@@ -1593,7 +1593,7 @@ private:
 		Int totalImbalanceQty;
 		Int marketImbalanceQty;
 		DateTime auctionTime;
-		AuctionType auctionType;
+		AuctionReason auctionType;
 		BuySell imbalanceSide;
 		Float continuousBookClrPx;
 		Float closingOnlyClrPx;
@@ -1618,7 +1618,7 @@ public:
 	inline Int totalImbalanceQty() const { return layout_.totalImbalanceQty; }
 	inline Int marketImbalanceQty() const { return layout_.marketImbalanceQty; }
 	inline DateTime auctionTime() const { return layout_.auctionTime; }
-	inline AuctionType auctionType() const { return layout_.auctionType; }
+	inline AuctionReason auctionType() const { return layout_.auctionType; }
 	inline BuySell imbalanceSide() const { return layout_.imbalanceSide; }
 	inline Float continuousBookClrPx() const { return layout_.continuousBookClrPx; }
 	inline Float closingOnlyClrPx() const { return layout_.closingOnlyClrPx; }
