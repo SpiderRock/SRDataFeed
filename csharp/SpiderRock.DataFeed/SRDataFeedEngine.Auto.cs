@@ -1768,6 +1768,165 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class OptionPrint2ContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<OptionPrint2> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<OptionPrint2> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<OptionPrint2> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<OptionPrint2>> Created;
+            public event EventHandler<ChangedEventArgs<OptionPrint2>> Changed;
+            public event EventHandler<UpdatedEventArgs<OptionPrint2>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<OptionPrint2> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<OptionPrint2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<OptionPrint2> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<OptionPrint2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<OptionPrint2> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<OptionPrint2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(OptionPrint2 obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<OptionPrint2>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<OptionPrint2> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "OptionPrint2.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(OptionPrint2 obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<OptionPrint2>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<OptionPrint2> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "OptionPrint2.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(OptionPrint2 current, OptionPrint2 previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<OptionPrint2> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "OptionPrint2.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<OptionPrint2.PKeyLayout, OptionPrint2> objectsByKey = new Dictionary<OptionPrint2.PKeyLayout, OptionPrint2>();
+            
+            [ThreadStatic] private static OptionPrint2 decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(OptionPrint2.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(OptionPrint2.PKeyLayout))));
+                }           
+                
+                OptionPrint2.PKeyLayout pkey = *(OptionPrint2.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                OptionPrint2 item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new OptionPrint2(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new OptionPrint2();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class OptionRiskFactorContainerCache
         {
             #region Events
@@ -3056,6 +3215,7 @@ namespace SpiderRock.DataFeed
          private readonly OptionNbboQuoteContainerCache optionNbboQuoteContainerCache = new OptionNbboQuoteContainerCache();
          private readonly OptionOpenMarkContainerCache optionOpenMarkContainerCache = new OptionOpenMarkContainerCache();
          private readonly OptionPrintContainerCache optionPrintContainerCache = new OptionPrintContainerCache();
+         private readonly OptionPrint2ContainerCache optionPrint2ContainerCache = new OptionPrint2ContainerCache();
          private readonly OptionRiskFactorContainerCache optionRiskFactorContainerCache = new OptionRiskFactorContainerCache();
          private readonly OptionSettlementMarkContainerCache optionSettlementMarkContainerCache = new OptionSettlementMarkContainerCache();
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
@@ -3083,6 +3243,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.OptionNbboQuote, optionNbboQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionOpenMark, optionOpenMarkContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionPrint, optionPrintContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.OptionPrint2, optionPrint2ContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionRiskFactor, optionRiskFactorContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionSettlementMark, optionSettlementMarkContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
@@ -3108,6 +3269,7 @@ namespace SpiderRock.DataFeed
              optionNbboQuoteContainerCache.Clear();
              optionOpenMarkContainerCache.Clear();
              optionPrintContainerCache.Clear();
+             optionPrint2ContainerCache.Clear();
              optionRiskFactorContainerCache.Clear();
              optionSettlementMarkContainerCache.Clear();
              stockBookQuoteContainerCache.Clear();
@@ -3319,6 +3481,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { optionPrintContainerCache.Updated += value; } }
             remove  { lock (eventLock) { optionPrintContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<OptionPrint2>> OptionPrint2Created
+        {
+            add     { lock (eventLock) { optionPrint2ContainerCache.Created += value; } }
+            remove  { lock (eventLock) { optionPrint2ContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<OptionPrint2>> OptionPrint2Changed
+        {
+            add     { lock (eventLock) { optionPrint2ContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { optionPrint2ContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<OptionPrint2>> OptionPrint2Updated
+        {
+            add     { lock (eventLock) { optionPrint2ContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { optionPrint2ContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<OptionRiskFactor>> OptionRiskFactorCreated

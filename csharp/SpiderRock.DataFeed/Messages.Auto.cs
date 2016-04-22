@@ -3139,6 +3139,12 @@ namespace SpiderRock.DataFeed
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
 			}
+ 			
+			public OptExch Exch
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.exch; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.exch = value; }
+			}
 
 			public void Clear()
 			{
@@ -3189,6 +3195,281 @@ namespace SpiderRock.DataFeed
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
 			public OptionKeyLayout okey;
+ 			public OptExch exch;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	okey.Equals(other.okey) &&
+					 	exch.Equals(other.exch);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = okey.GetHashCode();
+ 					hashCode = (hashCode*397) ^ ((int) exch);
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // OptionPrint.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public float prtPrice;
+			public int prtSize;
+			public byte prtType;
+			public ushort prtOrders;
+			public int prtVolume;
+			public int cxlVolume;
+			public ushort bidCount;
+			public ushort askCount;
+			public int bidVolume;
+			public int askVolume;
+			public float ebid;
+			public float eask;
+			public ushort ebsz;
+			public ushort easz;
+			public float eage;
+			public long netTimestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { }
+		
+		
+
+
+		/// <summary>print price</summary>
+        public float PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
+ 
+		/// <summary>print size [contracts]</summary>
+        public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
+ 
+		/// <summary>print type</summary>
+        public byte PrtType { get { return body.prtType; } set { body.prtType = value; } }
+ 
+		/// <summary>number of participating orders</summary>
+        public ushort PrtOrders { get { return body.prtOrders; } set { body.prtOrders = value; } }
+ 
+		/// <summary>day print volume in contracts [this exchange]</summary>
+        public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
+ 
+		/// <summary>day print/cancel volume (num of contracts printed and then cancelled)</summary>
+        public int CxlVolume { get { return body.cxlVolume; } set { body.cxlVolume = value; } }
+ 
+		/// <summary>number of bid prints</summary>
+        public ushort BidCount { get { return body.bidCount; } set { body.bidCount = value; } }
+ 
+		/// <summary>number of ask prints</summary>
+        public ushort AskCount { get { return body.askCount; } set { body.askCount = value; } }
+ 
+		/// <summary>bid print volume in contracts</summary>
+        public int BidVolume { get { return body.bidVolume; } set { body.bidVolume = value; } }
+ 
+		/// <summary>ask print volume in contracts</summary>
+        public int AskVolume { get { return body.askVolume; } set { body.askVolume = value; } }
+ 
+		/// <summary>exchange bid (at print -1.0 sec)</summary>
+        public float Ebid { get { return body.ebid; } set { body.ebid = value; } }
+ 
+		/// <summary>exchange ask</summary>
+        public float Eask { get { return body.eask; } set { body.eask = value; } }
+ 
+		/// <summary>exchange bid size</summary>
+        public ushort Ebsz { get { return body.ebsz; } set { body.ebsz = value; } }
+ 
+		/// <summary>exchange ask size</summary>
+        public ushort Easz { get { return body.easz; } set { body.easz = value; } }
+ 
+		/// <summary>age of prevailing quote at time of print</summary>
+        public float Eage { get { return body.eage; } set { body.eage = value; } }
+ 
+		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+
+		
+		#endregion	
+
+    } // OptionPrint
+
+
+	/// <summary>
+	/// OptionPrint2:113
+	/// </summary>
+	/// <remarks>
+	/// --- OptionPrint ---
+	/// </remarks>
+
+    public partial class OptionPrint2
+    {
+		public OptionPrint2()
+		{
+		}
+		
+		public OptionPrint2(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public OptionPrint2(OptionPrint2 source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal OptionPrint2(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as OptionPrint2);
+		}
+		
+		public bool Equals(OptionPrint2 other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(OptionPrint2 target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.OptionPrint2};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private OptionKey okey;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				okey = other.okey;
+				
+			}
+			
+			
+			public OptionKey Okey
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				okey = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.okey = okey;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.okey = okey;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // OptionPrint2.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public OptionKeyLayout okey;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
@@ -3213,7 +3494,7 @@ namespace SpiderRock.DataFeed
 					// ReSharper restore NonReadonlyFieldInGetHashCode
                 }
             }
-        } // OptionPrint.PKeyLayout
+        } // OptionPrint2.PKeyLayout
 
 		// ReSharper disable once InconsistentNaming
         internal readonly PKey pkey = new PKey();
@@ -3307,7 +3588,7 @@ namespace SpiderRock.DataFeed
 		
 		#endregion	
 
-    } // OptionPrint
+    } // OptionPrint2
 
 
 	/// <summary>

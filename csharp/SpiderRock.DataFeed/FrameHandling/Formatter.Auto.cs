@@ -181,6 +181,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, OptionPrint2 dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(OptionPrint2.PKeyLayout) + sizeof(OptionPrint2.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionPrint2");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((OptionPrint2.PKeyLayout*) src); src += sizeof(OptionPrint2.PKeyLayout);
+ 				dest.body = *((OptionPrint2.BodyLayout*) src); src += sizeof(OptionPrint2.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, OptionRiskFactor dest, byte* max)
 		{
 			unchecked

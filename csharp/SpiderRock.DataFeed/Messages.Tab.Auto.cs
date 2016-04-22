@@ -734,6 +734,61 @@ namespace SpiderRock.DataFeed
 
 				recordBuilder.Append(pkey.Okey.TabRecord);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.Exch);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(PrtPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtOrders);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CxlVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidCount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskCount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Ebid);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Eask);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Ebsz);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Easz);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Eage);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NetTimestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
+    public partial class OptionPrint2
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\texch\tprtPrice\tprtSize\tprtType\tprtOrders\tprtVolume\tcxlVolume\tbidCount\taskCount\tbidVolume\taskVolume\tebid\teask\tebsz\teasz\teage\tnetTimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Okey.TabRecord);
+				recordBuilder.Append("\t");
 
 				recordBuilder.Append(Exch);
 				recordBuilder.Append("\t");

@@ -33,6 +33,7 @@ namespace SpiderRock
 			OptionNbboQuote = 102,
 			OptionOpenMark = 105,
 			OptionPrint = 106,
+			OptionPrint2 = 113,
 			OptionRiskFactor = 379,
 			OptionSettlementMark = 374,
 			StockBookQuote = 121,
