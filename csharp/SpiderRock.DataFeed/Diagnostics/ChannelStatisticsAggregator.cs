@@ -72,6 +72,8 @@ namespace SpiderRock.DataFeed.Diagnostics
 
         public void Flush(double elapsedSeconds)
         {
+            if (elapsedSeconds.Equals(0d)) return;
+
             try
             {
                 List<Channel> copyOfChannels;
@@ -320,7 +322,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                 numBytes / (1024.0 * elapsed),
                 numFrames / elapsed,
                 numMessages / elapsed,
-                numLarge / numFrames,
+                numFrames == 0 ? 0 : numLarge / numFrames,
                 numGaps,
                 Math.Min(99, maxAsyncTime),
                 Math.Min(99, maxHandlerTime),
