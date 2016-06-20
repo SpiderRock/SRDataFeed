@@ -59,7 +59,7 @@ namespace SpiderRock
 
 			inline uint16_t length() const
 			{
-				return (uint16_t)(chars_[_Tsize - 1] == 0 ? _Tsize : strlen(chars_));
+				return (uint16_t)(chars_[_Tsize - 1] == 0 ? strlen(chars_) : _Tsize);
 			}
 
 			inline std::shared_ptr<const std::string> str() const
