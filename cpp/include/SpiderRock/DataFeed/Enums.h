@@ -92,6 +92,13 @@ namespace SpiderRock
 			Quote=2
 		};
 
+ 		enum class IndexSource : Enum 
+		{
+			None=0,
+			Live=1,
+			PriorDay=2
+		};
+
  		enum class LiveSurfaceType : Enum 
 		{
 			None=0,
@@ -113,7 +120,8 @@ namespace SpiderRock
 			LoBound=3,
 			HiBound=4,
 			SRPricer=5,
-			SRQuote=6
+			SRQuote=6,
+			CloseMark=7
 		};
 
  		enum class MarketStatus : Enum 

@@ -496,6 +496,165 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class IndexCloseContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<IndexClose> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<IndexClose> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<IndexClose> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<IndexClose>> Created;
+            public event EventHandler<ChangedEventArgs<IndexClose>> Changed;
+            public event EventHandler<UpdatedEventArgs<IndexClose>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<IndexClose> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<IndexClose>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<IndexClose> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<IndexClose>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<IndexClose> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<IndexClose>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(IndexClose obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<IndexClose>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<IndexClose> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "IndexClose.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(IndexClose obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<IndexClose>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<IndexClose> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "IndexClose.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(IndexClose current, IndexClose previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<IndexClose> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "IndexClose.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<IndexClose.PKeyLayout, IndexClose> objectsByKey = new Dictionary<IndexClose.PKeyLayout, IndexClose>();
+            
+            [ThreadStatic] private static IndexClose decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(IndexClose.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(IndexClose.PKeyLayout))));
+                }           
+                
+                IndexClose.PKeyLayout pkey = *(IndexClose.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                IndexClose item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new IndexClose(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new IndexClose();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class IndexQuoteContainerCache
         {
             #region Events
@@ -3207,6 +3366,7 @@ namespace SpiderRock.DataFeed
         private readonly FutureBookQuoteContainerCache futureBookQuoteContainerCache = new FutureBookQuoteContainerCache();
          private readonly FuturePrintContainerCache futurePrintContainerCache = new FuturePrintContainerCache();
          private readonly FutureSettlementMarkContainerCache futureSettlementMarkContainerCache = new FutureSettlementMarkContainerCache();
+         private readonly IndexCloseContainerCache indexCloseContainerCache = new IndexCloseContainerCache();
          private readonly IndexQuoteContainerCache indexQuoteContainerCache = new IndexQuoteContainerCache();
          private readonly LiveSurfaceAtmContainerCache liveSurfaceAtmContainerCache = new LiveSurfaceAtmContainerCache();
          private readonly OptionCloseMarkContainerCache optionCloseMarkContainerCache = new OptionCloseMarkContainerCache();
@@ -3235,6 +3395,7 @@ namespace SpiderRock.DataFeed
                 frameHandler.OnMessage(MessageType.FutureBookQuote, futureBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FuturePrint, futurePrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.FutureSettlementMark, futureSettlementMarkContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.IndexClose, indexCloseContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.IndexQuote, indexQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.LiveSurfaceAtm, liveSurfaceAtmContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionCloseMark, optionCloseMarkContainerCache.OnMessage);
@@ -3261,6 +3422,7 @@ namespace SpiderRock.DataFeed
             futureBookQuoteContainerCache.Clear();
              futurePrintContainerCache.Clear();
              futureSettlementMarkContainerCache.Clear();
+             indexCloseContainerCache.Clear();
              indexQuoteContainerCache.Clear();
              liveSurfaceAtmContainerCache.Clear();
              optionCloseMarkContainerCache.Clear();
@@ -3337,6 +3499,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { futureSettlementMarkContainerCache.Updated += value; } }
             remove  { lock (eventLock) { futureSettlementMarkContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<IndexClose>> IndexCloseCreated
+        {
+            add     { lock (eventLock) { indexCloseContainerCache.Created += value; } }
+            remove  { lock (eventLock) { indexCloseContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<IndexClose>> IndexCloseChanged
+        {
+            add     { lock (eventLock) { indexCloseContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { indexCloseContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<IndexClose>> IndexCloseUpdated
+        {
+            add     { lock (eventLock) { indexCloseContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { indexCloseContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<IndexQuote>> IndexQuoteCreated

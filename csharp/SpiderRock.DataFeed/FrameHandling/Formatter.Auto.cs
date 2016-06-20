@@ -61,6 +61,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, IndexClose dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(IndexClose.PKeyLayout) + sizeof(IndexClose.BodyLayout) > max) throw new IOException("Max exceeded decoding IndexClose");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((IndexClose.PKeyLayout*) src); src += sizeof(IndexClose.PKeyLayout);
+ 				dest.body = *((IndexClose.BodyLayout*) src); src += sizeof(IndexClose.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, IndexQuote dest, byte* max)
 		{
 			unchecked

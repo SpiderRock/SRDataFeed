@@ -877,6 +877,275 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
+	/// IndexClose:138
+	/// </summary>
+	/// <remarks>
+	/// --- Index closing record
+	/// StockBasketServer publishes 'Live' records
+	/// Period Begin/End publishes 'PriorDay' records
+	/// </remarks>
+
+    public partial class IndexClose
+    {
+		public IndexClose()
+		{
+		}
+		
+		public IndexClose(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public IndexClose(IndexClose source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal IndexClose(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as IndexClose);
+		}
+		
+		public bool Equals(IndexClose other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(IndexClose target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+ 			target.Invalidate();
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			Invalidate();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.IndexClose};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private StockKey ticker;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				ticker = other.ticker;
+				
+			}
+			
+			
+			public StockKey Ticker
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
+			}
+ 			
+			public IndexSource Source
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.source; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.source = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				ticker = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.ticker = ticker;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.ticker = ticker;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // IndexClose.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public StockKeyLayout ticker;
+ 			public IndexSource source;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	ticker.Equals(other.ticker) &&
+					 	source.Equals(other.source);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = ticker.GetHashCode();
+ 					hashCode = (hashCode*397) ^ ((int) source);
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // IndexClose.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public double idxBid;
+			public double idxAsk;
+			public double idxPrice;
+			public StockKeyLayout synTicker;
+			public double synBid;
+			public double synAsk;
+			public double synPrice;
+			public FutureKeyLayout synFKey;
+			public double synRatio;
+			public double synOffset;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		private volatile int usn;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedStockKey synTicker;
+ 		private CachedFutureKey synFKey;
+		
+
+
+		/// <summary>index bid value (if from quote, otherwise idxPrice)</summary>
+        public double IdxBid { get { return body.idxBid; } set { body.idxBid = value; } }
+ 
+		/// <summary>index ask value (if from quote, otherwise idxPrice)</summary>
+        public double IdxAsk { get { return body.idxAsk; } set { body.idxAsk = value; } }
+ 
+		/// <summary>index price</summary>
+        public double IdxPrice { get { return body.idxPrice; } set { body.idxPrice = value; } }
+             
+		/// <summary>syn quote ticker</summary>
+        public StockKey SynTicker { get { return CacheVar.AllocIfNull(ref synTicker).Get(ref body.synTicker, usn); } set { CacheVar.AllocIfNull(ref synTicker).Set(value); body.synTicker = value.Layout; } }
+ 
+		/// <summary>syn quote bid (market close)</summary>
+        public double SynBid { get { return body.synBid; } set { body.synBid = value; } }
+ 
+		/// <summary>syn quote ask (market close)</summary>
+        public double SynAsk { get { return body.synAsk; } set { body.synAsk = value; } }
+ 
+		/// <summary>syn last print (market close)</summary>
+        public double SynPrice { get { return body.synPrice; } set { body.synPrice = value; } }
+             
+		/// <summary>future key used to create the synthetic quote (if any)</summary>
+        public FutureKey SynFKey { get { return CacheVar.AllocIfNull(ref synFKey).Get(ref body.synFKey, usn); } set { CacheVar.AllocIfNull(ref synFKey).Set(value); body.synFKey = value.Layout; } }
+ 
+		/// <summary>synBid = futBid * synRatio + synOffset</summary>
+        public double SynRatio { get { return body.synRatio; } set { body.synRatio = value; } }
+ 
+		/// <summary>synAsk = futAsk * synRatio + synOffset</summary>
+        public double SynOffset { get { return body.synOffset; } set { body.synOffset = value; } }
+ 
+		/// <summary>record timestamp</summary>
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // IndexClose
+
+
+	/// <summary>
 	/// IndexQuote:137
 	/// </summary>
 	/// <remarks>
@@ -1339,6 +1608,7 @@ namespace SpiderRock.DataFeed
 			public float sdiv;
 			public float ddiv;
 			public byte exType;
+			public float earnCnt;
 			public float axisVolRT;
 			public float axisFUPrc;
 			public float cAtm;
@@ -1435,6 +1705,9 @@ namespace SpiderRock.DataFeed
 		/// <summary>exercise type of the options used to compute this surface</summary>
         public byte ExType { get { return body.exType; } set { body.exType = value; } }
  
+		/// <summary>number of qualifying earnings events (between now and expiration) [can be fractional]</summary>
+        public float EarnCnt { get { return body.earnCnt; } set { body.earnCnt = value; } }
+ 
 		/// <summary>axis volatility x sqrt(years) (used to compute xAxis) [usually 4m atm vol]</summary>
         public float AxisVolRT { get { return body.axisVolRT; } set { body.axisVolRT = value; } }
  
@@ -1447,10 +1720,10 @@ namespace SpiderRock.DataFeed
 		/// <summary>put atm vol (xAxis = 0)</summary>
         public float PAtm { get { return body.pAtm; } set { body.pAtm = value; } }
  
-		
+		/// <summary>minimum estimated atm vol</summary>
         public float MinAtmVol { get { return body.minAtmVol; } set { body.minAtmVol = value; } }
  
-		
+		/// <summary>maximum estimated atm vol</summary>
         public float MaxAtmVol { get { return body.maxAtmVol; } set { body.maxAtmVol = value; } }
  
 		/// <summary>h (x-axis step size; usually 0.5) [xAxis = (effStrike / effAxisFUPrc - 1.0) / axisVolRT; effStrike = strike * strikeRatio; effAxisFUPrc = axisFUPrc * symbolRatio]</summary>
@@ -1711,7 +1984,7 @@ namespace SpiderRock.DataFeed
 				
 			}
 			
-			
+			/// <summary>SR option key</summary>
 			public OptionKey Okey
 			{
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
@@ -1803,8 +2076,9 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public float uBid;
-			public float uAsk;
+			public double uBid;
+			public double uAsk;
+			public double uClose;
 			public float bidPx;
 			public float askPx;
 			public float bidIV;
@@ -1834,55 +2108,58 @@ namespace SpiderRock.DataFeed
 		
 
 
-		/// <summary>SR closing underlyer bid</summary>
-        public float UBid { get { return body.uBid; } set { body.uBid = value; } }
+		/// <summary>SR closing underlyer bid (C - 1m)</summary>
+        public double UBid { get { return body.uBid; } set { body.uBid = value; } }
  
-		/// <summary>SR closing underlyer ask</summary>
-        public float UAsk { get { return body.uAsk; } set { body.uAsk = value; } }
+		/// <summary>SR closing underlyer ask (C - 1m)</summary>
+        public double UAsk { get { return body.uAsk; } set { body.uAsk = value; } }
  
-		/// <summary>SR closing underlyer bid</summary>
+		/// <summary>official closing mark</summary>
+        public double UClose { get { return body.uClose; } set { body.uClose = value; } }
+ 
+		/// <summary>SR closing option bid (C - 1m)</summary>
         public float BidPx { get { return body.bidPx; } set { body.bidPx = value; } }
  
-		/// <summary>SR closing underlyer ask</summary>
+		/// <summary>SR closing option ask (C - 1m)</summary>
         public float AskPx { get { return body.askPx; } set { body.askPx = value; } }
  
-		/// <summary>implied vol of SR closing bid price</summary>
+		/// <summary>implied vol of SR closing bid price (C - 1m)</summary>
         public float BidIV { get { return body.bidIV; } set { body.bidIV = value; } }
  
-		/// <summary>implied vol of SR closing ask price</summary>
+		/// <summary>implied vol of SR closing ask price (C - 1m)</summary>
         public float AskIV { get { return body.askIV; } set { body.askIV = value; } }
  
-		/// <summary>SR surface price (always within bidPx/askPx)</summary>
+		/// <summary>SR surface price (always within bidPx/askPx) (C - 1m)</summary>
         public float SrPrc { get { return body.srPrc; } set { body.srPrc = value; } }
  
 		/// <summary>SR surface volatility</summary>
         public float SrVol { get { return body.srVol; } set { body.srVol = value; } }
  
-		
+		/// <summary>srPrc source [NbboMid, SRVol, LoBound, HiBound, SRPricer, SRQuote, CloseMark]</summary>
         public MarkSource SrSrc { get { return body.srSrc; } set { body.srSrc = value; } }
  
-		/// <summary>greeks from SR surface volatility</summary>
+		/// <summary>delta (SR surface)</summary>
         public float De { get { return body.de; } set { body.de = value; } }
  
-		
+		/// <summary>gamma (SR surface)</summary>
         public float Ga { get { return body.ga; } set { body.ga = value; } }
  
-		
+		/// <summary>theta (SR surface)</summary>
         public float Th { get { return body.th; } set { body.th = value; } }
  
-		
+		/// <summary>vega (SR surface)</summary>
         public float Ve { get { return body.ve; } set { body.ve = value; } }
  
-		
+		/// <summary>rho (SR surrface)</summary>
         public float Rh { get { return body.rh; } set { body.rh = value; } }
  
-		
+		/// <summary>phi (SR surface)</summary>
         public float Ph { get { return body.ph; } set { body.ph = value; } }
  
 		/// <summary>SR sdiv rate</summary>
         public float Sdiv { get { return body.sdiv; } set { body.sdiv = value; } }
  
-		/// <summary>SR ddiv rate</summary>
+		/// <summary>SR ddiv rate (sum of discrete dividend amounts)</summary>
         public float Ddiv { get { return body.ddiv; } set { body.ddiv = value; } }
  
 		/// <summary>SR interest rate</summary>
@@ -1891,7 +2168,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>SRPricingLib.CalcError</summary>
         public byte Error { get { return body.error; } set { body.error = value; } }
  
-		
+		/// <summary>record timestamp</summary>
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
 
 		
@@ -2802,6 +3079,7 @@ namespace SpiderRock.DataFeed
 			target.header = header;
  			pkey.CopyTo(target.pkey);
  			target.body = body;
+ 			target.Invalidate();
 
         }
 
@@ -2809,6 +3087,7 @@ namespace SpiderRock.DataFeed
         public void Clear()
         {
 			pkey.Clear();
+ 			Invalidate();
  			body = new BodyLayout();
 
         }
@@ -2956,15 +3235,21 @@ namespace SpiderRock.DataFeed
 			public float ddiv;
 			public float rate;
 			public byte error;
+			public OptionKeyLayout priorOKey;
+			public float prcAdjValue;
+			public float prcAdjRatio;
 			public DateTimeLayout timestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
 		internal BodyLayout body;
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
+		private volatile int usn;
 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedOptionKey priorOKey;
 		
 
 
@@ -3024,6 +3309,15 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>SRPricingLib.CalcError</summary>
         public byte Error { get { return body.error; } set { body.error = value; } }
+             
+		/// <summary>prior period option key (same as okey on most days)</summary>
+        public OptionKey PriorOKey { get { return CacheVar.AllocIfNull(ref priorOKey).Get(ref body.priorOKey, usn); } set { CacheVar.AllocIfNull(ref priorOKey).Set(value); body.priorOKey = value.Layout; } }
+ 
+		/// <summary>corp action adjustment value (0.0 on most days); [todayPrice = priorPrice * prcAdjRatio + prcAdjValue]</summary>
+        public float PrcAdjValue { get { return body.prcAdjValue; } set { body.prcAdjValue = value; } }
+ 
+		/// <summary>corp action adjustment factor (1.0 on most days)</summary>
+        public float PrcAdjRatio { get { return body.prcAdjRatio; } set { body.prcAdjRatio = value; } }
  
 		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
@@ -3549,7 +3843,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>number of participating orders</summary>
         public ushort PrtOrders { get { return body.prtOrders; } set { body.prtOrders = value; } }
  
-		/// <summary>day print volume in contracts [this exchange]</summary>
+		/// <summary>day print volume in contracts (electronic volume)</summary>
         public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
  
 		/// <summary>day print/cancel volume (num of contracts printed and then cancelled)</summary>
@@ -4643,6 +4937,7 @@ namespace SpiderRock.DataFeed
 		{
 			public float bidPrc;
 			public float askPrc;
+			public float srClsPrc;
 			public float closePrc;
 			public DateTimeLayout timestamp;
 		}
@@ -4656,13 +4951,16 @@ namespace SpiderRock.DataFeed
 		
 
 
-		/// <summary>bid price (SR mark from previous day)</summary>
+		/// <summary>bid price (close - 1min)</summary>
         public float BidPrc { get { return body.bidPrc; } set { body.bidPrc = value; } }
  
-		/// <summary>ask price (SR mark from previous day)</summary>
+		/// <summary>ask price (close - 1min)</summary>
         public float AskPrc { get { return body.askPrc; } set { body.askPrc = value; } }
  
-		/// <summary>official exchange closing mark</summary>
+		/// <summary>sr close mark (close - 1min)</summary>
+        public float SrClsPrc { get { return body.srClsPrc; } set { body.srClsPrc = value; } }
+ 
+		/// <summary>official exchange closing mark (last print; then official close)</summary>
         public float ClosePrc { get { return body.closePrc; } set { body.closePrc = value; } }
  
 		
@@ -4679,6 +4977,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// --- StockCloseQuote ---
+	/// from exchange fee handlers
 	/// </remarks>
 
     public partial class StockCloseQuote
@@ -4883,16 +5182,16 @@ namespace SpiderRock.DataFeed
 		
 
 
-		/// <summary>bid price</summary>
+		/// <summary>bid price	(close - 1min)</summary>
         public float BidPrice { get { return body.bidPrice; } set { body.bidPrice = value; } }
  
-		/// <summary>ask price</summary>
+		/// <summary>ask price (close - 1min)</summary>
         public float AskPrice { get { return body.askPrice; } set { body.askPrice = value; } }
  
-		/// <summary>bid size</summary>
+		/// <summary>bid size (close - 1min)</summary>
         public int BidSize { get { return body.bidSize; } set { body.bidSize = value; } }
  
-		/// <summary>ask size</summary>
+		/// <summary>ask size (close - 1min)</summary>
         public int AskSize { get { return body.askSize; } set { body.askSize = value; } }
  
 		
@@ -5175,6 +5474,7 @@ namespace SpiderRock.DataFeed
 	/// StockOpenMark:124
 	/// </summary>
 	/// <remarks>
+	/// #[closePrice:float]						# official exchange closing price (last trade)
 	/// --- StockOpenMark ---
 	/// </remarks>
 
@@ -5227,6 +5527,7 @@ namespace SpiderRock.DataFeed
 			target.header = header;
  			pkey.CopyTo(target.pkey);
  			target.body = body;
+ 			target.Invalidate();
 
         }
 
@@ -5234,6 +5535,7 @@ namespace SpiderRock.DataFeed
         public void Clear()
         {
 			pkey.Clear();
+ 			Invalidate();
  			body = new BodyLayout();
 
         }
@@ -5364,16 +5666,23 @@ namespace SpiderRock.DataFeed
 		{
 			public float bidPrc;
 			public float askPrc;
+			public float srClsPrc;
 			public float closePrc;
+			public StockKeyLayout priorTicker;
+			public float prcAdjValue;
+			public float prcAdjRatio;
 			public DateTimeLayout timestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
 		internal BodyLayout body;
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
+		private volatile int usn;
 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedStockKey priorTicker;
 		
 
 
@@ -5383,8 +5692,20 @@ namespace SpiderRock.DataFeed
 		/// <summary>ask price (SR mark from previous day)</summary>
         public float AskPrc { get { return body.askPrc; } set { body.askPrc = value; } }
  
-		/// <summary>official exchange closing mark</summary>
+		/// <summary>sr close mark (close - 1min) (from previous day)</summary>
+        public float SrClsPrc { get { return body.srClsPrc; } set { body.srClsPrc = value; } }
+ 
+		/// <summary>official exchange closing mark  (from previous day)</summary>
         public float ClosePrc { get { return body.closePrc; } set { body.closePrc = value; } }
+             
+		/// <summary>prior period stock key (same as ticker on most days)</summary>
+        public StockKey PriorTicker { get { return CacheVar.AllocIfNull(ref priorTicker).Get(ref body.priorTicker, usn); } set { CacheVar.AllocIfNull(ref priorTicker).Set(value); body.priorTicker = value.Layout; } }
+ 
+		/// <summary>corp action adjustment value (0.0 on most days)  currentPrice = priorPrice * factor + value</summary>
+        public float PrcAdjValue { get { return body.prcAdjValue; } set { body.prcAdjValue = value; } }
+ 
+		/// <summary>corp action adjustment factor (1.0 on most days)</summary>
+        public float PrcAdjRatio { get { return body.prcAdjRatio; } set { body.prcAdjRatio = value; } }
  
 		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }

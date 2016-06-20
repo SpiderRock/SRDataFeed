@@ -306,6 +306,89 @@ public:
 
 };
 
+ class IndexClose
+{
+public:
+	class Key
+	{
+		StockKey ticker_;
+		IndexSource source_;
+		
+	public:
+		inline const StockKey& ticker() const { return ticker_; }
+		inline IndexSource source() const { return source_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = StockKey()(k.ticker_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.source_));
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ticker_ == b.ticker_
+				&& a.source_ == b.source_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		Double idxBid;
+		Double idxAsk;
+		Double idxPrice;
+		StockKey synTicker;
+		Double synBid;
+		Double synAsk;
+		Double synPrice;
+		FutureKey synFKey;
+		Double synRatio;
+		Double synOffset;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline Double idxBid() const { return layout_.idxBid; }
+	inline Double idxAsk() const { return layout_.idxAsk; }
+	inline Double idxPrice() const { return layout_.idxPrice; }
+	inline const StockKey& synTicker() const { return layout_.synTicker; }
+	inline Double synBid() const { return layout_.synBid; }
+	inline Double synAsk() const { return layout_.synAsk; }
+	inline Double synPrice() const { return layout_.synPrice; }
+	inline const FutureKey& synFKey() const { return layout_.synFKey; }
+	inline Double synRatio() const { return layout_.synRatio; }
+	inline Double synOffset() const { return layout_.synOffset; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<IndexClose::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
  class IndexQuote
 {
 public:
@@ -422,6 +505,7 @@ private:
 		Float sdiv;
 		Float ddiv;
 		Byte exType;
+		Float earnCnt;
 		Float axisVolRT;
 		Float axisFUPrc;
 		Float cAtm;
@@ -501,6 +585,7 @@ public:
 	inline Float sdiv() const { return layout_.sdiv; }
 	inline Float ddiv() const { return layout_.ddiv; }
 	inline Byte exType() const { return layout_.exType; }
+	inline Float earnCnt() const { return layout_.earnCnt; }
 	inline Float axisVolRT() const { return layout_.axisVolRT; }
 	inline Float axisFUPrc() const { return layout_.axisFUPrc; }
 	inline Float cAtm() const { return layout_.cAtm; }
@@ -601,8 +686,9 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		Float uBid;
-		Float uAsk;
+		Double uBid;
+		Double uAsk;
+		Double uClose;
 		Float bidPx;
 		Float askPx;
 		Float bidIV;
@@ -635,8 +721,9 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline Float uBid() const { return layout_.uBid; }
-	inline Float uAsk() const { return layout_.uAsk; }
+	inline Double uBid() const { return layout_.uBid; }
+	inline Double uAsk() const { return layout_.uAsk; }
+	inline Double uClose() const { return layout_.uClose; }
 	inline Float bidPx() const { return layout_.bidPx; }
 	inline Float askPx() const { return layout_.askPx; }
 	inline Float bidIV() const { return layout_.bidIV; }
@@ -996,6 +1083,9 @@ private:
 		Float ddiv;
 		Float rate;
 		Byte error;
+		OptionKey priorOKey;
+		Float prcAdjValue;
+		Float prcAdjRatio;
 		DateTime timestamp;
 	};
 	
@@ -1030,6 +1120,9 @@ public:
 	inline Float ddiv() const { return layout_.ddiv; }
 	inline Float rate() const { return layout_.rate; }
 	inline Byte error() const { return layout_.error; }
+	inline const OptionKey& priorOKey() const { return layout_.priorOKey; }
+	inline Float prcAdjValue() const { return layout_.prcAdjValue; }
+	inline Float prcAdjRatio() const { return layout_.prcAdjRatio; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
@@ -1541,6 +1634,7 @@ private:
 		Key pkey;
 		Float bidPrc;
 		Float askPrc;
+		Float srClsPrc;
 		Float closePrc;
 		DateTime timestamp;
 	};
@@ -1559,6 +1653,7 @@ public:
 	
 	inline Float bidPrc() const { return layout_.bidPrc; }
 	inline Float askPrc() const { return layout_.askPrc; }
+	inline Float srClsPrc() const { return layout_.srClsPrc; }
 	inline Float closePrc() const { return layout_.closePrc; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
@@ -1760,7 +1855,11 @@ private:
 		Key pkey;
 		Float bidPrc;
 		Float askPrc;
+		Float srClsPrc;
 		Float closePrc;
+		StockKey priorTicker;
+		Float prcAdjValue;
+		Float prcAdjRatio;
 		DateTime timestamp;
 	};
 	
@@ -1778,7 +1877,11 @@ public:
 	
 	inline Float bidPrc() const { return layout_.bidPrc; }
 	inline Float askPrc() const { return layout_.askPrc; }
+	inline Float srClsPrc() const { return layout_.srClsPrc; }
 	inline Float closePrc() const { return layout_.closePrc; }
+	inline const StockKey& priorTicker() const { return layout_.priorTicker; }
+	inline Float prcAdjValue() const { return layout_.prcAdjValue; }
+	inline Float prcAdjRatio() const { return layout_.prcAdjRatio; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 

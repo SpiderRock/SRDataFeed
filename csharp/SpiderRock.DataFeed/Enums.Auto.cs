@@ -18,8 +18,9 @@ namespace SpiderRock.DataFeed
  	public enum FitType : byte { None=0,InitAtm=1,LoBound=2,HiBound=3,MidGap=4,MidGapW=5,MidGapN=6 };		
  	public enum FutExch : byte { None=0,CFE=1,CME=2,CBT=3,COMEX=4,NYMEX=5,ICE=6 };		
  	public enum IdxSrc : byte { Unknown=0,Indication=1,Quote=2 };		
+ 	public enum IndexSource : byte { None=0,Live=1,PriorDay=2 };		
  	public enum LiveSurfaceType : byte { None=0,Live=1,Hist=2,PriorDay=3,Skew=4,Interp=5,Test1=6,Test2=7,Test3=8 };		
- 	public enum MarkSource : byte { None=0,NbboMid=1,SRVol=2,LoBound=3,HiBound=4,SRPricer=5,SRQuote=6 };		
+ 	public enum MarkSource : byte { None=0,NbboMid=1,SRVol=2,LoBound=3,HiBound=4,SRPricer=5,SRQuote=6,CloseMark=7 };		
  	public enum MarketStatus : byte { None=0,PreOpen=1,PreCross=2,Cross=3,Open=4,Closed=5,Halted=6,AfterHours=7 };		
  	public enum OptExch : byte { None=0,AMEX=1,BOX=2,CBOE=3,ISE=4,NYSE=5,PHLX=6,NSDQ=7,BATS=8,C2=9,NQBX=10,MIAX=11,GMNI=12,CME=13,CBOT=14,NYMEX=15,COMEX=16,ICE=17,EDGO=18,MCRY=19 };		
  	public enum PricingGroup : byte { Default=0,Gelber=1,User=2,Test=3 };		

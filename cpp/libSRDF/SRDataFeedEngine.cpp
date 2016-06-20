@@ -39,6 +39,7 @@ public:
 	MessageEventSource<FutureBookQuote::Key, FutureBookQuote> futurebookquote;
 	MessageEventSource<FuturePrint::Key, FuturePrint> futureprint;
 	MessageEventSource<FutureSettlementMark::Key, FutureSettlementMark> futuresettlementmark;
+	MessageEventSource<IndexClose::Key, IndexClose> indexclose;
 	MessageEventSource<IndexQuote::Key, IndexQuote> indexquote;
 	MessageEventSource<LiveSurfaceAtm::Key, LiveSurfaceAtm> livesurfaceatm;
 	MessageEventSource<OptionCloseMark::Key, OptionCloseMark> optionclosemark;
@@ -75,6 +76,7 @@ SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote, { MessageType::FutureBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futuresettlementmark, { MessageType::FutureSettlementMark });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->indexclose, { MessageType::IndexClose });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->indexquote, { MessageType::IndexQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->livesurfaceatm, { MessageType::LiveSurfaceAtm });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->optionclosemark, { MessageType::OptionCloseMark });
@@ -215,6 +217,7 @@ void SRDataFeedEngine::Start()
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<FutureBookQuote>> observer) { impl_->futurebookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<FuturePrint>> observer) { impl_->futureprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<FutureSettlementMark>> observer) { impl_->futuresettlementmark.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<IndexClose>> observer) { impl_->indexclose.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<IndexQuote>> observer) { impl_->indexquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<LiveSurfaceAtm>> observer) { impl_->livesurfaceatm.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<OptionCloseMark>> observer) { impl_->optionclosemark.RegisterObserver(observer); }
@@ -236,6 +239,7 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockPrin
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<FutureBookQuote>> observer) { impl_->futurebookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<FuturePrint>> observer) { impl_->futureprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<FutureSettlementMark>> observer) { impl_->futuresettlementmark.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<IndexClose>> observer) { impl_->indexclose.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<IndexQuote>> observer) { impl_->indexquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<LiveSurfaceAtm>> observer) { impl_->livesurfaceatm.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<OptionCloseMark>> observer) { impl_->optionclosemark.RegisterObserver(observer); }
@@ -257,6 +261,7 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockPrin
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<FutureBookQuote>> observer) { impl_->futurebookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<FuturePrint>> observer) { impl_->futureprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<FutureSettlementMark>> observer) { impl_->futuresettlementmark.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<IndexClose>> observer) { impl_->indexclose.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<IndexQuote>> observer) { impl_->indexquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<LiveSurfaceAtm>> observer) { impl_->livesurfaceatm.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<OptionCloseMark>> observer) { impl_->optionclosemark.RegisterObserver(observer); }

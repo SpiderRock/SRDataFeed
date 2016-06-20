@@ -25,6 +25,7 @@ namespace SpiderRock
 			FutureBookQuote = 111,
 			FuturePrint = 115,
 			FutureSettlementMark = 375,
+			IndexClose = 138,
 			IndexQuote = 137,
 			LiveSurfaceAtm = 356,
 			OptionCloseMark = 373,

@@ -19,6 +19,7 @@ namespace SpiderRock.DataFeed
 		public static readonly MessageType FutureBookQuote = 111;
  		public static readonly MessageType FuturePrint = 115;
  		public static readonly MessageType FutureSettlementMark = 375;
+ 		public static readonly MessageType IndexClose = 138;
  		public static readonly MessageType IndexQuote = 137;
  		public static readonly MessageType LiveSurfaceAtm = 356;
  		public static readonly MessageType OptionCloseMark = 373;
@@ -48,6 +49,7 @@ namespace SpiderRock.DataFeed
 			isCore[FutureBookQuote] = true;
  			isCore[FuturePrint] = true;
  			isCore[FutureSettlementMark] = true;
+ 			isCore[IndexClose] = true;
  			isCore[IndexQuote] = true;
  			isCore[LiveSurfaceAtm] = true;
  			isCore[OptionCloseMark] = true;
@@ -90,6 +92,7 @@ namespace SpiderRock.DataFeed
  			names[FuturePrint] = "FuturePrint";
  			names[FutureSettlementMark] = "FutureSettlementMark";
  			names[GetCache] = "GetCache";
+ 			names[IndexClose] = "IndexClose";
  			names[IndexQuote] = "IndexQuote";
  			names[LiveSurfaceAtm] = "LiveSurfaceAtm";
  			names[OptionCloseMark] = "OptionCloseMark";
