@@ -322,7 +322,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                 numBytes / (1024.0 * elapsed),
                 numFrames / elapsed,
                 numMessages / elapsed,
-                numFrames == 0 ? 0 : numLarge / numFrames,
+                numLarge / Math.Max(1, numFrames),
                 numGaps,
                 Math.Min(99, maxAsyncTime),
                 Math.Min(99, maxHandlerTime),
