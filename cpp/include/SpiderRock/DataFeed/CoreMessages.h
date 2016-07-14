@@ -512,24 +512,39 @@ private:
 		Float pAtm;
 		Float minAtmVol;
 		Float maxAtmVol;
-		Float adjDI;
-		Float adjD8;
-		Float adjD7;
-		Float adjD6;
-		Float adjD5;
-		Float adjD4;
-		Float adjD3;
-		Float adjD2;
-		Float adjD1;
-		Float adjU1;
-		Float adjU2;
-		Float adjU3;
-		Float adjU4;
-		Float adjU5;
-		Float adjU6;
-		Float adjU7;
-		Float adjU8;
-		Float adjUI;
+		Float stepSz;
+		Float cAdjD8;
+		Float cAdjD7;
+		Float cAdjD6;
+		Float cAdjD5;
+		Float cAdjD4;
+		Float cAdjD3;
+		Float cAdjD2;
+		Float cAdjD1;
+		Float cAdjU1;
+		Float cAdjU2;
+		Float cAdjU3;
+		Float cAdjU4;
+		Float cAdjU5;
+		Float cAdjU6;
+		Float cAdjU7;
+		Float cAdjU8;
+		Float pAdjD8;
+		Float pAdjD7;
+		Float pAdjD6;
+		Float pAdjD5;
+		Float pAdjD4;
+		Float pAdjD3;
+		Float pAdjD2;
+		Float pAdjD1;
+		Float pAdjU1;
+		Float pAdjU2;
+		Float pAdjU3;
+		Float pAdjU4;
+		Float pAdjU5;
+		Float pAdjU6;
+		Float pAdjU7;
+		Float pAdjU8;
 		Float slope;
 		Float cmult;
 		Float pwidth;
@@ -592,24 +607,39 @@ public:
 	inline Float pAtm() const { return layout_.pAtm; }
 	inline Float minAtmVol() const { return layout_.minAtmVol; }
 	inline Float maxAtmVol() const { return layout_.maxAtmVol; }
-	inline Float adjDI() const { return layout_.adjDI; }
-	inline Float adjD8() const { return layout_.adjD8; }
-	inline Float adjD7() const { return layout_.adjD7; }
-	inline Float adjD6() const { return layout_.adjD6; }
-	inline Float adjD5() const { return layout_.adjD5; }
-	inline Float adjD4() const { return layout_.adjD4; }
-	inline Float adjD3() const { return layout_.adjD3; }
-	inline Float adjD2() const { return layout_.adjD2; }
-	inline Float adjD1() const { return layout_.adjD1; }
-	inline Float adjU1() const { return layout_.adjU1; }
-	inline Float adjU2() const { return layout_.adjU2; }
-	inline Float adjU3() const { return layout_.adjU3; }
-	inline Float adjU4() const { return layout_.adjU4; }
-	inline Float adjU5() const { return layout_.adjU5; }
-	inline Float adjU6() const { return layout_.adjU6; }
-	inline Float adjU7() const { return layout_.adjU7; }
-	inline Float adjU8() const { return layout_.adjU8; }
-	inline Float adjUI() const { return layout_.adjUI; }
+	inline Float stepSz() const { return layout_.stepSz; }
+	inline Float cAdjD8() const { return layout_.cAdjD8; }
+	inline Float cAdjD7() const { return layout_.cAdjD7; }
+	inline Float cAdjD6() const { return layout_.cAdjD6; }
+	inline Float cAdjD5() const { return layout_.cAdjD5; }
+	inline Float cAdjD4() const { return layout_.cAdjD4; }
+	inline Float cAdjD3() const { return layout_.cAdjD3; }
+	inline Float cAdjD2() const { return layout_.cAdjD2; }
+	inline Float cAdjD1() const { return layout_.cAdjD1; }
+	inline Float cAdjU1() const { return layout_.cAdjU1; }
+	inline Float cAdjU2() const { return layout_.cAdjU2; }
+	inline Float cAdjU3() const { return layout_.cAdjU3; }
+	inline Float cAdjU4() const { return layout_.cAdjU4; }
+	inline Float cAdjU5() const { return layout_.cAdjU5; }
+	inline Float cAdjU6() const { return layout_.cAdjU6; }
+	inline Float cAdjU7() const { return layout_.cAdjU7; }
+	inline Float cAdjU8() const { return layout_.cAdjU8; }
+	inline Float pAdjD8() const { return layout_.pAdjD8; }
+	inline Float pAdjD7() const { return layout_.pAdjD7; }
+	inline Float pAdjD6() const { return layout_.pAdjD6; }
+	inline Float pAdjD5() const { return layout_.pAdjD5; }
+	inline Float pAdjD4() const { return layout_.pAdjD4; }
+	inline Float pAdjD3() const { return layout_.pAdjD3; }
+	inline Float pAdjD2() const { return layout_.pAdjD2; }
+	inline Float pAdjD1() const { return layout_.pAdjD1; }
+	inline Float pAdjU1() const { return layout_.pAdjU1; }
+	inline Float pAdjU2() const { return layout_.pAdjU2; }
+	inline Float pAdjU3() const { return layout_.pAdjU3; }
+	inline Float pAdjU4() const { return layout_.pAdjU4; }
+	inline Float pAdjU5() const { return layout_.pAdjU5; }
+	inline Float pAdjU6() const { return layout_.pAdjU6; }
+	inline Float pAdjU7() const { return layout_.pAdjU7; }
+	inline Float pAdjU8() const { return layout_.pAdjU8; }
 	inline Float slope() const { return layout_.slope; }
 	inline Float cmult() const { return layout_.cmult; }
 	inline Float pwidth() const { return layout_.pwidth; }

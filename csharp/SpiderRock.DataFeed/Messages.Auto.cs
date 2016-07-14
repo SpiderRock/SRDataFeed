@@ -1615,24 +1615,39 @@ namespace SpiderRock.DataFeed
 			public float pAtm;
 			public float minAtmVol;
 			public float maxAtmVol;
-			public float adjDI;
-			public float adjD8;
-			public float adjD7;
-			public float adjD6;
-			public float adjD5;
-			public float adjD4;
-			public float adjD3;
-			public float adjD2;
-			public float adjD1;
-			public float adjU1;
-			public float adjU2;
-			public float adjU3;
-			public float adjU4;
-			public float adjU5;
-			public float adjU6;
-			public float adjU7;
-			public float adjU8;
-			public float adjUI;
+			public float stepSz;
+			public float cAdjD8;
+			public float cAdjD7;
+			public float cAdjD6;
+			public float cAdjD5;
+			public float cAdjD4;
+			public float cAdjD3;
+			public float cAdjD2;
+			public float cAdjD1;
+			public float cAdjU1;
+			public float cAdjU2;
+			public float cAdjU3;
+			public float cAdjU4;
+			public float cAdjU5;
+			public float cAdjU6;
+			public float cAdjU7;
+			public float cAdjU8;
+			public float pAdjD8;
+			public float pAdjD7;
+			public float pAdjD6;
+			public float pAdjD5;
+			public float pAdjD4;
+			public float pAdjD3;
+			public float pAdjD2;
+			public float pAdjD1;
+			public float pAdjU1;
+			public float pAdjU2;
+			public float pAdjU3;
+			public float pAdjU4;
+			public float pAdjU5;
+			public float pAdjU6;
+			public float pAdjU7;
+			public float pAdjU8;
 			public float slope;
 			public float cmult;
 			public float pwidth;
@@ -1727,58 +1742,103 @@ namespace SpiderRock.DataFeed
         public float MaxAtmVol { get { return body.maxAtmVol; } set { body.maxAtmVol = value; } }
  
 		/// <summary>h (x-axis step size; usually 0.5) [xAxis = (effStrike / effAxisFUPrc - 1.0) / axisVolRT; effStrike = strike * strikeRatio; effAxisFUPrc = axisFUPrc * symbolRatio]</summary>
-        public float AdjDI { get { return body.adjDI; } set { body.adjDI = value; } }
+        public float StepSz { get { return body.stepSz; } set { body.stepSz = value; } }
  
-		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]; Note: there is an implied intercept points (xAxis=0; skew=0) between adjD1 and adjU1</summary>
-        public float AdjD8 { get { return body.adjD8; } set { body.adjD8 = value; } }
+		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]; Note: there is an implied intercept points (xAxis=0; skew=0) between cAdjD1 and cAdjU1</summary>
+        public float CAdjD8 { get { return body.cAdjD8; } set { body.cAdjD8 = value; } }
  
 		/// <summary>dn 7 steps</summary>
-        public float AdjD7 { get { return body.adjD7; } set { body.adjD7 = value; } }
+        public float CAdjD7 { get { return body.cAdjD7; } set { body.cAdjD7 = value; } }
  
 		/// <summary>dn 6 steps</summary>
-        public float AdjD6 { get { return body.adjD6; } set { body.adjD6 = value; } }
+        public float CAdjD6 { get { return body.cAdjD6; } set { body.cAdjD6 = value; } }
  
 		/// <summary>dn 5 steps</summary>
-        public float AdjD5 { get { return body.adjD5; } set { body.adjD5 = value; } }
+        public float CAdjD5 { get { return body.cAdjD5; } set { body.cAdjD5 = value; } }
  
 		/// <summary>dn 4 steps</summary>
-        public float AdjD4 { get { return body.adjD4; } set { body.adjD4 = value; } }
+        public float CAdjD4 { get { return body.cAdjD4; } set { body.cAdjD4 = value; } }
  
 		/// <summary>dn 3 steps</summary>
-        public float AdjD3 { get { return body.adjD3; } set { body.adjD3 = value; } }
+        public float CAdjD3 { get { return body.cAdjD3; } set { body.cAdjD3 = value; } }
  
 		/// <summary>dn 2 steps</summary>
-        public float AdjD2 { get { return body.adjD2; } set { body.adjD2 = value; } }
+        public float CAdjD2 { get { return body.cAdjD2; } set { body.cAdjD2 = value; } }
  
 		/// <summary>dn 1 step</summary>
-        public float AdjD1 { get { return body.adjD1; } set { body.adjD1 = value; } }
+        public float CAdjD1 { get { return body.cAdjD1; } set { body.cAdjD1 = value; } }
  
 		/// <summary>up 1 step</summary>
-        public float AdjU1 { get { return body.adjU1; } set { body.adjU1 = value; } }
+        public float CAdjU1 { get { return body.cAdjU1; } set { body.cAdjU1 = value; } }
  
 		/// <summary>up 2 steps</summary>
-        public float AdjU2 { get { return body.adjU2; } set { body.adjU2 = value; } }
+        public float CAdjU2 { get { return body.cAdjU2; } set { body.cAdjU2 = value; } }
  
 		/// <summary>up 3 steps</summary>
-        public float AdjU3 { get { return body.adjU3; } set { body.adjU3 = value; } }
+        public float CAdjU3 { get { return body.cAdjU3; } set { body.cAdjU3 = value; } }
  
 		/// <summary>up 4 steps</summary>
-        public float AdjU4 { get { return body.adjU4; } set { body.adjU4 = value; } }
+        public float CAdjU4 { get { return body.cAdjU4; } set { body.cAdjU4 = value; } }
  
 		/// <summary>up 5 steps</summary>
-        public float AdjU5 { get { return body.adjU5; } set { body.adjU5 = value; } }
+        public float CAdjU5 { get { return body.cAdjU5; } set { body.cAdjU5 = value; } }
  
 		/// <summary>up 6 steps</summary>
-        public float AdjU6 { get { return body.adjU6; } set { body.adjU6 = value; } }
+        public float CAdjU6 { get { return body.cAdjU6; } set { body.cAdjU6 = value; } }
  
 		/// <summary>up 7 steps</summary>
-        public float AdjU7 { get { return body.adjU7; } set { body.adjU7 = value; } }
+        public float CAdjU7 { get { return body.cAdjU7; } set { body.cAdjU7 = value; } }
  
 		/// <summary>up 8 steps</summary>
-        public float AdjU8 { get { return body.adjU8; } set { body.adjU8 = value; } }
+        public float CAdjU8 { get { return body.cAdjU8; } set { body.cAdjU8 = value; } }
  
-		/// <summary>unused</summary>
-        public float AdjUI { get { return body.adjUI; } set { body.adjUI = value; } }
+		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]; Note: there is an implied intercept points (xAxis=0; skew=0) between pAdjD1 and pAdjU1</summary>
+        public float PAdjD8 { get { return body.pAdjD8; } set { body.pAdjD8 = value; } }
+ 
+		/// <summary>dn 7 steps</summary>
+        public float PAdjD7 { get { return body.pAdjD7; } set { body.pAdjD7 = value; } }
+ 
+		/// <summary>dn 6 steps</summary>
+        public float PAdjD6 { get { return body.pAdjD6; } set { body.pAdjD6 = value; } }
+ 
+		/// <summary>dn 5 steps</summary>
+        public float PAdjD5 { get { return body.pAdjD5; } set { body.pAdjD5 = value; } }
+ 
+		/// <summary>dn 4 steps</summary>
+        public float PAdjD4 { get { return body.pAdjD4; } set { body.pAdjD4 = value; } }
+ 
+		/// <summary>dn 3 steps</summary>
+        public float PAdjD3 { get { return body.pAdjD3; } set { body.pAdjD3 = value; } }
+ 
+		/// <summary>dn 2 steps</summary>
+        public float PAdjD2 { get { return body.pAdjD2; } set { body.pAdjD2 = value; } }
+ 
+		/// <summary>dn 1 step</summary>
+        public float PAdjD1 { get { return body.pAdjD1; } set { body.pAdjD1 = value; } }
+ 
+		/// <summary>up 1 step</summary>
+        public float PAdjU1 { get { return body.pAdjU1; } set { body.pAdjU1 = value; } }
+ 
+		/// <summary>up 2 steps</summary>
+        public float PAdjU2 { get { return body.pAdjU2; } set { body.pAdjU2 = value; } }
+ 
+		/// <summary>up 3 steps</summary>
+        public float PAdjU3 { get { return body.pAdjU3; } set { body.pAdjU3 = value; } }
+ 
+		/// <summary>up 4 steps</summary>
+        public float PAdjU4 { get { return body.pAdjU4; } set { body.pAdjU4 = value; } }
+ 
+		/// <summary>up 5 steps</summary>
+        public float PAdjU5 { get { return body.pAdjU5; } set { body.pAdjU5 = value; } }
+ 
+		/// <summary>up 6 steps</summary>
+        public float PAdjU6 { get { return body.pAdjU6; } set { body.pAdjU6 = value; } }
+ 
+		/// <summary>up 7 steps</summary>
+        public float PAdjU7 { get { return body.pAdjU7; } set { body.pAdjU7 = value; } }
+ 
+		/// <summary>up 8 steps</summary>
+        public float PAdjU8 { get { return body.pAdjU8; } set { body.pAdjU8 = value; } }
  
 		/// <summary>surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
         public float Slope { get { return body.slope; } set { body.slope = value; } }
