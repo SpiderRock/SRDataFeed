@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SpiderRock.DataFeed</RootNamespace>
     <AssemblyName>SpiderRock.DataFeed</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\build\</SolutionDir>
@@ -45,8 +45,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -56,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cache\CacheRequestException.cs" />
-    <Compile Include="CCodeKey.cs" />
     <Compile Include="ChangedEventArgs.cs" />
     <Compile Include="Channel.Latency.cs" />
     <Compile Include="ChannelCreatedEventArgs.cs" />
@@ -67,10 +66,10 @@
     <Compile Include="CreatedEventArgs.cs" />
     <Compile Include="Diagnostics\ProcessStatisticsAggregator.cs" />
     <Compile Include="FrameHandling\MessageHandler.cs" />
-    <Compile Include="Layouts\CCodeKeyLayout.cs" />
-    <Compile Include="Layouts\CCodeLayout.cs" />
     <Compile Include="Layouts\IKeyLayoutEquatable.cs" />
-    <Compile Include="PropertyValueCaching\CachedCCodeKey.cs" />
+    <Compile Include="Layouts\TickerKeyLayout.cs" />
+    <Compile Include="PropertyValueCaching\CachedExpiryKey.cs" />
+    <Compile Include="PropertyValueCaching\CachedTickerKey.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="Proto\UDP\ReadLoopState.cs" />
     <Compile Include="Proto\UDP\UdpDevice.cs" />
@@ -97,10 +96,9 @@
     <Compile Include="ChannelType.cs" />
     <Compile Include="Enums.Auto.cs" />
     <Compile Include="DateKey.cs" />
-    <Compile Include="FutureKey.cs" />
+    <Compile Include="ExpiryKey.cs" />
     <Compile Include="OptionKey.cs" />
-    <Compile Include="RootKey.cs" />
-    <Compile Include="StockKey.cs" />
+    <Compile Include="TickerKey.cs" />
     <Compile Include="Messages.Auto.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="MessageType.Auto.cs" />
@@ -109,20 +107,14 @@
     <Compile Include="FrameHandling\Formatter.cs" />
     <Compile Include="PropertyValueCaching\CachedValue.cs" />
     <Compile Include="PropertyValueCaching\CacheVar.cs" />
-    <Compile Include="PropertyValueCaching\CachedFutureKey.cs" />
     <Compile Include="PropertyValueCaching\CachedOptionKey.cs" />
-    <Compile Include="PropertyValueCaching\CachedRootKey.cs" />
-    <Compile Include="PropertyValueCaching\CachedStockKey.cs" />
     <Compile Include="PropertyValueCaching\CachedFixedLengthString.cs" />
     <Compile Include="PropertyValueCaching\CachedKey.cs" />
     <Compile Include="PropertyValueCaching\CachedDateKey.cs" />
     <Compile Include="Layouts\DateKeyLayout.cs" />
     <Compile Include="Layouts\DateTimeLayout.cs" />
-    <Compile Include="Layouts\FutureKeyLayout.cs" />
-    <Compile Include="Layouts\RootKeyLayout.cs" />
+    <Compile Include="Layouts\ExpiryKeyLayout.cs" />
     <Compile Include="Layouts\OptionKeyLayout.cs" />
-    <Compile Include="Layouts\RootLayout.cs" />
-    <Compile Include="Layouts\StockKeyLayout.cs" />
     <Compile Include="Layouts\TickerLayout.cs" />
     <Compile Include="Layouts\TimeSpanLayout.cs" />
     <Compile Include="FrameHandling\Formatter.Auto.cs" />

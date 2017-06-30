@@ -44,6 +44,12 @@ namespace SpiderRock.DataFeed.Layouts
             _data = data;
         }
 
+        public long Ticks { get { return _data; } }
+
+        public bool IsEmpty { get { return _data == 0; } }
+
+        public int Microseconds { get { return (int)(_data / 10L % 1000000L); } }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator DateTimeLayout(DateTime value)
         {

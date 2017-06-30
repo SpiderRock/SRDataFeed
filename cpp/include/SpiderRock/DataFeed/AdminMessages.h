@@ -173,6 +173,70 @@ public:
 
 };
 
+ class NetPulse
+{
+public:
+
+private:
+	struct Layout
+	{
+		TimeSpan frequency;
+		TimeSpan timeout;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+	
+public:
+	inline Header& header() { return header_; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline TimeSpan frequency() const { return layout_.frequency; }
+	inline TimeSpan timeout() const { return layout_.timeout; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	inline void frequency(TimeSpan value) { layout_.frequency = value; }
+	inline void timeout(TimeSpan value) { layout_.timeout = value; }
+	inline void timestamp(DateTime value) { layout_.timestamp = value; }
+	
+	
+	inline uint16_t Encode(uint8_t* buf) 
+	{
+		uint8_t* start = buf;
+		buf += sizeof(Header);
+
+		*reinterpret_cast<NetPulse::Layout*>(buf) = layout_;
+		buf += sizeof(layout_);
+		
+
+
+		header_.message_length = (uint16_t)(buf - start);
+		header_.key_length = 0;
+		header_.message_type = MessageType::NetPulse;
+		
+		*reinterpret_cast<Header*>(start) = header_;
+		
+		return header_.message_length;
+	}
+
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<NetPulse::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+
+};
+
 
 
 }	// namespace DataFeed

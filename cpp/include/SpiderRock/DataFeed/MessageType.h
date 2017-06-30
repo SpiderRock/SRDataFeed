@@ -16,36 +16,27 @@ namespace SpiderRock
 { 
 	namespace DataFeed
 	{
-		const UShort MAX_MESSAGE_TYPE = 1000;
+		const UShort MAX_MESSAGE_TYPE = 0x2000;
 
 		enum class MessageType : UShort
 		{
 			None = 0,
 			
-			FutureBookQuote = 111,
-			FuturePrint = 115,
-			FutureSettlementMark = 375,
-			IndexClose = 138,
+			FutureBookQuote = 360,
+			FuturePrint = 370,
 			IndexQuote = 137,
-			LiveSurfaceAtm = 356,
-			OptionCloseMark = 373,
-			OptionCloseQuote = 104,
-			OptionImpliedQuote = 377,
-			OptionNbboQuote = 102,
-			OptionOpenMark = 105,
-			OptionPrint = 106,
-			OptionPrint2 = 113,
-			OptionRiskFactor = 379,
-			OptionSettlementMark = 374,
-			StockBookQuote = 121,
-			StockCloseMark = 125,
-			StockCloseQuote = 123,
-			StockExchImbalance = 127,
-			StockOpenMark = 124,
-			StockPrint = 122,
+			LiveSurfaceAtm = 2160,
+			OptionImpliedQuote = 2300,
+			OptionNbboQuote = 260,
+			OptionPrint = 300,
+			OptionRiskFactor = 2320,
+			StockBookQuote = 430,
+			StockExchImbalance = 490,
+			StockPrint = 440,
 			
-			CacheComplete = 504,
-			GetCache = 503,
+			CacheComplete = 4106,
+			GetCache = 4096,
+			NetPulse = 5000,
 		};
 		
 		inline bool IsValid(MessageType message_type)

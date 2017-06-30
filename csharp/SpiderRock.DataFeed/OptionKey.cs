@@ -24,7 +24,6 @@ namespace SpiderRock.DataFeed
         private string osiKey;
 
         private string root;
-        private RootKey rootKey;
         private string stringKey;
         private string tabRecord, tabRecordCP;
 
@@ -50,7 +49,7 @@ namespace SpiderRock.DataFeed
 
         public string Root
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return root ?? (root = Layout.Root.ToString()); }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return root ?? (root = Layout.Ticker.ToString()); }
         }
 
         public CallPut CallPut
@@ -65,11 +64,6 @@ namespace SpiderRock.DataFeed
             {
                 return Layout.CallPut == CallPut.Call ? 'C' : 'P';
             }
-        }
-
-        public int StrikeInt
-        {
-            get { return Layout.StrikeInt; }
         }
 
         public double Strike
@@ -92,24 +86,40 @@ namespace SpiderRock.DataFeed
             get { return Layout.Day; }
         }
 
-        public RootKey RootKey
+        //public RootKey RootKey
+        //{
+        //    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //    get
+        //    {
+        //        return rootKey ?? (rootKey = RootKey.GetCreateRootKey(Layout));
+        //    }
+        //}
+
+        public bool IsValid
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return rootKey ?? (rootKey = RootKey.GetCreateRootKey(Layout));
+                if (Layout.IsEmpty || Layout.Ticker.IsEmpty) return false;
+
+                int yr = Year;
+                int mn = Month;
+                int dy = Day;
+
+                CallPut cp = CallPut;
+
+                if (yr < 1901 || yr > 2150) return false;
+                if (mn < 1 || mn > 12) return false;
+                if (dy < 1 || dy > 31) return false;
+
+                return cp == CallPut.Call || cp == CallPut.Put;
             }
         }
 
-        public bool IsValid
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Layout.IsValid; }
-        }
-
-        public int ExpIndex
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Layout.ExpIndex; }
-        }
+        //public int ExpIndex
+        //{
+        //    [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Layout.ExpIndex; }
+        //}
 
         public string Expiration
         {
@@ -120,20 +130,22 @@ namespace SpiderRock.DataFeed
             }
         }
 
-        public bool IsExpired
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Layout.IsExpired; }
-        }
+        //public bool IsExpired
+        //{
+        //    [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return Layout.IsExpired; }
+        //}
 
         public string OSIKey
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
+                int strikeInt = (int) (Strike * 1000D + 0.5);
+
                 return osiKey ??
                        (osiKey =
                            string.Format("{0}{1:D2}{2:D2}{3:D2}{4}{5:00000}{6:000}", Root.PadRight(6), Year%100, Month,
-                               Day, CallPutChar, StrikeInt/1000, StrikeInt%1000));
+                               Day, CallPutChar, strikeInt / 1000, strikeInt % 1000));
             }
         }
 
@@ -145,7 +157,7 @@ namespace SpiderRock.DataFeed
                 return stringKey ??
                        (stringKey =
                            string.Format("{0}-{1}-{2}-{3:D4}-{4:D2}-{5:D2}-{6}-{7}", Root, TickerSrc, AssetType, Year,
-                               Month, Day, StrikeInt, CallPutChar));
+                               Month, Day, Strike, CallPutChar));
             }
         }
 
@@ -159,10 +171,9 @@ namespace SpiderRock.DataFeed
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return tabRecord ??
-                       (tabRecord =
-                           string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}\t{7}", Root, TickerSrc, AssetType,
-                               Year, Month, Day, StrikeInt, CallPutChar));
+                int strikeInt = (int)(Strike * 1000D + 0.5);
+
+                return tabRecord ?? (tabRecord = string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}\t{7}", Root, TickerSrc, AssetType, Year, Month, Day, strikeInt, CallPutChar));
             }
         }
 
@@ -176,10 +187,9 @@ namespace SpiderRock.DataFeed
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return tabRecordCP ??
-                       (tabRecordCP =
-                           string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}", Root, TickerSrc, AssetType, Year,
-                               Month, Day, StrikeInt));
+                int strikeInt = (int)(Strike * 1000D + 0.5);
+
+                return tabRecordCP ?? (tabRecordCP = string.Format("{0}\t{1}\t{2}\t{3:D4}\t{4:D2}\t{5:D2}\t{6}", Root, TickerSrc, AssetType, Year, Month, Day, strikeInt));
             }
         }
 
@@ -205,25 +215,25 @@ namespace SpiderRock.DataFeed
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <(OptionKey x, OptionKey y)
         {
-            return x.Layout.Root < y.Layout.Root;
+            return x.Layout.Ticker < y.Layout.Ticker;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >(OptionKey x, OptionKey y)
         {
-            return x.Layout.Root > y.Layout.Root;
+            return x.Layout.Ticker > y.Layout.Ticker;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <=(OptionKey x, OptionKey y)
         {
-            return x.Layout.Root <= y.Layout.Root;
+            return x.Layout.Ticker <= y.Layout.Ticker;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >=(OptionKey x, OptionKey y)
         {
-            return x.Layout.Root >= y.Layout.Root;
+            return x.Layout.Ticker >= y.Layout.Ticker;
         }
 
         #endregion

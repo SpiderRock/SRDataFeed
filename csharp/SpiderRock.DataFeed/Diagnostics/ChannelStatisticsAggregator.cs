@@ -125,7 +125,7 @@ namespace SpiderRock.DataFeed.Diagnostics
                 for (int i = 0; i < channel.ByMessageType.Length; i++)
                 {
                     Channel.Statistics stats = channel.ByMessageType[i];
-                    if (stats == null || stats.Count == stats.LastCount) continue;
+                    if (stats == null) continue;
 
                     var msgType = new MessageType((ushort)i);
 
@@ -183,7 +183,7 @@ namespace SpiderRock.DataFeed.Diagnostics
             lines.Insert(insertPos, "-------------------------------------------------------------------------------------------------------------------------");
 
             lines.Add("-------------------------------------------------------------------------------------------------------------------------");
-            lines.Add(String.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}", "TOTAL:", numMessages, numMessages / elapsed, numSenders, numGaps, totalGaps, totalMessages));
+            lines.Add(string.Format("{0,40} {1,12:N0} {2,12:N1} {3,12} {4,12} {5,12} {6,15:N0}", "TOTAL:", numMessages, numMessages / elapsed, numSenders, numGaps, totalGaps, totalMessages));
             lines.Add("-------------------------------------------------------------------------------------------------------------------------");
 
             lines.Add(string.Empty);

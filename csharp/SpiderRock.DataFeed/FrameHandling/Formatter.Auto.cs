@@ -46,36 +46,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, FutureSettlementMark dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(FutureSettlementMark.PKeyLayout) + sizeof(FutureSettlementMark.BodyLayout) > max) throw new IOException("Max exceeded decoding FutureSettlementMark");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((FutureSettlementMark.PKeyLayout*) src); src += sizeof(FutureSettlementMark.PKeyLayout);
- 				dest.body = *((FutureSettlementMark.BodyLayout*) src); src += sizeof(FutureSettlementMark.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, IndexClose dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(IndexClose.PKeyLayout) + sizeof(IndexClose.BodyLayout) > max) throw new IOException("Max exceeded decoding IndexClose");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((IndexClose.PKeyLayout*) src); src += sizeof(IndexClose.PKeyLayout);
- 				dest.body = *((IndexClose.BodyLayout*) src); src += sizeof(IndexClose.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, IndexQuote dest, byte* max)
 		{
 			unchecked
@@ -100,36 +70,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 				dest.header = *((Header*) src); src += sizeof(Header);
 				dest.pkey.body = *((LiveSurfaceAtm.PKeyLayout*) src); src += sizeof(LiveSurfaceAtm.PKeyLayout);
  				dest.body = *((LiveSurfaceAtm.BodyLayout*) src); src += sizeof(LiveSurfaceAtm.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, OptionCloseMark dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(OptionCloseMark.PKeyLayout) + sizeof(OptionCloseMark.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionCloseMark");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((OptionCloseMark.PKeyLayout*) src); src += sizeof(OptionCloseMark.PKeyLayout);
- 				dest.body = *((OptionCloseMark.BodyLayout*) src); src += sizeof(OptionCloseMark.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, OptionCloseQuote dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(OptionCloseQuote.PKeyLayout) + sizeof(OptionCloseQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionCloseQuote");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((OptionCloseQuote.PKeyLayout*) src); src += sizeof(OptionCloseQuote.PKeyLayout);
- 				dest.body = *((OptionCloseQuote.BodyLayout*) src); src += sizeof(OptionCloseQuote.BodyLayout);
 			
 				return src;
 			}
@@ -166,21 +106,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, OptionOpenMark dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(OptionOpenMark.PKeyLayout) + sizeof(OptionOpenMark.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionOpenMark");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((OptionOpenMark.PKeyLayout*) src); src += sizeof(OptionOpenMark.PKeyLayout);
- 				dest.body = *((OptionOpenMark.BodyLayout*) src); src += sizeof(OptionOpenMark.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, OptionPrint dest, byte* max)
 		{
 			unchecked
@@ -190,21 +115,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 				dest.header = *((Header*) src); src += sizeof(Header);
 				dest.pkey.body = *((OptionPrint.PKeyLayout*) src); src += sizeof(OptionPrint.PKeyLayout);
  				dest.body = *((OptionPrint.BodyLayout*) src); src += sizeof(OptionPrint.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, OptionPrint2 dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(OptionPrint2.PKeyLayout) + sizeof(OptionPrint2.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionPrint2");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((OptionPrint2.PKeyLayout*) src); src += sizeof(OptionPrint2.PKeyLayout);
- 				dest.body = *((OptionPrint2.BodyLayout*) src); src += sizeof(OptionPrint2.BodyLayout);
 			
 				return src;
 			}
@@ -226,21 +136,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, OptionSettlementMark dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(OptionSettlementMark.PKeyLayout) + sizeof(OptionSettlementMark.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionSettlementMark");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((OptionSettlementMark.PKeyLayout*) src); src += sizeof(OptionSettlementMark.PKeyLayout);
- 				dest.body = *((OptionSettlementMark.BodyLayout*) src); src += sizeof(OptionSettlementMark.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, StockBookQuote dest, byte* max)
 		{
 			unchecked
@@ -256,36 +151,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, StockCloseMark dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(StockCloseMark.PKeyLayout) + sizeof(StockCloseMark.BodyLayout) > max) throw new IOException("Max exceeded decoding StockCloseMark");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((StockCloseMark.PKeyLayout*) src); src += sizeof(StockCloseMark.PKeyLayout);
- 				dest.body = *((StockCloseMark.BodyLayout*) src); src += sizeof(StockCloseMark.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, StockCloseQuote dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(StockCloseQuote.PKeyLayout) + sizeof(StockCloseQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding StockCloseQuote");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((StockCloseQuote.PKeyLayout*) src); src += sizeof(StockCloseQuote.PKeyLayout);
- 				dest.body = *((StockCloseQuote.BodyLayout*) src); src += sizeof(StockCloseQuote.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, StockExchImbalance dest, byte* max)
 		{
 			unchecked
@@ -295,21 +160,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 				dest.header = *((Header*) src); src += sizeof(Header);
 				dest.pkey.body = *((StockExchImbalance.PKeyLayout*) src); src += sizeof(StockExchImbalance.PKeyLayout);
  				dest.body = *((StockExchImbalance.BodyLayout*) src); src += sizeof(StockExchImbalance.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, StockOpenMark dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(StockOpenMark.PKeyLayout) + sizeof(StockOpenMark.BodyLayout) > max) throw new IOException("Max exceeded decoding StockOpenMark");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((StockOpenMark.PKeyLayout*) src); src += sizeof(StockOpenMark.PKeyLayout);
- 				dest.body = *((StockOpenMark.BodyLayout*) src); src += sizeof(StockOpenMark.BodyLayout);
 			
 				return src;
 			}
@@ -430,6 +280,41 @@ namespace SpiderRock.DataFeed.FrameHandling
 
 					dest.MsgTypeList[i] = item;
 				}
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Encode(NetPulse src, byte* dest, byte* max)
+		{
+			unchecked
+			{
+				int length = sizeof(Header) + sizeof(NetPulse.BodyLayout);
+				if (length > (int) (max - dest)) throw new IOException("Cannot encode NetPulse because it will exceed the buffer length");
+				
+				src.header.msgtype = MessageType.NetPulse;
+				src.header.msglen = (ushort) length;
+				src.header.keylen = 0;
+				src.header.sentts = System.DateTime.UtcNow.Ticks;
+				
+				*((Header*) dest) =	src.header; dest += sizeof(Header);
+				
+				*((NetPulse.BodyLayout*) dest) = src.body; dest += sizeof(NetPulse.BodyLayout);
+			
+				return dest;
+			}
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, NetPulse dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(NetPulse.BodyLayout) > max) throw new IOException("Max exceeded decoding NetPulse");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.body = *((NetPulse.BodyLayout*) src); src += sizeof(NetPulse.BodyLayout);
 			
 				return src;
 			}

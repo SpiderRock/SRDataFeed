@@ -29,7 +29,10 @@ namespace SpiderRock
 			SYN=7,
 			WAR=8,
 			FLX=9,
-			MUT=10
+			MUT=10,
+			SPD=11,
+			MM=12,
+			MF=13
 		};
 
  		enum class AuctionReason : Enum 
@@ -60,7 +63,8 @@ namespace SpiderRock
  		enum class CallPut : Enum 
 		{
 			Call=0,
-			Put=1
+			Put=1,
+			Pair=2
 		};
 
  		enum class FitType : Enum 
@@ -85,18 +89,18 @@ namespace SpiderRock
 			ICE=6
 		};
 
+ 		enum class GridType : Enum 
+		{
+			Uniform=0,
+			SRCubic=1,
+			SRFixed=2
+		};
+
  		enum class IdxSrc : Enum 
 		{
 			Unknown=0,
 			Indication=1,
 			Quote=2
-		};
-
- 		enum class IndexSource : Enum 
-		{
-			None=0,
-			Live=1,
-			PriorDay=2
 		};
 
  		enum class LiveSurfaceType : Enum 
@@ -112,18 +116,6 @@ namespace SpiderRock
 			Test3=8
 		};
 
- 		enum class MarkSource : Enum 
-		{
-			None=0,
-			NbboMid=1,
-			SRVol=2,
-			LoBound=3,
-			HiBound=4,
-			SRPricer=5,
-			SRQuote=6,
-			CloseMark=7
-		};
-
  		enum class MarketStatus : Enum 
 		{
 			None=0,
@@ -136,6 +128,26 @@ namespace SpiderRock
 			AfterHours=7
 		};
 
+ 		enum class MoneynessType : Enum 
+		{
+			PctStd=0,
+			LogStd=1,
+			NormStd=2
+		};
+
+ 		enum class OpraMktType : Flag 
+		{
+			None=0,
+			Rotation=1,
+			TradingHalted=2,
+			CustInterest=4,
+			QuoteNotFirm=8
+		};		
+		inline OpraMktType operator|(OpraMktType a, OpraMktType b)
+		{
+			return static_cast<OpraMktType>(static_cast<int>(a) | static_cast<int>(b));
+		}
+			
  		enum class OptExch : Enum 
 		{
 			None=0,
@@ -157,7 +169,8 @@ namespace SpiderRock
 			COMEX=16,
 			ICE=17,
 			EDGO=18,
-			MCRY=19
+			MCRY=19,
+			MPRL=20
 		};
 
  		enum class PricingGroup : Enum 
@@ -165,7 +178,17 @@ namespace SpiderRock
 			Default=0,
 			Gelber=1,
 			User=2,
-			Test=3
+			Test=3,
+			Implied=4,
+			Override=5
+		};
+
+ 		enum class PrtSide : Enum 
+		{
+			None=0,
+			Mid=1,
+			Bid=1,
+			Ask=2
 		};
 
  		enum class StkExch : Enum 
@@ -186,33 +209,38 @@ namespace SpiderRock
 			PSX=13,
 			BTSY=14,
 			BATS=15,
-			CBIDX=16
+			CBIDX=16,
+			IEX=17,
+			OTC=18
 		};
 
- 		enum class StockTick : Enum 
+ 		enum class StkPrintType : Enum 
 		{
 			None=0,
-			Up=1,
-			Down=2
+			RegularSequence=1,
+			OutOfSequence=2,
+			VolumeOnly=3,
+			ExtendedHours=4
 		};
 
  		enum class SurfaceResult : Enum 
 		{
 			None=0,
 			OK=1,
-			Init=2,
-			Cache=3,
-			PrevDay=4,
-			NullExpIdx=5,
-			NoStrikes=6,
-			NoBaseCurve=7,
-			BadBootAtm=8,
-			NoGoodStrikes=9,
-			BadAtmVol=10,
-			Bootstrap=11,
-			NoUPrc=12,
-			NoIVols=13,
-			NoModelPts=14
+			EOD=2,
+			Init=3,
+			Cache=4,
+			PrevDay=5,
+			NullExpIdx=6,
+			NoStrikes=7,
+			NoBaseCurve=8,
+			BadBootAtm=9,
+			NoGoodStrikes=10,
+			BadAtmVol=11,
+			Bootstrap=12,
+			NoUPrc=13,
+			NoIVols=14,
+			NoModelPts=15
 		};
 
  		enum class SysEnvironment : Enum 
@@ -231,7 +259,7 @@ namespace SpiderRock
 			ICE=4,
 			CFE=5,
 			CBOT=6,
-			COIN=7,
+			TD=7,
 			NYMEX=8,
 			COMEX=9,
 			RUT=10,
@@ -239,14 +267,15 @@ namespace SpiderRock
 			KET=12,
 			ISE=13,
 			ARCA=14,
-			NYSE=15
+			NYSE=15,
+			OTC=16
 		};
 
- 		enum class YesNo : Enum 
+ 		enum class UpdateType : Enum 
 		{
 			None=0,
-			Yes=1,
-			No=2
+			PrcChange=1,
+			SizeOnly=2
 		};
 
 			

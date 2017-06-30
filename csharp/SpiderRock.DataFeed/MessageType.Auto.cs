@@ -10,36 +10,27 @@ namespace SpiderRock.DataFeed
 {
     public partial struct MessageType
     {
-        private static readonly MessageType Lowest = 102;
-        private static readonly MessageType Highest = 504;
+        private static readonly MessageType Lowest = 137;
+        private static readonly MessageType Highest = 5000;
 
         public static readonly MessageType None = 0;
-        public static readonly MessageType Max = 1000;
+        public static readonly MessageType Max = 0x2000;
 
-		public static readonly MessageType FutureBookQuote = 111;
- 		public static readonly MessageType FuturePrint = 115;
- 		public static readonly MessageType FutureSettlementMark = 375;
- 		public static readonly MessageType IndexClose = 138;
+		public static readonly MessageType FutureBookQuote = 360;
+ 		public static readonly MessageType FuturePrint = 370;
  		public static readonly MessageType IndexQuote = 137;
- 		public static readonly MessageType LiveSurfaceAtm = 356;
- 		public static readonly MessageType OptionCloseMark = 373;
- 		public static readonly MessageType OptionCloseQuote = 104;
- 		public static readonly MessageType OptionImpliedQuote = 377;
- 		public static readonly MessageType OptionNbboQuote = 102;
- 		public static readonly MessageType OptionOpenMark = 105;
- 		public static readonly MessageType OptionPrint = 106;
- 		public static readonly MessageType OptionPrint2 = 113;
- 		public static readonly MessageType OptionRiskFactor = 379;
- 		public static readonly MessageType OptionSettlementMark = 374;
- 		public static readonly MessageType StockBookQuote = 121;
- 		public static readonly MessageType StockCloseMark = 125;
- 		public static readonly MessageType StockCloseQuote = 123;
- 		public static readonly MessageType StockExchImbalance = 127;
- 		public static readonly MessageType StockOpenMark = 124;
- 		public static readonly MessageType StockPrint = 122;
+ 		public static readonly MessageType LiveSurfaceAtm = 2160;
+ 		public static readonly MessageType OptionImpliedQuote = 2300;
+ 		public static readonly MessageType OptionNbboQuote = 260;
+ 		public static readonly MessageType OptionPrint = 300;
+ 		public static readonly MessageType OptionRiskFactor = 2320;
+ 		public static readonly MessageType StockBookQuote = 430;
+ 		public static readonly MessageType StockExchImbalance = 490;
+ 		public static readonly MessageType StockPrint = 440;
 
-		internal static readonly MessageType CacheComplete = 504;
- 		internal static readonly MessageType GetCache = 503;
+		internal static readonly MessageType CacheComplete = 4106;
+ 		internal static readonly MessageType GetCache = 4096;
+ 		internal static readonly MessageType NetPulse = 5000;
 
 		
 		private static bool[] CreateIsCoreTestVector()
@@ -48,24 +39,14 @@ namespace SpiderRock.DataFeed
 			
 			isCore[FutureBookQuote] = true;
  			isCore[FuturePrint] = true;
- 			isCore[FutureSettlementMark] = true;
- 			isCore[IndexClose] = true;
  			isCore[IndexQuote] = true;
  			isCore[LiveSurfaceAtm] = true;
- 			isCore[OptionCloseMark] = true;
- 			isCore[OptionCloseQuote] = true;
  			isCore[OptionImpliedQuote] = true;
  			isCore[OptionNbboQuote] = true;
- 			isCore[OptionOpenMark] = true;
  			isCore[OptionPrint] = true;
- 			isCore[OptionPrint2] = true;
  			isCore[OptionRiskFactor] = true;
- 			isCore[OptionSettlementMark] = true;
  			isCore[StockBookQuote] = true;
- 			isCore[StockCloseMark] = true;
- 			isCore[StockCloseQuote] = true;
  			isCore[StockExchImbalance] = true;
- 			isCore[StockOpenMark] = true;
  			isCore[StockPrint] = true;
 
 			
@@ -78,6 +59,7 @@ namespace SpiderRock.DataFeed
 			
 			isAdmin[CacheComplete] = true;
  			isAdmin[GetCache] = true;
+ 			isAdmin[NetPulse] = true;
 
 			
 			return isAdmin;
@@ -90,25 +72,16 @@ namespace SpiderRock.DataFeed
 			names[CacheComplete] = "CacheComplete";
  			names[FutureBookQuote] = "FutureBookQuote";
  			names[FuturePrint] = "FuturePrint";
- 			names[FutureSettlementMark] = "FutureSettlementMark";
  			names[GetCache] = "GetCache";
- 			names[IndexClose] = "IndexClose";
  			names[IndexQuote] = "IndexQuote";
  			names[LiveSurfaceAtm] = "LiveSurfaceAtm";
- 			names[OptionCloseMark] = "OptionCloseMark";
- 			names[OptionCloseQuote] = "OptionCloseQuote";
+ 			names[NetPulse] = "NetPulse";
  			names[OptionImpliedQuote] = "OptionImpliedQuote";
  			names[OptionNbboQuote] = "OptionNbboQuote";
- 			names[OptionOpenMark] = "OptionOpenMark";
  			names[OptionPrint] = "OptionPrint";
- 			names[OptionPrint2] = "OptionPrint2";
  			names[OptionRiskFactor] = "OptionRiskFactor";
- 			names[OptionSettlementMark] = "OptionSettlementMark";
  			names[StockBookQuote] = "StockBookQuote";
- 			names[StockCloseMark] = "StockCloseMark";
- 			names[StockCloseQuote] = "StockCloseQuote";
  			names[StockExchImbalance] = "StockExchImbalance";
- 			names[StockOpenMark] = "StockOpenMark";
  			names[StockPrint] = "StockPrint";
 
 			

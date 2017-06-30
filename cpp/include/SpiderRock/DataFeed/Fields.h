@@ -415,6 +415,7 @@ namespace SpiderRock
 		};
 
 		typedef DateTime DateKey;
+        typedef int64_t TimeSpan;
 
 		static_assert(sizeof(size_t) == 8, "sizeof(size_t) must be 8 bytes");
 
@@ -437,6 +438,7 @@ namespace SpiderRock
 		static_assert(sizeof(OptionKey) == 16, "sizeof(OptionKey) must be 16 bytes");
 		static_assert(sizeof(DateTime) == 8, "sizeof(DateTime) must be 8 bytes");
 		static_assert(sizeof(DateKey) == 8, "sizeof(DateKey) must be 8 bytes");
+		static_assert(sizeof(TimeSpan) == 8, "sizeof(TimeSpan) must be 8 bytes");
 
 		static_assert(sizeof(CCode) == 11, "sizeof(CCode) must be 11 bytes");
 		static_assert(sizeof(Root) == 6, "sizeof(Root) must be 6 bytes");

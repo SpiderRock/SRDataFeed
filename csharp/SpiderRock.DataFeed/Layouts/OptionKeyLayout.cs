@@ -7,118 +7,99 @@ namespace SpiderRock.DataFeed.Layouts
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct OptionKeyLayout : IEquatable<OptionKeyLayout>, IComparable<OptionKeyLayout>
     {
-        public static readonly int NowIndex = DateTime.Today.Year * 10000 + DateTime.Today.Month * 100 + DateTime.Today.Day;
-        private const int HighPrecision = 2;
+        public readonly AssetType AssetType;
+        public readonly TickerSrc TickerSrc;
+        public readonly TickerLayout Ticker;
+        private readonly byte year;
+        public readonly byte Month;
+        public readonly byte Day;
+        public readonly double Strike;
+        public readonly CallPut CallPut;
 
-        public OptionKeyLayout(AssetType assetType, TickerSrc tickerSrc, RootLayout root, int year, int month,
-            int day, double strike, CallPut callPut)
+        public OptionKeyLayout(AssetType assetType, TickerSrc tickerSrc, TickerLayout root, int year, int month, int day, double strike, CallPut callPut)
         {
-            unchecked
-            {
-                rootKey = new RootKeyLayout(assetType, tickerSrc, root);
-                this.year = (byte)(year - 1900);
-                this.month = (byte)month;
-                this.day = (byte)day;
-                flags = (byte)callPut;
-                if (strike < 1D)
-                {
-                    this.strike = (int)(strike * 1000000D + 0.5);
-                    flags = (byte)(flags | HighPrecision);
-                }
-                else
-                {
-                    this.strike = (int)(strike * 1000D + 0.5);
-                }
-            }
+            AssetType = assetType;
+            TickerSrc = tickerSrc;
+            Ticker = root;
+            this.year = (byte) unchecked(year - 1900);
+            Month = (byte) month;
+            Day = (byte) day;
+            Strike = strike;
+            CallPut = callPut;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe bool Equals(OptionKeyLayout other)
+        public bool Equals(OptionKeyLayout other)
         {
-            fixed (OptionKeyLayout* pfself = &this)
-            {
-                var pself = (long*)pfself;
-                var pother = (long*)&other;
-                return *(pself) == *(pother) && *(pself + 1) == *(pother + 1);
-            }
+            return Ticker.Equals(other.Ticker) &&
+                   Strike.Equals(other.Strike) &&
+                   Month == other.Month &&
+                   Day == other.Day &&
+                   year == other.year &&
+                   AssetType == other.AssetType &&
+                   TickerSrc == other.TickerSrc &&
+                   CallPut == other.CallPut;
         }
 
-        public unsafe int CompareTo(OptionKeyLayout other)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int CompareTo(OptionKeyLayout other)
         {
-            fixed (OptionKeyLayout* pfself = &this)
+            unchecked
             {
-                var pself = (long*)pfself;
-                var pother = (long*)&other;
-                int result = (*pself).CompareTo(*pother);
-                return result != 0 ? result : (*(pself + 1)).CompareTo(*(pother + 1));
+                int order = (byte) AssetType - (byte) other.AssetType;
+                if (order != 0) return order;
+
+                order = (byte) TickerSrc - (byte) other.TickerSrc;
+                if (order != 0) return order;
+
+                order = Ticker.CompareTo(other.Ticker);
+                if (order != 0) return order;
+
+                order = year - other.year;
+                if (order != 0) return order;
+
+                order = Month - other.Month;
+                if (order != 0) return order;
+
+                order = Day - other.Day;
+                if (order != 0) return order;
+
+                order = Strike.CompareTo(other.Strike);
+                if (order != 0) return order;
+
+                return (byte) CallPut - (byte) other.CallPut;
             }
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is OptionKeyLayout && Equals((OptionKeyLayout)obj);
+            return obj is OptionKeyLayout && Equals((OptionKeyLayout) obj);
         }
 
-        public override unsafe int GetHashCode()
+        public override int GetHashCode()
         {
             unchecked
             {
-                fixed (OptionKeyLayout* pself = &this)
-                {
-                    var p = (int*)pself;
-                    int hashCode = *p;
-                    hashCode = (hashCode * 397) ^ *(p + 1);
-                    hashCode = (hashCode * 397) ^ *(p + 2);
-                    hashCode = (hashCode * 397) ^ *(p + 3);
-                    return hashCode;
-                }
+                int hashCode = Ticker.GetHashCode();
+
+                /* year - 8 bits
+                 * month - 4 bits
+                 * day - 5 bits
+                 * flags - 3 bits (current 2 used)
+                 * AssetType - 6 bits (currently 4 used)
+                 * TickerSrc - 6 bits (currently 5 used)
+                 */
+
+                hashCode = (hashCode * 397) ^ ((year << 24) | (Month << 20) | (Day << 15) | ((byte) CallPut << 12) | ((byte) AssetType << 6) | (byte) TickerSrc);
+                hashCode = (hashCode * 397) ^ Strike.GetHashCode();
+                return hashCode;
             }
         }
 
         public bool IsEmpty
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return AssetType == AssetType.None && TickerSrc == TickerSrc.None; }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void TrimEnd()
-        {
-            rootKey.TrimEnd();
-        }
-
-        public bool IsValid
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                if (IsEmpty || Root.IsEmpty) return false;
-
-                int yr = Year;
-                int mn = Month;
-                int dy = Day;
-
-                CallPut cp = CallPut;
-
-                if (yr < 1901 || yr > 2150) return false;
-                if (mn < 1 || mn > 12) return false;
-                if (dy < 1 || dy > 31) return false;
-
-                return cp == CallPut.Call || cp == CallPut.Put;
-            }
-        }
-
-        public int ExpIndex
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return unchecked(Year * 10000 + Month * 100 + Day); }
-        }
-
-        public bool IsExpired
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return (ExpIndex < NowIndex); }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return AssetType == AssetType.None && TickerSrc == TickerSrc.None; }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,94 +115,22 @@ namespace SpiderRock.DataFeed.Layouts
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator RootKeyLayout(OptionKeyLayout value)
+        public static explicit operator TickerKeyLayout(OptionKeyLayout okeyLayout)
         {
-            return value.rootKey;
+            return new TickerKeyLayout(okeyLayout.AssetType, okeyLayout.TickerSrc, okeyLayout.Ticker);
         }
 
-        // ReSharper disable FieldCanBeMadeReadOnly.Local
-        private RootKeyLayout rootKey;
-        private byte year;
-        private byte month;
-        private byte day;
-        private int strike;
-        private byte flags;
-        // ReSharper restore FieldCanBeMadeReadOnly.Local
-
-        public AssetType AssetType
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator TickerLayout(OptionKeyLayout okeyLayout)
         {
-            get { return rootKey.AssetType; }
+            return okeyLayout.Ticker;
         }
 
-        public TickerSrc TickerSrc
-        {
-            get { return rootKey.TickerSrc; }
-        }
+        public int Year { get { return unchecked(year + 1900); } }
 
-        public RootLayout Root
+        public override string ToString()
         {
-            get { return rootKey.Root; }
-        }
-
-        public int Year
-        {
-            get
-            {
-                unchecked
-                {
-                    return year + 1900;
-                }
-            }
-        }
-
-        public int Month
-        {
-            get { return month; }
-        }
-
-        public int Day
-        {
-            get { return day; }
-        }
-
-        public double Strike
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                return (flags & HighPrecision) == HighPrecision
-                    ? Math.Round(0.000001 * strike, 6)
-                    : Math.Round(0.001 * strike, 3);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                if (strike < 1D)
-                {
-                    strike = (int)(value * 1000000D + 0.5);
-                    flags = (byte)(flags | HighPrecision);
-                }
-                else
-                {
-                    strike = (int)(value * 1000D + 0.5);
-                    flags = (byte)(flags & ~HighPrecision);
-                }
-            }
-        }
-
-        public int StrikeInt
-        {
-            get { return strike; }
-            set { strike = value; }
-        }
-
-        public CallPut CallPut
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get { return (CallPut)(0x01 & flags); }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set { flags = (byte)((flags & 0xFE) | (byte)value); }
+            return string.Format("{0}-{1}-{2}-{3:D4}-{4:D2}-{5:D2}-{6}-{7}", Ticker, TickerSrc, AssetType, Year, Month, Day, Strike, CallPut);
         }
     }
 }

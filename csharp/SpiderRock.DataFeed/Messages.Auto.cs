@@ -18,10 +18,10 @@ namespace SpiderRock.DataFeed
 	#region Core
 
 	/// <summary>
-	/// FutureBookQuote:111
+	/// FutureBookQuote:360
 	/// </summary>
 	/// <remarks>
-	/// --- FutureBookQuote ---
+	/// This table contains live future quote records from the listing exchange.  Each record contains up to four price levels and represents a live snapshot of the book for a specific future.
 	/// </remarks>
 
     public partial class FutureBookQuote
@@ -101,7 +101,7 @@ namespace SpiderRock.DataFeed
 		
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
-			private FutureKey fkey;
+			private ExpiryKey fkey;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -117,9 +117,9 @@ namespace SpiderRock.DataFeed
 			}
 			
 			
-			public FutureKey Fkey
+			public ExpiryKey Fkey
 			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return fkey ?? (fkey = FutureKey.GetCreateFutureKey(body.fkey)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return fkey ?? (fkey = ExpiryKey.GetCreateExpiryKey(body.fkey)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.fkey = value.Layout; fkey = value; }
 			}
 
@@ -171,7 +171,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
-			public FutureKeyLayout fkey;
+			public ExpiryKeyLayout fkey;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
@@ -208,6 +208,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
+			public UpdateType updateType;
 			public MarketStatus marketStatus;
 			public double bidPrice1;
 			public double askPrice1;
@@ -233,8 +234,6 @@ namespace SpiderRock.DataFeed
 			public ushort askSize4;
 			public ushort bidOrders4;
 			public ushort askOrders4;
-			public int bidPrintQuan;
-			public int askPrintQuan;
 			public long netTimestamp;
 		}
 
@@ -247,6 +246,9 @@ namespace SpiderRock.DataFeed
 		
 
 
+		
+        public UpdateType UpdateType { get { return body.updateType; } set { body.updateType = value; } }
+ 
 		/// <summary>market status (open, halted, etc)</summary>
         public MarketStatus MarketStatus { get { return body.marketStatus; } set { body.marketStatus = value; } }
  
@@ -322,13 +324,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>number of participating orders at the ask price</summary>
         public ushort AskOrders4 { get { return body.askOrders4; } set { body.askOrders4 = value; } }
  
-		
-        public int BidPrintQuan { get { return body.bidPrintQuan; } set { body.bidPrintQuan = value; } }
- 
-		
-        public int AskPrintQuan { get { return body.askPrintQuan; } set { body.askPrintQuan = value; } }
- 
-		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
@@ -338,10 +334,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// FuturePrint:115
+	/// FuturePrint:370
 	/// </summary>
 	/// <remarks>
-	/// --- FuturePrint ---
+	/// The most recent (last) print record for each active futures market.
 	/// </remarks>
 
     public partial class FuturePrint
@@ -421,7 +417,7 @@ namespace SpiderRock.DataFeed
 		
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
-			private FutureKey fkey;
+			private ExpiryKey fkey;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -437,9 +433,9 @@ namespace SpiderRock.DataFeed
 			}
 			
 			
-			public FutureKey Fkey
+			public ExpiryKey Fkey
 			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return fkey ?? (fkey = FutureKey.GetCreateFutureKey(body.fkey)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return fkey ?? (fkey = ExpiryKey.GetCreateExpiryKey(body.fkey)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.fkey = value.Layout; fkey = value; }
 			}
 
@@ -491,7 +487,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
-			public FutureKeyLayout fkey;
+			public ExpiryKeyLayout fkey;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
@@ -528,24 +524,24 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public FutExch futexch;
-			public double prtPrice;
-			public int prtQuan;
+			public FutExch prtExch;
 			public int prtSize;
+			public double prtPrice;
+			public int prtClusterNum;
+			public int prtClusterSize;
 			public byte prtType;
 			public ushort prtOrders;
+			public int prtQuan;
 			public int prtVolume;
-			public ushort bidCount;
-			public ushort askCount;
-			public int bidVolume;
-			public int askVolume;
-			public double iniPrice;
-			public double mrkPrice;
-			public double opnPrice;
-			public double clsPrice;
-			public double minPrice;
-			public double maxPrice;
+			public float bid;
+			public float ask;
+			public ushort bsz;
+			public ushort asz;
+			public float age;
+			public PrtSide prtSide;
+			public long prtTimestamp;
 			public long netTimestamp;
+			public DateTimeLayout timestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -558,16 +554,19 @@ namespace SpiderRock.DataFeed
 
 
 		/// <summary>print exchange</summary>
-        public FutExch Futexch { get { return body.futexch; } set { body.futexch = value; } }
+        public FutExch PrtExch { get { return body.prtExch; } set { body.prtExch = value; } }
+ 
+		/// <summary>print size [contracts]</summary>
+        public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
  
 		/// <summary>print price</summary>
         public double PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
  
-		/// <summary>print (cum) size [contracts]</summary>
-        public int PrtQuan { get { return body.prtQuan; } set { body.prtQuan = value; } }
+		/// <summary>incremental print cluster counter (one counter per fkey; used to group prints into clusters)</summary>
+        public int PrtClusterNum { get { return body.prtClusterNum; } set { body.prtClusterNum = value; } }
  
-		/// <summary>print size [contracts]</summary>
-        public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
+		/// <summary>cumulative size of prints in this sequence (sequence of prints @ same or better price with less than 25 ms elapsing since first print)</summary>
+        public int PrtClusterSize { get { return body.prtClusterSize; } set { body.prtClusterSize = value; } }
  
 		/// <summary>print type [exchange specific]</summary>
         public byte PrtType { get { return body.prtType; } set { body.prtType = value; } }
@@ -575,41 +574,38 @@ namespace SpiderRock.DataFeed
 		/// <summary>number of orders participating in this print</summary>
         public ushort PrtOrders { get { return body.prtOrders; } set { body.prtOrders = value; } }
  
+		/// <summary>cumulative (electronic) print size at current price level</summary>
+        public int PrtQuan { get { return body.prtQuan; } set { body.prtQuan = value; } }
+ 
 		/// <summary>cumulative day (electronic) print volume in contracts</summary>
         public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
  
-		/// <summary>number of bid prints</summary>
-        public ushort BidCount { get { return body.bidCount; } set { body.bidCount = value; } }
+		/// <summary>exchange bid (@ print time)</summary>
+        public float Bid { get { return body.bid; } set { body.bid = value; } }
  
-		/// <summary>number of ask prints</summary>
-        public ushort AskCount { get { return body.askCount; } set { body.askCount = value; } }
+		/// <summary>exchange ask (@ print time)</summary>
+        public float Ask { get { return body.ask; } set { body.ask = value; } }
  
-		/// <summary>bid print volume in contracts</summary>
-        public int BidVolume { get { return body.bidVolume; } set { body.bidVolume = value; } }
+		/// <summary>cumulative bid size (@ print time)</summary>
+        public ushort Bsz { get { return body.bsz; } set { body.bsz = value; } }
  
-		/// <summary>ask print volume in contracts</summary>
-        public int AskVolume { get { return body.askVolume; } set { body.askVolume = value; } }
+		/// <summary>cumulative ask size (@ print time)</summary>
+        public ushort Asz { get { return body.asz; } set { body.asz = value; } }
  
-		/// <summary>first print price of the session</summary>
-        public double IniPrice { get { return body.iniPrice; } set { body.iniPrice = value; } }
+		/// <summary>age of prevailing quote at time of print</summary>
+        public float Age { get { return body.age; } set { body.age = value; } }
  
-		/// <summary>last print within the session; used for after hours marks</summary>
-        public double MrkPrice { get { return body.mrkPrice; } set { body.mrkPrice = value; } }
+		/// <summary>implied print side (from bid/ask)</summary>
+        public PrtSide PrtSide { get { return body.prtSide; } set { body.prtSide = value; } }
  
-		/// <summary>open price (prior day close)</summary>
-        public double OpnPrice { get { return body.opnPrice; } set { body.opnPrice = value; } }
+		/// <summary>exchange high precision timestamp (if available)</summary>
+        public long PrtTimestamp { get { return body.prtTimestamp; } set { body.prtTimestamp = value; } }
  
-		/// <summary>official settlement price</summary>
-        public double ClsPrice { get { return body.clsPrice; } set { body.clsPrice = value; } }
- 
-		/// <summary>minimum print price within session hours</summary>
-        public double MinPrice { get { return body.minPrice; } set { body.minPrice = value; } }
- 
-		/// <summary>maximum print price within session hours</summary>
-        public double MaxPrice { get { return body.maxPrice; } set { body.maxPrice = value; } }
- 
-		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
 
 		
 		#endregion	
@@ -618,538 +614,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// FutureSettlementMark:375
-	/// </summary>
-	/// <remarks>
-	/// --- FutureSettlementMark ---
-	/// </remarks>
-
-    public partial class FutureSettlementMark
-    {
-		public FutureSettlementMark()
-		{
-		}
-		
-		public FutureSettlementMark(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public FutureSettlementMark(FutureSettlementMark source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal FutureSettlementMark(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as FutureSettlementMark);
-		}
-		
-		public bool Equals(FutureSettlementMark other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(FutureSettlementMark target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.FutureSettlementMark};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private FutureKey fkey;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				fkey = other.fkey;
-				
-			}
-			
-			
-			public FutureKey Fkey
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return fkey ?? (fkey = FutureKey.GetCreateFutureKey(body.fkey)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.fkey = value.Layout; fkey = value; }
-			}
- 			
-			public YesNo Early
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.early; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.early = value; }
-			}
- 			
-			public YesNo PriorPeriod
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.priorPeriod; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.priorPeriod = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				fkey = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.fkey = fkey;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.fkey = fkey;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // FutureSettlementMark.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public FutureKeyLayout fkey;
- 			public YesNo early;
- 			public YesNo priorPeriod;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	fkey.Equals(other.fkey) &&
-					 	early.Equals(other.early) &&
-					 	priorPeriod.Equals(other.priorPeriod);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = fkey.GetHashCode();
- 					hashCode = (hashCode*397) ^ ((int) early);
- 					hashCode = (hashCode*397) ^ ((int) priorPeriod);
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // FutureSettlementMark.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public DateKeyLayout settleDate;
-			public double settlePx;
-			public double lowLmtPx;
-			public double highLmtPx;
-			public int openInt;
-			public int volume;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedDateKey settleDate;
-		
-
-            
-		
-        public DateKey SettleDate { get { return CacheVar.AllocIfNull(ref settleDate).Get(ref body.settleDate, usn); } set { CacheVar.AllocIfNull(ref settleDate).Set(value); body.settleDate = value.Layout; } }
- 
-		/// <summary>Exchange settlement price</summary>
-        public double SettlePx { get { return body.settlePx; } set { body.settlePx = value; } }
- 
-		/// <summary>Exchange low limit price</summary>
-        public double LowLmtPx { get { return body.lowLmtPx; } set { body.lowLmtPx = value; } }
- 
-		/// <summary>Exchange high limit price</summary>
-        public double HighLmtPx { get { return body.highLmtPx; } set { body.highLmtPx = value; } }
- 
-		/// <summary>Exchange open interest (date prior to settle date)</summary>
-        public int OpenInt { get { return body.openInt; } set { body.openInt = value; } }
- 
-		/// <summary>Exchange volume (date prior to settle date)</summary>
-        public int Volume { get { return body.volume; } set { body.volume = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // FutureSettlementMark
-
-
-	/// <summary>
-	/// IndexClose:138
-	/// </summary>
-	/// <remarks>
-	/// --- Index closing record
-	/// StockBasketServer publishes 'Live' records
-	/// Period Begin/End publishes 'PriorDay' records
-	/// </remarks>
-
-    public partial class IndexClose
-    {
-		public IndexClose()
-		{
-		}
-		
-		public IndexClose(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public IndexClose(IndexClose source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal IndexClose(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as IndexClose);
-		}
-		
-		public bool Equals(IndexClose other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(IndexClose target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.IndexClose};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private StockKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public StockKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
- 			
-			public IndexSource Source
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.source; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.source = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // IndexClose.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public StockKeyLayout ticker;
- 			public IndexSource source;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker) &&
-					 	source.Equals(other.source);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
- 					hashCode = (hashCode*397) ^ ((int) source);
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // IndexClose.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public double idxBid;
-			public double idxAsk;
-			public double idxPrice;
-			public StockKeyLayout synTicker;
-			public double synBid;
-			public double synAsk;
-			public double synPrice;
-			public FutureKeyLayout synFKey;
-			public double synRatio;
-			public double synOffset;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedStockKey synTicker;
- 		private CachedFutureKey synFKey;
-		
-
-
-		/// <summary>index bid value (if from quote, otherwise idxPrice)</summary>
-        public double IdxBid { get { return body.idxBid; } set { body.idxBid = value; } }
- 
-		/// <summary>index ask value (if from quote, otherwise idxPrice)</summary>
-        public double IdxAsk { get { return body.idxAsk; } set { body.idxAsk = value; } }
- 
-		/// <summary>index price</summary>
-        public double IdxPrice { get { return body.idxPrice; } set { body.idxPrice = value; } }
-             
-		/// <summary>syn quote ticker</summary>
-        public StockKey SynTicker { get { return CacheVar.AllocIfNull(ref synTicker).Get(ref body.synTicker, usn); } set { CacheVar.AllocIfNull(ref synTicker).Set(value); body.synTicker = value.Layout; } }
- 
-		/// <summary>syn quote bid (market close)</summary>
-        public double SynBid { get { return body.synBid; } set { body.synBid = value; } }
- 
-		/// <summary>syn quote ask (market close)</summary>
-        public double SynAsk { get { return body.synAsk; } set { body.synAsk = value; } }
- 
-		/// <summary>syn last print (market close)</summary>
-        public double SynPrice { get { return body.synPrice; } set { body.synPrice = value; } }
-             
-		/// <summary>future key used to create the synthetic quote (if any)</summary>
-        public FutureKey SynFKey { get { return CacheVar.AllocIfNull(ref synFKey).Get(ref body.synFKey, usn); } set { CacheVar.AllocIfNull(ref synFKey).Set(value); body.synFKey = value.Layout; } }
- 
-		/// <summary>synBid = futBid * synRatio + synOffset</summary>
-        public double SynRatio { get { return body.synRatio; } set { body.synRatio = value; } }
- 
-		/// <summary>synAsk = futAsk * synRatio + synOffset</summary>
-        public double SynOffset { get { return body.synOffset; } set { body.synOffset = value; } }
- 
-		/// <summary>record timestamp</summary>
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // IndexClose
-
-
-	/// <summary>
 	/// IndexQuote:137
 	/// </summary>
 	/// <remarks>
-	/// IndexQuote - usually from live index feed handler
+	/// Live index levels and quotes including SpiderRock synthetic index levels and quotes.
 	/// </remarks>
 
     public partial class IndexQuote
@@ -1229,7 +697,7 @@ namespace SpiderRock.DataFeed
 		
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
-			private StockKey ticker;
+			private TickerKey ticker;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -1245,9 +713,9 @@ namespace SpiderRock.DataFeed
 			}
 			
 			
-			public StockKey Ticker
+			public TickerKey Ticker
 			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
 			}
 
@@ -1299,7 +767,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
-			public StockKeyLayout ticker;
+			public TickerKeyLayout ticker;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
@@ -1374,12 +842,12 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// LiveSurfaceAtm:356
+	/// LiveSurfaceAtm:2160
 	/// </summary>
 	/// <remarks>
-	/// Live Surface Atm Records
-	/// LiveSurfaceAtm
-	/// note: this records is computed live during the day
+	/// LiveSurfaceAtm (surfaceType = 'Live') records are computed and publish continuously during trading hours and represent a current best implied volatility market fit.
+	/// SurfaceType = 'PriorDay' records contain the closing surface record from the prior trading period (usually from just before the last main session close).
+	/// SurfaceType = 'Live' records are published to the SpiderRock elastic cluster at 5 minute intervals.
 	/// </remarks>
 
     public partial class LiveSurfaceAtm
@@ -1461,7 +929,7 @@ namespace SpiderRock.DataFeed
 		
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
-			private FutureKey fkey;
+			private ExpiryKey ekey;
  			private string pricingAccnt;
 
 			// ReSharper disable once InconsistentNaming
@@ -1473,16 +941,16 @@ namespace SpiderRock.DataFeed
 			{
 				if (other == null) throw new ArgumentNullException("other");
 				body = other.body;
-				fkey = other.fkey;
+				ekey = other.ekey;
  				pricingAccnt = other.pricingAccnt;
 				
 			}
 			
 			
-			public FutureKey Fkey
+			public ExpiryKey Ekey
 			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return fkey ?? (fkey = FutureKey.GetCreateFutureKey(body.fkey)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.fkey = value.Layout; fkey = value; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ekey ?? (ekey = ExpiryKey.GetCreateExpiryKey(body.ekey)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ekey = value.Layout; ekey = value; }
 			}
  			
 			public LiveSurfaceType SurfaceType
@@ -1506,7 +974,7 @@ namespace SpiderRock.DataFeed
 			public void Clear()
 			{
 				body = new PKeyLayout();
-				fkey = null;
+				ekey = null;
  				pricingAccnt = null;
 
 			}
@@ -1515,7 +983,7 @@ namespace SpiderRock.DataFeed
 			public void CopyTo(PKey target)
 			{
 				target.body = body;
-				target.fkey = fkey;
+				target.ekey = ekey;
  				target.pricingAccnt = pricingAccnt;
 
 			}
@@ -1524,7 +992,7 @@ namespace SpiderRock.DataFeed
 			public object Clone()
 			{
 				var target = new PKey(body);
-				target.fkey = fkey;
+				target.ekey = ekey;
  				target.pricingAccnt = pricingAccnt;
 
 				return target;
@@ -1554,7 +1022,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
-			public FutureKeyLayout fkey;
+			public ExpiryKeyLayout ekey;
  			public LiveSurfaceType surfaceType;
  			public PricingGroup pricingGroup;
  			public FixedString16Layout pricingAccnt;
@@ -1562,7 +1030,7 @@ namespace SpiderRock.DataFeed
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
             {
-                return	fkey.Equals(other.fkey) &&
+                return	ekey.Equals(other.ekey) &&
 					 	surfaceType.Equals(other.surfaceType) &&
 					 	pricingGroup.Equals(other.pricingGroup) &&
 					 	pricingAccnt.Equals(other.pricingAccnt);
@@ -1579,7 +1047,7 @@ namespace SpiderRock.DataFeed
                 unchecked
                 {
 					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = fkey.GetHashCode();
+					var hashCode = ekey.GetHashCode();
  					hashCode = (hashCode*397) ^ ((int) surfaceType);
  					hashCode = (hashCode*397) ^ ((int) pricingGroup);
  					hashCode = (hashCode*397) ^ (pricingAccnt.GetHashCode());
@@ -1600,7 +1068,10 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public StockKeyLayout ticker;
+			public FixedString10Layout date;
+			public FixedString8Layout time;
+			public TickerKeyLayout ticker;
+			public ExpiryKeyLayout fkey;
 			public float uBid;
 			public float uAsk;
 			public float years;
@@ -1609,54 +1080,51 @@ namespace SpiderRock.DataFeed
 			public float ddiv;
 			public byte exType;
 			public float earnCnt;
+			public float earnCntAdj;
 			public float axisVolRT;
 			public float axisFUPrc;
+			public MoneynessType moneynessType;
 			public float cAtm;
 			public float pAtm;
 			public float minAtmVol;
 			public float maxAtmVol;
-			public float stepSz;
-			public float cAdjD8;
-			public float cAdjD7;
-			public float cAdjD6;
-			public float cAdjD5;
-			public float cAdjD4;
-			public float cAdjD3;
-			public float cAdjD2;
-			public float cAdjD1;
-			public float cAdjU1;
-			public float cAdjU2;
-			public float cAdjU3;
-			public float cAdjU4;
-			public float cAdjU5;
-			public float cAdjU6;
-			public float cAdjU7;
-			public float cAdjU8;
-			public float pAdjD8;
-			public float pAdjD7;
-			public float pAdjD6;
-			public float pAdjD5;
-			public float pAdjD4;
-			public float pAdjD3;
-			public float pAdjD2;
-			public float pAdjD1;
-			public float pAdjU1;
-			public float pAdjU2;
-			public float pAdjU3;
-			public float pAdjU4;
-			public float pAdjU5;
-			public float pAdjU6;
-			public float pAdjU7;
-			public float pAdjU8;
-			public float slope;
-			public float cmult;
+			public float eMove;
+			public float cAtmCen;
+			public float pAtmCen;
+			public float surfVariance;
+			public GridType gridType;
+			public float minXAxis;
+			public float maxXAxis;
+			public float xAxisScale;
+			public float skewD8;
+			public float skewD7;
+			public float skewD6;
+			public float skewD5;
+			public float skewD4;
+			public float skewD3;
+			public float skewD2;
+			public float skewD1;
+			public float skewC0;
+			public float skewU1;
+			public float skewU2;
+			public float skewU3;
+			public float skewU4;
+			public float skewU5;
+			public float skewU6;
+			public float skewU7;
+			public float skewU8;
+			public float sdivD8;
+			public float sdivD4;
+			public float sdivU4;
+			public float sdivU8;
 			public float pwidth;
 			public float vwidth;
 			public float sdivEMA;
-			public float sdivLoEMA;
-			public float sdivHiEMA;
+			public float sdivLo;
+			public float sdivHi;
 			public float atmMAC;
 			public float cprMAC;
+			public float slope;
 			public float cAtmMove;
 			public float pAtmMove;
 			public byte cCnt;
@@ -1675,7 +1143,7 @@ namespace SpiderRock.DataFeed
 			public float fitErrPrc;
 			public float fitErrVol;
 			public FitType fitType;
-			public FutureKeyLayout sFKey;
+			public ExpiryKeyLayout sEKey;
 			public LiveSurfaceType sType;
 			public DateTimeLayout sTimestamp;
 			public int counter;
@@ -1691,18 +1159,30 @@ namespace SpiderRock.DataFeed
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Invalidate() { ++usn; }
 		
- 		private CachedStockKey ticker;
- 		private CachedFutureKey sFKey;
+ 		private CachedFixedLengthString<FixedString10Layout> date;
+ 		private CachedFixedLengthString<FixedString8Layout> time;
+ 		private CachedTickerKey ticker;
+ 		private CachedExpiryKey fkey;
+ 		private CachedExpiryKey sEKey;
 		
 
-            
-		
-        public StockKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+
+		/// <summary>archive date</summary>
+        public string Date { get { return CacheVar.AllocIfNull(ref date).Get(ref body.date, usn); } set { CacheVar.AllocIfNull(ref date).Set(value); body.date = value; } }
  
-		/// <summary>underlyer bid price</summary>
+		/// <summary>archive time</summary>
+        public string Time { get { return CacheVar.AllocIfNull(ref time).Get(ref body.time, usn); } set { CacheVar.AllocIfNull(ref time).Set(value); body.time = value; } }
+             
+		/// <summary>underlying stock key that this option expiration attaches to</summary>
+        public TickerKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+             
+		/// <summary>future that this option expiration month written on (if any)</summary>
+        public ExpiryKey Fkey { get { return CacheVar.AllocIfNull(ref fkey).Get(ref body.fkey, usn); } set { CacheVar.AllocIfNull(ref fkey).Set(value); body.fkey = value.Layout; } }
+ 
+		/// <summary>underlier bid price</summary>
         public float UBid { get { return body.uBid; } set { body.uBid = value; } }
  
-		/// <summary>underlyer ask price</summary>
+		/// <summary>underlier ask price</summary>
         public float UAsk { get { return body.uAsk; } set { body.uAsk = value; } }
  
 		/// <summary>time to expiration (in years)</summary>
@@ -1720,14 +1200,20 @@ namespace SpiderRock.DataFeed
 		/// <summary>exercise type of the options used to compute this surface</summary>
         public byte ExType { get { return body.exType; } set { body.exType = value; } }
  
-		/// <summary>number of qualifying earnings events (between now and expiration) [can be fractional]</summary>
+		/// <summary>number of qualifying earnings events prior to expiration [can be fractional] (from StockEarningsCalendar)</summary>
         public float EarnCnt { get { return body.earnCnt; } set { body.earnCnt = value; } }
+ 
+		/// <summary>number of qualifying earnings events prior to expiration [adjusted] (from StockEarningsCalendar + LiveSurfaceTerm)</summary>
+        public float EarnCntAdj { get { return body.earnCntAdj; } set { body.earnCntAdj = value; } }
  
 		/// <summary>axis volatility x sqrt(years) (used to compute xAxis) [usually 4m atm vol]</summary>
         public float AxisVolRT { get { return body.axisVolRT; } set { body.axisVolRT = value; } }
  
 		/// <summary>axis FwdUPrc (fwd underlying price used to compute xAxis)</summary>
         public float AxisFUPrc { get { return body.axisFUPrc; } set { body.axisFUPrc = value; } }
+ 
+		/// <summary>moneyness (xAxis) convention</summary>
+        public MoneynessType MoneynessType { get { return body.moneynessType; } set { body.moneynessType = value; } }
  
 		/// <summary>call atm vol (xAxis = 0)</summary>
         public float CAtm { get { return body.cAtm; } set { body.cAtm = value; } }
@@ -1741,110 +1227,92 @@ namespace SpiderRock.DataFeed
 		/// <summary>maximum estimated atm vol</summary>
         public float MaxAtmVol { get { return body.maxAtmVol; } set { body.maxAtmVol = value; } }
  
-		/// <summary>h (x-axis step size; usually 0.5) [xAxis = (effStrike / effAxisFUPrc - 1.0) / axisVolRT; effStrike = strike * strikeRatio; effAxisFUPrc = axisFUPrc * symbolRatio]</summary>
-        public float StepSz { get { return body.stepSz; } set { body.stepSz = value; } }
+		/// <summary>implied earnings move (from LiveSurfaceTerm)</summary>
+        public float EMove { get { return body.eMove; } set { body.eMove = value; } }
  
-		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]; Note: there is an implied intercept points (xAxis=0; skew=0) between cAdjD1 and cAdjU1</summary>
-        public float CAdjD8 { get { return body.cAdjD8; } set { body.cAdjD8 = value; } }
+		/// <summary>call atm vol (xAxis = 0) (eMove/earnCntAdj censored)</summary>
+        public float CAtmCen { get { return body.cAtmCen; } set { body.cAtmCen = value; } }
  
-		/// <summary>dn 7 steps</summary>
-        public float CAdjD7 { get { return body.cAdjD7; } set { body.cAdjD7 = value; } }
+		/// <summary>put atm vol (xAxis = 0) (eMove/earnCntAdj censored)</summary>
+        public float PAtmCen { get { return body.pAtmCen; } set { body.pAtmCen = value; } }
  
-		/// <summary>dn 6 steps</summary>
-        public float CAdjD6 { get { return body.cAdjD6; } set { body.cAdjD6 = value; } }
+		/// <summary>estimate of surface variance; full surface integration</summary>
+        public float SurfVariance { get { return body.surfVariance; } set { body.surfVariance = value; } }
  
-		/// <summary>dn 5 steps</summary>
-        public float CAdjD5 { get { return body.cAdjD5; } set { body.cAdjD5 = value; } }
+		/// <summary>gridType defines D8 - U8 xAxis points</summary>
+        public GridType GridType { get { return body.gridType; } set { body.gridType = value; } }
  
-		/// <summary>dn 4 steps</summary>
-        public float CAdjD4 { get { return body.cAdjD4; } set { body.cAdjD4 = value; } }
+		/// <summary>minimum xAxis value;xAxis values to the left extrapolate horizontally</summary>
+        public float MinXAxis { get { return body.minXAxis; } set { body.minXAxis = value; } }
  
-		/// <summary>dn 3 steps</summary>
-        public float CAdjD3 { get { return body.cAdjD3; } set { body.cAdjD3 = value; } }
+		/// <summary>maximum xAxis value;xAxis values to the right extrapolate horizontally</summary>
+        public float MaxXAxis { get { return body.maxXAxis; } set { body.maxXAxis = value; } }
  
-		/// <summary>dn 2 steps</summary>
-        public float CAdjD2 { get { return body.cAdjD2; } set { body.cAdjD2 = value; } }
+		/// <summary>xAxis @ left (skewD8) end point = -xAxisScale; xAxis @ right (skewU8) end point = +xAxisScale; [xAxis = (effStrike / effAxisFUPrc - 1.0) / axisVolRT; effStrike = strike * strikeRatio; effAxisFUPrc = axisFUPrc * symbolRatio]</summary>
+        public float XAxisScale { get { return body.xAxisScale; } set { body.xAxisScale = value; } }
  
-		/// <summary>dn 1 step</summary>
-        public float CAdjD1 { get { return body.cAdjD1; } set { body.cAdjD1 = value; } }
+		/// <summary>skew @ D8 point (volatility skew curve)</summary>
+        public float SkewD8 { get { return body.skewD8; } set { body.skewD8 = value; } }
  
-		/// <summary>up 1 step</summary>
-        public float CAdjU1 { get { return body.cAdjU1; } set { body.cAdjU1 = value; } }
+		/// <summary>skew @ D7 point</summary>
+        public float SkewD7 { get { return body.skewD7; } set { body.skewD7 = value; } }
  
-		/// <summary>up 2 steps</summary>
-        public float CAdjU2 { get { return body.cAdjU2; } set { body.cAdjU2 = value; } }
+		/// <summary>skew @ D6 point</summary>
+        public float SkewD6 { get { return body.skewD6; } set { body.skewD6 = value; } }
  
-		/// <summary>up 3 steps</summary>
-        public float CAdjU3 { get { return body.cAdjU3; } set { body.cAdjU3 = value; } }
+		/// <summary>skew @ D5 point</summary>
+        public float SkewD5 { get { return body.skewD5; } set { body.skewD5 = value; } }
  
-		/// <summary>up 4 steps</summary>
-        public float CAdjU4 { get { return body.cAdjU4; } set { body.cAdjU4 = value; } }
+		/// <summary>skew @ D4 point</summary>
+        public float SkewD4 { get { return body.skewD4; } set { body.skewD4 = value; } }
  
-		/// <summary>up 5 steps</summary>
-        public float CAdjU5 { get { return body.cAdjU5; } set { body.cAdjU5 = value; } }
+		/// <summary>skew @ D3 point</summary>
+        public float SkewD3 { get { return body.skewD3; } set { body.skewD3 = value; } }
  
-		/// <summary>up 6 steps</summary>
-        public float CAdjU6 { get { return body.cAdjU6; } set { body.cAdjU6 = value; } }
+		/// <summary>skew @ D2 point</summary>
+        public float SkewD2 { get { return body.skewD2; } set { body.skewD2 = value; } }
  
-		/// <summary>up 7 steps</summary>
-        public float CAdjU7 { get { return body.cAdjU7; } set { body.cAdjU7 = value; } }
+		/// <summary>skew @ D1 point</summary>
+        public float SkewD1 { get { return body.skewD1; } set { body.skewD1 = value; } }
  
-		/// <summary>up 8 steps</summary>
-        public float CAdjU8 { get { return body.cAdjU8; } set { body.cAdjU8 = value; } }
+		/// <summary>central value (@xAxis = 0) [usually zero]</summary>
+        public float SkewC0 { get { return body.skewC0; } set { body.skewC0 = value; } }
  
-		/// <summary>dn 8 steps [strikeVol = (cAtm|pAtm) * (SkewSpline(xAxis) + 1.0)]; Note: there is an implied intercept points (xAxis=0; skew=0) between pAdjD1 and pAdjU1</summary>
-        public float PAdjD8 { get { return body.pAdjD8; } set { body.pAdjD8 = value; } }
+		/// <summary>skew @ U1 point</summary>
+        public float SkewU1 { get { return body.skewU1; } set { body.skewU1 = value; } }
  
-		/// <summary>dn 7 steps</summary>
-        public float PAdjD7 { get { return body.pAdjD7; } set { body.pAdjD7 = value; } }
+		/// <summary>skew @ U2 point</summary>
+        public float SkewU2 { get { return body.skewU2; } set { body.skewU2 = value; } }
  
-		/// <summary>dn 6 steps</summary>
-        public float PAdjD6 { get { return body.pAdjD6; } set { body.pAdjD6 = value; } }
+		/// <summary>skew @ U3 point</summary>
+        public float SkewU3 { get { return body.skewU3; } set { body.skewU3 = value; } }
  
-		/// <summary>dn 5 steps</summary>
-        public float PAdjD5 { get { return body.pAdjD5; } set { body.pAdjD5 = value; } }
+		/// <summary>skew @ U4 point</summary>
+        public float SkewU4 { get { return body.skewU4; } set { body.skewU4 = value; } }
  
-		/// <summary>dn 4 steps</summary>
-        public float PAdjD4 { get { return body.pAdjD4; } set { body.pAdjD4 = value; } }
+		/// <summary>skew @ U5 point</summary>
+        public float SkewU5 { get { return body.skewU5; } set { body.skewU5 = value; } }
  
-		/// <summary>dn 3 steps</summary>
-        public float PAdjD3 { get { return body.pAdjD3; } set { body.pAdjD3 = value; } }
+		/// <summary>skew @ U6 point</summary>
+        public float SkewU6 { get { return body.skewU6; } set { body.skewU6 = value; } }
  
-		/// <summary>dn 2 steps</summary>
-        public float PAdjD2 { get { return body.pAdjD2; } set { body.pAdjD2 = value; } }
+		/// <summary>skew @ U7 point</summary>
+        public float SkewU7 { get { return body.skewU7; } set { body.skewU7 = value; } }
  
-		/// <summary>dn 1 step</summary>
-        public float PAdjD1 { get { return body.pAdjD1; } set { body.pAdjD1 = value; } }
+		/// <summary>skew @ U8 point</summary>
+        public float SkewU8 { get { return body.skewU8; } set { body.skewU8 = value; } }
  
-		/// <summary>up 1 step</summary>
-        public float PAdjU1 { get { return body.pAdjU1; } set { body.pAdjU1 = value; } }
+		/// <summary>sdiv @ D8 point (sdiv rate curve)</summary>
+        public float SdivD8 { get { return body.sdivD8; } set { body.sdivD8 = value; } }
  
-		/// <summary>up 2 steps</summary>
-        public float PAdjU2 { get { return body.pAdjU2; } set { body.pAdjU2 = value; } }
+		/// <summary>sdiv @ D4 point</summary>
+        public float SdivD4 { get { return body.sdivD4; } set { body.sdivD4 = value; } }
  
-		/// <summary>up 3 steps</summary>
-        public float PAdjU3 { get { return body.pAdjU3; } set { body.pAdjU3 = value; } }
+		/// <summary>sdiv @ U4 point</summary>
+        public float SdivU4 { get { return body.sdivU4; } set { body.sdivU4 = value; } }
  
-		/// <summary>up 4 steps</summary>
-        public float PAdjU4 { get { return body.pAdjU4; } set { body.pAdjU4 = value; } }
- 
-		/// <summary>up 5 steps</summary>
-        public float PAdjU5 { get { return body.pAdjU5; } set { body.pAdjU5 = value; } }
- 
-		/// <summary>up 6 steps</summary>
-        public float PAdjU6 { get { return body.pAdjU6; } set { body.pAdjU6 = value; } }
- 
-		/// <summary>up 7 steps</summary>
-        public float PAdjU7 { get { return body.pAdjU7; } set { body.pAdjU7 = value; } }
- 
-		/// <summary>up 8 steps</summary>
-        public float PAdjU8 { get { return body.pAdjU8; } set { body.pAdjU8 = value; } }
- 
-		/// <summary>surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
-        public float Slope { get { return body.slope; } set { body.slope = value; } }
- 
-		/// <summary>unused (always 1.0)</summary>
-        public float Cmult { get { return body.cmult; } set { body.cmult = value; } }
+		/// <summary>sdiv @ U8 point</summary>
+        public float SdivU8 { get { return body.sdivU8; } set { body.sdivU8 = value; } }
  
 		/// <summary>minimum mkt premium width</summary>
         public float Pwidth { get { return body.pwidth; } set { body.pwidth = value; } }
@@ -1856,16 +1324,19 @@ namespace SpiderRock.DataFeed
         public float SdivEMA { get { return body.sdivEMA; } set { body.sdivEMA = value; } }
  
 		/// <summary>maximum sdiv bid (all markets in this expiration)</summary>
-        public float SdivLoEMA { get { return body.sdivLoEMA; } set { body.sdivLoEMA = value; } }
+        public float SdivLo { get { return body.sdivLo; } set { body.sdivLo = value; } }
  
 		/// <summary>minimum sdiv ask (all markets in this expiration)</summary>
-        public float SdivHiEMA { get { return body.sdivHiEMA; } set { body.sdivHiEMA = value; } }
+        public float SdivHi { get { return body.sdivHi; } set { body.sdivHi = value; } }
  
-		
+		/// <summary>atm max abs change (half-life ~ 1 minute)</summary>
         public float AtmMAC { get { return body.atmMAC; } set { body.atmMAC = value; } }
  
-		
+		/// <summary>cpr max abs change (half-life ~ 1 minute)</summary>
         public float CprMAC { get { return body.cprMAC; } set { body.cprMAC = value; } }
+ 
+		/// <summary>Surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
+        public float Slope { get { return body.slope; } set { body.slope = value; } }
  
 		/// <summary>fixed strike cAtm move from prior period</summary>
         public float CAtmMove { get { return body.cAtmMove; } set { body.cAtmMove = value; } }
@@ -1922,7 +1393,7 @@ namespace SpiderRock.DataFeed
         public FitType FitType { get { return body.fitType; } set { body.fitType = value; } }
              
 		/// <summary>overnight LiveSurfaceAtm used for surface</summary>
-        public FutureKey SFKey { get { return CacheVar.AllocIfNull(ref sFKey).Get(ref body.sFKey, usn); } set { CacheVar.AllocIfNull(ref sFKey).Set(value); body.sFKey = value.Layout; } }
+        public ExpiryKey SEKey { get { return CacheVar.AllocIfNull(ref sEKey).Get(ref body.sEKey, usn); } set { CacheVar.AllocIfNull(ref sEKey).Set(value); body.sEKey = value.Layout; } }
  
 		
         public LiveSurfaceType SType { get { return body.sType; } set { body.sType = value; } }
@@ -1946,538 +1417,13 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// OptionCloseMark:373
+	/// OptionImpliedQuote:2300
 	/// </summary>
 	/// <remarks>
-	/// --- OptionCloseMark ---
-	/// </remarks>
-
-    public partial class OptionCloseMark
-    {
-		public OptionCloseMark()
-		{
-		}
-		
-		public OptionCloseMark(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public OptionCloseMark(OptionCloseMark source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal OptionCloseMark(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as OptionCloseMark);
-		}
-		
-		public bool Equals(OptionCloseMark other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(OptionCloseMark target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.OptionCloseMark};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private OptionKey okey;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				okey = other.okey;
-				
-			}
-			
-			/// <summary>SR option key</summary>
-			public OptionKey Okey
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				okey = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.okey = okey;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.okey = okey;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // OptionCloseMark.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public OptionKeyLayout okey;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	okey.Equals(other.okey);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = okey.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // OptionCloseMark.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public double uBid;
-			public double uAsk;
-			public double uClose;
-			public float bidPx;
-			public float askPx;
-			public float bidIV;
-			public float askIV;
-			public float srPrc;
-			public float srVol;
-			public MarkSource srSrc;
-			public float de;
-			public float ga;
-			public float th;
-			public float ve;
-			public float rh;
-			public float ph;
-			public float sdiv;
-			public float ddiv;
-			public float rate;
-			public byte error;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
-		
-		
-
-
-		/// <summary>SR closing underlyer bid (C - 1m)</summary>
-        public double UBid { get { return body.uBid; } set { body.uBid = value; } }
- 
-		/// <summary>SR closing underlyer ask (C - 1m)</summary>
-        public double UAsk { get { return body.uAsk; } set { body.uAsk = value; } }
- 
-		/// <summary>official closing mark</summary>
-        public double UClose { get { return body.uClose; } set { body.uClose = value; } }
- 
-		/// <summary>SR closing option bid (C - 1m)</summary>
-        public float BidPx { get { return body.bidPx; } set { body.bidPx = value; } }
- 
-		/// <summary>SR closing option ask (C - 1m)</summary>
-        public float AskPx { get { return body.askPx; } set { body.askPx = value; } }
- 
-		/// <summary>implied vol of SR closing bid price (C - 1m)</summary>
-        public float BidIV { get { return body.bidIV; } set { body.bidIV = value; } }
- 
-		/// <summary>implied vol of SR closing ask price (C - 1m)</summary>
-        public float AskIV { get { return body.askIV; } set { body.askIV = value; } }
- 
-		/// <summary>SR surface price (always within bidPx/askPx) (C - 1m)</summary>
-        public float SrPrc { get { return body.srPrc; } set { body.srPrc = value; } }
- 
-		/// <summary>SR surface volatility</summary>
-        public float SrVol { get { return body.srVol; } set { body.srVol = value; } }
- 
-		/// <summary>srPrc source [NbboMid, SRVol, LoBound, HiBound, SRPricer, SRQuote, CloseMark]</summary>
-        public MarkSource SrSrc { get { return body.srSrc; } set { body.srSrc = value; } }
- 
-		/// <summary>delta (SR surface)</summary>
-        public float De { get { return body.de; } set { body.de = value; } }
- 
-		/// <summary>gamma (SR surface)</summary>
-        public float Ga { get { return body.ga; } set { body.ga = value; } }
- 
-		/// <summary>theta (SR surface)</summary>
-        public float Th { get { return body.th; } set { body.th = value; } }
- 
-		/// <summary>vega (SR surface)</summary>
-        public float Ve { get { return body.ve; } set { body.ve = value; } }
- 
-		/// <summary>rho (SR surrface)</summary>
-        public float Rh { get { return body.rh; } set { body.rh = value; } }
- 
-		/// <summary>phi (SR surface)</summary>
-        public float Ph { get { return body.ph; } set { body.ph = value; } }
- 
-		/// <summary>SR sdiv rate</summary>
-        public float Sdiv { get { return body.sdiv; } set { body.sdiv = value; } }
- 
-		/// <summary>SR ddiv rate (sum of discrete dividend amounts)</summary>
-        public float Ddiv { get { return body.ddiv; } set { body.ddiv = value; } }
- 
-		/// <summary>SR interest rate</summary>
-        public float Rate { get { return body.rate; } set { body.rate = value; } }
- 
-		/// <summary>SRPricingLib.CalcError</summary>
-        public byte Error { get { return body.error; } set { body.error = value; } }
- 
-		/// <summary>record timestamp</summary>
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // OptionCloseMark
-
-
-	/// <summary>
-	/// OptionCloseQuote:104
-	/// </summary>
-	/// <remarks>
-	/// --- OptionCloseQuote ---
-	/// </remarks>
-
-    public partial class OptionCloseQuote
-    {
-		public OptionCloseQuote()
-		{
-		}
-		
-		public OptionCloseQuote(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public OptionCloseQuote(OptionCloseQuote source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal OptionCloseQuote(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as OptionCloseQuote);
-		}
-		
-		public bool Equals(OptionCloseQuote other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(OptionCloseQuote target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.OptionCloseQuote};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private OptionKey okey;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				okey = other.okey;
-				
-			}
-			
-			
-			public OptionKey Okey
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				okey = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.okey = okey;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.okey = okey;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // OptionCloseQuote.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public OptionKeyLayout okey;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	okey.Equals(other.okey);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = okey.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // OptionCloseQuote.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public float bidPrice;
-			public float askPrice;
-			public ushort bidSize;
-			public ushort askSize;
-			public OptExch bidExch;
-			public OptExch askExch;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
-		
-		
-
-
-		/// <summary>bid price</summary>
-        public float BidPrice { get { return body.bidPrice; } set { body.bidPrice = value; } }
- 
-		/// <summary>ask price</summary>
-        public float AskPrice { get { return body.askPrice; } set { body.askPrice = value; } }
- 
-		/// <summary>bid size in contracts (largest exch quote)</summary>
-        public ushort BidSize { get { return body.bidSize; } set { body.bidSize = value; } }
- 
-		/// <summary>ask size in contracts (largest exch quote)</summary>
-        public ushort AskSize { get { return body.askSize; } set { body.askSize = value; } }
- 
-		/// <summary>first (or largest remaining) exchange at bid price</summary>
-        public OptExch BidExch { get { return body.bidExch; } set { body.bidExch = value; } }
- 
-		/// <summary>first (or largest remaining) exchange at ask price</summary>
-        public OptExch AskExch { get { return body.askExch; } set { body.askExch = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // OptionCloseQuote
-
-
-	/// <summary>
-	/// OptionImpliedQuote:377
-	/// </summary>
-	/// <remarks>
-	/// --- OptionImpliedQuote ---
+	/// Records in this table are identical to the records in our live implied quote multicast feed.  CalcSource=Tick records are computed and published each time an option NBBO price changes.  CalcSource=Loop records are computed in a 2-3 minute background loop.  CalcSource=Close records are computed and published on the market close.
+	/// Note that the underlier price (uPrc) will be the same for all options an underlier when CalcSource=Loop|Close.  This is not true for CalcSource=Tick where uPrc will be the underlier price that prevailed when the option price changed.
+	/// If you are consuming multicast data and only want records with consistent uPrc values for all options you should ignore Tick records. Alternatively, you can use an independent underlier price source (our StockBookQuote feed or some other) and 'adjust' the values in this table to the new underlier value.
+	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automaticall applies the appropriate underlier adjustments as records are being returned.
 	/// </remarks>
 
     public partial class OptionImpliedQuote
@@ -2666,7 +1612,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public StockKeyLayout ticker;
+			public TickerKeyLayout ticker;
 			public float uprc;
 			public float years;
 			public float rate;
@@ -2681,6 +1627,7 @@ namespace SpiderRock.DataFeed
 			public float svol;
 			public float sprc;
 			public float smrk;
+			public float veSlope;
 			public float de;
 			public float ga;
 			public float th;
@@ -2706,15 +1653,15 @@ namespace SpiderRock.DataFeed
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Invalidate() { ++usn; }
 		
- 		private CachedStockKey ticker;
+ 		private CachedTickerKey ticker;
  		private CachedFixedLengthString<FixedString16Layout> calcErr;
 		
 
             
 		
-        public StockKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+        public TickerKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
  
-		/// <summary>underlyer price (usually mid-market)</summary>
+		/// <summary>underlier price (usually mid-market)</summary>
         public float Uprc { get { return body.uprc; } set { body.uprc = value; } }
  
 		/// <summary>years to expiration</summary>
@@ -2756,6 +1703,9 @@ namespace SpiderRock.DataFeed
 		/// <summary>option surface mark (option surface price w/bounding rules)</summary>
         public float Smrk { get { return body.smrk; } set { body.smrk = value; } }
  
+		/// <summary>veSlope = dVol / dUprc (assuming vol @ xAxis = 0 remains constant);hedgeDelta = (de + ve * 100 * veSlope) if hedging with this assumption</summary>
+        public float VeSlope { get { return body.veSlope; } set { body.veSlope = value; } }
+ 
 		/// <summary>option delta (from svol)</summary>
         public float De { get { return body.de; } set { body.de = value; } }
  
@@ -2774,28 +1724,28 @@ namespace SpiderRock.DataFeed
 		/// <summary>option phi (from svol)</summary>
         public float Ph { get { return body.ph; } set { body.ph = value; } }
  
-		/// <summary>underlyer up 50% slide</summary>
+		/// <summary>underlier up 50% slide</summary>
         public float Up50 { get { return body.up50; } set { body.up50 = value; } }
  
-		/// <summary>underlyer dn 50% slide</summary>
+		/// <summary>underlier dn 50% slide</summary>
         public float Dn50 { get { return body.dn50; } set { body.dn50 = value; } }
  
-		/// <summary>underlyer up 15% slide</summary>
+		/// <summary>underlier up 15% slide</summary>
         public float Up15 { get { return body.up15; } set { body.up15 = value; } }
  
-		/// <summary>underlyer dn 15% slide</summary>
+		/// <summary>underlier dn 15% slide</summary>
         public float Dn15 { get { return body.dn15; } set { body.dn15 = value; } }
  
-		/// <summary>underlyer up 6% slide</summary>
+		/// <summary>underlier up 6% slide</summary>
         public float Up06 { get { return body.up06; } set { body.up06 = value; } }
  
-		/// <summary>underlyer dn 8% slide</summary>
+		/// <summary>underlier dn 8% slide</summary>
         public float Dn08 { get { return body.dn08; } set { body.dn08 = value; } }
  
 		/// <summary>option pricing error, otherwise, an empty string.  pertains to the Greeks (de, ga, th, ve, ro, ph) and sprc</summary>
         public string CalcErr { get { return CacheVar.AllocIfNull(ref calcErr).Get(ref body.calcErr, usn); } set { CacheVar.AllocIfNull(ref calcErr).Set(value); body.calcErr = value; } }
  
-		/// <summary>Tick=from NBBO quote change; Loop=from background loop; Close=Final EOD record;</summary>
+		/// <summary>Tick=nbbo tick; Loop=from background loop; Close=Final EOD record;</summary>
         public CalcSource CalcSource { get { return body.calcSource; } set { body.calcSource = value; } }
  
 		
@@ -2808,10 +1758,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// OptionNbboQuote:102
+	/// OptionNbboQuote:260
 	/// </summary>
 	/// <remarks>
-	/// --- OptionNbboQuote ---
+	/// This table contains live option quote records from OPRA (equities) or the listing exchange (futures).  Each record contains up to two price levels and represents a live snapshot of the book for a specific option series.  There are typically 1mm+ records in this table if all ticker sources are enabled.
 	/// </remarks>
 
     public partial class OptionNbboQuote
@@ -2998,6 +1948,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
+			public UpdateType updateType;
 			public float bidPrice;
 			public float askPrice;
 			public ushort bidSize;
@@ -3008,6 +1959,8 @@ namespace SpiderRock.DataFeed
 			public OptExch askExch;
 			public uint bidMask;
 			public uint askMask;
+			public OpraMktType bidMktType;
+			public OpraMktType askMktType;
 			public float bidPrice2;
 			public float askPrice2;
 			public ushort cumBidSize2;
@@ -3026,6 +1979,9 @@ namespace SpiderRock.DataFeed
 		
 
 
+		
+        public UpdateType UpdateType { get { return body.updateType; } set { body.updateType = value; } }
+ 
 		/// <summary>bid price</summary>
         public float BidPrice { get { return body.bidPrice; } set { body.bidPrice = value; } }
  
@@ -3056,6 +2012,12 @@ namespace SpiderRock.DataFeed
 		/// <summary>exchange ask bit mask</summary>
         public uint AskMask { get { return body.askMask; } set { body.askMask = value; } }
  
+		/// <summary>bid side quote flags (if any)</summary>
+        public OpraMktType BidMktType { get { return body.bidMktType; } set { body.bidMktType = value; } }
+ 
+		/// <summary>ask side quote flags (if any)</summary>
+        public OpraMktType AskMktType { get { return body.askMktType; } set { body.askMktType = value; } }
+ 
 		/// <summary>2nd best bid price</summary>
         public float BidPrice2 { get { return body.bidPrice2; } set { body.bidPrice2 = value; } }
  
@@ -3074,7 +2036,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>last ask price change (milliseconds since midnight)</summary>
         public int AskTime { get { return body.askTime; } set { body.askTime = value; } }
  
-		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
@@ -3084,315 +2046,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// OptionOpenMark:105
+	/// OptionPrint:300
 	/// </summary>
 	/// <remarks>
-	/// --- OptionOpenMark ---
-	/// </remarks>
-
-    public partial class OptionOpenMark
-    {
-		public OptionOpenMark()
-		{
-		}
-		
-		public OptionOpenMark(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public OptionOpenMark(OptionOpenMark source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal OptionOpenMark(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as OptionOpenMark);
-		}
-		
-		public bool Equals(OptionOpenMark other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(OptionOpenMark target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.OptionOpenMark};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private OptionKey okey;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				okey = other.okey;
-				
-			}
-			
-			
-			public OptionKey Okey
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				okey = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.okey = okey;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.okey = okey;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // OptionOpenMark.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public OptionKeyLayout okey;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	okey.Equals(other.okey);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = okey.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // OptionOpenMark.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public float uBid;
-			public float uAsk;
-			public float bidPx;
-			public float askPx;
-			public float bidIV;
-			public float askIV;
-			public float srPrc;
-			public float srVol;
-			public MarkSource srSrc;
-			public float de;
-			public float ga;
-			public float th;
-			public float ve;
-			public float rh;
-			public float ph;
-			public float sdiv;
-			public float ddiv;
-			public float rate;
-			public byte error;
-			public OptionKeyLayout priorOKey;
-			public float prcAdjValue;
-			public float prcAdjRatio;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedOptionKey priorOKey;
-		
-
-
-		/// <summary>SR closing bid</summary>
-        public float UBid { get { return body.uBid; } set { body.uBid = value; } }
- 
-		/// <summary>SR closing ask</summary>
-        public float UAsk { get { return body.uAsk; } set { body.uAsk = value; } }
- 
-		/// <summary>SR closing bid</summary>
-        public float BidPx { get { return body.bidPx; } set { body.bidPx = value; } }
- 
-		/// <summary>SR closing ask</summary>
-        public float AskPx { get { return body.askPx; } set { body.askPx = value; } }
- 
-		/// <summary>implied vol of SR closing bid price</summary>
-        public float BidIV { get { return body.bidIV; } set { body.bidIV = value; } }
- 
-		/// <summary>implied vol of SR closing ask price</summary>
-        public float AskIV { get { return body.askIV; } set { body.askIV = value; } }
- 
-		/// <summary>SR surface price (always within bidPx/askPx)</summary>
-        public float SrPrc { get { return body.srPrc; } set { body.srPrc = value; } }
- 
-		/// <summary>SR surface volatility</summary>
-        public float SrVol { get { return body.srVol; } set { body.srVol = value; } }
- 
-		
-        public MarkSource SrSrc { get { return body.srSrc; } set { body.srSrc = value; } }
- 
-		/// <summary>greeks from SR surface volatility</summary>
-        public float De { get { return body.de; } set { body.de = value; } }
- 
-		
-        public float Ga { get { return body.ga; } set { body.ga = value; } }
- 
-		
-        public float Th { get { return body.th; } set { body.th = value; } }
- 
-		
-        public float Ve { get { return body.ve; } set { body.ve = value; } }
- 
-		
-        public float Rh { get { return body.rh; } set { body.rh = value; } }
- 
-		
-        public float Ph { get { return body.ph; } set { body.ph = value; } }
- 
-		/// <summary>SR live sdiv rate</summary>
-        public float Sdiv { get { return body.sdiv; } set { body.sdiv = value; } }
- 
-		/// <summary>SR live ddiv rate</summary>
-        public float Ddiv { get { return body.ddiv; } set { body.ddiv = value; } }
- 
-		/// <summary>SR live int rate</summary>
-        public float Rate { get { return body.rate; } set { body.rate = value; } }
- 
-		/// <summary>SRPricingLib.CalcError</summary>
-        public byte Error { get { return body.error; } set { body.error = value; } }
-             
-		/// <summary>prior period option key (same as okey on most days)</summary>
-        public OptionKey PriorOKey { get { return CacheVar.AllocIfNull(ref priorOKey).Get(ref body.priorOKey, usn); } set { CacheVar.AllocIfNull(ref priorOKey).Set(value); body.priorOKey = value.Layout; } }
- 
-		/// <summary>corp action adjustment value (0.0 on most days); [todayPrice = priorPrice * prcAdjRatio + prcAdjValue]</summary>
-        public float PrcAdjValue { get { return body.prcAdjValue; } set { body.prcAdjValue = value; } }
- 
-		/// <summary>corp action adjustment factor (1.0 on most days)</summary>
-        public float PrcAdjRatio { get { return body.prcAdjRatio; } set { body.prcAdjRatio = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // OptionOpenMark
-
-
-	/// <summary>
-	/// OptionPrint:106
-	/// </summary>
-	/// <remarks>
-	/// --- OptionPrint ---
+	/// The most recent (last) print record for each active equity and future option series.  Quote markup represents quote that existed just prior to the print on the reporting exchange.
 	/// </remarks>
 
     public partial class OptionPrint
@@ -3493,12 +2150,6 @@ namespace SpiderRock.DataFeed
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
 			}
- 			
-			public OptExch Exch
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.exch; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.exch = value; }
-			}
 
 			public void Clear()
 			{
@@ -3549,13 +2200,11 @@ namespace SpiderRock.DataFeed
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
 			public OptionKeyLayout okey;
- 			public OptExch exch;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
             {
-                return	okey.Equals(other.okey) &&
-					 	exch.Equals(other.exch);
+                return	okey.Equals(other.okey);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3570,7 +2219,6 @@ namespace SpiderRock.DataFeed
                 {
 					// ReSharper disable NonReadonlyFieldInGetHashCode
 					var hashCode = okey.GetHashCode();
- 					hashCode = (hashCode*397) ^ ((int) exch);
 
                     return hashCode;
 					// ReSharper restore NonReadonlyFieldInGetHashCode
@@ -3588,8 +2236,11 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public float prtPrice;
+			public OptExch prtExch;
 			public int prtSize;
+			public float prtPrice;
+			public int prtClusterNum;
+			public int prtClusterSize;
 			public byte prtType;
 			public ushort prtOrders;
 			public int prtVolume;
@@ -3603,7 +2254,10 @@ namespace SpiderRock.DataFeed
 			public ushort ebsz;
 			public ushort easz;
 			public float eage;
+			public PrtSide prtSide;
+			public long prtTimestamp;
 			public long netTimestamp;
+			public DateTimeLayout timestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -3615,11 +2269,20 @@ namespace SpiderRock.DataFeed
 		
 
 
-		/// <summary>print price</summary>
-        public float PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
+		
+        public OptExch PrtExch { get { return body.prtExch; } set { body.prtExch = value; } }
  
 		/// <summary>print size [contracts]</summary>
         public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
+ 
+		/// <summary>print price</summary>
+        public float PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
+ 
+		/// <summary>incremental print cluster counter (one counter per okey; used to group prints into clusters)</summary>
+        public int PrtClusterNum { get { return body.prtClusterNum; } set { body.prtClusterNum = value; } }
+ 
+		/// <summary>cumulative size of prints in this sequence (sequence of prints @ same or more aggressive price with less than 25 ms elapsing since first print; can span exchanges)</summary>
+        public int PrtClusterSize { get { return body.prtClusterSize; } set { body.prtClusterSize = value; } }
  
 		/// <summary>print type</summary>
         public byte PrtType { get { return body.prtType; } set { body.prtType = value; } }
@@ -3645,10 +2308,10 @@ namespace SpiderRock.DataFeed
 		/// <summary>ask print volume in contracts</summary>
         public int AskVolume { get { return body.askVolume; } set { body.askVolume = value; } }
  
-		/// <summary>exchange bid (at print -1.0 sec)</summary>
+		/// <summary>exchange bid (@ print time)</summary>
         public float Ebid { get { return body.ebid; } set { body.ebid = value; } }
  
-		/// <summary>exchange ask</summary>
+		/// <summary>exchange ask (@ print time)</summary>
         public float Eask { get { return body.eask; } set { body.eask = value; } }
  
 		/// <summary>exchange bid size</summary>
@@ -3660,8 +2323,17 @@ namespace SpiderRock.DataFeed
 		/// <summary>age of prevailing quote at time of print</summary>
         public float Eage { get { return body.eage; } set { body.eage = value; } }
  
-		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+		/// <summary>implied print side (based on ebid/eask and nbbo market)</summary>
+        public PrtSide PrtSide { get { return body.prtSide; } set { body.prtSide = value; } }
+ 
+		/// <summary>exchange high precision timestamp (if available)</summary>
+        public long PrtTimestamp { get { return body.prtTimestamp; } set { body.prtTimestamp = value; } }
+ 
+		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
 
 		
 		#endregion	
@@ -3670,286 +2342,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// OptionPrint2:113
+	/// OptionRiskFactor:2320
 	/// </summary>
 	/// <remarks>
-	/// --- OptionPrint ---
-	/// </remarks>
-
-    public partial class OptionPrint2
-    {
-		public OptionPrint2()
-		{
-		}
-		
-		public OptionPrint2(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public OptionPrint2(OptionPrint2 source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal OptionPrint2(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as OptionPrint2);
-		}
-		
-		public bool Equals(OptionPrint2 other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(OptionPrint2 target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.OptionPrint2};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private OptionKey okey;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				okey = other.okey;
-				
-			}
-			
-			
-			public OptionKey Okey
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				okey = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.okey = okey;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.okey = okey;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // OptionPrint2.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public OptionKeyLayout okey;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	okey.Equals(other.okey);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = okey.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // OptionPrint2.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public OptExch exch;
-			public float prtPrice;
-			public int prtSize;
-			public byte prtType;
-			public ushort prtOrders;
-			public int prtVolume;
-			public int cxlVolume;
-			public ushort bidCount;
-			public ushort askCount;
-			public int bidVolume;
-			public int askVolume;
-			public float ebid;
-			public float eask;
-			public ushort ebsz;
-			public ushort easz;
-			public float eage;
-			public long netTimestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
-		
-		
-
-
-		
-        public OptExch Exch { get { return body.exch; } set { body.exch = value; } }
- 
-		/// <summary>print price</summary>
-        public float PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
- 
-		/// <summary>print size [contracts]</summary>
-        public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
- 
-		/// <summary>print type</summary>
-        public byte PrtType { get { return body.prtType; } set { body.prtType = value; } }
- 
-		/// <summary>number of participating orders</summary>
-        public ushort PrtOrders { get { return body.prtOrders; } set { body.prtOrders = value; } }
- 
-		/// <summary>day print volume in contracts (electronic volume)</summary>
-        public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
- 
-		/// <summary>day print/cancel volume (num of contracts printed and then cancelled)</summary>
-        public int CxlVolume { get { return body.cxlVolume; } set { body.cxlVolume = value; } }
- 
-		/// <summary>number of bid prints</summary>
-        public ushort BidCount { get { return body.bidCount; } set { body.bidCount = value; } }
- 
-		/// <summary>number of ask prints</summary>
-        public ushort AskCount { get { return body.askCount; } set { body.askCount = value; } }
- 
-		/// <summary>bid print volume in contracts</summary>
-        public int BidVolume { get { return body.bidVolume; } set { body.bidVolume = value; } }
- 
-		/// <summary>ask print volume in contracts</summary>
-        public int AskVolume { get { return body.askVolume; } set { body.askVolume = value; } }
- 
-		/// <summary>exchange bid (at print -1.0 sec)</summary>
-        public float Ebid { get { return body.ebid; } set { body.ebid = value; } }
- 
-		/// <summary>exchange ask</summary>
-        public float Eask { get { return body.eask; } set { body.eask = value; } }
- 
-		/// <summary>exchange bid size</summary>
-        public ushort Ebsz { get { return body.ebsz; } set { body.ebsz = value; } }
- 
-		/// <summary>exchange ask size</summary>
-        public ushort Easz { get { return body.easz; } set { body.easz = value; } }
- 
-		/// <summary>age of prevailing quote at time of print</summary>
-        public float Eage { get { return body.eage; } set { body.eage = value; } }
- 
-		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
-        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
-
-		
-		#endregion	
-
-    } // OptionPrint2
-
-
-	/// <summary>
-	/// OptionRiskFactor:379
-	/// </summary>
-	/// <remarks>
-	/// --- OptionRiskFactor ---
+	/// This table contains the up/dn underlier price slides used in OCC risk calculations.  Note that these values are computed by SpiderRock using similar methods but may not exactly match OCC values.
 	/// </remarks>
 
     public partial class OptionRiskFactor
@@ -4138,14 +2534,11 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public StockKeyLayout ticker;
-			public float uprc;
-			public float years;
+			public TickerKeyLayout ticker;
 			public float svol;
-			public float sprc;
-			public float de;
-			public float obid;
-			public float oask;
+			public float years;
+			public float up50;
+			public float dn50;
 			public float up15;
 			public float dn15;
 			public float up12;
@@ -4170,66 +2563,57 @@ namespace SpiderRock.DataFeed
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Invalidate() { ++usn; }
 		
- 		private CachedStockKey ticker;
+ 		private CachedTickerKey ticker;
  		private CachedFixedLengthString<FixedString16Layout> calcErr;
 		
 
             
 		
-        public StockKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
- 
-		/// <summary>underlyer price (usually mid-market)</summary>
-        public float Uprc { get { return body.uprc; } set { body.uprc = value; } }
- 
-		/// <summary>years to expiration</summary>
-        public float Years { get { return body.years; } set { body.years = value; } }
+        public TickerKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
  
 		/// <summary>option surface volatility</summary>
         public float Svol { get { return body.svol; } set { body.svol = value; } }
  
-		/// <summary>option surface price</summary>
-        public float Sprc { get { return body.sprc; } set { body.sprc = value; } }
+		/// <summary>years to expiration</summary>
+        public float Years { get { return body.years; } set { body.years = value; } }
  
-		/// <summary>option delta (from svol)</summary>
-        public float De { get { return body.de; } set { body.de = value; } }
+		/// <summary>underlier up 50% slide</summary>
+        public float Up50 { get { return body.up50; } set { body.up50 = value; } }
  
-		/// <summary>option bid price</summary>
-        public float Obid { get { return body.obid; } set { body.obid = value; } }
+		/// <summary>underlier dn 50% slide</summary>
+        public float Dn50 { get { return body.dn50; } set { body.dn50 = value; } }
  
-		/// <summary>option ask price</summary>
-        public float Oask { get { return body.oask; } set { body.oask = value; } }
- 
-		/// <summary>underlyer up 15% slide</summary>
+		/// <summary>underlier up 15% slide</summary>
         public float Up15 { get { return body.up15; } set { body.up15 = value; } }
  
-		/// <summary>underlyer dn 15% slide</summary>
+		/// <summary>underlier dn 15% slide</summary>
         public float Dn15 { get { return body.dn15; } set { body.dn15 = value; } }
  
-		/// <summary>underlyer up 12% slide</summary>
+		/// <summary>underlier up 12% slide</summary>
         public float Up12 { get { return body.up12; } set { body.up12 = value; } }
  
-		/// <summary>underlyer dn 12% slide</summary>
+		/// <summary>underlier dn 12% slide</summary>
         public float Dn12 { get { return body.dn12; } set { body.dn12 = value; } }
  
-		/// <summary>underlyer up 9% slide</summary>
+		/// <summary>underlier up 9% slide</summary>
         public float Up09 { get { return body.up09; } set { body.up09 = value; } }
  
-		/// <summary>underlyer dn 9% slide</summary>
+		/// <summary>underlier dn 9% slide</summary>
         public float Dn09 { get { return body.dn09; } set { body.dn09 = value; } }
  
-		/// <summary>underlyer dn 8% slide</summary>
+		/// <summary>underlier dn 8% slide</summary>
         public float Dn08 { get { return body.dn08; } set { body.dn08 = value; } }
  
-		/// <summary>underlyer up 6% slide</summary>
+		/// <summary>underlier up 6% slide</summary>
         public float Up06 { get { return body.up06; } set { body.up06 = value; } }
  
-		/// <summary>underlyer dn 6% slide</summary>
+		/// <summary>underlier dn 6% slide</summary>
         public float Dn06 { get { return body.dn06; } set { body.dn06 = value; } }
  
-		/// <summary>underlyer up 3% slide</summary>
+		/// <summary>underlier up 3% slide</summary>
         public float Up03 { get { return body.up03; } set { body.up03 = value; } }
  
-		/// <summary>underlyer dn 3% slide</summary>
+		/// <summary>underlier dn 3% slide</summary>
         public float Dn03 { get { return body.dn03; } set { body.dn03 = value; } }
  
 		/// <summary>option pricing error, otherwise, an empty string.</summary>
@@ -4248,275 +2632,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// OptionSettlementMark:374
+	/// StockBookQuote:430
 	/// </summary>
 	/// <remarks>
-	/// --- OptionSettlementMark ---
-	/// </remarks>
-
-    public partial class OptionSettlementMark
-    {
-		public OptionSettlementMark()
-		{
-		}
-		
-		public OptionSettlementMark(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public OptionSettlementMark(OptionSettlementMark source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal OptionSettlementMark(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as OptionSettlementMark);
-		}
-		
-		public bool Equals(OptionSettlementMark other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(OptionSettlementMark target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.OptionSettlementMark};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private OptionKey okey;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				okey = other.okey;
-				
-			}
-			
-			
-			public OptionKey Okey
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
-			}
- 			
-			public YesNo Early
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.early; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.early = value; }
-			}
- 			
-			public YesNo PriorPeriod
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.priorPeriod; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.priorPeriod = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				okey = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.okey = okey;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.okey = okey;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // OptionSettlementMark.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public OptionKeyLayout okey;
- 			public YesNo early;
- 			public YesNo priorPeriod;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	okey.Equals(other.okey) &&
-					 	early.Equals(other.early) &&
-					 	priorPeriod.Equals(other.priorPeriod);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = okey.GetHashCode();
- 					hashCode = (hashCode*397) ^ ((int) early);
- 					hashCode = (hashCode*397) ^ ((int) priorPeriod);
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // OptionSettlementMark.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public DateKeyLayout settleDate;
-			public float settlePx;
-			public float settleDe;
-			public float lowLmtPx;
-			public float highLmtPx;
-			public int openInt;
-			public int volume;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedDateKey settleDate;
-		
-
-            
-		
-        public DateKey SettleDate { get { return CacheVar.AllocIfNull(ref settleDate).Get(ref body.settleDate, usn); } set { CacheVar.AllocIfNull(ref settleDate).Set(value); body.settleDate = value.Layout; } }
- 
-		/// <summary>Exchange settlement price</summary>
-        public float SettlePx { get { return body.settlePx; } set { body.settlePx = value; } }
- 
-		/// <summary>Exchange settlement delta</summary>
-        public float SettleDe { get { return body.settleDe; } set { body.settleDe = value; } }
- 
-		/// <summary>Exchange low limit price</summary>
-        public float LowLmtPx { get { return body.lowLmtPx; } set { body.lowLmtPx = value; } }
- 
-		/// <summary>Exchange high limit price</summary>
-        public float HighLmtPx { get { return body.highLmtPx; } set { body.highLmtPx = value; } }
- 
-		/// <summary>Exchange open interest (date prior to settle date)</summary>
-        public int OpenInt { get { return body.openInt; } set { body.openInt = value; } }
- 
-		/// <summary>Exchange volume (date prior to settle date)</summary>
-        public int Volume { get { return body.volume; } set { body.volume = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // OptionSettlementMark
-
-
-	/// <summary>
-	/// StockBookQuote:121
-	/// </summary>
-	/// <remarks>
-	/// Composite stock book feed computed for all available feeds.  This stream should
-	/// be used to determine best ex stock routing and for internal micro market modeling.
-	/// Updates on every tick
+	/// This table contains live equity quote records for all CQS/UQDF securities as well as US OTC equity securities, SpiderRock synthetic markets, and a number of major indexes.  Each record contains up to two price levels and represents a live snapshot of the book for a specific market.
 	/// </remarks>
 
     public partial class StockBookQuote
@@ -4596,7 +2715,7 @@ namespace SpiderRock.DataFeed
 		
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
-			private StockKey ticker;
+			private TickerKey ticker;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -4612,9 +2731,9 @@ namespace SpiderRock.DataFeed
 			}
 			
 			
-			public StockKey Ticker
+			public TickerKey Ticker
 			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
 			}
 
@@ -4666,7 +2785,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
-			public StockKeyLayout ticker;
+			public TickerKeyLayout ticker;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
@@ -4703,6 +2822,8 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
+			public UpdateType updateType;
+			public MarketStatus marketStatus;
 			public float bidPrice1;
 			public ushort bidSize1;
 			public StkExch bidExch1;
@@ -4719,10 +2840,7 @@ namespace SpiderRock.DataFeed
 			public ushort askSize2;
 			public StkExch askExch2;
 			public uint askMask2;
-			public byte expCnt;
-			public float expWidth;
-			public int bidPrintQuan;
-			public int askPrintQuan;
+			public uint haltMask;
 			public long netTimestamp;
 		}
 
@@ -4735,6 +2853,12 @@ namespace SpiderRock.DataFeed
 		
 
 
+		
+        public UpdateType UpdateType { get { return body.updateType; } set { body.updateType = value; } }
+ 
+		/// <summary>market status (open, halted, etc)</summary>
+        public MarketStatus MarketStatus { get { return body.marketStatus; } set { body.marketStatus = value; } }
+ 
 		/// <summary>bid price for best price level</summary>
         public float BidPrice1 { get { return body.bidPrice1; } set { body.bidPrice1 = value; } }
  
@@ -4783,19 +2907,10 @@ namespace SpiderRock.DataFeed
 		/// <summary>ask exchange bit mask for next best ask price level</summary>
         public uint AskMask2 { get { return body.askMask2; } set { body.askMask2 = value; } }
  
-		/// <summary>initialization counter for expWidth field</summary>
-        public byte ExpCnt { get { return body.expCnt; } set { body.expCnt = value; } }
+		/// <summary>bit mask of halted exchanges</summary>
+        public uint HaltMask { get { return body.haltMask; } set { body.haltMask = value; } }
  
-		/// <summary>exp [w=1/128] average market width (askPrice1 - bidPrice1)</summary>
-        public float ExpWidth { get { return body.expWidth; } set { body.expWidth = value; } }
- 
-		
-        public int BidPrintQuan { get { return body.bidPrintQuan; } set { body.bidPrintQuan = value; } }
- 
-		
-        public int AskPrintQuan { get { return body.askPrintQuan; } set { body.askPrintQuan = value; } }
- 
-		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
+		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
 
 		
@@ -4805,475 +2920,11 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// StockCloseMark:125
+	/// StockExchImbalance:490
 	/// </summary>
 	/// <remarks>
-	/// --- StockCloseMark ---
-	/// </remarks>
-
-    public partial class StockCloseMark
-    {
-		public StockCloseMark()
-		{
-		}
-		
-		public StockCloseMark(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public StockCloseMark(StockCloseMark source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal StockCloseMark(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as StockCloseMark);
-		}
-		
-		public bool Equals(StockCloseMark other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(StockCloseMark target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.StockCloseMark};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private StockKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public StockKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // StockCloseMark.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public StockKeyLayout ticker;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // StockCloseMark.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public float bidPrc;
-			public float askPrc;
-			public float srClsPrc;
-			public float closePrc;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
-		
-		
-
-
-		/// <summary>bid price (close - 1min)</summary>
-        public float BidPrc { get { return body.bidPrc; } set { body.bidPrc = value; } }
- 
-		/// <summary>ask price (close - 1min)</summary>
-        public float AskPrc { get { return body.askPrc; } set { body.askPrc = value; } }
- 
-		/// <summary>sr close mark (close - 1min)</summary>
-        public float SrClsPrc { get { return body.srClsPrc; } set { body.srClsPrc = value; } }
- 
-		/// <summary>official exchange closing mark (last print; then official close)</summary>
-        public float ClosePrc { get { return body.closePrc; } set { body.closePrc = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // StockCloseMark
-
-
-	/// <summary>
-	/// StockCloseQuote:123
-	/// </summary>
-	/// <remarks>
-	/// --- StockCloseQuote ---
-	/// from exchange fee handlers
-	/// </remarks>
-
-    public partial class StockCloseQuote
-    {
-		public StockCloseQuote()
-		{
-		}
-		
-		public StockCloseQuote(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public StockCloseQuote(StockCloseQuote source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal StockCloseQuote(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as StockCloseQuote);
-		}
-		
-		public bool Equals(StockCloseQuote other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(StockCloseQuote target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.StockCloseQuote};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private StockKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public StockKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // StockCloseQuote.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public StockKeyLayout ticker;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // StockCloseQuote.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public float bidPrice;
-			public float askPrice;
-			public int bidSize;
-			public int askSize;
-			public StkExch bidExch;
-			public StkExch askExch;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
-		
-		
-
-
-		/// <summary>bid price	(close - 1min)</summary>
-        public float BidPrice { get { return body.bidPrice; } set { body.bidPrice = value; } }
- 
-		/// <summary>ask price (close - 1min)</summary>
-        public float AskPrice { get { return body.askPrice; } set { body.askPrice = value; } }
- 
-		/// <summary>bid size (close - 1min)</summary>
-        public int BidSize { get { return body.bidSize; } set { body.bidSize = value; } }
- 
-		/// <summary>ask size (close - 1min)</summary>
-        public int AskSize { get { return body.askSize; } set { body.askSize = value; } }
- 
-		
-        public StkExch BidExch { get { return body.bidExch; } set { body.bidExch = value; } }
- 
-		
-        public StkExch AskExch { get { return body.askExch; } set { body.askExch = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // StockCloseQuote
-
-
-	/// <summary>
-	/// StockExchImbalance:127
-	/// </summary>
-	/// <remarks>
-	/// --- StockExchImbal ---
+	/// StockExchImbalance records contain live exchange closing auction imbalance details.  Imbalance information can be available from more than one exchange for each ticker.
+	/// Final StockExchImbalance records are published to the SpiderRock elastic cluster nightly after the auction close.
 	/// </remarks>
 
     public partial class StockExchImbalance
@@ -5353,7 +3004,7 @@ namespace SpiderRock.DataFeed
 		
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
-			private StockKey ticker;
+			private TickerKey ticker;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -5369,9 +3020,9 @@ namespace SpiderRock.DataFeed
 			}
 			
 			
-			public StockKey Ticker
+			public TickerKey Ticker
 			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
 			}
  			
@@ -5429,7 +3080,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
-			public StockKeyLayout ticker;
+			public TickerKeyLayout ticker;
  			public StkExch exch;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -5531,258 +3182,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// StockOpenMark:124
+	/// StockPrint:440
 	/// </summary>
 	/// <remarks>
-	/// #[closePrice:float]						# official exchange closing price (last trade)
-	/// --- StockOpenMark ---
-	/// </remarks>
-
-    public partial class StockOpenMark
-    {
-		public StockOpenMark()
-		{
-		}
-		
-		public StockOpenMark(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public StockOpenMark(StockOpenMark source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal StockOpenMark(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as StockOpenMark);
-		}
-		
-		public bool Equals(StockOpenMark other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(StockOpenMark target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.StockOpenMark};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private StockKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public StockKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // StockOpenMark.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public StockKeyLayout ticker;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // StockOpenMark.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public float bidPrc;
-			public float askPrc;
-			public float srClsPrc;
-			public float closePrc;
-			public StockKeyLayout priorTicker;
-			public float prcAdjValue;
-			public float prcAdjRatio;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedStockKey priorTicker;
-		
-
-
-		/// <summary>bid price (SR mark from previous day)</summary>
-        public float BidPrc { get { return body.bidPrc; } set { body.bidPrc = value; } }
- 
-		/// <summary>ask price (SR mark from previous day)</summary>
-        public float AskPrc { get { return body.askPrc; } set { body.askPrc = value; } }
- 
-		/// <summary>sr close mark (close - 1min) (from previous day)</summary>
-        public float SrClsPrc { get { return body.srClsPrc; } set { body.srClsPrc = value; } }
- 
-		/// <summary>official exchange closing mark  (from previous day)</summary>
-        public float ClosePrc { get { return body.closePrc; } set { body.closePrc = value; } }
-             
-		/// <summary>prior period stock key (same as ticker on most days)</summary>
-        public StockKey PriorTicker { get { return CacheVar.AllocIfNull(ref priorTicker).Get(ref body.priorTicker, usn); } set { CacheVar.AllocIfNull(ref priorTicker).Set(value); body.priorTicker = value.Layout; } }
- 
-		/// <summary>corp action adjustment value (0.0 on most days)  currentPrice = priorPrice * factor + value</summary>
-        public float PrcAdjValue { get { return body.prcAdjValue; } set { body.prcAdjValue = value; } }
- 
-		/// <summary>corp action adjustment factor (1.0 on most days)</summary>
-        public float PrcAdjRatio { get { return body.prcAdjRatio; } set { body.prcAdjRatio = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // StockOpenMark
-
-
-	/// <summary>
-	/// StockPrint:122
-	/// </summary>
-	/// <remarks>
-	/// Consolidated stock print which contains last print and tick test across all
-	/// data streams.  This stream is used to compute short sale tick tests at the point of order
-	/// generation. Updates on every print.
+	/// The most recent (last) print record for CTS/UTDF markets as well as SpiderRock synthetic markets.  Records also incorporate some summary detail and closing mark information as well.
 	/// </remarks>
 
     public partial class StockPrint
@@ -5862,7 +3265,7 @@ namespace SpiderRock.DataFeed
 		
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
-			private StockKey ticker;
+			private TickerKey ticker;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -5878,9 +3281,9 @@ namespace SpiderRock.DataFeed
 			}
 			
 			
-			public StockKey Ticker
+			public TickerKey Ticker
 			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = StockKey.GetCreateStockKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
 			}
 
@@ -5932,7 +3335,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
-			public StockKeyLayout ticker;
+			public TickerKeyLayout ticker;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
@@ -5969,31 +3372,28 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public MarketStatus marketStatus;
 			public StkExch prtExch;
 			public int prtSize;
-			public int prtQuan;
 			public float prtPrice;
+			public int prtClusterNum;
+			public int prtClusterSize;
 			public int prtVolume;
-			public StockTick lastTick;
-			public float iniPrice;
 			public float mrkPrice;
-			public float opnPrice;
 			public float clsPrice;
-			public float minPrice;
-			public float maxPrice;
-			public int bCnt;
-			public int sCnt;
-			public int shBot;
-			public int shSld;
-			public float shMny;
-			public ushort expCnt;
-			public float expV1;
-			public float expV2;
-			public float expV3;
-			public float expV4;
-			public float expV5;
+			public StkPrintType prtType;
+			public byte prtCond1;
+			public byte prtCond2;
+			public byte prtCond3;
+			public byte prtCond4;
+			public float ebid;
+			public float eask;
+			public ushort ebsz;
+			public ushort easz;
+			public float eage;
+			public PrtSide prtSide;
+			public long prtTimestamp;
 			public long netTimestamp;
+			public DateTimeLayout timestamp;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -6005,80 +3405,71 @@ namespace SpiderRock.DataFeed
 		
 
 
-		
-        public MarketStatus MarketStatus { get { return body.marketStatus; } set { body.marketStatus = value; } }
- 
 		/// <summary>print exch</summary>
         public StkExch PrtExch { get { return body.prtExch; } set { body.prtExch = value; } }
  
 		/// <summary>print size</summary>
         public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
  
-		/// <summary>cumulative print size at this price level</summary>
-        public int PrtQuan { get { return body.prtQuan; } set { body.prtQuan = value; } }
- 
 		/// <summary>print price level</summary>
         public float PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
+ 
+		/// <summary>incremental print cluster counter (one counter per ticker; used to group prints into clusters)</summary>
+        public int PrtClusterNum { get { return body.prtClusterNum; } set { body.prtClusterNum = value; } }
+ 
+		/// <summary>cumulative size of prints in this sequence (prints @ same or more aggressive price with less than 25 ms elapsing since first print; can span exchanges)</summary>
+        public int PrtClusterSize { get { return body.prtClusterSize; } set { body.prtClusterSize = value; } }
  
 		/// <summary>cumulative print size today</summary>
         public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
  
-		
-        public StockTick LastTick { get { return body.lastTick; } set { body.lastTick = value; } }
- 
-		/// <summary>first print price of the day [8:30 - 3:00]</summary>
-        public float IniPrice { get { return body.iniPrice; } set { body.iniPrice = value; } }
- 
-		/// <summary>last print within market hours [8:30 - 3:00]; used for after hours marks</summary>
+		/// <summary>last regular market print price</summary>
         public float MrkPrice { get { return body.mrkPrice; } set { body.mrkPrice = value; } }
  
-		/// <summary>open price (prior day close)</summary>
-        public float OpnPrice { get { return body.opnPrice; } set { body.opnPrice = value; } }
- 
-		/// <summary>official NMS closing price</summary>
+		/// <summary>official closing price (if available)</summary>
         public float ClsPrice { get { return body.clsPrice; } set { body.clsPrice = value; } }
  
-		/// <summary>minimum print price within market hours</summary>
-        public float MinPrice { get { return body.minPrice; } set { body.minPrice = value; } }
+		
+        public StkPrintType PrtType { get { return body.prtType; } set { body.prtType = value; } }
  
-		/// <summary>maximum print price within market hours</summary>
-        public float MaxPrice { get { return body.maxPrice; } set { body.maxPrice = value; } }
+		/// <summary>print condition (from SIP feed)</summary>
+        public byte PrtCond1 { get { return body.prtCond1; } set { body.prtCond1 = value; } }
  
-		/// <summary>buy count (print w/last tick dn) [market maker perspective]</summary>
-        public int BCnt { get { return body.bCnt; } set { body.bCnt = value; } }
+		
+        public byte PrtCond2 { get { return body.prtCond2; } set { body.prtCond2 = value; } }
  
-		/// <summary>sell count (print w/last tick up)</summary>
-        public int SCnt { get { return body.sCnt; } set { body.sCnt = value; } }
+		
+        public byte PrtCond3 { get { return body.prtCond3; } set { body.prtCond3 = value; } }
  
-		/// <summary>cumulative shares w/last tick dn [8:30 - 3:00] [max 100k $delta per print]</summary>
-        public int ShBot { get { return body.shBot; } set { body.shBot = value; } }
+		
+        public byte PrtCond4 { get { return body.prtCond4; } set { body.prtCond4 = value; } }
  
-		/// <summary>cumulative shares w/last tick up</summary>
-        public int ShSld { get { return body.shSld; } set { body.shSld = value; } }
+		/// <summary>exchange bid (@ print time) [SIP feed]</summary>
+        public float Ebid { get { return body.ebid; } set { body.ebid = value; } }
  
-		/// <summary>net bot/sld money</summary>
-        public float ShMny { get { return body.shMny; } set { body.shMny = value; } }
+		/// <summary>exchange ask (@ print time) [SIP feed]</summary>
+        public float Eask { get { return body.eask; } set { body.eask = value; } }
  
-		/// <summary>exp average counter [8:30 - 3:00]</summary>
-        public ushort ExpCnt { get { return body.expCnt; } set { body.expCnt = value; } }
+		/// <summary>exchange bid size</summary>
+        public ushort Ebsz { get { return body.ebsz; } set { body.ebsz = value; } }
  
-		/// <summary>exp average [move*move] (w=1/1)       note: does not include overnight move</summary>
-        public float ExpV1 { get { return body.expV1; } set { body.expV1 = value; } }
+		/// <summary>exchange ask size</summary>
+        public ushort Easz { get { return body.easz; } set { body.easz = value; } }
  
-		/// <summary>exp average [move*move] (w=1/4)</summary>
-        public float ExpV2 { get { return body.expV2; } set { body.expV2 = value; } }
+		/// <summary>age of prevailing quote at time of print</summary>
+        public float Eage { get { return body.eage; } set { body.eage = value; } }
  
-		/// <summary>exp average [move*move] (w=1/16)</summary>
-        public float ExpV3 { get { return body.expV3; } set { body.expV3 = value; } }
+		
+        public PrtSide PrtSide { get { return body.prtSide; } set { body.prtSide = value; } }
  
-		/// <summary>exp average [move*move] (w=1/64)</summary>
-        public float ExpV4 { get { return body.expV4; } set { body.expV4 = value; } }
- 
-		/// <summary>exp average [move*move] (w=1/256)</summary>
-        public float ExpV5 { get { return body.expV5; } set { body.expV5 = value; } }
+		/// <summary>exchange high precision timestamp (if available)</summary>
+        public long PrtTimestamp { get { return body.prtTimestamp; } set { body.prtTimestamp = value; } }
  
 		/// <summary>inbound packet PTP timestamp from SR gateway switch; usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
 
 		
 		#endregion	
@@ -6091,12 +3482,10 @@ namespace SpiderRock.DataFeed
 	#region Admin
 
 	/// <summary>
-	/// CacheComplete:504
+	/// CacheComplete:4106
 	/// </summary>
 	/// <remarks>
-	/// CacheComplete - Generated by the cache server to indicate that the cache
-	/// request has been completely filled and no more cache messages will be
-	/// generated for this particular requestID.
+
 	/// </remarks>
 
     internal partial class CacheComplete
@@ -6132,14 +3521,10 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// GetCache:503
+	/// GetCache:4096
 	/// </summary>
 	/// <remarks>
-	/// admin (stateless) messages
-	/// GetCache - Used by clients to request cache updates from an upstream cache
-	/// server. The usual semantic is: open tcp connection, send GetCache message,
-	/// parse all resulting messages, server sends CacheComplete message, client
-	/// terminates connection on receipt of CacheComplete message.
+
 	/// </remarks>
 
     internal partial class GetCache
@@ -6199,6 +3584,49 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // GetCache
+
+
+	/// <summary>
+	/// NetPulse:5000
+	/// </summary>
+	/// <remarks>
+
+	/// </remarks>
+
+    internal partial class NetPulse
+    {
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.NetPulse};
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public TimeSpanLayout frequency;
+			public TimeSpanLayout timeout;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		
+
+
+		
+        public TimeSpan Frequency { get { return body.frequency; } set { body.frequency = value; } }
+ 
+		
+        public TimeSpan Timeout { get { return body.timeout; } set { body.timeout = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // NetPulse
 
 
 	#endregion

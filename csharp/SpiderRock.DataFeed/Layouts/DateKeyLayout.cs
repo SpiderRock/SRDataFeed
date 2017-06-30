@@ -10,13 +10,10 @@ namespace SpiderRock.DataFeed.Layouts
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(DateKeyLayout other)
         {
-            return value == other.value;
+            return _value == other._value;
         }
 
-        public long Value
-        {
-            get { return value; }
-        }
+        public long Value { get { return _value; } }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override bool Equals(object obj)
@@ -26,31 +23,31 @@ namespace SpiderRock.DataFeed.Layouts
 
         public override int GetHashCode()
         {
-            return value.GetHashCode();
+            return _value.GetHashCode();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <(DateKeyLayout x, DateKeyLayout y)
         {
-            return (x.value < y.value);
+            return (x._value < y._value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator <=(DateKeyLayout x, DateKeyLayout y)
         {
-            return (x.value <= y.value);
+            return (x._value <= y._value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >(DateKeyLayout x, DateKeyLayout y)
         {
-            return (x.value > y.value);
+            return (x._value > y._value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator >=(DateKeyLayout x, DateKeyLayout y)
         {
-            return (x.value >= y.value);
+            return (x._value >= y._value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -65,11 +62,25 @@ namespace SpiderRock.DataFeed.Layouts
             return !left.Equals(right);
         }
 
-        private readonly long value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator DateTime(DateKeyLayout value)
+        {
+            return new DateTime(value._value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator DateTimeLayout(DateKeyLayout value)
+        {
+            return new DateTimeLayout(value._value);
+        }
+
+        private readonly long _value;
 
         public DateKeyLayout(long data)
         {
-            value = data;
+            _value = data;
         }
+
+        public bool IsEmpty { get { return _value == 0; } }
     }
 }
