@@ -76,6 +76,7 @@ private:
 		UShort askSize4;
 		UShort bidOrders4;
 		UShort askOrders4;
+		Long srcTimestamp;
 		Long netTimestamp;
 	};
 	
@@ -117,6 +118,7 @@ public:
 	inline UShort askSize4() const { return layout_.askSize4; }
 	inline UShort bidOrders4() const { return layout_.bidOrders4; }
 	inline UShort askOrders4() const { return layout_.askOrders4; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
@@ -299,21 +301,15 @@ public:
 	{
 		ExpiryKey ekey_;
 		LiveSurfaceType surfaceType_;
-		PricingGroup pricingGroup_;
-		String<16> pricingAccnt_;
 		
 	public:
 		inline const ExpiryKey& ekey() const { return ekey_; }
 		inline LiveSurfaceType surfaceType() const { return surfaceType_; }
-		inline PricingGroup pricingGroup() const { return pricingGroup_; }
-		inline const String<16>& pricingAccnt() const { return pricingAccnt_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = ExpiryKey()(k.ekey_);
 			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.surfaceType_));
-			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.pricingGroup_));
-			hash_code = (hash_code * 397) ^ String<16>()(k.pricingAccnt_);
 
 			return hash_code;
 		}
@@ -322,9 +318,7 @@ public:
 		{
 			return
 				a.ekey_ == b.ekey_
-				&& a.surfaceType_ == b.surfaceType_
-				&& a.pricingGroup_ == b.pricingGroup_
-				&& a.pricingAccnt_ == b.pricingAccnt_;
+				&& a.surfaceType_ == b.surfaceType_;
 		}
 	};
 	
@@ -341,26 +335,36 @@ private:
 		Float uAsk;
 		Float years;
 		Float rate;
-		Float sdiv;
 		Float ddiv;
 		Byte exType;
+		Byte modelType;
 		Float earnCnt;
 		Float earnCntAdj;
 		Float axisVolRT;
 		Float axisFUPrc;
 		MoneynessType moneynessType;
-		Float cAtm;
-		Float pAtm;
+		UnderlierMode underlierMode;
+		Float atmVol;
+		Float atmCen;
 		Float minAtmVol;
 		Float maxAtmVol;
 		Float eMove;
-		Float cAtmCen;
-		Float pAtmCen;
+		Float uPrcOffset;
+		Float uPrcOffsetEMA;
+		Float sdiv;
+		Float sdivEMA;
+		Float atmMove;
+		Float atmCenMove;
+		Float slope;
 		Float surfVariance;
 		GridType gridType;
 		Float minXAxis;
 		Float maxXAxis;
 		Float xAxisScale;
+		Float xAxisOffset;
+		Float skewD11;
+		Float skewD10;
+		Float skewD9;
 		Float skewD8;
 		Float skewD7;
 		Float skewD6;
@@ -378,20 +382,17 @@ private:
 		Float skewU6;
 		Float skewU7;
 		Float skewU8;
-		Float sdivD8;
-		Float sdivD4;
-		Float sdivU4;
-		Float sdivU8;
+		Float skewU9;
+		Float skewU10;
+		Float skewU11;
+		Float sdivD3;
+		Float sdivD2;
+		Float sdivD1;
+		Float sdivU1;
+		Float sdivU2;
+		Float sdivU3;
 		Float pwidth;
 		Float vwidth;
-		Float sdivEMA;
-		Float sdivLo;
-		Float sdivHi;
-		Float atmMAC;
-		Float cprMAC;
-		Float slope;
-		Float cAtmMove;
-		Float pAtmMove;
 		Byte cCnt;
 		Byte pCnt;
 		Byte cBidMiss;
@@ -407,11 +408,12 @@ private:
 		Float fitErrAsk;
 		Float fitErrPrc;
 		Float fitErrVol;
-		FitType fitType;
 		ExpiryKey sEKey;
 		LiveSurfaceType sType;
 		DateTime sTimestamp;
 		Int counter;
+		Int skewCounter;
+		Int sdivCounter;
 		SurfaceResult surfaceResult;
 		DateTime timestamp;
 	};
@@ -436,26 +438,36 @@ public:
 	inline Float uAsk() const { return layout_.uAsk; }
 	inline Float years() const { return layout_.years; }
 	inline Float rate() const { return layout_.rate; }
-	inline Float sdiv() const { return layout_.sdiv; }
 	inline Float ddiv() const { return layout_.ddiv; }
 	inline Byte exType() const { return layout_.exType; }
+	inline Byte modelType() const { return layout_.modelType; }
 	inline Float earnCnt() const { return layout_.earnCnt; }
 	inline Float earnCntAdj() const { return layout_.earnCntAdj; }
 	inline Float axisVolRT() const { return layout_.axisVolRT; }
 	inline Float axisFUPrc() const { return layout_.axisFUPrc; }
 	inline MoneynessType moneynessType() const { return layout_.moneynessType; }
-	inline Float cAtm() const { return layout_.cAtm; }
-	inline Float pAtm() const { return layout_.pAtm; }
+	inline UnderlierMode underlierMode() const { return layout_.underlierMode; }
+	inline Float atmVol() const { return layout_.atmVol; }
+	inline Float atmCen() const { return layout_.atmCen; }
 	inline Float minAtmVol() const { return layout_.minAtmVol; }
 	inline Float maxAtmVol() const { return layout_.maxAtmVol; }
 	inline Float eMove() const { return layout_.eMove; }
-	inline Float cAtmCen() const { return layout_.cAtmCen; }
-	inline Float pAtmCen() const { return layout_.pAtmCen; }
+	inline Float uPrcOffset() const { return layout_.uPrcOffset; }
+	inline Float uPrcOffsetEMA() const { return layout_.uPrcOffsetEMA; }
+	inline Float sdiv() const { return layout_.sdiv; }
+	inline Float sdivEMA() const { return layout_.sdivEMA; }
+	inline Float atmMove() const { return layout_.atmMove; }
+	inline Float atmCenMove() const { return layout_.atmCenMove; }
+	inline Float slope() const { return layout_.slope; }
 	inline Float surfVariance() const { return layout_.surfVariance; }
 	inline GridType gridType() const { return layout_.gridType; }
 	inline Float minXAxis() const { return layout_.minXAxis; }
 	inline Float maxXAxis() const { return layout_.maxXAxis; }
 	inline Float xAxisScale() const { return layout_.xAxisScale; }
+	inline Float xAxisOffset() const { return layout_.xAxisOffset; }
+	inline Float skewD11() const { return layout_.skewD11; }
+	inline Float skewD10() const { return layout_.skewD10; }
+	inline Float skewD9() const { return layout_.skewD9; }
 	inline Float skewD8() const { return layout_.skewD8; }
 	inline Float skewD7() const { return layout_.skewD7; }
 	inline Float skewD6() const { return layout_.skewD6; }
@@ -473,20 +485,17 @@ public:
 	inline Float skewU6() const { return layout_.skewU6; }
 	inline Float skewU7() const { return layout_.skewU7; }
 	inline Float skewU8() const { return layout_.skewU8; }
-	inline Float sdivD8() const { return layout_.sdivD8; }
-	inline Float sdivD4() const { return layout_.sdivD4; }
-	inline Float sdivU4() const { return layout_.sdivU4; }
-	inline Float sdivU8() const { return layout_.sdivU8; }
+	inline Float skewU9() const { return layout_.skewU9; }
+	inline Float skewU10() const { return layout_.skewU10; }
+	inline Float skewU11() const { return layout_.skewU11; }
+	inline Float sdivD3() const { return layout_.sdivD3; }
+	inline Float sdivD2() const { return layout_.sdivD2; }
+	inline Float sdivD1() const { return layout_.sdivD1; }
+	inline Float sdivU1() const { return layout_.sdivU1; }
+	inline Float sdivU2() const { return layout_.sdivU2; }
+	inline Float sdivU3() const { return layout_.sdivU3; }
 	inline Float pwidth() const { return layout_.pwidth; }
 	inline Float vwidth() const { return layout_.vwidth; }
-	inline Float sdivEMA() const { return layout_.sdivEMA; }
-	inline Float sdivLo() const { return layout_.sdivLo; }
-	inline Float sdivHi() const { return layout_.sdivHi; }
-	inline Float atmMAC() const { return layout_.atmMAC; }
-	inline Float cprMAC() const { return layout_.cprMAC; }
-	inline Float slope() const { return layout_.slope; }
-	inline Float cAtmMove() const { return layout_.cAtmMove; }
-	inline Float pAtmMove() const { return layout_.pAtmMove; }
 	inline Byte cCnt() const { return layout_.cCnt; }
 	inline Byte pCnt() const { return layout_.pCnt; }
 	inline Byte cBidMiss() const { return layout_.cBidMiss; }
@@ -502,11 +511,12 @@ public:
 	inline Float fitErrAsk() const { return layout_.fitErrAsk; }
 	inline Float fitErrPrc() const { return layout_.fitErrPrc; }
 	inline Float fitErrVol() const { return layout_.fitErrVol; }
-	inline FitType fitType() const { return layout_.fitType; }
 	inline const ExpiryKey& sEKey() const { return layout_.sEKey; }
 	inline LiveSurfaceType sType() const { return layout_.sType; }
 	inline DateTime sTimestamp() const { return layout_.sTimestamp; }
 	inline Int counter() const { return layout_.counter; }
+	inline Int skewCounter() const { return layout_.skewCounter; }
+	inline Int sdivCounter() const { return layout_.sdivCounter; }
 	inline SurfaceResult surfaceResult() const { return layout_.surfaceResult; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
@@ -529,13 +539,16 @@ public:
 	class Key
 	{
 		OptionKey okey_;
+		CalcType calcType_;
 		
 	public:
 		inline const OptionKey& okey() const { return okey_; }
+		inline CalcType calcType() const { return calcType_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = OptionKey()(k.okey_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.calcType_));
 
 			return hash_code;
 		}
@@ -543,7 +556,8 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.okey_ == b.okey_;
+				a.okey_ == b.okey_
+				&& a.calcType_ == b.calcType_;
 		}
 	};
 	
@@ -580,7 +594,7 @@ private:
 		Float dn15;
 		Float up06;
 		Float dn08;
-		String<16> calcErr;
+		String<24> calcErr;
 		CalcSource calcSource;
 		DateTime timestamp;
 	};
@@ -625,7 +639,7 @@ public:
 	inline Float dn15() const { return layout_.dn15; }
 	inline Float up06() const { return layout_.up06; }
 	inline Float dn08() const { return layout_.dn08; }
-	inline const String<16>& calcErr() const { return layout_.calcErr; }
+	inline const String<24>& calcErr() const { return layout_.calcErr; }
 	inline CalcSource calcSource() const { return layout_.calcSource; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
@@ -690,6 +704,7 @@ private:
 		UShort cumAskSize2;
 		Int bidTime;
 		Int askTime;
+		Long srcTimestamp;
 		Long netTimestamp;
 	};
 	
@@ -724,6 +739,7 @@ public:
 	inline UShort cumAskSize2() const { return layout_.cumAskSize2; }
 	inline Int bidTime() const { return layout_.bidTime; }
 	inline Int askTime() const { return layout_.askTime; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
@@ -885,7 +901,7 @@ private:
 		Float dn06;
 		Float up03;
 		Float dn03;
-		String<16> calcErr;
+		String<24> calcErr;
 		CalcSource calcSource;
 		DateTime timestamp;
 	};
@@ -918,7 +934,7 @@ public:
 	inline Float dn06() const { return layout_.dn06; }
 	inline Float up03() const { return layout_.up03; }
 	inline Float dn03() const { return layout_.dn03; }
-	inline const String<16>& calcErr() const { return layout_.calcErr; }
+	inline const String<24>& calcErr() const { return layout_.calcErr; }
 	inline CalcSource calcSource() const { return layout_.calcSource; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
@@ -983,6 +999,7 @@ private:
 		StkExch askExch2;
 		UInt askMask2;
 		UInt haltMask;
+		Long srcTimestamp;
 		Long netTimestamp;
 	};
 	
@@ -1017,6 +1034,7 @@ public:
 	inline StkExch askExch2() const { return layout_.askExch2; }
 	inline UInt askMask2() const { return layout_.askMask2; }
 	inline UInt haltMask() const { return layout_.haltMask; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 

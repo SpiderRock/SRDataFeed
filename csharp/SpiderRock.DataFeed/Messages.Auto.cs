@@ -234,6 +234,7 @@ namespace SpiderRock.DataFeed
 			public ushort askSize4;
 			public ushort bidOrders4;
 			public ushort askOrders4;
+			public long srcTimestamp;
 			public long netTimestamp;
 		}
 
@@ -323,6 +324,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>number of participating orders at the ask price</summary>
         public ushort AskOrders4 { get { return body.askOrders4; } set { body.askOrders4 = value; } }
+ 
+		/// <summary>source high precision timestamp (if available)</summary>
+        public long SrcTimestamp { get { return body.srcTimestamp; } set { body.srcTimestamp = value; } }
  
 		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
@@ -930,7 +934,6 @@ namespace SpiderRock.DataFeed
 		public sealed class PKey : IEquatable<PKey>, ICloneable
 		{
 			private ExpiryKey ekey;
- 			private string pricingAccnt;
 
 			// ReSharper disable once InconsistentNaming
 			internal PKeyLayout body;
@@ -942,7 +945,6 @@ namespace SpiderRock.DataFeed
 				if (other == null) throw new ArgumentNullException("other");
 				body = other.body;
 				ekey = other.ekey;
- 				pricingAccnt = other.pricingAccnt;
 				
 			}
 			
@@ -958,24 +960,11 @@ namespace SpiderRock.DataFeed
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.surfaceType; }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.surfaceType = value; }
 			}
- 			
-			public PricingGroup PricingGroup
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.pricingGroup; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.pricingGroup = value; }
-			}
- 			
-			public string PricingAccnt
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return pricingAccnt ?? (pricingAccnt = body.pricingAccnt); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.pricingAccnt = value; pricingAccnt = value; }
-			}
 
 			public void Clear()
 			{
 				body = new PKeyLayout();
 				ekey = null;
- 				pricingAccnt = null;
 
 			}
 
@@ -984,7 +973,6 @@ namespace SpiderRock.DataFeed
 			{
 				target.body = body;
 				target.ekey = ekey;
- 				target.pricingAccnt = pricingAccnt;
 
 			}
 			
@@ -993,7 +981,6 @@ namespace SpiderRock.DataFeed
 			{
 				var target = new PKey(body);
 				target.ekey = ekey;
- 				target.pricingAccnt = pricingAccnt;
 
 				return target;
 			}
@@ -1024,16 +1011,12 @@ namespace SpiderRock.DataFeed
         {
 			public ExpiryKeyLayout ekey;
  			public LiveSurfaceType surfaceType;
- 			public PricingGroup pricingGroup;
- 			public FixedString16Layout pricingAccnt;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
             {
                 return	ekey.Equals(other.ekey) &&
-					 	surfaceType.Equals(other.surfaceType) &&
-					 	pricingGroup.Equals(other.pricingGroup) &&
-					 	pricingAccnt.Equals(other.pricingAccnt);
+					 	surfaceType.Equals(other.surfaceType);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1049,8 +1032,6 @@ namespace SpiderRock.DataFeed
 					// ReSharper disable NonReadonlyFieldInGetHashCode
 					var hashCode = ekey.GetHashCode();
  					hashCode = (hashCode*397) ^ ((int) surfaceType);
- 					hashCode = (hashCode*397) ^ ((int) pricingGroup);
- 					hashCode = (hashCode*397) ^ (pricingAccnt.GetHashCode());
 
                     return hashCode;
 					// ReSharper restore NonReadonlyFieldInGetHashCode
@@ -1076,26 +1057,36 @@ namespace SpiderRock.DataFeed
 			public float uAsk;
 			public float years;
 			public float rate;
-			public float sdiv;
 			public float ddiv;
 			public byte exType;
+			public byte modelType;
 			public float earnCnt;
 			public float earnCntAdj;
 			public float axisVolRT;
 			public float axisFUPrc;
 			public MoneynessType moneynessType;
-			public float cAtm;
-			public float pAtm;
+			public UnderlierMode underlierMode;
+			public float atmVol;
+			public float atmCen;
 			public float minAtmVol;
 			public float maxAtmVol;
 			public float eMove;
-			public float cAtmCen;
-			public float pAtmCen;
+			public float uPrcOffset;
+			public float uPrcOffsetEMA;
+			public float sdiv;
+			public float sdivEMA;
+			public float atmMove;
+			public float atmCenMove;
+			public float slope;
 			public float surfVariance;
 			public GridType gridType;
 			public float minXAxis;
 			public float maxXAxis;
 			public float xAxisScale;
+			public float xAxisOffset;
+			public float skewD11;
+			public float skewD10;
+			public float skewD9;
 			public float skewD8;
 			public float skewD7;
 			public float skewD6;
@@ -1113,20 +1104,17 @@ namespace SpiderRock.DataFeed
 			public float skewU6;
 			public float skewU7;
 			public float skewU8;
-			public float sdivD8;
-			public float sdivD4;
-			public float sdivU4;
-			public float sdivU8;
+			public float skewU9;
+			public float skewU10;
+			public float skewU11;
+			public float sdivD3;
+			public float sdivD2;
+			public float sdivD1;
+			public float sdivU1;
+			public float sdivU2;
+			public float sdivU3;
 			public float pwidth;
 			public float vwidth;
-			public float sdivEMA;
-			public float sdivLo;
-			public float sdivHi;
-			public float atmMAC;
-			public float cprMAC;
-			public float slope;
-			public float cAtmMove;
-			public float pAtmMove;
 			public byte cCnt;
 			public byte pCnt;
 			public byte cBidMiss;
@@ -1142,11 +1130,12 @@ namespace SpiderRock.DataFeed
 			public float fitErrAsk;
 			public float fitErrPrc;
 			public float fitErrVol;
-			public FitType fitType;
 			public ExpiryKeyLayout sEKey;
 			public LiveSurfaceType sType;
 			public DateTimeLayout sTimestamp;
 			public int counter;
+			public int skewCounter;
+			public int sdivCounter;
 			public SurfaceResult surfaceResult;
 			public DateTimeLayout timestamp;
 		}
@@ -1191,14 +1180,14 @@ namespace SpiderRock.DataFeed
 		/// <summary>interest rate</summary>
         public float Rate { get { return body.rate; } set { body.rate = value; } }
  
-		/// <summary>stock dividend (borrow rate)</summary>
-        public float Sdiv { get { return body.sdiv; } set { body.sdiv = value; } }
- 
 		/// <summary>present value of discrete dividend stream</summary>
         public float Ddiv { get { return body.ddiv; } set { body.ddiv = value; } }
  
 		/// <summary>exercise type of the options used to compute this surface</summary>
         public byte ExType { get { return body.exType; } set { body.exType = value; } }
+ 
+		/// <summary>option pricing model used for price calcs</summary>
+        public byte ModelType { get { return body.modelType; } set { body.modelType = value; } }
  
 		/// <summary>number of qualifying earnings events prior to expiration [can be fractional] (from StockEarningsCalendar)</summary>
         public float EarnCnt { get { return body.earnCnt; } set { body.earnCnt = value; } }
@@ -1215,11 +1204,14 @@ namespace SpiderRock.DataFeed
 		/// <summary>moneyness (xAxis) convention</summary>
         public MoneynessType MoneynessType { get { return body.moneynessType; } set { body.moneynessType = value; } }
  
-		/// <summary>call atm vol (xAxis = 0)</summary>
-        public float CAtm { get { return body.cAtm; } set { body.cAtm = value; } }
+		/// <summary>underlier pricing mode (None=use spot/stock market; FrontMonth=use front month future market + uPrcOffset; Actual = use actual underlier future market)</summary>
+        public UnderlierMode UnderlierMode { get { return body.underlierMode; } set { body.underlierMode = value; } }
  
-		/// <summary>put atm vol (xAxis = 0)</summary>
-        public float PAtm { get { return body.pAtm; } set { body.pAtm = value; } }
+		/// <summary>atm vol (xAxis = 0)</summary>
+        public float AtmVol { get { return body.atmVol; } set { body.atmVol = value; } }
+ 
+		/// <summary>atm vol (xAxis = 0) (eMove/earnCntAdj censored)</summary>
+        public float AtmCen { get { return body.atmCen; } set { body.atmCen = value; } }
  
 		/// <summary>minimum estimated atm vol</summary>
         public float MinAtmVol { get { return body.minAtmVol; } set { body.minAtmVol = value; } }
@@ -1230,16 +1222,31 @@ namespace SpiderRock.DataFeed
 		/// <summary>implied earnings move (from LiveSurfaceTerm)</summary>
         public float EMove { get { return body.eMove; } set { body.eMove = value; } }
  
-		/// <summary>call atm vol (xAxis = 0) (eMove/earnCntAdj censored)</summary>
-        public float CAtmCen { get { return body.cAtmCen; } set { body.cAtmCen = value; } }
+		/// <summary>implied offset for use when underlierMode = FrontMonth</summary>
+        public float UPrcOffset { get { return body.uPrcOffset; } set { body.uPrcOffset = value; } }
  
-		/// <summary>put atm vol (xAxis = 0) (eMove/earnCntAdj censored)</summary>
-        public float PAtmCen { get { return body.pAtmCen; } set { body.pAtmCen = value; } }
+		/// <summary>time smoothed implied uPrcOffset (half-live ~ 20 seconds)</summary>
+        public float UPrcOffsetEMA { get { return body.uPrcOffsetEMA; } set { body.uPrcOffsetEMA = value; } }
+ 
+		/// <summary>stock dividend (borrow rate)</summary>
+        public float Sdiv { get { return body.sdiv; } set { body.sdiv = value; } }
+ 
+		/// <summary>sdiv exp moving average (10 minutes)</summary>
+        public float SdivEMA { get { return body.sdivEMA; } set { body.sdivEMA = value; } }
+ 
+		/// <summary>fixed strike atm move from prior period</summary>
+        public float AtmMove { get { return body.atmMove; } set { body.atmMove = value; } }
+ 
+		/// <summary>fixed strike atm (censored) move from prior period</summary>
+        public float AtmCenMove { get { return body.atmCenMove; } set { body.atmCenMove = value; } }
+ 
+		/// <summary>Surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
+        public float Slope { get { return body.slope; } set { body.slope = value; } }
  
 		/// <summary>estimate of surface variance; full surface integration</summary>
         public float SurfVariance { get { return body.surfVariance; } set { body.surfVariance = value; } }
  
-		/// <summary>gridType defines D8 - U8 xAxis points</summary>
+		/// <summary>gridType defines D11 - U12 xAxis points + spline type</summary>
         public GridType GridType { get { return body.gridType; } set { body.gridType = value; } }
  
 		/// <summary>minimum xAxis value;xAxis values to the left extrapolate horizontally</summary>
@@ -1248,10 +1255,22 @@ namespace SpiderRock.DataFeed
 		/// <summary>maximum xAxis value;xAxis values to the right extrapolate horizontally</summary>
         public float MaxXAxis { get { return body.maxXAxis; } set { body.maxXAxis = value; } }
  
-		/// <summary>xAxis @ left (skewD8) end point = -xAxisScale; xAxis @ right (skewU8) end point = +xAxisScale; [xAxis = (effStrike / effAxisFUPrc - 1.0) / axisVolRT; effStrike = strike * strikeRatio; effAxisFUPrc = axisFUPrc * symbolRatio]</summary>
+		/// <summary>xAxis = (effStrike / effAxisFUPrc - 1.0) / axisVolRT; effStrike = strike * strikeRatio; effAxisFUPrc = axisFUPrc * symbolRatio</summary>
         public float XAxisScale { get { return body.xAxisScale; } set { body.xAxisScale = value; } }
  
-		/// <summary>skew @ D8 point (volatility skew curve)</summary>
+		
+        public float XAxisOffset { get { return body.xAxisOffset; } set { body.xAxisOffset = value; } }
+ 
+		/// <summary>skew @ D11 point (volatility skew curve)</summary>
+        public float SkewD11 { get { return body.skewD11; } set { body.skewD11 = value; } }
+ 
+		/// <summary>skew @ D10 point</summary>
+        public float SkewD10 { get { return body.skewD10; } set { body.skewD10 = value; } }
+ 
+		/// <summary>skew @ D9 point</summary>
+        public float SkewD9 { get { return body.skewD9; } set { body.skewD9 = value; } }
+ 
+		/// <summary>skew @ D8 point</summary>
         public float SkewD8 { get { return body.skewD8; } set { body.skewD8 = value; } }
  
 		/// <summary>skew @ D7 point</summary>
@@ -1275,7 +1294,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>skew @ D1 point</summary>
         public float SkewD1 { get { return body.skewD1; } set { body.skewD1 = value; } }
  
-		/// <summary>central value (@xAxis = 0) [usually zero]</summary>
+		/// <summary>central value (@xAxis = xAxisOffset) [usually min vol pt]</summary>
         public float SkewC0 { get { return body.skewC0; } set { body.skewC0 = value; } }
  
 		/// <summary>skew @ U1 point</summary>
@@ -1302,47 +1321,38 @@ namespace SpiderRock.DataFeed
 		/// <summary>skew @ U8 point</summary>
         public float SkewU8 { get { return body.skewU8; } set { body.skewU8 = value; } }
  
-		/// <summary>sdiv @ D8 point (sdiv rate curve)</summary>
-        public float SdivD8 { get { return body.sdivD8; } set { body.sdivD8 = value; } }
+		/// <summary>skew @ U9 point</summary>
+        public float SkewU9 { get { return body.skewU9; } set { body.skewU9 = value; } }
  
-		/// <summary>sdiv @ D4 point</summary>
-        public float SdivD4 { get { return body.sdivD4; } set { body.sdivD4 = value; } }
+		/// <summary>skew @ U10 point</summary>
+        public float SkewU10 { get { return body.skewU10; } set { body.skewU10 = value; } }
  
-		/// <summary>sdiv @ U4 point</summary>
-        public float SdivU4 { get { return body.sdivU4; } set { body.sdivU4 = value; } }
+		/// <summary>skew @ U11 point</summary>
+        public float SkewU11 { get { return body.skewU11; } set { body.skewU11 = value; } }
  
-		/// <summary>sdiv @ U8 point</summary>
-        public float SdivU8 { get { return body.sdivU8; } set { body.sdivU8 = value; } }
+		/// <summary>sdiv @ D3 point</summary>
+        public float SdivD3 { get { return body.sdivD3; } set { body.sdivD3 = value; } }
+ 
+		/// <summary>sdiv @ D2 point</summary>
+        public float SdivD2 { get { return body.sdivD2; } set { body.sdivD2 = value; } }
+ 
+		/// <summary>sdiv @ D1 point</summary>
+        public float SdivD1 { get { return body.sdivD1; } set { body.sdivD1 = value; } }
+ 
+		/// <summary>sdiv @ U1 point</summary>
+        public float SdivU1 { get { return body.sdivU1; } set { body.sdivU1 = value; } }
+ 
+		/// <summary>sdiv @ U2 point</summary>
+        public float SdivU2 { get { return body.sdivU2; } set { body.sdivU2 = value; } }
+ 
+		/// <summary>sdiv @ U3 point</summary>
+        public float SdivU3 { get { return body.sdivU3; } set { body.sdivU3 = value; } }
  
 		/// <summary>minimum mkt premium width</summary>
         public float Pwidth { get { return body.pwidth; } set { body.pwidth = value; } }
  
 		/// <summary>minimum mkt volatility width</summary>
         public float Vwidth { get { return body.vwidth; } set { body.vwidth = value; } }
- 
-		/// <summary>sdiv exp moving average (10 minutes)</summary>
-        public float SdivEMA { get { return body.sdivEMA; } set { body.sdivEMA = value; } }
- 
-		/// <summary>maximum sdiv bid (all markets in this expiration)</summary>
-        public float SdivLo { get { return body.sdivLo; } set { body.sdivLo = value; } }
- 
-		/// <summary>minimum sdiv ask (all markets in this expiration)</summary>
-        public float SdivHi { get { return body.sdivHi; } set { body.sdivHi = value; } }
- 
-		/// <summary>atm max abs change (half-life ~ 1 minute)</summary>
-        public float AtmMAC { get { return body.atmMAC; } set { body.atmMAC = value; } }
- 
-		/// <summary>cpr max abs change (half-life ~ 1 minute)</summary>
-        public float CprMAC { get { return body.cprMAC; } set { body.cprMAC = value; } }
- 
-		/// <summary>Surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
-        public float Slope { get { return body.slope; } set { body.slope = value; } }
- 
-		/// <summary>fixed strike cAtm move from prior period</summary>
-        public float CAtmMove { get { return body.cAtmMove; } set { body.cAtmMove = value; } }
- 
-		/// <summary>fixed strike pAtm move from prior period</summary>
-        public float PAtmMove { get { return body.pAtmMove; } set { body.pAtmMove = value; } }
  
 		/// <summary>num call strikes</summary>
         public byte CCnt { get { return body.cCnt; } set { body.cCnt = value; } }
@@ -1388,9 +1398,6 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>surface vol of the option with the largest fit error</summary>
         public float FitErrVol { get { return body.fitErrVol; } set { body.fitErrVol = value; } }
- 
-		/// <summary>type of surface fit used</summary>
-        public FitType FitType { get { return body.fitType; } set { body.fitType = value; } }
              
 		/// <summary>overnight LiveSurfaceAtm used for surface</summary>
         public ExpiryKey SEKey { get { return CacheVar.AllocIfNull(ref sEKey).Get(ref body.sEKey, usn); } set { CacheVar.AllocIfNull(ref sEKey).Set(value); body.sEKey = value.Layout; } }
@@ -1403,6 +1410,12 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>message counter - number of surface fits today</summary>
         public int Counter { get { return body.counter; } set { body.counter = value; } }
+ 
+		/// <summary>skew surface fit counter</summary>
+        public int SkewCounter { get { return body.skewCounter; } set { body.skewCounter = value; } }
+ 
+		/// <summary>sdiv surface fit counter</summary>
+        public int SdivCounter { get { return body.sdivCounter; } set { body.sdivCounter = value; } }
  
 		
         public SurfaceResult SurfaceResult { get { return body.surfaceResult; } set { body.surfaceResult = value; } }
@@ -1423,7 +1436,7 @@ namespace SpiderRock.DataFeed
 	/// Records in this table are identical to the records in our live implied quote multicast feed.  CalcSource=Tick records are computed and published each time an option NBBO price changes.  CalcSource=Loop records are computed in a 2-3 minute background loop.  CalcSource=Close records are computed and published on the market close.
 	/// Note that the underlier price (uPrc) will be the same for all options an underlier when CalcSource=Loop|Close.  This is not true for CalcSource=Tick where uPrc will be the underlier price that prevailed when the option price changed.
 	/// If you are consuming multicast data and only want records with consistent uPrc values for all options you should ignore Tick records. Alternatively, you can use an independent underlier price source (our StockBookQuote feed or some other) and 'adjust' the values in this table to the new underlier value.
-	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automaticall applies the appropriate underlier adjustments as records are being returned.
+	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automatically applies the appropriate underlier adjustments as records are being returned.
 	/// </remarks>
 
     public partial class OptionImpliedQuote
@@ -1526,6 +1539,12 @@ namespace SpiderRock.DataFeed
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
 				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
 			}
+ 			/// <summary>Tick=nbbo tick; Loop=from background loop;</summary>
+			public CalcType CalcType
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.calcType; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.calcType = value; }
+			}
 
 			public void Clear()
 			{
@@ -1576,11 +1595,13 @@ namespace SpiderRock.DataFeed
         internal struct PKeyLayout : IEquatable<PKeyLayout>
         {
 			public OptionKeyLayout okey;
+ 			public CalcType calcType;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public bool Equals(PKeyLayout other)
             {
-                return	okey.Equals(other.okey);
+                return	okey.Equals(other.okey) &&
+					 	calcType.Equals(other.calcType);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1595,6 +1616,7 @@ namespace SpiderRock.DataFeed
                 {
 					// ReSharper disable NonReadonlyFieldInGetHashCode
 					var hashCode = okey.GetHashCode();
+ 					hashCode = (hashCode*397) ^ ((int) calcType);
 
                     return hashCode;
 					// ReSharper restore NonReadonlyFieldInGetHashCode
@@ -1640,7 +1662,7 @@ namespace SpiderRock.DataFeed
 			public float dn15;
 			public float up06;
 			public float dn08;
-			public FixedString16Layout calcErr;
+			public FixedString24Layout calcErr;
 			public CalcSource calcSource;
 			public DateTimeLayout timestamp;
 		}
@@ -1654,7 +1676,7 @@ namespace SpiderRock.DataFeed
 		internal void Invalidate() { ++usn; }
 		
  		private CachedTickerKey ticker;
- 		private CachedFixedLengthString<FixedString16Layout> calcErr;
+ 		private CachedFixedLengthString<FixedString24Layout> calcErr;
 		
 
             
@@ -1967,6 +1989,7 @@ namespace SpiderRock.DataFeed
 			public ushort cumAskSize2;
 			public int bidTime;
 			public int askTime;
+			public long srcTimestamp;
 			public long netTimestamp;
 		}
 
@@ -2035,6 +2058,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>last ask price change (milliseconds since midnight)</summary>
         public int AskTime { get { return body.askTime; } set { body.askTime = value; } }
+ 
+		/// <summary>source high precision timestamp (if available)</summary>
+        public long SrcTimestamp { get { return body.srcTimestamp; } set { body.srcTimestamp = value; } }
  
 		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
@@ -2550,7 +2576,7 @@ namespace SpiderRock.DataFeed
 			public float dn06;
 			public float up03;
 			public float dn03;
-			public FixedString16Layout calcErr;
+			public FixedString24Layout calcErr;
 			public CalcSource calcSource;
 			public DateTimeLayout timestamp;
 		}
@@ -2564,7 +2590,7 @@ namespace SpiderRock.DataFeed
 		internal void Invalidate() { ++usn; }
 		
  		private CachedTickerKey ticker;
- 		private CachedFixedLengthString<FixedString16Layout> calcErr;
+ 		private CachedFixedLengthString<FixedString24Layout> calcErr;
 		
 
             
@@ -2841,6 +2867,7 @@ namespace SpiderRock.DataFeed
 			public StkExch askExch2;
 			public uint askMask2;
 			public uint haltMask;
+			public long srcTimestamp;
 			public long netTimestamp;
 		}
 
@@ -2909,6 +2936,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>bit mask of halted exchanges</summary>
         public uint HaltMask { get { return body.haltMask; } set { body.haltMask = value; } }
+ 
+		/// <summary>source high precision timestamp (if available)</summary>
+        public long SrcTimestamp { get { return body.srcTimestamp; } set { body.srcTimestamp = value; } }
  
 		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
         public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }

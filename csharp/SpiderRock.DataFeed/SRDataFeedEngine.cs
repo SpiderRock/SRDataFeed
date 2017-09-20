@@ -35,7 +35,7 @@ namespace SpiderRock.DataFeed
 
         public SRDataFeedEngine()
         {
-            sysEnvironment = SysEnvironment.Red;
+            sysEnvironment = SysEnvironment.V7_Stable;
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
             LatencyMode = GCLatencyMode.SustainedLowLatency;
@@ -414,13 +414,9 @@ namespace SpiderRock.DataFeed
 
             string ipAddress;
 
-            if (sysEnvironment == SysEnvironment.Red)
+            if (sysEnvironment == SysEnvironment.V7_Stable)
             {
                 ipAddress = string.Format("233.74.249.{0}", channelNumber);
-            }
-            else if (sysEnvironment == SysEnvironment.Blue)
-            {
-                ipAddress = string.Format("233.117.185.{0}", channelNumber);
             }
             else
             {

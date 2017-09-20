@@ -217,9 +217,9 @@ namespace SpiderRock.DataFeed.Layouts
 	}
  	
 	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-	internal unsafe struct FixedString16Layout : IEquatable<FixedString16Layout>, IComparable<FixedString16Layout>, IEquatable<string>
+	internal unsafe struct FixedString24Layout : IEquatable<FixedString24Layout>, IComparable<FixedString24Layout>, IEquatable<string>
 	{
-		public fixed byte chars[16];
+		public fixed byte chars[24];
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override string ToString()
@@ -236,17 +236,17 @@ namespace SpiderRock.DataFeed.Layouts
 				{
 					fixed (byte* charsPtr = chars)
 					{
-						for (int i = 0; i < 16; i++) 
+						for (int i = 0; i < 24; i++) 
 						{
 							if (charsPtr[i] == 0) return i;
 						}
-						return 16;
+						return 24;
 					}
 				}
 			}
 		}
 		
-		public int MaxLength { get { return 16; } }
+		public int MaxLength { get { return 24; } }
 
         public bool IsEmpty
         {
@@ -254,14 +254,14 @@ namespace SpiderRock.DataFeed.Layouts
         }
 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Equals(FixedString16Layout other)
+		public bool Equals(FixedString24Layout other)
 		{
-			fixed (FixedString16Layout* pfself = &this)
+			fixed (FixedString24Layout* pfself = &this)
 			{
 				/* -------------- compare as ints ------------ */
 				var pIntSelf = (int*) pfself;
 				var pIntOther = (int*) &other;
-				for (int i = 0; i < 4; i++)
+				for (int i = 0; i < 6; i++)
 				{
 					if (*(pIntSelf++) == *(pIntOther++)) continue;
 					return false;
@@ -280,7 +280,7 @@ namespace SpiderRock.DataFeed.Layouts
 				fixed (char* valuePtr = value)
 				{
 					int i = 0;
-					while (i < 16) 
+					while (i < 24) 
 					{
 						byte mine = charsPtr[i]; 
 						byte theirs = (byte) valuePtr[i];
@@ -294,14 +294,14 @@ namespace SpiderRock.DataFeed.Layouts
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int CompareTo(FixedString16Layout other)
+		public int CompareTo(FixedString24Layout other)
         {
 			unchecked
 			{
 				fixed (byte* pfchars = chars)
 				{
 					var pother = (byte*) &other;
-					for (int i = 0; i < 16; i++)
+					for (int i = 0; i < 24; i++)
 					{
 						int result = *(pfchars + i) - *(pother + i);
 						if (result == 0) continue;
@@ -335,9 +335,9 @@ namespace SpiderRock.DataFeed.Layouts
 						char* pstr = valuePtr;
 						byte* pchars = charsPtr;
 						
-						if (value.Length >= 16)
+						if (value.Length >= 24)
 						{
-							for (int i = 0; i < 16; i++) { *(pchars++) = (byte) *(pstr++); }
+							for (int i = 0; i < 24; i++) { *(pchars++) = (byte) *(pstr++); }
 						}
 						else
 						{
@@ -356,9 +356,9 @@ namespace SpiderRock.DataFeed.Layouts
 			{
 				fixed (byte* begPtr = chars)
 				{
-					byte* endPtr = begPtr + 15;
+					byte* endPtr = begPtr + 23;
 					
-					for (int i = 0; i < 16; i++)
+					for (int i = 0; i < 24; i++)
 					{
 						if (*endPtr == 32)
 						{
@@ -373,12 +373,12 @@ namespace SpiderRock.DataFeed.Layouts
 		
 		public override int GetHashCode()
 		{
-			fixed (FixedString16Layout* pfself = &this)
+			fixed (FixedString24Layout* pfself = &this)
 			{
 				int hashCode = 37;
 				/* -------------- hash as ints ------------ */
 				var pIntSelf = (int*) pfself;
-				for (int i = 0; i < 4; i++)
+				for (int i = 0; i < 6; i++)
 				{
 					hashCode = (hashCode*397) ^ *(pIntSelf++);
 				}
@@ -388,15 +388,15 @@ namespace SpiderRock.DataFeed.Layouts
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator string(FixedString16Layout value)
+		public static implicit operator string(FixedString24Layout value)
 		{
 			return value.Value;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static implicit operator FixedString16Layout(string value)
+		public static implicit operator FixedString24Layout(string value)
 		{
-			var r = new FixedString16Layout();
+			var r = new FixedString24Layout();
 			if (string.IsNullOrEmpty(value)) return r;
 			r.Value = value;
 			return r;

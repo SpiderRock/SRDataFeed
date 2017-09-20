@@ -60,6 +60,12 @@ namespace SpiderRock
 			Close=3
 		};
 
+ 		enum class CalcType : Enum 
+		{
+			Loop=0,
+			Tick=1
+		};
+
  		enum class CallPut : Enum 
 		{
 			Call=0,
@@ -67,23 +73,12 @@ namespace SpiderRock
 			Pair=2
 		};
 
- 		enum class FitType : Enum 
-		{
-			None=0,
-			InitAtm=1,
-			LoBound=2,
-			HiBound=3,
-			MidGap=4,
-			MidGapW=5,
-			MidGapN=6
-		};
-
  		enum class FutExch : Enum 
 		{
 			None=0,
 			CFE=1,
 			CME=2,
-			CBT=3,
+			CBOT=3,
 			COMEX=4,
 			NYMEX=5,
 			ICE=6
@@ -93,7 +88,8 @@ namespace SpiderRock
 		{
 			Uniform=0,
 			SRCubic=1,
-			SRFixed=2
+			SRFixed=2,
+			BSpline=3
 		};
 
  		enum class IdxSrc : Enum 
@@ -110,10 +106,12 @@ namespace SpiderRock
 			Hist=2,
 			PriorDay=3,
 			Skew=4,
-			Interp=5,
-			Test1=6,
-			Test2=7,
-			Test3=8
+			LiveSkew=5,
+			LiveAdj=6,
+			Interp=7,
+			Test1=8,
+			Test2=9,
+			Test3=10
 		};
 
  		enum class MarketStatus : Enum 
@@ -173,16 +171,6 @@ namespace SpiderRock
 			MPRL=20
 		};
 
- 		enum class PricingGroup : Enum 
-		{
-			Default=0,
-			Gelber=1,
-			User=2,
-			Test=3,
-			Implied=4,
-			Override=5
-		};
-
  		enum class PrtSide : Enum 
 		{
 			None=0,
@@ -240,14 +228,15 @@ namespace SpiderRock
 			Bootstrap=12,
 			NoUPrc=13,
 			NoIVols=14,
-			NoModelPts=15
+			NoModelPts=15,
+			ZeroYears=16,
+			NoSimpleVol=17
 		};
 
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			Red=1,
-			Blue=2
+			V7_Stable=3
 		};
 
  		enum class TickerSrc : Enum 
@@ -269,6 +258,13 @@ namespace SpiderRock
 			ARCA=14,
 			NYSE=15,
 			OTC=16
+		};
+
+ 		enum class UnderlierMode : Enum 
+		{
+			None=0,
+			Actual=1,
+			FrontMonth=2
 		};
 
  		enum class UpdateType : Enum 
