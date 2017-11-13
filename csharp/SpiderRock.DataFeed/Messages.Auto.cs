@@ -1078,7 +1078,7 @@ namespace SpiderRock.DataFeed
 			public float atmMove;
 			public float atmCenMove;
 			public float slope;
-			public float surfVariance;
+			public float varSwapFV;
 			public GridType gridType;
 			public float minXAxis;
 			public float maxXAxis;
@@ -1240,11 +1240,11 @@ namespace SpiderRock.DataFeed
 		/// <summary>fixed strike atm (censored) move from prior period</summary>
         public float AtmCenMove { get { return body.atmCenMove; } set { body.atmCenMove = value; } }
  
-		/// <summary>Surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
+		/// <summary>volatility surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
         public float Slope { get { return body.slope; } set { body.slope = value; } }
  
-		/// <summary>estimate of surface variance; full surface integration</summary>
-        public float SurfVariance { get { return body.surfVariance; } set { body.surfVariance = value; } }
+		/// <summary>variance swap fair value (estimated by numerical integration over OTM price surface)</summary>
+        public float VarSwapFV { get { return body.varSwapFV; } set { body.varSwapFV = value; } }
  
 		/// <summary>gridType defines D11 - U12 xAxis points + spline type</summary>
         public GridType GridType { get { return body.gridType; } set { body.gridType = value; } }

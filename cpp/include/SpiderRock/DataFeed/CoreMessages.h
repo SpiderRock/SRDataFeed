@@ -356,7 +356,7 @@ private:
 		Float atmMove;
 		Float atmCenMove;
 		Float slope;
-		Float surfVariance;
+		Float varSwapFV;
 		GridType gridType;
 		Float minXAxis;
 		Float maxXAxis;
@@ -459,7 +459,7 @@ public:
 	inline Float atmMove() const { return layout_.atmMove; }
 	inline Float atmCenMove() const { return layout_.atmCenMove; }
 	inline Float slope() const { return layout_.slope; }
-	inline Float surfVariance() const { return layout_.surfVariance; }
+	inline Float varSwapFV() const { return layout_.varSwapFV; }
 	inline GridType gridType() const { return layout_.gridType; }
 	inline Float minXAxis() const { return layout_.minXAxis; }
 	inline Float maxXAxis() const { return layout_.maxXAxis; }
