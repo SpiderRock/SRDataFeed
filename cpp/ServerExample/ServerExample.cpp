@@ -31,7 +31,6 @@ using SpiderRock::DataFeed::OptionNbboQuote;
 using SpiderRock::DataFeed::OptionPrint;
 using SpiderRock::DataFeed::LiveSurfaceAtm;
 
-using SpiderRock::DataFeed::Root;
 using SpiderRock::DataFeed::Ticker;
 using SpiderRock::DataFeed::MessageType;
 
@@ -68,9 +67,9 @@ public:
 
 	void OnChange(const OptionNbboQuote& obj)
 	{
-		static Root spy = Root("SPY");
+		static Ticker spy = Ticker("SPY");
 
-		if (obj.pkey().okey().root() != spy) return;
+		if (obj.pkey().okey().ticker() != spy) return;
 
 		cout << "SPY " << obj.pkey().okey().strike() << endl;
 	}

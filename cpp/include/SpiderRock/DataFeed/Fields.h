@@ -141,29 +141,27 @@ namespace SpiderRock
 
 		template <uint16_t _Tsize> using String = FixedLengthString < _Tsize > ;
 
-		typedef String<11> CCode;
-		typedef String<6> Root;
-		typedef String<14> Ticker;
+		typedef String<12> Ticker;
 
-		class CCodeKey
+		class ExpiryKey
 		{
 			AssetType asset_type_;
 			TickerSrc ticker_source_;
-			CCode ccode_;
+			Ticker ticker_;
 			Short reserved1_;
 			Byte reserved2_;
 
 		public:
-			CCodeKey() { }
+			ExpiryKey() { }
 
-			CCodeKey(
+			ExpiryKey(
 				AssetType asset_type,
 				TickerSrc ticker_source,
-				const CCode& ccode
+				const Ticker& ticker
 				) :
 				asset_type_(asset_type),
 				ticker_source_(ticker_source),
-				ccode_(ccode),
+				ticker_(ticker),
 				reserved1_(0),
 				reserved2_(0)
 			{
@@ -171,9 +169,9 @@ namespace SpiderRock
 
 			inline AssetType asset_type() const { return asset_type_; }
 			inline TickerSrc ticker_source() const { return ticker_source_; }
-			inline const CCode& ccode() const { return ccode_; }
+			inline const Ticker& ticker() const { return ticker_; }
 
-			inline size_t operator()(const CCodeKey& k) const
+			inline size_t operator()(const ExpiryKey& k) const
 			{
 				auto ptr = reinterpret_cast<const int32_t*>(&k);
 
@@ -186,7 +184,7 @@ namespace SpiderRock
 				return hash_code;
 			}
 
-			inline bool operator==(const CCodeKey &other) const
+			inline bool operator==(const ExpiryKey &other) const
 			{
 				auto self_ptr = reinterpret_cast<const int64_t*>(this);
 				auto other_ptr = reinterpret_cast<const int64_t*>(&other);
@@ -194,53 +192,17 @@ namespace SpiderRock
 			}
 		};
 
-		class RootKey
-		{
-			AssetType asset_type_;
-			TickerSrc ticker_source_;
-			Root root_;
-			int64_t reserved_;
 
-		public:
-			RootKey() { }
-
-			RootKey(
-				AssetType asset_type,
-				TickerSrc ticker_source,
-				const Root& root
-				) :
-				asset_type_(asset_type),
-				ticker_source_(ticker_source),
-				root_(root)
-			{
-			}
-
-			inline AssetType asset_type() const { return asset_type_; }
-			inline TickerSrc ticker_source() const { return ticker_source_; }
-			inline const Root& root() const { return root_; }
-
-			inline size_t operator()(const RootKey& k) const
-			{
-				auto ptr = reinterpret_cast<const int32_t*>(&k);
-				return (*ptr * 397) ^ *(ptr + 1);
-			}
-
-			inline bool operator==(const RootKey &other) const
-			{
-				return *reinterpret_cast<const int64_t*>(this) == *reinterpret_cast<const int64_t*>(&other);
-			}
-		};
-
-		class StockKey
+		class TickerKey
 		{
 			AssetType asset_type_;
 			TickerSrc ticker_source_;
 			Ticker ticker_;
 
 		public:
-			StockKey() { }
+			TickerKey() { }
 
-			StockKey(
+			TickerKey(
 				AssetType asset_type,
 				TickerSrc ticker_source,
 				const Ticker& ticker
@@ -255,7 +217,7 @@ namespace SpiderRock
 			inline TickerSrc ticker_source() const { return ticker_source_; }
 			inline const Ticker& ticker() const { return ticker_; }
 
-			inline size_t operator()(const StockKey& k) const
+			inline size_t operator()(const TickerKey& k) const
 			{
 				auto ptr = reinterpret_cast<const int32_t*>(&k);
 
@@ -267,7 +229,7 @@ namespace SpiderRock
 				return hash_code;
 			}
 
-			inline bool operator==(const StockKey &other) const
+			inline bool operator==(const TickerKey &other) const
 			{
 				auto self_ptr = reinterpret_cast<const int64_t*>(this);
 				auto other_ptr = reinterpret_cast<const int64_t*>(&other);
@@ -275,72 +237,16 @@ namespace SpiderRock
 			}
 		};
 
-		class FutureKey
-		{
-			AssetType asset_type_;
-			TickerSrc ticker_source_;
-			CCode CCode_;
-			Byte year_;
-			Byte month_;
-			Byte day_;
-
-		public:
-			FutureKey() { }
-
-			FutureKey(
-				AssetType asset_type,
-				TickerSrc ticker_source,
-				const CCode& CCode,
-				UShort year,
-				Byte month,
-				Byte day
-				) :
-				asset_type_(asset_type),
-				ticker_source_(ticker_source),
-				CCode_(CCode),
-				year_(year - 1900),
-				month_(month),
-				day_(day)
-			{
-			}
-
-			inline AssetType asset_type() const { return asset_type_; }
-			inline TickerSrc ticker_source() const { return ticker_source_; }
-			inline const CCode& ticker() const { return CCode_; }
-			inline UShort year() const { return year_ + 1900; }
-			inline Byte month() const { return month_; }
-			inline Byte day() const { return day_; }
-
-			inline size_t operator()(const FutureKey& k) const
-			{
-				auto ptr = reinterpret_cast<const int32_t*>(&k);
-
-				size_t hash_code = *ptr;
-				hash_code = (hash_code * 397) ^ *(ptr + 1);
-				hash_code = (hash_code * 397) ^ *(ptr + 2);
-				hash_code = (hash_code * 397) ^ *(ptr + 3);
-				hash_code = (hash_code * 397) ^ *(ptr + 4);
-
-				return hash_code;
-			}
-
-			inline bool operator==(const FutureKey &other) const
-			{
-				auto self_ptr = reinterpret_cast<const int64_t*>(this);
-				auto other_ptr = reinterpret_cast<const int64_t*>(&other);
-				return *self_ptr == *other_ptr && *(self_ptr + 1) == *(other_ptr + 1);
-			}
-		};
 
 		class OptionKey
 		{
 			AssetType asset_type_;
 			TickerSrc ticker_source_;
-			Root root_;
+			Ticker ticker_;
 			Byte year_;
 			Byte month_;
 			Byte day_;
-			Int strike_;
+			Double strike_;
 			CallPut call_put_;
 
 		public:
@@ -349,7 +255,7 @@ namespace SpiderRock
 			OptionKey(
 				AssetType asset_type,
 				TickerSrc ticker_source,
-				const Root& root,
+				const Ticker& ticker,
 				UShort year,
 				Byte month,
 				Byte day,
@@ -358,23 +264,23 @@ namespace SpiderRock
 				) :
 				asset_type_(asset_type),
 				ticker_source_(ticker_source),
-				root_(root),
+				ticker_(ticker),
 				year_(year - 1900),
 				month_(month),
 				day_(day),
-				strike_(static_cast<int32_t>(round(strike * 1000L))),
+				strike_(strike),
 				call_put_(call_put)
 			{
 			}
 
 			inline AssetType asset_type() const { return asset_type_; }
 			inline TickerSrc ticker_source() const { return ticker_source_; }
-			inline const Root& root() const { return root_; }
+			inline const Ticker& ticker() const { return ticker_; }
 
 			inline UShort year() const { return year_ + 1900; }
 			inline Byte month() const { return month_; }
 			inline Byte day() const { return day_; }
-			inline Double strike() const { return 0.001L * strike_; }
+			inline Double strike() const { return strike_; }
 			inline CallPut call_put() const { return call_put_; }
 
 			inline size_t operator()(const OptionKey& k) const
@@ -431,18 +337,14 @@ namespace SpiderRock
 		static_assert(sizeof(Float) == 4, "sizeof(Float) must be 4 bytes");
 		static_assert(sizeof(Double) == 8, "sizeof(Double) must be 8 bytes");
 
-		static_assert(sizeof(RootKey) == 16, "sizeof(RootKey) must be 16 bytes");
-		static_assert(sizeof(CCodeKey) == 16, "sizeof(CCodeKey) must be 16 bytes");
-		static_assert(sizeof(StockKey) == 16, "sizeof(StockKey) must be 16 bytes");
-		static_assert(sizeof(FutureKey) == 16, "sizeof(FutureKey) must be 16 bytes");
-		static_assert(sizeof(OptionKey) == 16, "sizeof(OptionKey) must be 16 bytes");
+		static_assert(sizeof(ExpiryKey) == 17, "sizeof(CCodeKey) must be 17 bytes");
+		static_assert(sizeof(TickerKey) == 14, "sizeof(TickerKey) must be 14 bytes");
+		static_assert(sizeof(OptionKey) == 26, "sizeof(OptionKey) must be 26 bytes");
 		static_assert(sizeof(DateTime) == 8, "sizeof(DateTime) must be 8 bytes");
 		static_assert(sizeof(DateKey) == 8, "sizeof(DateKey) must be 8 bytes");
 		static_assert(sizeof(TimeSpan) == 8, "sizeof(TimeSpan) must be 8 bytes");
 
-		static_assert(sizeof(CCode) == 11, "sizeof(CCode) must be 11 bytes");
-		static_assert(sizeof(Root) == 6, "sizeof(Root) must be 6 bytes");
-		static_assert(sizeof(Ticker) == 14, "sizeof(Ticker) must be 14 bytes");
+		static_assert(sizeof(Ticker) == 12, "sizeof(Ticker) must be 14 bytes");
 	}
 }
 
