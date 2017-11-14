@@ -16,7 +16,6 @@
 #include "SpiderRock/Net/IPAddress.h"
 #include "SpiderRock/Net/IPEndPoint.h"
 #include "SpiderRock/Net/Proto/Receiver.h"
-#include "SpiderRock/Net/Proto/DBL/Receiver.h"
 #include "SpiderRock/Net/Proto/UDP/Receiver.h"
 #include "SpiderRock/DataFeed/MessageEventSource.h"
 #include "SpiderRock/DataFeed/FrameHandler.h"
@@ -61,7 +60,7 @@ public:
 };
 
 SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
-	: impl_{ new impl(SysEnvironment::Blue, device_address) }
+	: impl_{ new impl(SysEnvironment::V7_Stable, device_address) }
 {
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote, { MessageType::FutureBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
@@ -122,18 +121,7 @@ IPEndPoint SRDataFeedEngine::GetIPEndPoint(DataChannel channel)
 
 	string ipaddr;
 
-	if (impl_->environment == SysEnvironment::Red)
-	{
-		ipaddr = "233.74.249." + to_string(chnum);
-	}
-	else if (impl_->environment == SysEnvironment::Blue)
-	{
-		ipaddr = "233.117.185." + to_string(chnum);
-	}
-	else
-	{
-		throw std::runtime_error("Unsupported SysEnvironment " + std::to_string(static_cast<int>(impl_->environment)));
-	}
+	ipaddr = "233.117.185." + to_string(chnum);
 
 	IPEndPoint ep(ipaddr, ipport);
 
