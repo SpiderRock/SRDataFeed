@@ -33,7 +33,7 @@ namespace SpiderRock
 			SRDataFeedEngine(in_addr device_address);
 			~SRDataFeedEngine();
 			
-			enum class Protocol { DBL, UDP };
+			enum class Protocol { UDP };
 
 			void MakeCacheRequest(std::initializer_list<MessageType> message_types);
 			void CreateThreadGroup(Protocol proto, std::initializer_list<DataChannel> channels);
