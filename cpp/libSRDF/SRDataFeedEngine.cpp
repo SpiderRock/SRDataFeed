@@ -121,7 +121,7 @@ IPEndPoint SRDataFeedEngine::GetIPEndPoint(DataChannel channel)
 
 	string ipaddr;
 
-	ipaddr = "233.117.185." + to_string(chnum);
+	ipaddr = "233.74.249." + to_string(chnum);
 
 	IPEndPoint ep(ipaddr, ipport);
 
