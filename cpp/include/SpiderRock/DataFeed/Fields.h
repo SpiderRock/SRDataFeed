@@ -268,7 +268,7 @@ namespace SpiderRock
 				year_(year - 1900),
 				month_(month),
 				day_(day),
-				strike_(static_cast<int32_t>(round(strike * 1000L))),
+				strike_(strike),
 				call_put_(call_put)
 			{
 			}
@@ -280,7 +280,7 @@ namespace SpiderRock
 			inline UShort year() const { return year_ + 1900; }
 			inline Byte month() const { return month_; }
 			inline Byte day() const { return day_; }
-			inline Double strike() const { return 0.001L * strike_; }
+			inline Double strike() const { return strike_; }
 			inline CallPut call_put() const { return call_put_; }
 
 			inline size_t operator()(const OptionKey& k) const
