@@ -47,8 +47,8 @@ namespace SpiderRock
 			OptQuoteComex = 34,
 
 			IdxQuoteRut = 51,
-			IdxQuoteCboe = 52,
-			IdxQuoteCboeNew = 53,
+			IdxQuoteSR = 52,
+			IdxQuoteCboe = 53,
 
 			ImpliedQuoteNmsLoop = 61,
 
@@ -62,6 +62,8 @@ namespace SpiderRock
 			ImpliedQuoteNms2 = 72,
 			ImpliedQuoteNms3 = 73,
 			ImpliedQuoteNms4 = 74,
+
+			Pulse = 100,
 
 			StkExchQuote1Nsdq = 101,
 			StkExchQuote2Nsdq = 102,
