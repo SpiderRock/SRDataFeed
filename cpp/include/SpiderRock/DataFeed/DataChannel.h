@@ -95,7 +95,8 @@ namespace SpiderRock
 			CobExchQuotePhlx = 152,
 			CobExchQuoteIce = 153,
 
-			ImbalanceArca = 170
+			ImbalanceArca = 170,
+			ImbalanceNyse = 171
 		};
 	}
 }
