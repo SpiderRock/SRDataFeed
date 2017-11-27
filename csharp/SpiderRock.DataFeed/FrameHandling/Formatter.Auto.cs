@@ -166,6 +166,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, StockMarketSummary dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(StockMarketSummary.PKeyLayout) + sizeof(StockMarketSummary.BodyLayout) > max) throw new IOException("Max exceeded decoding StockMarketSummary");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((StockMarketSummary.PKeyLayout*) src); src += sizeof(StockMarketSummary.PKeyLayout);
+ 				dest.body = *((StockMarketSummary.BodyLayout*) src); src += sizeof(StockMarketSummary.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, StockPrint dest, byte* max)
 		{
 			unchecked

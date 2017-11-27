@@ -1133,6 +1133,103 @@ public:
 
 };
 
+ class StockMarketSummary
+{
+public:
+	class Key
+	{
+		TickerKey ticker_;
+		
+	public:
+		inline const TickerKey& ticker() const { return ticker_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = TickerKey()(k.ticker_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ticker_ == b.ticker_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		Double iniPrice;
+		Double mrkPrice;
+		Double clsPrice;
+		Double minPrice;
+		Double maxPrice;
+		Int sharesOutstanding;
+		Int bidCount;
+		Int bidVolume;
+		Int askCount;
+		Int askVolume;
+		Int midCount;
+		Int midVolume;
+		Int prtCount;
+		Double prtPrice;
+		Int expCount;
+		Double expWidth;
+		Float expBidSize;
+		Float expAskSize;
+		DateTime lastPrint;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline Double iniPrice() const { return layout_.iniPrice; }
+	inline Double mrkPrice() const { return layout_.mrkPrice; }
+	inline Double clsPrice() const { return layout_.clsPrice; }
+	inline Double minPrice() const { return layout_.minPrice; }
+	inline Double maxPrice() const { return layout_.maxPrice; }
+	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
+	inline Int bidCount() const { return layout_.bidCount; }
+	inline Int bidVolume() const { return layout_.bidVolume; }
+	inline Int askCount() const { return layout_.askCount; }
+	inline Int askVolume() const { return layout_.askVolume; }
+	inline Int midCount() const { return layout_.midCount; }
+	inline Int midVolume() const { return layout_.midVolume; }
+	inline Int prtCount() const { return layout_.prtCount; }
+	inline Double prtPrice() const { return layout_.prtPrice; }
+	inline Int expCount() const { return layout_.expCount; }
+	inline Double expWidth() const { return layout_.expWidth; }
+	inline Float expBidSize() const { return layout_.expBidSize; }
+	inline Float expAskSize() const { return layout_.expAskSize; }
+	inline DateTime lastPrint() const { return layout_.lastPrint; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<StockMarketSummary::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
  class StockPrint
 {
 public:
