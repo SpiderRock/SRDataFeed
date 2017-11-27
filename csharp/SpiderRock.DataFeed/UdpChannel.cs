@@ -100,6 +100,7 @@
         OptAuction = 160,
         OptOrder = 161,
 
-        ImbalanceArca = 170
+        ImbalanceArca = 170,
+        ImbalanceNyse = 171
     }
 }
