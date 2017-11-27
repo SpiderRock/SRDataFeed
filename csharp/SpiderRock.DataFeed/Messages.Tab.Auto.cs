@@ -838,6 +838,67 @@ namespace SpiderRock.DataFeed
         }
     }
 
+    public partial class StockMarketSummary
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "ticker\tiniPrice\tmrkPrice\tclsPrice\tminPrice\tmaxPrice\tsharesOutstanding\tbidCount\tbidVolume\taskCount\taskVolume\tmidCount\tmidVolume\tprtCount\tprtPrice\texpCount\texpWidth\texpBidSize\texpAskSize\tlastPrint\ttimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Ticker);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(IniPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MrkPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClsPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MaxPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SharesOutstanding);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidCount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskCount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MidCount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MidVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtCount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExpCount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExpWidth);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExpBidSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExpAskSize);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(LastPrint);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class StockPrint
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;

@@ -16,6 +16,7 @@
 #include "SpiderRock/Net/IPAddress.h"
 #include "SpiderRock/Net/IPEndPoint.h"
 #include "SpiderRock/Net/Proto/Receiver.h"
+#include "SpiderRock/Net/Proto/DBL/Receiver.h"
 #include "SpiderRock/Net/Proto/UDP/Receiver.h"
 #include "SpiderRock/DataFeed/MessageEventSource.h"
 #include "SpiderRock/DataFeed/FrameHandler.h"
@@ -45,6 +46,7 @@ public:
 	MessageEventSource<OptionRiskFactor::Key, OptionRiskFactor> optionriskfactor;
 	MessageEventSource<StockBookQuote::Key, StockBookQuote> stockbookquote;
 	MessageEventSource<StockExchImbalance::Key, StockExchImbalance> stockexchimbalance;
+	MessageEventSource<StockMarketSummary::Key, StockMarketSummary> stockmarketsummary;
 	MessageEventSource<StockPrint::Key, StockPrint> stockprint;			
 
 	impl(SysEnvironment environment, IPAddress if_addr)
@@ -72,6 +74,7 @@ SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
 	impl_->frame_handler.RegisterMessageHandler(&impl_->optionriskfactor, { MessageType::OptionRiskFactor });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockbookquote, { MessageType::StockBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockexchimbalance, { MessageType::StockExchImbalance });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->stockmarketsummary, { MessageType::StockMarketSummary });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockprint, { MessageType::StockPrint });
 }
 
@@ -192,6 +195,7 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<OptionPri
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<OptionRiskFactor>> observer) { impl_->optionriskfactor.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockMarketSummary>> observer) { impl_->stockmarketsummary.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
 
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<FutureBookQuote>> observer) { impl_->futurebookquote.RegisterObserver(observer); }
@@ -204,6 +208,7 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<OptionPri
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<OptionRiskFactor>> observer) { impl_->optionriskfactor.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockMarketSummary>> observer) { impl_->stockmarketsummary.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
 
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<FutureBookQuote>> observer) { impl_->futurebookquote.RegisterObserver(observer); }
@@ -216,4 +221,5 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<OptionPri
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<OptionRiskFactor>> observer) { impl_->optionriskfactor.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockMarketSummary>> observer) { impl_->stockmarketsummary.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
