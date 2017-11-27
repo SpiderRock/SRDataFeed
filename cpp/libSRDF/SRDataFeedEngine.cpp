@@ -16,7 +16,6 @@
 #include "SpiderRock/Net/IPAddress.h"
 #include "SpiderRock/Net/IPEndPoint.h"
 #include "SpiderRock/Net/Proto/Receiver.h"
-#include "SpiderRock/Net/Proto/DBL/Receiver.h"
 #include "SpiderRock/Net/Proto/UDP/Receiver.h"
 #include "SpiderRock/DataFeed/MessageEventSource.h"
 #include "SpiderRock/DataFeed/FrameHandler.h"
