@@ -850,7 +850,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// LiveSurfaceAtm (surfaceType = 'Live') records are computed and publish continuously during trading hours and represent a current best implied volatility market fit.
-	/// SurfaceType = 'PriorDay' records contain the closing surface record from the prior trading period (usually from just before the last main session close).
+	/// SurfaceType = 'PriorDay' records contain the `closing surface record from the prior trading period (usually from just before the last main session close).
 	/// SurfaceType = 'Live' records are published to the SpiderRock elastic cluster at 5 minute intervals.
 	/// </remarks>
 
@@ -3209,6 +3209,294 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // StockExchImbalance
+
+
+	/// <summary>
+	/// StockMarketSummary:445
+	/// </summary>
+	/// <remarks>
+	/// These records represent live market summary snapshots for equity, index, and synthetic markets.
+	/// </remarks>
+
+    public partial class StockMarketSummary
+    {
+		public StockMarketSummary()
+		{
+		}
+		
+		public StockMarketSummary(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public StockMarketSummary(StockMarketSummary source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal StockMarketSummary(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as StockMarketSummary);
+		}
+		
+		public bool Equals(StockMarketSummary other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(StockMarketSummary target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.StockMarketSummary};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private TickerKey ticker;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				ticker = other.ticker;
+				
+			}
+			
+			
+			public TickerKey Ticker
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				ticker = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.ticker = ticker;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.ticker = ticker;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // StockMarketSummary.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public TickerKeyLayout ticker;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	ticker.Equals(other.ticker);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = ticker.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // StockMarketSummary.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public double iniPrice;
+			public double mrkPrice;
+			public double clsPrice;
+			public double minPrice;
+			public double maxPrice;
+			public int sharesOutstanding;
+			public int bidCount;
+			public int bidVolume;
+			public int askCount;
+			public int askVolume;
+			public int midCount;
+			public int midVolume;
+			public int prtCount;
+			public double prtPrice;
+			public int expCount;
+			public double expWidth;
+			public float expBidSize;
+			public float expAskSize;
+			public DateTimeLayout lastPrint;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { }
+		
+		
+
+
+		/// <summary>first print price of the day during regular market hours</summary>
+        public double IniPrice { get { return body.iniPrice; } set { body.iniPrice = value; } }
+ 
+		/// <summary>last print handling during regular market hours</summary>
+        public double MrkPrice { get { return body.mrkPrice; } set { body.mrkPrice = value; } }
+ 
+		/// <summary>official exchange closing price</summary>
+        public double ClsPrice { get { return body.clsPrice; } set { body.clsPrice = value; } }
+ 
+		/// <summary>minimum print price within market hours</summary>
+        public double MinPrice { get { return body.minPrice; } set { body.minPrice = value; } }
+ 
+		/// <summary>maximum print price within market hours</summary>
+        public double MaxPrice { get { return body.maxPrice; } set { body.maxPrice = value; } }
+ 
+		/// <summary>shares outstanding</summary>
+        public int SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
+ 
+		/// <summary>num prints &lt;= quote.bid</summary>
+        public int BidCount { get { return body.bidCount; } set { body.bidCount = value; } }
+ 
+		/// <summary>volume when prtPrice &lt;= quote.bid</summary>
+        public int BidVolume { get { return body.bidVolume; } set { body.bidVolume = value; } }
+ 
+		/// <summary>num prints &gt;= quote.ask</summary>
+        public int AskCount { get { return body.askCount; } set { body.askCount = value; } }
+ 
+		/// <summary>volume when prtPrice &gt;= quote.ask</summary>
+        public int AskVolume { get { return body.askVolume; } set { body.askVolume = value; } }
+ 
+		/// <summary>num prints inside quote.bid / quote.ask</summary>
+        public int MidCount { get { return body.midCount; } set { body.midCount = value; } }
+ 
+		/// <summary>volume inside quote.bid / quote.ask</summary>
+        public int MidVolume { get { return body.midVolume; } set { body.midVolume = value; } }
+ 
+		/// <summary>number of distinct print reports</summary>
+        public int PrtCount { get { return body.prtCount; } set { body.prtCount = value; } }
+ 
+		/// <summary>last print price</summary>
+        public double PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
+ 
+		/// <summary>number of updates included in exponential average</summary>
+        public int ExpCount { get { return body.expCount; } set { body.expCount = value; } }
+ 
+		/// <summary>exponential average market width (10 minute 1/2 life)</summary>
+        public double ExpWidth { get { return body.expWidth; } set { body.expWidth = value; } }
+ 
+		/// <summary>exponential average bid size (10 minute 1/2 life)</summary>
+        public float ExpBidSize { get { return body.expBidSize; } set { body.expBidSize = value; } }
+ 
+		/// <summary>exponential average ask size (10 minute 1/2 life)</summary>
+        public float ExpAskSize { get { return body.expAskSize; } set { body.expAskSize = value; } }
+ 
+		
+        public DateTime LastPrint { get { return body.lastPrint; } set { body.lastPrint = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // StockMarketSummary
 
 
 	/// <summary>

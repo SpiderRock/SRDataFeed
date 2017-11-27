@@ -1609,6 +1609,165 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class StockMarketSummaryContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<StockMarketSummary> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<StockMarketSummary> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<StockMarketSummary> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<StockMarketSummary>> Created;
+            public event EventHandler<ChangedEventArgs<StockMarketSummary>> Changed;
+            public event EventHandler<UpdatedEventArgs<StockMarketSummary>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<StockMarketSummary> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<StockMarketSummary>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<StockMarketSummary> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<StockMarketSummary>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<StockMarketSummary> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<StockMarketSummary>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(StockMarketSummary obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<StockMarketSummary>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<StockMarketSummary> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockMarketSummary.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(StockMarketSummary obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<StockMarketSummary>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<StockMarketSummary> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockMarketSummary.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(StockMarketSummary current, StockMarketSummary previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<StockMarketSummary> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockMarketSummary.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<StockMarketSummary.PKeyLayout, StockMarketSummary> objectsByKey = new Dictionary<StockMarketSummary.PKeyLayout, StockMarketSummary>();
+            
+            [ThreadStatic] private static StockMarketSummary decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(StockMarketSummary.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(StockMarketSummary.PKeyLayout))));
+                }           
+                
+                StockMarketSummary.PKeyLayout pkey = *(StockMarketSummary.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                StockMarketSummary item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new StockMarketSummary(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new StockMarketSummary();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class StockPrintContainerCache
         {
             #region Events
@@ -1783,6 +1942,7 @@ namespace SpiderRock.DataFeed
          private readonly OptionRiskFactorContainerCache optionRiskFactorContainerCache = new OptionRiskFactorContainerCache();
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
          private readonly StockExchImbalanceContainerCache stockExchImbalanceContainerCache = new StockExchImbalanceContainerCache();
+         private readonly StockMarketSummaryContainerCache stockMarketSummaryContainerCache = new StockMarketSummaryContainerCache();
          private readonly StockPrintContainerCache stockPrintContainerCache = new StockPrintContainerCache();
 
         #endregion
@@ -1802,6 +1962,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.OptionRiskFactor, optionRiskFactorContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockExchImbalance, stockExchImbalanceContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.StockMarketSummary, stockMarketSummaryContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockPrint, stockPrintContainerCache.OnMessage);
 
             }
@@ -1819,6 +1980,7 @@ namespace SpiderRock.DataFeed
              optionRiskFactorContainerCache.Clear();
              stockBookQuoteContainerCache.Clear();
              stockExchImbalanceContainerCache.Clear();
+             stockMarketSummaryContainerCache.Clear();
              stockPrintContainerCache.Clear();
 
         }
@@ -2005,6 +2167,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { stockExchImbalanceContainerCache.Updated += value; } }
             remove  { lock (eventLock) { stockExchImbalanceContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<StockMarketSummary>> StockMarketSummaryCreated
+        {
+            add     { lock (eventLock) { stockMarketSummaryContainerCache.Created += value; } }
+            remove  { lock (eventLock) { stockMarketSummaryContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<StockMarketSummary>> StockMarketSummaryChanged
+        {
+            add     { lock (eventLock) { stockMarketSummaryContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { stockMarketSummaryContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<StockMarketSummary>> StockMarketSummaryUpdated
+        {
+            add     { lock (eventLock) { stockMarketSummaryContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { stockMarketSummaryContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<StockPrint>> StockPrintCreated

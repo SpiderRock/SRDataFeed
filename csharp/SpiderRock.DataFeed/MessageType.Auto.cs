@@ -26,6 +26,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType OptionRiskFactor = 2320;
  		public static readonly MessageType StockBookQuote = 430;
  		public static readonly MessageType StockExchImbalance = 490;
+ 		public static readonly MessageType StockMarketSummary = 445;
  		public static readonly MessageType StockPrint = 440;
 
 		internal static readonly MessageType CacheComplete = 4106;
@@ -47,6 +48,7 @@ namespace SpiderRock.DataFeed
  			isCore[OptionRiskFactor] = true;
  			isCore[StockBookQuote] = true;
  			isCore[StockExchImbalance] = true;
+ 			isCore[StockMarketSummary] = true;
  			isCore[StockPrint] = true;
 
 			
@@ -82,6 +84,7 @@ namespace SpiderRock.DataFeed
  			names[OptionRiskFactor] = "OptionRiskFactor";
  			names[StockBookQuote] = "StockBookQuote";
  			names[StockExchImbalance] = "StockExchImbalance";
+ 			names[StockMarketSummary] = "StockMarketSummary";
  			names[StockPrint] = "StockPrint";
 
 			

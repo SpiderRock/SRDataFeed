@@ -32,6 +32,7 @@ namespace SpiderRock
 			OptionRiskFactor = 2320,
 			StockBookQuote = 430,
 			StockExchImbalance = 490,
+			StockMarketSummary = 445,
 			StockPrint = 440,
 			
 			CacheComplete = 4106,
