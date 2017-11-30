@@ -12,13 +12,13 @@ namespace SpiderRock.DataFeed
 
 	public enum AssetType : byte { None=0,EQT=1,IDX=2,BND=3,CUR=4,COM=5,FUT=6,SYN=7,WAR=8,FLX=9,MUT=10,SPD=11,MM=12,MF=13 };		
  	public enum AuctionReason : byte { None=0,Open=1,Market=2,Halt=3,Closing=4,RegulatoryImbalance=5 };		
- 	public enum BuySell : byte { None=0,Buy=1,Sell=2 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2,Close=3 };		
  	public enum CalcType : byte { Loop=0,Tick=1 };		
  	public enum CallPut : byte { Call=0,Put=1,Pair=2 };		
  	public enum FutExch : byte { None=0,CFE=1,CME=2,CBOT=3,COMEX=4,NYMEX=5,ICE=6 };		
  	public enum GridType : byte { Uniform=0,SRCubic=1,SRFixed=2,BSpline=3 };		
  	public enum IdxSrc : byte { Unknown=0,Indication=1,Quote=2 };		
+ 	public enum ImbalanceSide : byte { None=0,Buy=1,Sell=2,NoImbalance=3 };		
  	public enum LiveSurfaceType : byte { None=0,Live=1,Hist=2,PriorDay=3,Skew=4,LiveSkew=5,LiveAdj=6,Interp=7,Test1=8,Test2=9,Test3=10 };		
  	public enum MarketStatus : byte { None=0,PreOpen=1,PreCross=2,Cross=3,Open=4,Closed=5,Halted=6,AfterHours=7 };		
  	public enum MoneynessType : byte { PctStd=0,LogStd=1,NormStd=2 };		
