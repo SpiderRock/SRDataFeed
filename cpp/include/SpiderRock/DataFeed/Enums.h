@@ -45,13 +45,6 @@ namespace SpiderRock
 			RegulatoryImbalance=5
 		};
 
- 		enum class BuySell : Enum 
-		{
-			None=0,
-			Buy=1,
-			Sell=2
-		};
-
  		enum class CalcSource : Enum 
 		{
 			None=0,
@@ -97,6 +90,14 @@ namespace SpiderRock
 			Unknown=0,
 			Indication=1,
 			Quote=2
+		};
+
+ 		enum class ImbalanceSide : Enum 
+		{
+			None=0,
+			Buy=1,
+			Sell=2,
+			NoImbalance=3
 		};
 
  		enum class LiveSurfaceType : Enum 
