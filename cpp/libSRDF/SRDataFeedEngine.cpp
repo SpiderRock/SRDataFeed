@@ -83,7 +83,7 @@ SRDataFeedEngine::~SRDataFeedEngine()
 
 void SRDataFeedEngine::MakeCacheRequest(initializer_list<MessageType> message_types)
 {
-	int32_t ipport = 2340 + (static_cast<int32_t>(impl_->environment) * 1000);
+	int32_t ipport = 2280 + (static_cast<int32_t>(impl_->environment) * 1000);
 
 	initializer_list<IPEndPoint> endpoints =
 	{
