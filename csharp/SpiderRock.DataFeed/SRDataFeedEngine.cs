@@ -100,7 +100,7 @@ namespace SpiderRock.DataFeed
         {
             get
             {
-                var cacheServerPort = 2340 + ((int) sysEnvironment*1000);
+                var cacheServerPort = 2280 + (int) sysEnvironment * 1000;
                 yield return new IPEndPoint(IPAddress.Parse("198.102.4.145"), cacheServerPort);
                 yield return new IPEndPoint(IPAddress.Parse("198.102.4.146"), cacheServerPort);
             }
