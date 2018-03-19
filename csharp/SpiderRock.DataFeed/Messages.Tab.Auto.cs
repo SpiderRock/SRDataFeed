@@ -234,7 +234,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "ekey\tsurfaceType\tdate\ttime\tticker\tfkey\tuBid\tuAsk\tyears\trate\tddiv\texType\tmodelType\tearnCnt\tearnCntAdj\taxisVolRT\taxisFUPrc\tmoneynessType\tunderlierMode\tatmVol\tatmCen\tminAtmVol\tmaxAtmVol\teMove\tuPrcOffset\tuPrcOffsetEMA\tsdiv\tsdivEMA\tatmMove\tatmCenMove\tslope\tvarSwapFV\tgridType\tminXAxis\tmaxXAxis\txAxisScale\txAxisOffset\tskewD11\tskewD10\tskewD9\tskewD8\tskewD7\tskewD6\tskewD5\tskewD4\tskewD3\tskewD2\tskewD1\tskewC0\tskewU1\tskewU2\tskewU3\tskewU4\tskewU5\tskewU6\tskewU7\tskewU8\tskewU9\tskewU10\tskewU11\tsdivD3\tsdivD2\tsdivD1\tsdivU1\tsdivU2\tsdivU3\tpwidth\tvwidth\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tsEKey\tsType\tsTimestamp\tcounter\tskewCounter\tsdivCounter\tsurfaceResult\ttimestamp";
+		public const string TabHeader = "ekey\tsurfaceType\tdate\ttime\tticker\tfkey\tuBid\tuAsk\tyears\trate\tddiv\texType\tmodelType\tearnCnt\tearnCntAdj\taxisVolRT\taxisFUPrc\tmoneynessType\tunderlierMode\tatmVol\tatmCen\tminAtmVol\tmaxAtmVol\teMove\tuPrcOffset\tuPrcOffsetEMA\tsdiv\tsdivEMA\tatmMove\tatmCenMove\tatmVega\tslope\tvarSwapFV\tgridType\tminXAxis\tmaxXAxis\txAxisScale\txAxisOffset\tskewD11\tskewD10\tskewD9\tskewD8\tskewD7\tskewD6\tskewD5\tskewD4\tskewD3\tskewD2\tskewD1\tskewC0\tskewU1\tskewU2\tskewU3\tskewU4\tskewU5\tskewU6\tskewU7\tskewU8\tskewU9\tskewU10\tskewU11\tsdivD3\tsdivD2\tsdivD1\tsdivU1\tsdivU2\tsdivU3\tpwidth\tvwidth\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tsEKey\tsType\tsTimestamp\tcounter\tskewCounter\tsdivCounter\tsurfaceResult\ttimestamp";
 
 		public string TabRecord
         {
@@ -303,6 +303,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(AtmMove);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AtmCenMove);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AtmVega);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Slope);
 				recordBuilder.Append("\t");
@@ -724,6 +726,57 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(CalcSource);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
+    public partial class SpreadBookQuote
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "skey\tupdateType\tbidMask1\taskMask1\tbidPrice1\taskPrice1\tbidSize1\taskSize1\tbidPrice2\taskPrice2\tbidSize2\taskSize2\tbidTime\taskTime\tsrcTimestamp\tnetTimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Skey);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(UpdateType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidMask1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskMask1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidPrice1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskPrice1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidSize1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskSize1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidPrice2);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskPrice2);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidSize2);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskSize2);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(BidTime);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(AskTime);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SrcTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NetTimestamp);
 
 				return recordBuilder.ToString();
 			}

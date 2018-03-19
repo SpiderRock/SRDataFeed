@@ -1077,6 +1077,7 @@ namespace SpiderRock.DataFeed
 			public float sdivEMA;
 			public float atmMove;
 			public float atmCenMove;
+			public float atmVega;
 			public float slope;
 			public float varSwapFV;
 			public GridType gridType;
@@ -1240,7 +1241,10 @@ namespace SpiderRock.DataFeed
 		/// <summary>fixed strike atm (censored) move from prior period</summary>
         public float AtmCenMove { get { return body.atmCenMove; } set { body.atmCenMove = value; } }
  
-		/// <summary>volatility surface slope (dVol / dXAxis) @ ATM (x=0)</summary>
+		/// <summary>surface vega @ ATM (xAxis=0)</summary>
+        public float AtmVega { get { return body.atmVega; } set { body.atmVega = value; } }
+ 
+		/// <summary>volatility surface slope (dVol / dXAxis) @ ATM (xAxis=0)</summary>
         public float Slope { get { return body.slope; } set { body.slope = value; } }
  
 		/// <summary>variance swap fair value (estimated by numerical integration over OTM price surface)</summary>
@@ -2655,6 +2659,274 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // OptionRiskFactor
+
+
+	/// <summary>
+	/// SpreadBookQuote:525
+	/// </summary>
+	/// <remarks>
+	/// This table contains live spread quote records from the individual equity option exchanges.  Each record contains up to two price levels and represents a live snapshot of the book for a specific spread.
+	/// </remarks>
+
+    public partial class SpreadBookQuote
+    {
+		public SpreadBookQuote()
+		{
+		}
+		
+		public SpreadBookQuote(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public SpreadBookQuote(SpreadBookQuote source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal SpreadBookQuote(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as SpreadBookQuote);
+		}
+		
+		public bool Equals(SpreadBookQuote other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(SpreadBookQuote target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.SpreadBookQuote};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private TickerKey skey;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				skey = other.skey;
+				
+			}
+			
+			/// <summary>SR Spread Key (should have corresponding ProductDefinition record)</summary>
+			public TickerKey Skey
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return skey ?? (skey = TickerKey.GetCreateTickerKey(body.skey)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.skey = value.Layout; skey = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				skey = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.skey = skey;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.skey = skey;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // SpreadBookQuote.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public TickerKeyLayout skey;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	skey.Equals(other.skey);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = skey.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // SpreadBookQuote.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public UpdateType updateType;
+			public uint bidMask1;
+			public uint askMask1;
+			public float bidPrice1;
+			public float askPrice1;
+			public ushort bidSize1;
+			public ushort askSize1;
+			public float bidPrice2;
+			public float askPrice2;
+			public ushort bidSize2;
+			public ushort askSize2;
+			public DateTimeLayout bidTime;
+			public DateTimeLayout askTime;
+			public long srcTimestamp;
+			public long netTimestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { }
+		
+		
+
+
+		
+        public UpdateType UpdateType { get { return body.updateType; } set { body.updateType = value; } }
+ 
+		/// <summary>exchange bid bit mask (OptExch mask for NMS spreads; zero for single exchange spreads)</summary>
+        public uint BidMask1 { get { return body.bidMask1; } set { body.bidMask1 = value; } }
+ 
+		/// <summary>exchange ask bit mask (OptExch mask for NMS spreads; zero for single exchange spreads)</summary>
+        public uint AskMask1 { get { return body.askMask1; } set { body.askMask1 = value; } }
+ 
+		/// <summary>bid price</summary>
+        public float BidPrice1 { get { return body.bidPrice1; } set { body.bidPrice1 = value; } }
+ 
+		/// <summary>ask price</summary>
+        public float AskPrice1 { get { return body.askPrice1; } set { body.askPrice1 = value; } }
+ 
+		/// <summary>cumulative size at bidPrice</summary>
+        public ushort BidSize1 { get { return body.bidSize1; } set { body.bidSize1 = value; } }
+ 
+		/// <summary>cumulative size at askPrice</summary>
+        public ushort AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
+ 
+		/// <summary>2nd best bid price</summary>
+        public float BidPrice2 { get { return body.bidPrice2; } set { body.bidPrice2 = value; } }
+ 
+		/// <summary>2nd best ask price</summary>
+        public float AskPrice2 { get { return body.askPrice2; } set { body.askPrice2 = value; } }
+ 
+		/// <summary>cumulative size at 2nd price</summary>
+        public ushort BidSize2 { get { return body.bidSize2; } set { body.bidSize2 = value; } }
+ 
+		/// <summary>cumulative size at 2nd price</summary>
+        public ushort AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
+ 
+		/// <summary>last bid price or size change</summary>
+        public DateTime BidTime { get { return body.bidTime; } set { body.bidTime = value; } }
+ 
+		/// <summary>last ask price or size change</summary>
+        public DateTime AskTime { get { return body.askTime; } set { body.askTime = value; } }
+ 
+		/// <summary>source high precision timestamp (if available)</summary>
+        public long SrcTimestamp { get { return body.srcTimestamp; } set { body.srcTimestamp = value; } }
+ 
+		/// <summary>inbound packet PTP timestamp from SR gateway switch;usually syncronized with facility grandfather clock</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+
+		
+		#endregion	
+
+    } // SpreadBookQuote
 
 
 	/// <summary>

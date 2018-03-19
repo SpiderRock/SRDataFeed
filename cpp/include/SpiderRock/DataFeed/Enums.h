@@ -32,7 +32,9 @@ namespace SpiderRock
 			MUT=10,
 			SPD=11,
 			MM=12,
-			MF=13
+			MF=13,
+			COIN=14,
+			TOKEN=15
 		};
 
  		enum class AuctionReason : Enum 
@@ -97,7 +99,8 @@ namespace SpiderRock
 			None=0,
 			Buy=1,
 			Sell=2,
-			NoImbalance=3
+			NoImbalance=3,
+			InsufOrdsToCalc=4
 		};
 
  		enum class LiveSurfaceType : Enum 
@@ -231,7 +234,8 @@ namespace SpiderRock
 			NoIVols=14,
 			NoModelPts=15,
 			ZeroYears=16,
-			NoSimpleVol=17
+			NoSimpleVol=17,
+			OptMktNotOpn=18
 		};
 
  		enum class SysEnvironment : Enum 
@@ -254,11 +258,18 @@ namespace SpiderRock
 			COMEX=9,
 			RUT=10,
 			CBOE=11,
-			KET=12,
-			ISE=13,
-			ARCA=14,
-			NYSE=15,
-			OTC=16
+			ISE=12,
+			ARCA=13,
+			NYSE=14,
+			OTC=15,
+			GDAX=16,
+			BSTAMP=17,
+			KRAKEN=18,
+			TST=19,
+			USR1=20,
+			USR2=21,
+			USR3=22,
+			NSDQ=23
 		};
 
  		enum class UnderlierMode : Enum 
