@@ -136,6 +136,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, SpreadBookQuote dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(SpreadBookQuote.PKeyLayout) + sizeof(SpreadBookQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding SpreadBookQuote");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((SpreadBookQuote.PKeyLayout*) src); src += sizeof(SpreadBookQuote.PKeyLayout);
+ 				dest.body = *((SpreadBookQuote.BodyLayout*) src); src += sizeof(SpreadBookQuote.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, StockBookQuote dest, byte* max)
 		{
 			unchecked

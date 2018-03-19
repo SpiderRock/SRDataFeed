@@ -30,6 +30,7 @@ namespace SpiderRock
 			OptionNbboQuote = 260,
 			OptionPrint = 300,
 			OptionRiskFactor = 2320,
+			SpreadBookQuote = 525,
 			StockBookQuote = 430,
 			StockExchImbalance = 490,
 			StockMarketSummary = 445,

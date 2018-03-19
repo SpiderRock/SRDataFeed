@@ -101,6 +101,7 @@
         OptOrder = 161,
 
         ImbalanceArca = 170,
-        ImbalanceNyse = 171
+        ImbalanceNyse = 171,
+        ImbalanceNasdaq = 172
     }
 }

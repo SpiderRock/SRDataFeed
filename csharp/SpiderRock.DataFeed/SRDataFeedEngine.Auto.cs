@@ -1291,6 +1291,165 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class SpreadBookQuoteContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<SpreadBookQuote> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<SpreadBookQuote> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<SpreadBookQuote> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<SpreadBookQuote>> Created;
+            public event EventHandler<ChangedEventArgs<SpreadBookQuote>> Changed;
+            public event EventHandler<UpdatedEventArgs<SpreadBookQuote>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<SpreadBookQuote> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<SpreadBookQuote>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<SpreadBookQuote> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<SpreadBookQuote>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<SpreadBookQuote> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<SpreadBookQuote>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(SpreadBookQuote obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<SpreadBookQuote>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<SpreadBookQuote> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "SpreadBookQuote.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(SpreadBookQuote obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<SpreadBookQuote>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<SpreadBookQuote> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "SpreadBookQuote.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(SpreadBookQuote current, SpreadBookQuote previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<SpreadBookQuote> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "SpreadBookQuote.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<SpreadBookQuote.PKeyLayout, SpreadBookQuote> objectsByKey = new Dictionary<SpreadBookQuote.PKeyLayout, SpreadBookQuote>();
+            
+            [ThreadStatic] private static SpreadBookQuote decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(SpreadBookQuote.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(SpreadBookQuote.PKeyLayout))));
+                }           
+                
+                SpreadBookQuote.PKeyLayout pkey = *(SpreadBookQuote.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                SpreadBookQuote item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new SpreadBookQuote(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new SpreadBookQuote();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class StockBookQuoteContainerCache
         {
             #region Events
@@ -1940,6 +2099,7 @@ namespace SpiderRock.DataFeed
          private readonly OptionNbboQuoteContainerCache optionNbboQuoteContainerCache = new OptionNbboQuoteContainerCache();
          private readonly OptionPrintContainerCache optionPrintContainerCache = new OptionPrintContainerCache();
          private readonly OptionRiskFactorContainerCache optionRiskFactorContainerCache = new OptionRiskFactorContainerCache();
+         private readonly SpreadBookQuoteContainerCache spreadBookQuoteContainerCache = new SpreadBookQuoteContainerCache();
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
          private readonly StockExchImbalanceContainerCache stockExchImbalanceContainerCache = new StockExchImbalanceContainerCache();
          private readonly StockMarketSummaryContainerCache stockMarketSummaryContainerCache = new StockMarketSummaryContainerCache();
@@ -1960,6 +2120,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.OptionNbboQuote, optionNbboQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionPrint, optionPrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionRiskFactor, optionRiskFactorContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.SpreadBookQuote, spreadBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockExchImbalance, stockExchImbalanceContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockMarketSummary, stockMarketSummaryContainerCache.OnMessage);
@@ -1978,6 +2139,7 @@ namespace SpiderRock.DataFeed
              optionNbboQuoteContainerCache.Clear();
              optionPrintContainerCache.Clear();
              optionRiskFactorContainerCache.Clear();
+             spreadBookQuoteContainerCache.Clear();
              stockBookQuoteContainerCache.Clear();
              stockExchImbalanceContainerCache.Clear();
              stockMarketSummaryContainerCache.Clear();
@@ -2131,6 +2293,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { optionRiskFactorContainerCache.Updated += value; } }
             remove  { lock (eventLock) { optionRiskFactorContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<SpreadBookQuote>> SpreadBookQuoteCreated
+        {
+            add     { lock (eventLock) { spreadBookQuoteContainerCache.Created += value; } }
+            remove  { lock (eventLock) { spreadBookQuoteContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<SpreadBookQuote>> SpreadBookQuoteChanged
+        {
+            add     { lock (eventLock) { spreadBookQuoteContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { spreadBookQuoteContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<SpreadBookQuote>> SpreadBookQuoteUpdated
+        {
+            add     { lock (eventLock) { spreadBookQuoteContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { spreadBookQuoteContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<StockBookQuote>> StockBookQuoteCreated
