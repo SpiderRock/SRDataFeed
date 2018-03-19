@@ -8,7 +8,6 @@ using System.Runtime;
 using System.Threading;
 using SpiderRock.DataFeed.Cache;
 using SpiderRock.DataFeed.FrameHandling;
-using SpiderRock.DataFeed.Proto.DBL;
 using SpiderRock.DataFeed.Diagnostics;
 using SpiderRock.DataFeed.Proto.UDP;
 
@@ -22,7 +21,6 @@ namespace SpiderRock.DataFeed
         private readonly object startLock = new object();
         private readonly object disposeLock = new object();
         private readonly CancellationTokenSource disposeTokenSource;
-        private readonly List<DblManager> dblManagers = new List<DblManager>();
         private readonly List<UdpDevice> udpDevices = new List<UdpDevice>();
         private bool running;
         private bool disposed;
@@ -76,8 +74,6 @@ namespace SpiderRock.DataFeed
         public IPAddress IFAddress { get; set; }
 
         public UdpChannel[] Channels { get; set; }
-
-        public Protocol Protocol { get; set; }
 
         public string LogBaseDirectory { get; set; }
 
@@ -177,30 +173,14 @@ namespace SpiderRock.DataFeed
 
                 if (Channels.Length > 0)
                 {
-                    if (Protocol == Protocol.DBL)
-                    {
-                        var dblManager = new DblManager(IFAddress, "Default", channelFactory);
-                        dblManagers.Add(dblManager);
+                    var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, ThreadPriority.Normal);
+                    udpDevice.Open();
+                    udpDevices.Add(udpDevice);
 
-                        foreach (UdpChannel udpChannel in Channels)
-                        {
-                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine UDP/DBL Channel: {0}",
-                                udpChannel);
-                            dblManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
-                        }
-                    }
-                    else
+                    foreach (UdpChannel udpChannel in Channels)
                     {
-                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, ThreadPriority.Normal);
-                        udpDevice.Open();
-                        udpDevices.Add(udpDevice);
-
-                        foreach (UdpChannel udpChannel in Channels)
-                        {
-                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine UDP Channel: {0}",
-                                udpChannel);
-                            udpDevice.Join(GetIPEndPoint(udpChannel));
-                        }
+                        SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine UDP Channel: {0}", udpChannel);
+                        udpDevice.Join(GetIPEndPoint(udpChannel));
                     }
                 }
 
@@ -208,30 +188,14 @@ namespace SpiderRock.DataFeed
                 {
                     SRTrace.Default.TraceEvent(TraceEventType.Start, 0, channelThreadGroup.ToString());
 
-                    if (channelThreadGroup.Proto == Protocol.DBL)
-                    {
-                        var dblManager = new DblManager(IFAddress, channelThreadGroup.ToString(), channelFactory);
-                        dblManagers.Add(dblManager);
+                    var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, channelThreadGroup.Priority);
+                    udpDevice.Open();
+                    udpDevices.Add(udpDevice);
 
-                        foreach (UdpChannel udpChannel in channelThreadGroup)
-                        {
-                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}",
-                                udpChannel);
-                            dblManager.AddListener(GetIPEndPoint(udpChannel), frameHandler);
-                        }
-                    }
-                    else
+                    foreach (UdpChannel udpChannel in channelThreadGroup)
                     {
-                        var udpDevice = new UdpDevice(IFAddress, frameHandler, ReceiveBufferSize, channelFactory, channelThreadGroup.Priority);
-                        udpDevice.Open();
-                        udpDevices.Add(udpDevice);
-
-                        foreach (UdpChannel udpChannel in channelThreadGroup)
-                        {
-                            SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}",
-                                udpChannel);
-                            udpDevice.Join(GetIPEndPoint(udpChannel));
-                        }
+                        SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "SRDataFeedEngine Channel: {0}", udpChannel);
+                        udpDevice.Join(GetIPEndPoint(udpChannel));
                     }
                 }
 
@@ -451,12 +415,6 @@ namespace SpiderRock.DataFeed
                         udpDevice.Dispose();
                     }
                     udpDevices.Clear();
-
-                    foreach (var dblManager in dblManagers)
-                    {
-                        dblManager.Dispose();
-                    }
-                    dblManagers.Clear();
 
                     if (processStatisticsAggregator != null)
                     {

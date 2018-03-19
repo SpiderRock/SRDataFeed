@@ -18,7 +18,6 @@ namespace SRBenchmark
                 IPAddress ifAddr;
                 UdpChannel[] channels;
                 var freq = 10;
-                var proto = Protocol.UDP;
                 var receiveBufferSize = 20;
                 MessageType[] cache = null;
 
@@ -42,13 +41,6 @@ namespace SRBenchmark
                      receiveBufferSize > 200))
                 {
                     throw new UsageException("-recvBuf must be an integer [1, 200]");
-                }
-
-                var protoArg = parsed.FirstOrDefault(arg => arg.Name == "-proto");
-                // ReSharper disable once AccessToStaticMemberViaDerivedType
-                if (protoArg != null && !Protocol.TryParse(protoArg.Values[0], true, out proto))
-                {
-                    throw new UsageException("-proto must be UDP or DBL");
                 }
 
                 try
@@ -88,7 +80,6 @@ namespace SRBenchmark
                 using (var engine = new SRDataFeedEngine())
                 {
                     engine.IFAddress = ifAddr;
-                    engine.Protocol = proto;
                     engine.Channels = channels;
                     engine.ReceiveBufferSize = receiveBufferSize*1024*1024;
 
@@ -122,7 +113,7 @@ namespace SRBenchmark
             {
                 Console.Error.WriteLine("Invalid usage: {0}", e.Message);
                 Console.Error.WriteLine(
-                    "Usage: -ifAddr IPv4Address -channels UdpChannel1 UdpChannel2 ... [-freq SECONDS] [-proto UDP|DBL] [-recvBuf MBs] -cache MessageType1 MessageType2 ... [-latency]");
+                    "Usage: -ifAddr IPv4Address -channels UdpChannel1 UdpChannel2 ... [-freq SECONDS] [-recvBuf MBs] -cache MessageType1 MessageType2 ... [-latency]");
             }
             catch (Exception e)
             {

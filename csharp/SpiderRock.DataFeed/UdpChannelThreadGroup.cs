@@ -12,10 +12,5 @@ namespace SpiderRock.DataFeed
         public UdpChannelThreadGroup()
         {
         }
-
-        public override Protocol Proto
-        {
-            get { return Protocol.UDP; }
-        }
     }
 }
