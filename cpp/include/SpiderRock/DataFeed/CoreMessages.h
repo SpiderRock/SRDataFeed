@@ -966,6 +966,7 @@ public:
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = TickerKey()(k.skey_);
+
 			return hash_code;
 		}
 		
