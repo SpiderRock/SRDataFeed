@@ -355,6 +355,7 @@ private:
 		Float sdivEMA;
 		Float atmMove;
 		Float atmCenMove;
+		Float atmVega;
 		Float slope;
 		Float varSwapFV;
 		GridType gridType;
@@ -458,6 +459,7 @@ public:
 	inline Float sdivEMA() const { return layout_.sdivEMA; }
 	inline Float atmMove() const { return layout_.atmMove; }
 	inline Float atmCenMove() const { return layout_.atmCenMove; }
+	inline Float atmVega() const { return layout_.atmVega; }
 	inline Float slope() const { return layout_.slope; }
 	inline Float varSwapFV() const { return layout_.varSwapFV; }
 	inline GridType gridType() const { return layout_.gridType; }
@@ -944,6 +946,92 @@ public:
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
 		layout_ = *reinterpret_cast<OptionRiskFactor::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
+ class SpreadBookQuote
+{
+public:
+	class Key
+	{
+		TickerKey skey_;
+		
+	public:
+		inline const TickerKey& skey() const { return skey_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = TickerKey()(k.skey_);
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.skey_ == b.skey_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		UpdateType updateType;
+		UInt bidMask1;
+		UInt askMask1;
+		Float bidPrice1;
+		Float askPrice1;
+		UShort bidSize1;
+		UShort askSize1;
+		Float bidPrice2;
+		Float askPrice2;
+		UShort bidSize2;
+		UShort askSize2;
+		DateTime bidTime;
+		DateTime askTime;
+		Long srcTimestamp;
+		Long netTimestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline UpdateType updateType() const { return layout_.updateType; }
+	inline UInt bidMask1() const { return layout_.bidMask1; }
+	inline UInt askMask1() const { return layout_.askMask1; }
+	inline Float bidPrice1() const { return layout_.bidPrice1; }
+	inline Float askPrice1() const { return layout_.askPrice1; }
+	inline UShort bidSize1() const { return layout_.bidSize1; }
+	inline UShort askSize1() const { return layout_.askSize1; }
+	inline Float bidPrice2() const { return layout_.bidPrice2; }
+	inline Float askPrice2() const { return layout_.askPrice2; }
+	inline UShort bidSize2() const { return layout_.bidSize2; }
+	inline UShort askSize2() const { return layout_.askSize2; }
+	inline DateTime bidTime() const { return layout_.bidTime; }
+	inline DateTime askTime() const { return layout_.askTime; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<SpreadBookQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 
