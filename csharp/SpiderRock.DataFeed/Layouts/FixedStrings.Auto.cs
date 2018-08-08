@@ -217,6 +217,380 @@ namespace SpiderRock.DataFeed.Layouts
 	}
  	
 	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+	internal unsafe struct FixedString12Layout : IEquatable<FixedString12Layout>, IComparable<FixedString12Layout>, IEquatable<string>
+	{
+		public fixed byte chars[12];
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override string ToString()
+		{
+			return Value;
+		}
+		
+		public int Length
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get
+			{
+				unchecked
+				{
+					fixed (byte* charsPtr = chars)
+					{
+						for (int i = 0; i < 12; i++) 
+						{
+							if (charsPtr[i] == 0) return i;
+						}
+						return 12;
+					}
+				}
+			}
+		}
+		
+		public int MaxLength { get { return 12; } }
+
+        public bool IsEmpty
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { fixed (byte* pfchars = chars) return *pfchars == 0; }
+        }
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Equals(FixedString12Layout other)
+		{
+			fixed (FixedString12Layout* pfself = &this)
+			{
+				/* -------------- compare as ints ------------ */
+				var pIntSelf = (int*) pfself;
+				var pIntOther = (int*) &other;
+				for (int i = 0; i < 3; i++)
+				{
+					if (*(pIntSelf++) == *(pIntOther++)) continue;
+					return false;
+				}
+ 				return true;
+
+			}
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Equals(string value)
+		{
+			unchecked
+			{
+				fixed (byte* charsPtr = chars)
+				fixed (char* valuePtr = value)
+				{
+					int i = 0;
+					while (i < 12) 
+					{
+						byte mine = charsPtr[i]; 
+						byte theirs = (byte) valuePtr[i];
+						if (mine != theirs) return false;
+						if (mine == 0 || theirs == 0) break;
+						++i;
+					}
+					return i == value.Length;
+				}
+			}
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int CompareTo(FixedString12Layout other)
+        {
+			unchecked
+			{
+				fixed (byte* pfchars = chars)
+				{
+					var pother = (byte*) &other;
+					for (int i = 0; i < 12; i++)
+					{
+						int result = *(pfchars + i) - *(pother + i);
+						if (result == 0) continue;
+						return result;
+					}
+					return 0;
+				}
+			}
+        }
+
+	    public string Value
+	    {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	        get
+			{
+				fixed (byte* charsPtr = chars)
+				{
+					int length = Length;
+					return length == 0 ? string.Empty : new string((sbyte*) charsPtr, 0, Length, System.Text.Encoding.ASCII);
+				}
+			}
+			
+	        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set
+			{
+				unchecked
+				{
+					fixed (byte* charsPtr = chars)
+					fixed (char* valuePtr = value)
+					{
+						char* pstr = valuePtr;
+						byte* pchars = charsPtr;
+						
+						if (value.Length >= 12)
+						{
+							for (int i = 0; i < 12; i++) { *(pchars++) = (byte) *(pstr++); }
+						}
+						else
+						{
+							while (*pstr != 0) { *(pchars++) = (byte) *(pstr++); }
+							*pchars = 0;
+						}
+					}
+				}
+			}
+	    }
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void TrimEnd()
+		{
+			unchecked
+			{
+				fixed (byte* begPtr = chars)
+				{
+					byte* endPtr = begPtr + 11;
+					
+					for (int i = 0; i < 12; i++)
+					{
+						if (*endPtr == 32)
+						{
+							*(endPtr--) = 0;
+							continue;
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		public override int GetHashCode()
+		{
+			fixed (FixedString12Layout* pfself = &this)
+			{
+				int hashCode = 37;
+				/* -------------- hash as ints ------------ */
+				var pIntSelf = (int*) pfself;
+				for (int i = 0; i < 3; i++)
+				{
+					hashCode = (hashCode*397) ^ *(pIntSelf++);
+				}
+
+				return hashCode;
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator string(FixedString12Layout value)
+		{
+			return value.Value;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator FixedString12Layout(string value)
+		{
+			var r = new FixedString12Layout();
+			if (string.IsNullOrEmpty(value)) return r;
+			r.Value = value;
+			return r;
+		}
+	}
+ 	
+	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+	internal unsafe struct FixedString20Layout : IEquatable<FixedString20Layout>, IComparable<FixedString20Layout>, IEquatable<string>
+	{
+		public fixed byte chars[20];
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override string ToString()
+		{
+			return Value;
+		}
+		
+		public int Length
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get
+			{
+				unchecked
+				{
+					fixed (byte* charsPtr = chars)
+					{
+						for (int i = 0; i < 20; i++) 
+						{
+							if (charsPtr[i] == 0) return i;
+						}
+						return 20;
+					}
+				}
+			}
+		}
+		
+		public int MaxLength { get { return 20; } }
+
+        public bool IsEmpty
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { fixed (byte* pfchars = chars) return *pfchars == 0; }
+        }
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Equals(FixedString20Layout other)
+		{
+			fixed (FixedString20Layout* pfself = &this)
+			{
+				/* -------------- compare as ints ------------ */
+				var pIntSelf = (int*) pfself;
+				var pIntOther = (int*) &other;
+				for (int i = 0; i < 5; i++)
+				{
+					if (*(pIntSelf++) == *(pIntOther++)) continue;
+					return false;
+				}
+ 				return true;
+
+			}
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Equals(string value)
+		{
+			unchecked
+			{
+				fixed (byte* charsPtr = chars)
+				fixed (char* valuePtr = value)
+				{
+					int i = 0;
+					while (i < 20) 
+					{
+						byte mine = charsPtr[i]; 
+						byte theirs = (byte) valuePtr[i];
+						if (mine != theirs) return false;
+						if (mine == 0 || theirs == 0) break;
+						++i;
+					}
+					return i == value.Length;
+				}
+			}
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int CompareTo(FixedString20Layout other)
+        {
+			unchecked
+			{
+				fixed (byte* pfchars = chars)
+				{
+					var pother = (byte*) &other;
+					for (int i = 0; i < 20; i++)
+					{
+						int result = *(pfchars + i) - *(pother + i);
+						if (result == 0) continue;
+						return result;
+					}
+					return 0;
+				}
+			}
+        }
+
+	    public string Value
+	    {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	        get
+			{
+				fixed (byte* charsPtr = chars)
+				{
+					int length = Length;
+					return length == 0 ? string.Empty : new string((sbyte*) charsPtr, 0, Length, System.Text.Encoding.ASCII);
+				}
+			}
+			
+	        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set
+			{
+				unchecked
+				{
+					fixed (byte* charsPtr = chars)
+					fixed (char* valuePtr = value)
+					{
+						char* pstr = valuePtr;
+						byte* pchars = charsPtr;
+						
+						if (value.Length >= 20)
+						{
+							for (int i = 0; i < 20; i++) { *(pchars++) = (byte) *(pstr++); }
+						}
+						else
+						{
+							while (*pstr != 0) { *(pchars++) = (byte) *(pstr++); }
+							*pchars = 0;
+						}
+					}
+				}
+			}
+	    }
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void TrimEnd()
+		{
+			unchecked
+			{
+				fixed (byte* begPtr = chars)
+				{
+					byte* endPtr = begPtr + 19;
+					
+					for (int i = 0; i < 20; i++)
+					{
+						if (*endPtr == 32)
+						{
+							*(endPtr--) = 0;
+							continue;
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		public override int GetHashCode()
+		{
+			fixed (FixedString20Layout* pfself = &this)
+			{
+				int hashCode = 37;
+				/* -------------- hash as ints ------------ */
+				var pIntSelf = (int*) pfself;
+				for (int i = 0; i < 5; i++)
+				{
+					hashCode = (hashCode*397) ^ *(pIntSelf++);
+				}
+
+				return hashCode;
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator string(FixedString20Layout value)
+		{
+			return value.Value;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator FixedString20Layout(string value)
+		{
+			var r = new FixedString20Layout();
+			if (string.IsNullOrEmpty(value)) return r;
+			r.Value = value;
+			return r;
+		}
+	}
+ 	
+	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 	internal unsafe struct FixedString24Layout : IEquatable<FixedString24Layout>, IComparable<FixedString24Layout>, IEquatable<string>
 	{
 		public fixed byte chars[24];
@@ -771,6 +1145,193 @@ namespace SpiderRock.DataFeed.Layouts
 		public static implicit operator FixedString32Layout(string value)
 		{
 			var r = new FixedString32Layout();
+			if (string.IsNullOrEmpty(value)) return r;
+			r.Value = value;
+			return r;
+		}
+	}
+ 	
+	[StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+	internal unsafe struct FixedString64Layout : IEquatable<FixedString64Layout>, IComparable<FixedString64Layout>, IEquatable<string>
+	{
+		public fixed byte chars[64];
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public override string ToString()
+		{
+			return Value;
+		}
+		
+		public int Length
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get
+			{
+				unchecked
+				{
+					fixed (byte* charsPtr = chars)
+					{
+						for (int i = 0; i < 64; i++) 
+						{
+							if (charsPtr[i] == 0) return i;
+						}
+						return 64;
+					}
+				}
+			}
+		}
+		
+		public int MaxLength { get { return 64; } }
+
+        public bool IsEmpty
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)] get { fixed (byte* pfchars = chars) return *pfchars == 0; }
+        }
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Equals(FixedString64Layout other)
+		{
+			fixed (FixedString64Layout* pfself = &this)
+			{
+				/* -------------- compare as ints ------------ */
+				var pIntSelf = (int*) pfself;
+				var pIntOther = (int*) &other;
+				for (int i = 0; i < 16; i++)
+				{
+					if (*(pIntSelf++) == *(pIntOther++)) continue;
+					return false;
+				}
+ 				return true;
+
+			}
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public bool Equals(string value)
+		{
+			unchecked
+			{
+				fixed (byte* charsPtr = chars)
+				fixed (char* valuePtr = value)
+				{
+					int i = 0;
+					while (i < 64) 
+					{
+						byte mine = charsPtr[i]; 
+						byte theirs = (byte) valuePtr[i];
+						if (mine != theirs) return false;
+						if (mine == 0 || theirs == 0) break;
+						++i;
+					}
+					return i == value.Length;
+				}
+			}
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int CompareTo(FixedString64Layout other)
+        {
+			unchecked
+			{
+				fixed (byte* pfchars = chars)
+				{
+					var pother = (byte*) &other;
+					for (int i = 0; i < 64; i++)
+					{
+						int result = *(pfchars + i) - *(pother + i);
+						if (result == 0) continue;
+						return result;
+					}
+					return 0;
+				}
+			}
+        }
+
+	    public string Value
+	    {
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	        get
+			{
+				fixed (byte* charsPtr = chars)
+				{
+					int length = Length;
+					return length == 0 ? string.Empty : new string((sbyte*) charsPtr, 0, Length, System.Text.Encoding.ASCII);
+				}
+			}
+			
+	        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set
+			{
+				unchecked
+				{
+					fixed (byte* charsPtr = chars)
+					fixed (char* valuePtr = value)
+					{
+						char* pstr = valuePtr;
+						byte* pchars = charsPtr;
+						
+						if (value.Length >= 64)
+						{
+							for (int i = 0; i < 64; i++) { *(pchars++) = (byte) *(pstr++); }
+						}
+						else
+						{
+							while (*pstr != 0) { *(pchars++) = (byte) *(pstr++); }
+							*pchars = 0;
+						}
+					}
+				}
+			}
+	    }
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void TrimEnd()
+		{
+			unchecked
+			{
+				fixed (byte* begPtr = chars)
+				{
+					byte* endPtr = begPtr + 63;
+					
+					for (int i = 0; i < 64; i++)
+					{
+						if (*endPtr == 32)
+						{
+							*(endPtr--) = 0;
+							continue;
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		public override int GetHashCode()
+		{
+			fixed (FixedString64Layout* pfself = &this)
+			{
+				int hashCode = 37;
+				/* -------------- hash as ints ------------ */
+				var pIntSelf = (int*) pfself;
+				for (int i = 0; i < 16; i++)
+				{
+					hashCode = (hashCode*397) ^ *(pIntSelf++);
+				}
+
+				return hashCode;
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator string(FixedString64Layout value)
+		{
+			return value.Value;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static implicit operator FixedString64Layout(string value)
+		{
+			var r = new FixedString64Layout();
 			if (string.IsNullOrEmpty(value)) return r;
 			r.Value = value;
 			return r;
