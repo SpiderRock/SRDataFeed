@@ -2057,10 +2057,10 @@ namespace SpiderRock.DataFeed
 		/// <summary>cumulative size at 2nd price</summary>
         public ushort CumAskSize2 { get { return body.cumAskSize2; } set { body.cumAskSize2 = value; } }
  
-		/// <summary>last bid price change (milliseconds since midnight)</summary>
+		/// <summary>last bid price change (milliseconds since midnight) calculated from the srcTimestamp</summary>
         public int BidTime { get { return body.bidTime; } set { body.bidTime = value; } }
  
-		/// <summary>last ask price change (milliseconds since midnight)</summary>
+		/// <summary>last ask price change (milliseconds since midnight) calculated from the srcTimestamp</summary>
         public int AskTime { get { return body.askTime; } set { body.askTime = value; } }
  
 		/// <summary>source high precision timestamp (if available)</summary>
@@ -3481,6 +3481,293 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // StockExchImbalance
+
+
+	/// <summary>
+	/// StockExchImbalanceV2:491
+	/// </summary>
+	/// <remarks>
+	/// StockExchImbalanceV2 records contain live exchange closing auction imbalance details.  Imbalance information can be available from more than one exchange for each ticker.
+	/// Final StockExchImbalanceV2 records are published to the SpiderRock elastic cluster nightly after the auction close.
+	/// </remarks>
+
+    public partial class StockExchImbalanceV2
+    {
+		public StockExchImbalanceV2()
+		{
+		}
+		
+		public StockExchImbalanceV2(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public StockExchImbalanceV2(StockExchImbalanceV2 source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal StockExchImbalanceV2(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as StockExchImbalanceV2);
+		}
+		
+		public bool Equals(StockExchImbalanceV2 other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(StockExchImbalanceV2 target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.StockExchImbalanceV2};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private TickerKey ticker;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				ticker = other.ticker;
+				
+			}
+			
+			
+			public TickerKey Ticker
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
+			}
+ 			/// <summary>Projected Auction Time (hhmm).</summary>
+			public DateTime AuctionTime
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.auctionTime; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.auctionTime = value; }
+			}
+ 			
+			public AuctionReason AuctionType
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.auctionType; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.auctionType = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				ticker = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.ticker = ticker;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.ticker = ticker;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // StockExchImbalanceV2.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public TickerKeyLayout ticker;
+ 			public DateTimeLayout auctionTime;
+ 			public AuctionReason auctionType;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	ticker.Equals(other.ticker) &&
+					 	auctionTime.Equals(other.auctionTime) &&
+					 	auctionType.Equals(other.auctionType);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = ticker.GetHashCode();
+ 					hashCode = (hashCode*397) ^ (auctionTime.GetHashCode());
+ 					hashCode = (hashCode*397) ^ ((int) auctionType);
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // StockExchImbalanceV2.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public float referencePx;
+			public int pairedQty;
+			public int totalImbalanceQty;
+			public int marketImbalanceQty;
+			public ImbalanceSide imbalanceSide;
+			public float continuousBookClrPx;
+			public float closingOnlyClrPx;
+			public float ssrFillingPx;
+			public float indicativeMatchPx;
+			public float upperCollar;
+			public float lowerCollar;
+			public AuctionStatus auctionStatus;
+			public YesNo freezeStatus;
+			public byte numExtensions;
+			public long netTimestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { }
+		
+		
+
+
+		/// <summary>For Pillar-powered markets, the Reference Price is used to calculate the Indicative Match Price.</summary>
+        public float ReferencePx { get { return body.referencePx; } set { body.referencePx = value; } }
+ 
+		/// <summary>For Pillar-powered markets, the number of shares paired off at the Indicative Match Price.</summary>
+        public int PairedQty { get { return body.pairedQty; } set { body.pairedQty = value; } }
+ 
+		/// <summary>For Pillar-powered markets, the total imbalance quantity at the Indicative Match Price.</summary>
+        public int TotalImbalanceQty { get { return body.totalImbalanceQty; } set { body.totalImbalanceQty = value; } }
+ 
+		/// <summary>For Pillar-powered markets, the total market order imbalance quantity at the Indicative Match Price.</summary>
+        public int MarketImbalanceQty { get { return body.marketImbalanceQty; } set { body.marketImbalanceQty = value; } }
+ 
+		/// <summary>The side of the TotalImbalanceQty.</summary>
+        public ImbalanceSide ImbalanceSide { get { return body.imbalanceSide; } set { body.imbalanceSide = value; } }
+ 
+		/// <summary>For Pillar-powered markets, the price at which all interest on the book can trade, including auction and imbalance offset interest, and disregarding auction collars.</summary>
+        public float ContinuousBookClrPx { get { return body.continuousBookClrPx; } set { body.continuousBookClrPx = value; } }
+ 
+		/// <summary>For Pillar-powered markets, the price at which all eligible auction-only interest would trade, subject to auction collars.</summary>
+        public float ClosingOnlyClrPx { get { return body.closingOnlyClrPx; } set { body.closingOnlyClrPx = value; } }
+ 
+		/// <summary>For Pillar-powered markets, not supported and defaulted to 0.</summary>
+        public float SsrFillingPx { get { return body.ssrFillingPx; } set { body.ssrFillingPx = value; } }
+ 
+		/// <summary>For Pillar-powered markets, the price that has the highest executable volume of auction-eligible shares, subject to auction collars. It includes the non-displayed quantity of Reserve Orders.</summary>
+        public float IndicativeMatchPx { get { return body.indicativeMatchPx; } set { body.indicativeMatchPx = value; } }
+ 
+		/// <summary>If the IndicativeMatchPrice is not strictly between the UpperCollar and the LowerCollar, special auction rules apply. See Rule 7.35P for details.</summary>
+        public float UpperCollar { get { return body.upperCollar; } set { body.upperCollar = value; } }
+ 
+		/// <summary>If the IndicativeMatchPrice is not strictly between the UpperCollar and the LowerCollar, special auction rules apply. See Rule 7.35P for details.</summary>
+        public float LowerCollar { get { return body.lowerCollar; } set { body.lowerCollar = value; } }
+ 
+		/// <summary>Indicates whether the auction will run.</summary>
+        public AuctionStatus AuctionStatus { get { return body.auctionStatus; } set { body.auctionStatus = value; } }
+ 
+		
+        public YesNo FreezeStatus { get { return body.freezeStatus; } set { body.freezeStatus = value; } }
+ 
+		/// <summary>Number of times the halt period has been extended.</summary>
+        public byte NumExtensions { get { return body.numExtensions; } set { body.numExtensions = value; } }
+ 
+		/// <summary>PTP timestamp</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+
+		
+		#endregion	
+
+    } // StockExchImbalanceV2
 
 
 	/// <summary>

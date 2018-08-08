@@ -891,6 +891,61 @@ namespace SpiderRock.DataFeed
         }
     }
 
+    public partial class StockExchImbalanceV2
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "ticker\tauctionTime\tauctionType\treferencePx\tpairedQty\ttotalImbalanceQty\tmarketImbalanceQty\timbalanceSide\tcontinuousBookClrPx\tclosingOnlyClrPx\tssrFillingPx\tindicativeMatchPx\tupperCollar\tlowerCollar\tauctionStatus\tfreezeStatus\tnumExtensions\tnetTimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Ticker);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(pkey.AuctionTime);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.AuctionType);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(ReferencePx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PairedQty);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TotalImbalanceQty);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MarketImbalanceQty);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ImbalanceSide);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ContinuousBookClrPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClosingOnlyClrPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SsrFillingPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IndicativeMatchPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UpperCollar);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(LowerCollar);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStatus);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(FreezeStatus);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NumExtensions);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NetTimestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class StockMarketSummary
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;

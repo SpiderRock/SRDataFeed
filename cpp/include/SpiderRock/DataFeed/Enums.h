@@ -47,6 +47,15 @@ namespace SpiderRock
 			RegulatoryImbalance=5
 		};
 
+ 		enum class AuctionStatus : Enum 
+		{
+			None=0,
+			WillRunOpenAndClose=1,
+			WillRunInterest=2,
+			WillNotRunImbalance=3,
+			WillNotRunClsAuction=4
+		};
+
  		enum class CalcSource : Enum 
 		{
 			None=0,
@@ -179,8 +188,8 @@ namespace SpiderRock
 		{
 			None=0,
 			Mid=1,
-			Bid=1,
-			Ask=2
+			Bid=2,
+			Ask=3
 		};
 
  		enum class StkExch : Enum 
@@ -269,7 +278,8 @@ namespace SpiderRock
 			USR1=20,
 			USR2=21,
 			USR3=22,
-			NSDQ=23
+			NSDQ=23,
+			MFQS=24
 		};
 
  		enum class UnderlierMode : Enum 
@@ -284,6 +294,13 @@ namespace SpiderRock
 			None=0,
 			PrcChange=1,
 			SizeOnly=2
+		};
+
+ 		enum class YesNo : Enum 
+		{
+			None=0,
+			Yes=1,
+			No=2
 		};
 
 			
