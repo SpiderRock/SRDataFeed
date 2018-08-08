@@ -181,6 +181,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, StockExchImbalanceV2 dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(StockExchImbalanceV2.PKeyLayout) + sizeof(StockExchImbalanceV2.BodyLayout) > max) throw new IOException("Max exceeded decoding StockExchImbalanceV2");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((StockExchImbalanceV2.PKeyLayout*) src); src += sizeof(StockExchImbalanceV2.PKeyLayout);
+ 				dest.body = *((StockExchImbalanceV2.BodyLayout*) src); src += sizeof(StockExchImbalanceV2.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, StockMarketSummary dest, byte* max)
 		{
 			unchecked

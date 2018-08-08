@@ -1768,6 +1768,165 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class StockExchImbalanceV2ContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<StockExchImbalanceV2> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<StockExchImbalanceV2> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<StockExchImbalanceV2> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<StockExchImbalanceV2>> Created;
+            public event EventHandler<ChangedEventArgs<StockExchImbalanceV2>> Changed;
+            public event EventHandler<UpdatedEventArgs<StockExchImbalanceV2>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<StockExchImbalanceV2> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<StockExchImbalanceV2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<StockExchImbalanceV2> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<StockExchImbalanceV2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<StockExchImbalanceV2> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<StockExchImbalanceV2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(StockExchImbalanceV2 obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<StockExchImbalanceV2>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<StockExchImbalanceV2> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockExchImbalanceV2.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(StockExchImbalanceV2 obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<StockExchImbalanceV2>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<StockExchImbalanceV2> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockExchImbalanceV2.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(StockExchImbalanceV2 current, StockExchImbalanceV2 previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<StockExchImbalanceV2> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "StockExchImbalanceV2.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<StockExchImbalanceV2.PKeyLayout, StockExchImbalanceV2> objectsByKey = new Dictionary<StockExchImbalanceV2.PKeyLayout, StockExchImbalanceV2>();
+            
+            [ThreadStatic] private static StockExchImbalanceV2 decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(StockExchImbalanceV2.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(StockExchImbalanceV2.PKeyLayout))));
+                }           
+                
+                StockExchImbalanceV2.PKeyLayout pkey = *(StockExchImbalanceV2.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                StockExchImbalanceV2 item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new StockExchImbalanceV2(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new StockExchImbalanceV2();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class StockMarketSummaryContainerCache
         {
             #region Events
@@ -2102,6 +2261,7 @@ namespace SpiderRock.DataFeed
          private readonly SpreadBookQuoteContainerCache spreadBookQuoteContainerCache = new SpreadBookQuoteContainerCache();
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
          private readonly StockExchImbalanceContainerCache stockExchImbalanceContainerCache = new StockExchImbalanceContainerCache();
+         private readonly StockExchImbalanceV2ContainerCache stockExchImbalanceV2ContainerCache = new StockExchImbalanceV2ContainerCache();
          private readonly StockMarketSummaryContainerCache stockMarketSummaryContainerCache = new StockMarketSummaryContainerCache();
          private readonly StockPrintContainerCache stockPrintContainerCache = new StockPrintContainerCache();
 
@@ -2123,6 +2283,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.SpreadBookQuote, spreadBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockExchImbalance, stockExchImbalanceContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.StockExchImbalanceV2, stockExchImbalanceV2ContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockMarketSummary, stockMarketSummaryContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockPrint, stockPrintContainerCache.OnMessage);
 
@@ -2142,6 +2303,7 @@ namespace SpiderRock.DataFeed
              spreadBookQuoteContainerCache.Clear();
              stockBookQuoteContainerCache.Clear();
              stockExchImbalanceContainerCache.Clear();
+             stockExchImbalanceV2ContainerCache.Clear();
              stockMarketSummaryContainerCache.Clear();
              stockPrintContainerCache.Clear();
 
@@ -2347,6 +2509,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { stockExchImbalanceContainerCache.Updated += value; } }
             remove  { lock (eventLock) { stockExchImbalanceContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<StockExchImbalanceV2>> StockExchImbalanceV2Created
+        {
+            add     { lock (eventLock) { stockExchImbalanceV2ContainerCache.Created += value; } }
+            remove  { lock (eventLock) { stockExchImbalanceV2ContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<StockExchImbalanceV2>> StockExchImbalanceV2Changed
+        {
+            add     { lock (eventLock) { stockExchImbalanceV2ContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { stockExchImbalanceV2ContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<StockExchImbalanceV2>> StockExchImbalanceV2Updated
+        {
+            add     { lock (eventLock) { stockExchImbalanceV2ContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { stockExchImbalanceV2ContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<StockMarketSummary>> StockMarketSummaryCreated
