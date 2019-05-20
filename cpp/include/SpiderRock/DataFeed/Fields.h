@@ -173,13 +173,11 @@ namespace SpiderRock
 
 			inline size_t operator()(const ExpiryKey& k) const
 			{
-				auto ptr = reinterpret_cast<const int32_t*>(&k);
+				auto ptr = reinterpret_cast<const int64_t*>(&k);
 
 				size_t hash_code = *ptr;
 				hash_code = (hash_code * 397) ^ *(ptr + 1);
-				hash_code = (hash_code * 397) ^ *(ptr + 2);
-				hash_code = (hash_code * 397) ^ *(ptr + 3);
-				hash_code = (hash_code * 397) ^ *(ptr + 4);
+				hash_code = (hash_code * 397) ^ *(int8_t*)(ptr + 2);
 
 				return hash_code;
 			}
@@ -188,7 +186,10 @@ namespace SpiderRock
 			{
 				auto self_ptr = reinterpret_cast<const int64_t*>(this);
 				auto other_ptr = reinterpret_cast<const int64_t*>(&other);
-				return *self_ptr == *other_ptr && *(self_ptr + 1) == *(other_ptr + 1);
+				return 
+					*self_ptr == *other_ptr && 
+					*(self_ptr + 1) == *(other_ptr + 1) &&
+					*(int8_t*)(self_ptr + 1) == *(int8_t*)(other_ptr + 1);
 			}
 		};
 
@@ -219,21 +220,23 @@ namespace SpiderRock
 
 			inline size_t operator()(const TickerKey& k) const
 			{
-				auto ptr = reinterpret_cast<const int32_t*>(&k);
+				auto ptr = reinterpret_cast<const int64_t*>(&k);
 
 				size_t hash_code = *ptr;
-				hash_code = (hash_code * 397) ^ *(ptr + 1);
-				hash_code = (hash_code * 397) ^ *(ptr + 2);
-				hash_code = (hash_code * 397) ^ *(ptr + 3);
+				hash_code = (hash_code * 397) ^ *(int32_t*)(ptr + 1);
+				// only using 12 of the 14 bytes, betting on the fact
+				// that most tickers are empty at the end
+				// the equality should fill that gap
 
 				return hash_code;
 			}
 
 			inline bool operator==(const TickerKey &other) const
 			{
-				auto self_ptr = reinterpret_cast<const int64_t*>(this);
-				auto other_ptr = reinterpret_cast<const int64_t*>(&other);
-				return *self_ptr == *other_ptr && *(self_ptr + 1) == *(other_ptr + 1);
+				return 
+					ticker_ == other.ticker_ && 
+					asset_type_ == other.asset_type_ && 
+					ticker_source_ == other.ticker_source_;
 			}
 		};
 
@@ -285,12 +288,12 @@ namespace SpiderRock
 
 			inline size_t operator()(const OptionKey& k) const
 			{
-				auto ptr = reinterpret_cast<const int32_t*>(&k);
+				auto ptr = reinterpret_cast<const int64_t*>(&k);
 
 				size_t hash_code = *ptr;
 				hash_code = (hash_code * 397) ^ *(ptr + 1);
 				hash_code = (hash_code * 397) ^ *(ptr + 2);
-				hash_code = (hash_code * 397) ^ *(ptr + 3);
+				hash_code = (hash_code * 397) ^ *(int16_t*)(ptr + 3);
 
 				return hash_code;
 			}
@@ -299,7 +302,11 @@ namespace SpiderRock
 			{
 				auto self_ptr = reinterpret_cast<const int64_t*>(this);
 				auto other_ptr = reinterpret_cast<const int64_t*>(&other);
-				return *self_ptr == *other_ptr && *(self_ptr + 1) == *(other_ptr + 1);
+				return 
+					*self_ptr == *other_ptr && 
+					*(self_ptr + 1) == *(other_ptr + 1) &&
+					*(self_ptr + 2) == *(other_ptr + 2) &&
+					*(int16_t*)(self_ptr + 3) == *(int16_t*)(other_ptr + 3);
 			}
 		};
 
