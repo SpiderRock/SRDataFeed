@@ -136,6 +136,75 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, ProductDefinitionV2 dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(ProductDefinitionV2.PKeyLayout) + sizeof(ProductDefinitionV2.BodyLayout) > max) throw new IOException("Max exceeded decoding ProductDefinitionV2");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((ProductDefinitionV2.PKeyLayout*) src); src += sizeof(ProductDefinitionV2.PKeyLayout);
+ 				dest.body = *((ProductDefinitionV2.BodyLayout*) src); src += sizeof(ProductDefinitionV2.BodyLayout);
+ 
+				// LegsItem Repeat Section
+
+				if (src + sizeof(ushort) > max) throw new IOException("Max exceeded decoding ProductDefinitionV2.Legs length");
+				ushort size = *((ushort*) src); src += sizeof(ushort);
+				if (src + size * ProductDefinitionV2.LegsItem.Length > max) throw new IOException("Max exceeded decoding ProductDefinitionV2.Legs items");
+
+				dest.LegsList = new ProductDefinitionV2.LegsItem[size];
+				
+				for (int i = 0; i < size; i++)
+				{
+					var item = new ProductDefinitionV2.LegsItem();
+					item.LegID = *((FixedString24Layout*) src); src += sizeof(FixedString24Layout);
+ 					item.SecKey = OptionKey.GetCreateOptionKey(*((OptionKeyLayout*) src)); src += sizeof(OptionKeyLayout);
+ 					item.SecType = *((SpdrKeyType*) src); src++;
+ 					item.Side = *((BuySell*) src); src++;
+ 					item.Ratio = *((ushort*) src); src += sizeof(ushort);
+ 					item.RefDelta = *((float*) src); src += sizeof(float);
+ 					item.RefPrc = *((double*) src); src += sizeof(double);
+
+					dest.LegsList[i] = item;
+				}
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, RootDefinition dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(RootDefinition.PKeyLayout) + sizeof(RootDefinition.BodyLayout) > max) throw new IOException("Max exceeded decoding RootDefinition");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((RootDefinition.PKeyLayout*) src); src += sizeof(RootDefinition.PKeyLayout);
+ 				dest.body = *((RootDefinition.BodyLayout*) src); src += sizeof(RootDefinition.BodyLayout);
+ 
+				// UnderlyingItem Repeat Section
+
+				if (src + sizeof(ushort) > max) throw new IOException("Max exceeded decoding RootDefinition.Underlying length");
+				ushort size = *((ushort*) src); src += sizeof(ushort);
+				if (src + size * RootDefinition.UnderlyingItem.Length > max) throw new IOException("Max exceeded decoding RootDefinition.Underlying items");
+
+				dest.UnderlyingList = new RootDefinition.UnderlyingItem[size];
+				
+				for (int i = 0; i < size; i++)
+				{
+					var item = new RootDefinition.UnderlyingItem();
+					item.Ticker = TickerKey.GetCreateTickerKey(*((TickerKeyLayout*) src)); src += sizeof(TickerKeyLayout);
+ 					item.Spc = *((float*) src); src += sizeof(float);
+
+					dest.UnderlyingList[i] = item;
+				}
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, SpreadBookQuote dest, byte* max)
 		{
 			unchecked
@@ -220,6 +289,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 				dest.header = *((Header*) src); src += sizeof(Header);
 				dest.pkey.body = *((StockPrint.PKeyLayout*) src); src += sizeof(StockPrint.PKeyLayout);
  				dest.body = *((StockPrint.BodyLayout*) src); src += sizeof(StockPrint.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, TickerDefinition dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(TickerDefinition.PKeyLayout) + sizeof(TickerDefinition.BodyLayout) > max) throw new IOException("Max exceeded decoding TickerDefinition");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((TickerDefinition.PKeyLayout*) src); src += sizeof(TickerDefinition.PKeyLayout);
+ 				dest.body = *((TickerDefinition.BodyLayout*) src); src += sizeof(TickerDefinition.BodyLayout);
 			
 				return src;
 			}

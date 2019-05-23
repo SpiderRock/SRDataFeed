@@ -24,12 +24,15 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType OptionNbboQuote = 260;
  		public static readonly MessageType OptionPrint = 300;
  		public static readonly MessageType OptionRiskFactor = 2320;
+ 		public static readonly MessageType ProductDefinitionV2 = 2455;
+ 		public static readonly MessageType RootDefinition = 240;
  		public static readonly MessageType SpreadBookQuote = 525;
  		public static readonly MessageType StockBookQuote = 430;
  		public static readonly MessageType StockExchImbalance = 490;
  		public static readonly MessageType StockExchImbalanceV2 = 491;
  		public static readonly MessageType StockMarketSummary = 445;
  		public static readonly MessageType StockPrint = 440;
+ 		public static readonly MessageType TickerDefinition = 420;
 
 		internal static readonly MessageType CacheComplete = 4106;
  		internal static readonly MessageType GetCache = 4096;
@@ -48,12 +51,15 @@ namespace SpiderRock.DataFeed
  			isCore[OptionNbboQuote] = true;
  			isCore[OptionPrint] = true;
  			isCore[OptionRiskFactor] = true;
+ 			isCore[ProductDefinitionV2] = true;
+ 			isCore[RootDefinition] = true;
  			isCore[SpreadBookQuote] = true;
  			isCore[StockBookQuote] = true;
  			isCore[StockExchImbalance] = true;
  			isCore[StockExchImbalanceV2] = true;
  			isCore[StockMarketSummary] = true;
  			isCore[StockPrint] = true;
+ 			isCore[TickerDefinition] = true;
 
 			
 			return isCore;
@@ -86,12 +92,15 @@ namespace SpiderRock.DataFeed
  			names[OptionNbboQuote] = "OptionNbboQuote";
  			names[OptionPrint] = "OptionPrint";
  			names[OptionRiskFactor] = "OptionRiskFactor";
+ 			names[ProductDefinitionV2] = "ProductDefinitionV2";
+ 			names[RootDefinition] = "RootDefinition";
  			names[SpreadBookQuote] = "SpreadBookQuote";
  			names[StockBookQuote] = "StockBookQuote";
  			names[StockExchImbalance] = "StockExchImbalance";
  			names[StockExchImbalanceV2] = "StockExchImbalanceV2";
  			names[StockMarketSummary] = "StockMarketSummary";
  			names[StockPrint] = "StockPrint";
+ 			names[TickerDefinition] = "TickerDefinition";
 
 			
 			return names;
