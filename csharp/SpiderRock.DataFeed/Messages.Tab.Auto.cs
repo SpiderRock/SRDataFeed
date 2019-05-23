@@ -203,7 +203,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "ticker\tpriceSource\tidxBid\tidxAsk\tidxPrice\tnetTimestamp";
+		public const string TabHeader = "ticker\tpriceSource\tidxBid\tidxAsk\tidxPrice\tnetTimestamp\ttimestamp";
 
 		public string TabRecord
         {
@@ -224,6 +224,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(IdxPrice);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(NetTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
 
 				return recordBuilder.ToString();
 			}
@@ -234,7 +236,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "ekey\tsurfaceType\tdate\ttime\tticker\tfkey\tuBid\tuAsk\tyears\trate\tddiv\texType\tmodelType\tearnCnt\tearnCntAdj\taxisVolRT\taxisFUPrc\tmoneynessType\tunderlierMode\tatmVol\tatmCen\tminAtmVol\tmaxAtmVol\teMove\tuPrcOffset\tuPrcOffsetEMA\tsdiv\tsdivEMA\tatmMove\tatmCenMove\tatmVega\tslope\tvarSwapFV\tgridType\tminXAxis\tmaxXAxis\txAxisScale\txAxisOffset\tskewD11\tskewD10\tskewD9\tskewD8\tskewD7\tskewD6\tskewD5\tskewD4\tskewD3\tskewD2\tskewD1\tskewC0\tskewU1\tskewU2\tskewU3\tskewU4\tskewU5\tskewU6\tskewU7\tskewU8\tskewU9\tskewU10\tskewU11\tsdivD3\tsdivD2\tsdivD1\tsdivU1\tsdivU2\tsdivU3\tpwidth\tvwidth\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tsEKey\tsType\tsTimestamp\tcounter\tskewCounter\tsdivCounter\tsurfaceResult\ttimestamp";
+		public const string TabHeader = "ekey\tsurfaceType\tdate\ttime\tticker\tfkey\tuBid\tuAsk\tyears\trate\tddiv\texType\tmodelType\tearnCnt\tearnCntAdj\taxisVolRT\taxisFUPrc\tmoneynessType\tunderlierMode\tatmVol\tatmCen\tatmVolHist\tatmCenHist\tminAtmVol\tmaxAtmVol\tminCPAdjVal\tmaxCPAdjVal\teMove\teMoveHist\tuPrcOffset\tuPrcOffsetEMA\tsdiv\tsdivEMA\tatmMove\tatmCenMove\tatmVega\tslope\tvarSwapFV\tgridType\tminXAxis\tmaxXAxis\txAxisScale\txAxisOffset\tskewD11\tskewD10\tskewD9\tskewD8\tskewD7\tskewD6\tskewD5\tskewD4\tskewD3\tskewD2\tskewD1\tskewC0\tskewU1\tskewU2\tskewU3\tskewU4\tskewU5\tskewU6\tskewU7\tskewU8\tskewU9\tskewU10\tskewU11\tsdivD3\tsdivD2\tsdivD1\tsdivU1\tsdivU2\tsdivU3\tpwidth\tvwidth\tcCnt\tpCnt\tcBidMiss\tcAskMiss\tpBidMiss\tpAskMiss\tfitAvgErr\tfitAvgAbsErr\tfitMaxPrcErr\tfitErrXX\tfitErrCP\tfitErrBid\tfitErrAsk\tfitErrPrc\tfitErrVol\tsEKey\tsType\tsTimestamp\tcounter\tskewCounter\tsdivCounter\tsurfaceResult\ttimestamp";
 
 		public string TabRecord
         {
@@ -286,11 +288,21 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AtmCen);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(AtmVolHist);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AtmCenHist);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(MinAtmVol);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(MaxAtmVol);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(MinCPAdjVal);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MaxCPAdjVal);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(EMove);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(EMoveHist);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(UPrcOffset);
 				recordBuilder.Append("\t");
@@ -732,11 +744,199 @@ namespace SpiderRock.DataFeed
         }
     }
 
+    public partial class ProductDefinitionV2
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "secKey_rt\tsecKey_ts\tsecKey_at\tsecKey_yr\tsecKey_mn\tsecKey_dy\tsecKey_xx\tsecKey_cp\tsecType\tsecurityID\tproductClass\tunderlierID\tundKey\tundType\tproductGroup\tsecurityGroup\tmarketSegmentID\tsecurityDesc\texchange\tproductType\tproductTerm\tproductIndexType\tproductRate\tcontractSize\tcontractUnit\tpriceFormat\tminTickSize\tdisplayFactor\tstrikeScale\tminLotSize\tbookDepth\timpliedBookDepth\timpMarketInd\tminPriceIncrementAmount\tparValue\tcontMultiplier\tcabPrice\ttradeCurr\tsettleCurr\tstrikeCurr\texpiration\tmaturity\texerciseType\tuserDefined\tdecayStartYear\tdecayStartMonth\tdecayStartDay\tdecayQty\tpriceRatio\ttimestamp\tLegs";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.SecKey.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.SecType);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(SecurityID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ProductClass);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UnderlierID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UndKey);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UndType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ProductGroup);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SecurityGroup);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MarketSegmentID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SecurityDesc);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Exchange);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ProductType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ProductTerm);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ProductIndexType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ProductRate);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ContractSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ContractUnit);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PriceFormat);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinTickSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DisplayFactor);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StrikeScale);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinLotSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BookDepth);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ImpliedBookDepth);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ImpMarketInd);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinPriceIncrementAmount);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ParValue);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ContMultiplier);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CabPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TradeCurr);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SettleCurr);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StrikeCurr);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Expiration);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Maturity);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExerciseType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UserDefined);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DecayStartYear);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DecayStartMonth);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DecayStartDay);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DecayQty);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PriceRatio);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
+    public partial class RootDefinition
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "root\tticker\tosiRoot\tccode\texpirationMap\tunderlierMode\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tmoneynessType\tpriceQuoteType\tvolumeTier\tpositionLimit\texchanges\ttickValue\tpointValue\tstrikeScale\tstrikeRatio\tcashOnExercise\tunderliersPerCn\tpremiumMult\tadjConvention\toptPriceInc\tpriceFormat\ttradeCurr\tsettleCurr\tstrikeCurr\tdefaultSurfaceRoot\ttimestamp\tUnderlying";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Root);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(Ticker);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OsiRoot);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Ccode);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExpirationMap);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UnderlierMode);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OptionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Multihedge);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExerciseTime);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExerciseType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TimeMetric);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PricingModel);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MoneynessType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PriceQuoteType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(VolumeTier);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PositionLimit);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Exchanges);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TickValue);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PointValue);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StrikeScale);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StrikeRatio);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CashOnExercise);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UnderliersPerCn);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PremiumMult);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AdjConvention);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OptPriceInc);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PriceFormat);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TradeCurr);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SettleCurr);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StrikeCurr);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DefaultSurfaceRoot);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class SpreadBookQuote
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "skey\tupdateType\tbidMask1\taskMask1\tbidPrice1\taskPrice1\tbidSize1\taskSize1\tbidPrice2\taskPrice2\tbidSize2\taskSize2\tbidTime\taskTime\tsrcTimestamp\tnetTimestamp";
+		public const string TabHeader = "skey\tisTest\tticker\tbidPrice1\taskPrice1\tbidSize1\taskSize1\tbidPrice2\taskPrice2\tbidSize2\taskSize2\tbidExch1\taskExch1\tbidMask1\taskMask1\tbidTime\taskTime\tupdateType\tsrcTimestamp\tnetTimestamp\ttimestamp";
 
 		public string TabRecord
         {
@@ -747,12 +947,10 @@ namespace SpiderRock.DataFeed
 
 				recordBuilder.Append(pkey.Skey);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.IsTest);
+				recordBuilder.Append("\t");
 
-				recordBuilder.Append(UpdateType);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(BidMask1);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(AskMask1);
+				recordBuilder.Append(Ticker);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(BidPrice1);
 				recordBuilder.Append("\t");
@@ -770,13 +968,25 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AskSize2);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(BidExch1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskExch1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BidMask1);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AskMask1);
+				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(BidTime);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(AskTime);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(UpdateType);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(SrcTimestamp);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(NetTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
 
 				return recordBuilder.ToString();
 			}
@@ -850,7 +1060,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "ticker\texch\treferencePx\tpairedQty\ttotalImbalanceQty\tmarketImbalanceQty\tauctionTime\tauctionType\timbalanceSide\tcontinuousBookClrPx\tclosingOnlyClrPx\tssrFillingPx\tnetTimestamp";
+		public const string TabHeader = "ticker\tauctionTime\tauctionType\treferencePx\tpairedQty\ttotalImbalanceQty\tmarketImbalanceQty\timbalanceSide\tcontinuousBookClrPx\tclosingOnlyClrPx\tssrFillingPx\tindicativeMatchPx\tupperCollar\tlowerCollar\tauctionStatus\tfreezeStatus\tnumExtensions\tsourceTime\tnetTimestamp";
 
 		public string TabRecord
         {
@@ -861,7 +1071,9 @@ namespace SpiderRock.DataFeed
 
 				recordBuilder.Append(pkey.Ticker);
 				recordBuilder.Append("\t");
-				recordBuilder.Append(pkey.Exch);
+				recordBuilder.AppendInTabRecordFormat(pkey.AuctionTime);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.AuctionType);
 				recordBuilder.Append("\t");
 
 				recordBuilder.Append(ReferencePx);
@@ -872,10 +1084,6 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(MarketImbalanceQty);
 				recordBuilder.Append("\t");
-				recordBuilder.AppendInTabRecordFormat(AuctionTime);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(AuctionType);
-				recordBuilder.Append("\t");
 				recordBuilder.Append(ImbalanceSide);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(ContinuousBookClrPx);
@@ -883,6 +1091,20 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(ClosingOnlyClrPx);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(SsrFillingPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IndicativeMatchPx);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(UpperCollar);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(LowerCollar);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStatus);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(FreezeStatus);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NumExtensions);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(SourceTime);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(NetTimestamp);
 
@@ -1064,6 +1286,73 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(PrtTimestamp);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(NetTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
+    public partial class TickerDefinition
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "ticker\tsymbolType\tname\tindNum\tsubNum\tgrpNum\tprimaryExch\tsymbol\tissueClass\tsecurityID\tsic\tcusip\ttapeCode\tstkPriceInc\tstkVolume\tfutVolume\toptVolume\texchString\tnumOptions\tsharesOutstanding\ttimeMetric\ttickPilotGroup\ttkDefSource\ttimestamp";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.Ticker);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(SymbolType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Name);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IndNum);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SubNum);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(GrpNum);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrimaryExch);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Symbol);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IssueClass);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SecurityID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Sic);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Cusip);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TapeCode);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StkPriceInc);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(StkVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(FutVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OptVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExchString);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NumOptions);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SharesOutstanding);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TimeMetric);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TickPilotGroup);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TkDefSource);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 

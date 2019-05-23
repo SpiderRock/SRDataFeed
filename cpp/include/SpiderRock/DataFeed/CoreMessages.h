@@ -261,6 +261,7 @@ private:
 		Double idxAsk;
 		Double idxPrice;
 		Long netTimestamp;
+		DateTime timestamp;
 	};
 	
 	Header header_;
@@ -280,6 +281,7 @@ public:
 	inline Double idxAsk() const { return layout_.idxAsk; }
 	inline Double idxPrice() const { return layout_.idxPrice; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -346,9 +348,14 @@ private:
 		UnderlierMode underlierMode;
 		Float atmVol;
 		Float atmCen;
+		Float atmVolHist;
+		Float atmCenHist;
 		Float minAtmVol;
 		Float maxAtmVol;
+		Float minCPAdjVal;
+		Float maxCPAdjVal;
 		Float eMove;
+		Float eMoveHist;
 		Float uPrcOffset;
 		Float uPrcOffsetEMA;
 		Float sdiv;
@@ -450,9 +457,14 @@ public:
 	inline UnderlierMode underlierMode() const { return layout_.underlierMode; }
 	inline Float atmVol() const { return layout_.atmVol; }
 	inline Float atmCen() const { return layout_.atmCen; }
+	inline Float atmVolHist() const { return layout_.atmVolHist; }
+	inline Float atmCenHist() const { return layout_.atmCenHist; }
 	inline Float minAtmVol() const { return layout_.minAtmVol; }
 	inline Float maxAtmVol() const { return layout_.maxAtmVol; }
+	inline Float minCPAdjVal() const { return layout_.minCPAdjVal; }
+	inline Float maxCPAdjVal() const { return layout_.maxCPAdjVal; }
 	inline Float eMove() const { return layout_.eMove; }
+	inline Float eMoveHist() const { return layout_.eMoveHist; }
 	inline Float uPrcOffset() const { return layout_.uPrcOffset; }
 	inline Float uPrcOffsetEMA() const { return layout_.uPrcOffsetEMA; }
 	inline Float sdiv() const { return layout_.sdiv; }
@@ -953,19 +965,22 @@ public:
 
 };
 
- class SpreadBookQuote
+ class ProductDefinitionV2
 {
 public:
 	class Key
 	{
-		TickerKey skey_;
+		OptionKey secKey_;
+		SpdrKeyType secType_;
 		
 	public:
-		inline const TickerKey& skey() const { return skey_; }
+		inline const OptionKey& secKey() const { return secKey_; }
+		inline SpdrKeyType secType() const { return secType_; }
 
 		inline size_t operator()(const Key& k) const
 		{
-			size_t hash_code = TickerKey()(k.skey_);
+			size_t hash_code = OptionKey()(k.secKey_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.secType_));
 
 			return hash_code;
 		}
@@ -973,7 +988,325 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.skey_ == b.skey_;
+				a.secKey_ == b.secKey_
+				&& a.secType_ == b.secType_;
+		}
+	};
+	
+	class Legs
+	{
+		String<24> legID_;
+		OptionKey secKey_;
+		SpdrKeyType secType_;
+		BuySell side_;
+		UShort ratio_;
+		Float refDelta_;
+		Double refPrc_;
+		
+	public:
+		inline const String<24>& legID() const { return legID_; }
+		inline const OptionKey& secKey() const { return secKey_; }
+		inline SpdrKeyType secType() const { return secType_; }
+		inline BuySell side() const { return side_; }
+		inline UShort ratio() const { return ratio_; }
+		inline Float refDelta() const { return refDelta_; }
+		inline Double refPrc() const { return refPrc_; }
+		inline void legID(const String<24>& value) { legID_ = value; }
+		inline void secKey(const OptionKey& value) { secKey_ = value; }
+		inline void secType(SpdrKeyType value) { secType_ = value; }
+		inline void side(BuySell value) { side_ = value; }
+		inline void ratio(UShort value) { ratio_ = value; }
+		inline void refDelta(Float value) { refDelta_ = value; }
+		inline void refPrc(Double value) { refPrc_ = value; }
+	};
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		String<24> securityID;
+		ProductClass productClass;
+		Long underlierID;
+		ExpiryKey undKey;
+		SpdrKeyType undType;
+		String<6> productGroup;
+		String<6> securityGroup;
+		Int marketSegmentID;
+		String<80> securityDesc;
+		String<8> exchange;
+		ProductType productType;
+		ProductTerm productTerm;
+		ProductIndexType productIndexType;
+		Float productRate;
+		Float contractSize;
+		ContractUnit contractUnit;
+		PriceFormat priceFormat;
+		Double minTickSize;
+		Double displayFactor;
+		Double strikeScale;
+		Short minLotSize;
+		Short bookDepth;
+		Short impliedBookDepth;
+		Short impMarketInd;
+		Float minPriceIncrementAmount;
+		Float parValue;
+		Float contMultiplier;
+		Double cabPrice;
+		Currency tradeCurr;
+		Currency settleCurr;
+		Currency strikeCurr;
+		DateTime expiration;
+		DateKey maturity;
+		ExerciseType exerciseType;
+		YesNo userDefined;
+		Short decayStartYear;
+		Byte decayStartMonth;
+		Byte decayStartDay;
+		Int decayQty;
+		Double priceRatio;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	vector<Legs>legs_;
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline const String<24>& securityID() const { return layout_.securityID; }
+	inline ProductClass productClass() const { return layout_.productClass; }
+	inline Long underlierID() const { return layout_.underlierID; }
+	inline const ExpiryKey& undKey() const { return layout_.undKey; }
+	inline SpdrKeyType undType() const { return layout_.undType; }
+	inline const String<6>& productGroup() const { return layout_.productGroup; }
+	inline const String<6>& securityGroup() const { return layout_.securityGroup; }
+	inline Int marketSegmentID() const { return layout_.marketSegmentID; }
+	inline const String<80>& securityDesc() const { return layout_.securityDesc; }
+	inline const String<8>& exchange() const { return layout_.exchange; }
+	inline ProductType productType() const { return layout_.productType; }
+	inline ProductTerm productTerm() const { return layout_.productTerm; }
+	inline ProductIndexType productIndexType() const { return layout_.productIndexType; }
+	inline Float productRate() const { return layout_.productRate; }
+	inline Float contractSize() const { return layout_.contractSize; }
+	inline ContractUnit contractUnit() const { return layout_.contractUnit; }
+	inline PriceFormat priceFormat() const { return layout_.priceFormat; }
+	inline Double minTickSize() const { return layout_.minTickSize; }
+	inline Double displayFactor() const { return layout_.displayFactor; }
+	inline Double strikeScale() const { return layout_.strikeScale; }
+	inline Short minLotSize() const { return layout_.minLotSize; }
+	inline Short bookDepth() const { return layout_.bookDepth; }
+	inline Short impliedBookDepth() const { return layout_.impliedBookDepth; }
+	inline Short impMarketInd() const { return layout_.impMarketInd; }
+	inline Float minPriceIncrementAmount() const { return layout_.minPriceIncrementAmount; }
+	inline Float parValue() const { return layout_.parValue; }
+	inline Float contMultiplier() const { return layout_.contMultiplier; }
+	inline Double cabPrice() const { return layout_.cabPrice; }
+	inline Currency tradeCurr() const { return layout_.tradeCurr; }
+	inline Currency settleCurr() const { return layout_.settleCurr; }
+	inline Currency strikeCurr() const { return layout_.strikeCurr; }
+	inline DateTime expiration() const { return layout_.expiration; }
+	inline DateKey maturity() const { return layout_.maturity; }
+	inline ExerciseType exerciseType() const { return layout_.exerciseType; }
+	inline YesNo userDefined() const { return layout_.userDefined; }
+	inline Short decayStartYear() const { return layout_.decayStartYear; }
+	inline Byte decayStartMonth() const { return layout_.decayStartMonth; }
+	inline Byte decayStartDay() const { return layout_.decayStartDay; }
+	inline Int decayQty() const { return layout_.decayQty; }
+	inline Double priceRatio() const { return layout_.priceRatio; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<ProductDefinitionV2::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+		// Legs Repeat Section
+		auto legs_count = *reinterpret_cast<uint16_t*>(ptr);
+		ptr += sizeof(legs_count);
+
+		for (int i = 0; i < legs_count; i++)
+		{
+			legs_.push_back(*reinterpret_cast<Legs*>(ptr));
+			ptr += sizeof(Legs);
+		}
+
+	}
+
+};
+
+ class RootDefinition
+{
+public:
+	class Key
+	{
+		TickerKey root_;
+		
+	public:
+		inline const TickerKey& root() const { return root_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = TickerKey()(k.root_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.root_ == b.root_;
+		}
+	};
+	
+	class Underlying
+	{
+		TickerKey ticker_;
+		Float spc_;
+		
+	public:
+		inline const TickerKey& ticker() const { return ticker_; }
+		inline Float spc() const { return spc_; }
+		inline void ticker(const TickerKey& value) { ticker_ = value; }
+		inline void spc(Float value) { spc_ = value; }
+	};
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		TickerKey ticker;
+		String<8> osiRoot;
+		TickerKey ccode;
+		ExpirationMap expirationMap;
+		UnderlierMode underlierMode;
+		OptionType optionType;
+		Multihedge multihedge;
+		ExerciseTime exerciseTime;
+		ExerciseType exerciseType;
+		TimeMetric timeMetric;
+		PricingModel pricingModel;
+		MoneynessType moneynessType;
+		PriceQuoteType priceQuoteType;
+		VolumeTier volumeTier;
+		Int positionLimit;
+		String<24> exchanges;
+		Float tickValue;
+		Float pointValue;
+		Double strikeScale;
+		Float strikeRatio;
+		Float cashOnExercise;
+		Int underliersPerCn;
+		Double premiumMult;
+		AdjConvention adjConvention;
+		OptPriceInc optPriceInc;
+		PriceFormat priceFormat;
+		Currency tradeCurr;
+		Currency settleCurr;
+		Currency strikeCurr;
+		TickerKey defaultSurfaceRoot;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	vector<Underlying>underlying_;
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline const TickerKey& ticker() const { return layout_.ticker; }
+	inline const String<8>& osiRoot() const { return layout_.osiRoot; }
+	inline const TickerKey& ccode() const { return layout_.ccode; }
+	inline ExpirationMap expirationMap() const { return layout_.expirationMap; }
+	inline UnderlierMode underlierMode() const { return layout_.underlierMode; }
+	inline OptionType optionType() const { return layout_.optionType; }
+	inline Multihedge multihedge() const { return layout_.multihedge; }
+	inline ExerciseTime exerciseTime() const { return layout_.exerciseTime; }
+	inline ExerciseType exerciseType() const { return layout_.exerciseType; }
+	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
+	inline PricingModel pricingModel() const { return layout_.pricingModel; }
+	inline MoneynessType moneynessType() const { return layout_.moneynessType; }
+	inline PriceQuoteType priceQuoteType() const { return layout_.priceQuoteType; }
+	inline VolumeTier volumeTier() const { return layout_.volumeTier; }
+	inline Int positionLimit() const { return layout_.positionLimit; }
+	inline const String<24>& exchanges() const { return layout_.exchanges; }
+	inline Float tickValue() const { return layout_.tickValue; }
+	inline Float pointValue() const { return layout_.pointValue; }
+	inline Double strikeScale() const { return layout_.strikeScale; }
+	inline Float strikeRatio() const { return layout_.strikeRatio; }
+	inline Float cashOnExercise() const { return layout_.cashOnExercise; }
+	inline Int underliersPerCn() const { return layout_.underliersPerCn; }
+	inline Double premiumMult() const { return layout_.premiumMult; }
+	inline AdjConvention adjConvention() const { return layout_.adjConvention; }
+	inline OptPriceInc optPriceInc() const { return layout_.optPriceInc; }
+	inline PriceFormat priceFormat() const { return layout_.priceFormat; }
+	inline Currency tradeCurr() const { return layout_.tradeCurr; }
+	inline Currency settleCurr() const { return layout_.settleCurr; }
+	inline Currency strikeCurr() const { return layout_.strikeCurr; }
+	inline const TickerKey& defaultSurfaceRoot() const { return layout_.defaultSurfaceRoot; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<RootDefinition::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+		// Underlying Repeat Section
+		auto underlying_count = *reinterpret_cast<uint16_t*>(ptr);
+		ptr += sizeof(underlying_count);
+
+		for (int i = 0; i < underlying_count; i++)
+		{
+			underlying_.push_back(*reinterpret_cast<Underlying*>(ptr));
+			ptr += sizeof(Underlying);
+		}
+
+	}
+
+};
+
+ class SpreadBookQuote
+{
+public:
+	class Key
+	{
+		TickerKey skey_;
+		YesNo isTest_;
+		
+	public:
+		inline const TickerKey& skey() const { return skey_; }
+		inline YesNo isTest() const { return isTest_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = TickerKey()(k.skey_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.isTest_));
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.skey_ == b.skey_
+				&& a.isTest_ == b.isTest_;
 		}
 	};
 	
@@ -982,21 +1315,25 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		UpdateType updateType;
-		UInt bidMask1;
-		UInt askMask1;
-		Float bidPrice1;
-		Float askPrice1;
+		TickerKey ticker;
+		Double bidPrice1;
+		Double askPrice1;
 		UShort bidSize1;
 		UShort askSize1;
-		Float bidPrice2;
-		Float askPrice2;
+		Double bidPrice2;
+		Double askPrice2;
 		UShort bidSize2;
 		UShort askSize2;
+		OptExch bidExch1;
+		OptExch askExch1;
+		UInt bidMask1;
+		UInt askMask1;
 		DateTime bidTime;
 		DateTime askTime;
+		UpdateType updateType;
 		Long srcTimestamp;
 		Long netTimestamp;
+		DateTime timestamp;
 	};
 	
 	Header header_;
@@ -1011,21 +1348,25 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline UpdateType updateType() const { return layout_.updateType; }
-	inline UInt bidMask1() const { return layout_.bidMask1; }
-	inline UInt askMask1() const { return layout_.askMask1; }
-	inline Float bidPrice1() const { return layout_.bidPrice1; }
-	inline Float askPrice1() const { return layout_.askPrice1; }
+	inline const TickerKey& ticker() const { return layout_.ticker; }
+	inline Double bidPrice1() const { return layout_.bidPrice1; }
+	inline Double askPrice1() const { return layout_.askPrice1; }
 	inline UShort bidSize1() const { return layout_.bidSize1; }
 	inline UShort askSize1() const { return layout_.askSize1; }
-	inline Float bidPrice2() const { return layout_.bidPrice2; }
-	inline Float askPrice2() const { return layout_.askPrice2; }
+	inline Double bidPrice2() const { return layout_.bidPrice2; }
+	inline Double askPrice2() const { return layout_.askPrice2; }
 	inline UShort bidSize2() const { return layout_.bidSize2; }
 	inline UShort askSize2() const { return layout_.askSize2; }
+	inline OptExch bidExch1() const { return layout_.bidExch1; }
+	inline OptExch askExch1() const { return layout_.askExch1; }
+	inline UInt bidMask1() const { return layout_.bidMask1; }
+	inline UInt askMask1() const { return layout_.askMask1; }
 	inline DateTime bidTime() const { return layout_.bidTime; }
 	inline DateTime askTime() const { return layout_.askTime; }
+	inline UpdateType updateType() const { return layout_.updateType; }
 	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
@@ -1145,16 +1486,19 @@ public:
 	class Key
 	{
 		TickerKey ticker_;
-		StkExch exch_;
+		DateTime auctionTime_;
+		AuctionReason auctionType_;
 		
 	public:
 		inline const TickerKey& ticker() const { return ticker_; }
-		inline StkExch exch() const { return exch_; }
+		inline DateTime auctionTime() const { return auctionTime_; }
+		inline AuctionReason auctionType() const { return auctionType_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = TickerKey()(k.ticker_);
-			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exch_));
+			hash_code = (hash_code * 397) ^ DateTime()(k.auctionTime_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.auctionType_));
 
 			return hash_code;
 		}
@@ -1163,7 +1507,8 @@ public:
 		{
 			return
 				a.ticker_ == b.ticker_
-				&& a.exch_ == b.exch_;
+				&& a.auctionTime_ == b.auctionTime_
+				&& a.auctionType_ == b.auctionType_;
 		}
 	};
 	
@@ -1176,12 +1521,17 @@ private:
 		Int pairedQty;
 		Int totalImbalanceQty;
 		Int marketImbalanceQty;
-		DateTime auctionTime;
-		AuctionReason auctionType;
 		ImbalanceSide imbalanceSide;
 		Float continuousBookClrPx;
 		Float closingOnlyClrPx;
 		Float ssrFillingPx;
+		Float indicativeMatchPx;
+		Float upperCollar;
+		Float lowerCollar;
+		AuctionStatus auctionStatus;
+		YesNo freezeStatus;
+		Byte numExtensions;
+		DateTime sourceTime;
 		Long netTimestamp;
 	};
 	
@@ -1201,12 +1551,17 @@ public:
 	inline Int pairedQty() const { return layout_.pairedQty; }
 	inline Int totalImbalanceQty() const { return layout_.totalImbalanceQty; }
 	inline Int marketImbalanceQty() const { return layout_.marketImbalanceQty; }
-	inline DateTime auctionTime() const { return layout_.auctionTime; }
-	inline AuctionReason auctionType() const { return layout_.auctionType; }
 	inline ImbalanceSide imbalanceSide() const { return layout_.imbalanceSide; }
 	inline Float continuousBookClrPx() const { return layout_.continuousBookClrPx; }
 	inline Float closingOnlyClrPx() const { return layout_.closingOnlyClrPx; }
 	inline Float ssrFillingPx() const { return layout_.ssrFillingPx; }
+	inline Float indicativeMatchPx() const { return layout_.indicativeMatchPx; }
+	inline Float upperCollar() const { return layout_.upperCollar; }
+	inline Float lowerCollar() const { return layout_.lowerCollar; }
+	inline AuctionStatus auctionStatus() const { return layout_.auctionStatus; }
+	inline YesNo freezeStatus() const { return layout_.freezeStatus; }
+	inline Byte numExtensions() const { return layout_.numExtensions; }
+	inline DateTime sourceTime() const { return layout_.sourceTime; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
 	
 	inline void Decode(Header* buf) 
@@ -1508,6 +1863,109 @@ public:
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
 		layout_ = *reinterpret_cast<StockPrint::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
+ class TickerDefinition
+{
+public:
+	class Key
+	{
+		TickerKey ticker_;
+		
+	public:
+		inline const TickerKey& ticker() const { return ticker_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = TickerKey()(k.ticker_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ticker_ == b.ticker_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		SymbolType symbolType;
+		String<32> name;
+		Short indNum;
+		Short subNum;
+		Short grpNum;
+		PrimaryExch primaryExch;
+		String<6> symbol;
+		String<1> issueClass;
+		Int securityID;
+		String<4> sic;
+		String<10> cusip;
+		TapeCode tapeCode;
+		StkPriceInc stkPriceInc;
+		Float stkVolume;
+		Float futVolume;
+		Float optVolume;
+		String<8> exchString;
+		Int numOptions;
+		Int sharesOutstanding;
+		TimeMetric timeMetric;
+		String<2> tickPilotGroup;
+		TkDefSource tkDefSource;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline SymbolType symbolType() const { return layout_.symbolType; }
+	inline const String<32>& name() const { return layout_.name; }
+	inline Short indNum() const { return layout_.indNum; }
+	inline Short subNum() const { return layout_.subNum; }
+	inline Short grpNum() const { return layout_.grpNum; }
+	inline PrimaryExch primaryExch() const { return layout_.primaryExch; }
+	inline const String<6>& symbol() const { return layout_.symbol; }
+	inline const String<1>& issueClass() const { return layout_.issueClass; }
+	inline Int securityID() const { return layout_.securityID; }
+	inline const String<4>& sic() const { return layout_.sic; }
+	inline const String<10>& cusip() const { return layout_.cusip; }
+	inline TapeCode tapeCode() const { return layout_.tapeCode; }
+	inline StkPriceInc stkPriceInc() const { return layout_.stkPriceInc; }
+	inline Float stkVolume() const { return layout_.stkVolume; }
+	inline Float futVolume() const { return layout_.futVolume; }
+	inline Float optVolume() const { return layout_.optVolume; }
+	inline const String<8>& exchString() const { return layout_.exchString; }
+	inline Int numOptions() const { return layout_.numOptions; }
+	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
+	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
+	inline const String<2>& tickPilotGroup() const { return layout_.tickPilotGroup; }
+	inline TkDefSource tkDefSource() const { return layout_.tkDefSource; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<TickerDefinition::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 

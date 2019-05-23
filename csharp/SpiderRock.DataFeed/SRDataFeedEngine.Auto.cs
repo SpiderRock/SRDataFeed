@@ -1291,6 +1291,324 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class ProductDefinitionV2ContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<ProductDefinitionV2> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<ProductDefinitionV2> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<ProductDefinitionV2> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<ProductDefinitionV2>> Created;
+            public event EventHandler<ChangedEventArgs<ProductDefinitionV2>> Changed;
+            public event EventHandler<UpdatedEventArgs<ProductDefinitionV2>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<ProductDefinitionV2> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<ProductDefinitionV2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<ProductDefinitionV2> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<ProductDefinitionV2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<ProductDefinitionV2> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<ProductDefinitionV2>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(ProductDefinitionV2 obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<ProductDefinitionV2>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<ProductDefinitionV2> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "ProductDefinitionV2.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(ProductDefinitionV2 obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<ProductDefinitionV2>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<ProductDefinitionV2> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "ProductDefinitionV2.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(ProductDefinitionV2 current, ProductDefinitionV2 previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<ProductDefinitionV2> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "ProductDefinitionV2.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<ProductDefinitionV2.PKeyLayout, ProductDefinitionV2> objectsByKey = new Dictionary<ProductDefinitionV2.PKeyLayout, ProductDefinitionV2>();
+            
+            [ThreadStatic] private static ProductDefinitionV2 decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(ProductDefinitionV2.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(ProductDefinitionV2.PKeyLayout))));
+                }           
+                
+                ProductDefinitionV2.PKeyLayout pkey = *(ProductDefinitionV2.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                ProductDefinitionV2 item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new ProductDefinitionV2(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new ProductDefinitionV2();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
+        private sealed class RootDefinitionContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<RootDefinition> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<RootDefinition> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<RootDefinition> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<RootDefinition>> Created;
+            public event EventHandler<ChangedEventArgs<RootDefinition>> Changed;
+            public event EventHandler<UpdatedEventArgs<RootDefinition>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<RootDefinition> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<RootDefinition>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<RootDefinition> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<RootDefinition>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<RootDefinition> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<RootDefinition>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(RootDefinition obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<RootDefinition>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<RootDefinition> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "RootDefinition.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(RootDefinition obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<RootDefinition>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<RootDefinition> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "RootDefinition.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(RootDefinition current, RootDefinition previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<RootDefinition> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "RootDefinition.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<RootDefinition.PKeyLayout, RootDefinition> objectsByKey = new Dictionary<RootDefinition.PKeyLayout, RootDefinition>();
+            
+            [ThreadStatic] private static RootDefinition decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(RootDefinition.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(RootDefinition.PKeyLayout))));
+                }           
+                
+                RootDefinition.PKeyLayout pkey = *(RootDefinition.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                RootDefinition item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new RootDefinition(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new RootDefinition();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class SpreadBookQuoteContainerCache
         {
             #region Events
@@ -2244,6 +2562,165 @@ namespace SpiderRock.DataFeed
                 }
             }
         }   
+ 
+        private sealed class TickerDefinitionContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<TickerDefinition> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<TickerDefinition> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<TickerDefinition> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<TickerDefinition>> Created;
+            public event EventHandler<ChangedEventArgs<TickerDefinition>> Changed;
+            public event EventHandler<UpdatedEventArgs<TickerDefinition>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<TickerDefinition> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<TickerDefinition>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<TickerDefinition> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<TickerDefinition>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<TickerDefinition> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<TickerDefinition>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(TickerDefinition obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<TickerDefinition>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<TickerDefinition> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "TickerDefinition.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(TickerDefinition obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<TickerDefinition>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<TickerDefinition> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "TickerDefinition.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(TickerDefinition current, TickerDefinition previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<TickerDefinition> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "TickerDefinition.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<TickerDefinition.PKeyLayout, TickerDefinition> objectsByKey = new Dictionary<TickerDefinition.PKeyLayout, TickerDefinition>();
+            
+            [ThreadStatic] private static TickerDefinition decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(TickerDefinition.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(TickerDefinition.PKeyLayout))));
+                }           
+                
+                TickerDefinition.PKeyLayout pkey = *(TickerDefinition.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                TickerDefinition item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new TickerDefinition(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new TickerDefinition();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
 
 
         #endregion
@@ -2258,12 +2735,15 @@ namespace SpiderRock.DataFeed
          private readonly OptionNbboQuoteContainerCache optionNbboQuoteContainerCache = new OptionNbboQuoteContainerCache();
          private readonly OptionPrintContainerCache optionPrintContainerCache = new OptionPrintContainerCache();
          private readonly OptionRiskFactorContainerCache optionRiskFactorContainerCache = new OptionRiskFactorContainerCache();
+         private readonly ProductDefinitionV2ContainerCache productDefinitionV2ContainerCache = new ProductDefinitionV2ContainerCache();
+         private readonly RootDefinitionContainerCache rootDefinitionContainerCache = new RootDefinitionContainerCache();
          private readonly SpreadBookQuoteContainerCache spreadBookQuoteContainerCache = new SpreadBookQuoteContainerCache();
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
          private readonly StockExchImbalanceContainerCache stockExchImbalanceContainerCache = new StockExchImbalanceContainerCache();
          private readonly StockExchImbalanceV2ContainerCache stockExchImbalanceV2ContainerCache = new StockExchImbalanceV2ContainerCache();
          private readonly StockMarketSummaryContainerCache stockMarketSummaryContainerCache = new StockMarketSummaryContainerCache();
          private readonly StockPrintContainerCache stockPrintContainerCache = new StockPrintContainerCache();
+         private readonly TickerDefinitionContainerCache tickerDefinitionContainerCache = new TickerDefinitionContainerCache();
 
         #endregion
         
@@ -2280,12 +2760,15 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.OptionNbboQuote, optionNbboQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionPrint, optionPrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionRiskFactor, optionRiskFactorContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.ProductDefinitionV2, productDefinitionV2ContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.RootDefinition, rootDefinitionContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.SpreadBookQuote, spreadBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockExchImbalance, stockExchImbalanceContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockExchImbalanceV2, stockExchImbalanceV2ContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockMarketSummary, stockMarketSummaryContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockPrint, stockPrintContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.TickerDefinition, tickerDefinitionContainerCache.OnMessage);
 
             }
         }
@@ -2300,12 +2783,15 @@ namespace SpiderRock.DataFeed
              optionNbboQuoteContainerCache.Clear();
              optionPrintContainerCache.Clear();
              optionRiskFactorContainerCache.Clear();
+             productDefinitionV2ContainerCache.Clear();
+             rootDefinitionContainerCache.Clear();
              spreadBookQuoteContainerCache.Clear();
              stockBookQuoteContainerCache.Clear();
              stockExchImbalanceContainerCache.Clear();
              stockExchImbalanceV2ContainerCache.Clear();
              stockMarketSummaryContainerCache.Clear();
              stockPrintContainerCache.Clear();
+             tickerDefinitionContainerCache.Clear();
 
         }
 
@@ -2457,6 +2943,42 @@ namespace SpiderRock.DataFeed
             remove  { lock (eventLock) { optionRiskFactorContainerCache.Updated -= value; } }
         }
          
+        public event EventHandler<CreatedEventArgs<ProductDefinitionV2>> ProductDefinitionV2Created
+        {
+            add     { lock (eventLock) { productDefinitionV2ContainerCache.Created += value; } }
+            remove  { lock (eventLock) { productDefinitionV2ContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<ProductDefinitionV2>> ProductDefinitionV2Changed
+        {
+            add     { lock (eventLock) { productDefinitionV2ContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { productDefinitionV2ContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<ProductDefinitionV2>> ProductDefinitionV2Updated
+        {
+            add     { lock (eventLock) { productDefinitionV2ContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { productDefinitionV2ContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<RootDefinition>> RootDefinitionCreated
+        {
+            add     { lock (eventLock) { rootDefinitionContainerCache.Created += value; } }
+            remove  { lock (eventLock) { rootDefinitionContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<RootDefinition>> RootDefinitionChanged
+        {
+            add     { lock (eventLock) { rootDefinitionContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { rootDefinitionContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<RootDefinition>> RootDefinitionUpdated
+        {
+            add     { lock (eventLock) { rootDefinitionContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { rootDefinitionContainerCache.Updated -= value; } }
+        }
+         
         public event EventHandler<CreatedEventArgs<SpreadBookQuote>> SpreadBookQuoteCreated
         {
             add     { lock (eventLock) { spreadBookQuoteContainerCache.Created += value; } }
@@ -2563,6 +3085,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { stockPrintContainerCache.Updated += value; } }
             remove  { lock (eventLock) { stockPrintContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<TickerDefinition>> TickerDefinitionCreated
+        {
+            add     { lock (eventLock) { tickerDefinitionContainerCache.Created += value; } }
+            remove  { lock (eventLock) { tickerDefinitionContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<TickerDefinition>> TickerDefinitionChanged
+        {
+            add     { lock (eventLock) { tickerDefinitionContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { tickerDefinitionContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<TickerDefinition>> TickerDefinitionUpdated
+        {
+            add     { lock (eventLock) { tickerDefinitionContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { tickerDefinitionContainerCache.Updated -= value; } }
         }
 
         
