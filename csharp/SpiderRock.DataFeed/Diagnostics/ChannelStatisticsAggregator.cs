@@ -129,7 +129,7 @@ namespace SpiderRock.DataFeed.Diagnostics
 
                     var msgType = new MessageType((ushort)i);
 
-                    string key = String.Format("{0,8} ({1,25}/{2,3})", channel.Type, msgType, i);
+                    string key = String.Format("{0,8} ({1,24}/{2,4})", channel.Type, msgType, i);
 
                     Channel.Statistics agg = GetOrCreate(aggregate, key);
 
