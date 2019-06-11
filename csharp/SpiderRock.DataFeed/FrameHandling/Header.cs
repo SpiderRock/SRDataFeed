@@ -6,6 +6,7 @@ namespace SpiderRock.DataFeed.FrameHandling
     internal struct Header
     {
         public SysEnvironment environment;
+        public ushort reserved;
         public MessageType msgtype;
         public HeaderBits bits;
         public SourceId sourceid;

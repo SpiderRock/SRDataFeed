@@ -54,26 +54,26 @@ private:
 		MarketStatus marketStatus;
 		Double bidPrice1;
 		Double askPrice1;
-		UShort bidSize1;
-		UShort askSize1;
+		Int bidSize1;
+		Int askSize1;
 		UShort bidOrders1;
 		UShort askOrders1;
 		Double bidPrice2;
 		Double askPrice2;
-		UShort bidSize2;
-		UShort askSize2;
+		Int bidSize2;
+		Int askSize2;
 		UShort bidOrders2;
 		UShort askOrders2;
 		Double bidPrice3;
 		Double askPrice3;
-		UShort bidSize3;
-		UShort askSize3;
+		Int bidSize3;
+		Int askSize3;
 		UShort bidOrders3;
 		UShort askOrders3;
 		Double bidPrice4;
 		Double askPrice4;
-		UShort bidSize4;
-		UShort askSize4;
+		Int bidSize4;
+		Int askSize4;
 		UShort bidOrders4;
 		UShort askOrders4;
 		Long srcTimestamp;
@@ -96,26 +96,26 @@ public:
 	inline MarketStatus marketStatus() const { return layout_.marketStatus; }
 	inline Double bidPrice1() const { return layout_.bidPrice1; }
 	inline Double askPrice1() const { return layout_.askPrice1; }
-	inline UShort bidSize1() const { return layout_.bidSize1; }
-	inline UShort askSize1() const { return layout_.askSize1; }
+	inline Int bidSize1() const { return layout_.bidSize1; }
+	inline Int askSize1() const { return layout_.askSize1; }
 	inline UShort bidOrders1() const { return layout_.bidOrders1; }
 	inline UShort askOrders1() const { return layout_.askOrders1; }
 	inline Double bidPrice2() const { return layout_.bidPrice2; }
 	inline Double askPrice2() const { return layout_.askPrice2; }
-	inline UShort bidSize2() const { return layout_.bidSize2; }
-	inline UShort askSize2() const { return layout_.askSize2; }
+	inline Int bidSize2() const { return layout_.bidSize2; }
+	inline Int askSize2() const { return layout_.askSize2; }
 	inline UShort bidOrders2() const { return layout_.bidOrders2; }
 	inline UShort askOrders2() const { return layout_.askOrders2; }
 	inline Double bidPrice3() const { return layout_.bidPrice3; }
 	inline Double askPrice3() const { return layout_.askPrice3; }
-	inline UShort bidSize3() const { return layout_.bidSize3; }
-	inline UShort askSize3() const { return layout_.askSize3; }
+	inline Int bidSize3() const { return layout_.bidSize3; }
+	inline Int askSize3() const { return layout_.askSize3; }
 	inline UShort bidOrders3() const { return layout_.bidOrders3; }
 	inline UShort askOrders3() const { return layout_.askOrders3; }
 	inline Double bidPrice4() const { return layout_.bidPrice4; }
 	inline Double askPrice4() const { return layout_.askPrice4; }
-	inline UShort bidSize4() const { return layout_.bidSize4; }
-	inline UShort askSize4() const { return layout_.askSize4; }
+	inline Int bidSize4() const { return layout_.bidSize4; }
+	inline Int askSize4() const { return layout_.askSize4; }
 	inline UShort bidOrders4() const { return layout_.bidOrders4; }
 	inline UShort askOrders4() const { return layout_.askOrders4; }
 	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
@@ -174,8 +174,8 @@ private:
 		Int prtVolume;
 		Float bid;
 		Float ask;
-		UShort bsz;
-		UShort asz;
+		Int bsz;
+		Int asz;
 		Float age;
 		PrtSide prtSide;
 		Long prtTimestamp;
@@ -206,8 +206,8 @@ public:
 	inline Int prtVolume() const { return layout_.prtVolume; }
 	inline Float bid() const { return layout_.bid; }
 	inline Float ask() const { return layout_.ask; }
-	inline UShort bsz() const { return layout_.bsz; }
-	inline UShort asz() const { return layout_.asz; }
+	inline Int bsz() const { return layout_.bsz; }
+	inline Int asz() const { return layout_.asz; }
 	inline Float age() const { return layout_.age; }
 	inline PrtSide prtSide() const { return layout_.prtSide; }
 	inline Long prtTimestamp() const { return layout_.prtTimestamp; }
@@ -368,8 +368,8 @@ private:
 		GridType gridType;
 		Float minXAxis;
 		Float maxXAxis;
-		Float xAxisScale;
-		Float xAxisOffset;
+		Float skewMinX;
+		Float skewMinY;
 		Float skewD11;
 		Float skewD10;
 		Float skewD9;
@@ -407,6 +407,7 @@ private:
 		Byte cAskMiss;
 		Byte pBidMiss;
 		Byte pAskMiss;
+		FitPath fitPath;
 		Float fitAvgErr;
 		Float fitAvgAbsErr;
 		Float fitMaxPrcErr;
@@ -477,8 +478,8 @@ public:
 	inline GridType gridType() const { return layout_.gridType; }
 	inline Float minXAxis() const { return layout_.minXAxis; }
 	inline Float maxXAxis() const { return layout_.maxXAxis; }
-	inline Float xAxisScale() const { return layout_.xAxisScale; }
-	inline Float xAxisOffset() const { return layout_.xAxisOffset; }
+	inline Float skewMinX() const { return layout_.skewMinX; }
+	inline Float skewMinY() const { return layout_.skewMinY; }
 	inline Float skewD11() const { return layout_.skewD11; }
 	inline Float skewD10() const { return layout_.skewD10; }
 	inline Float skewD9() const { return layout_.skewD9; }
@@ -516,6 +517,7 @@ public:
 	inline Byte cAskMiss() const { return layout_.cAskMiss; }
 	inline Byte pBidMiss() const { return layout_.pBidMiss; }
 	inline Byte pAskMiss() const { return layout_.pAskMiss; }
+	inline FitPath fitPath() const { return layout_.fitPath; }
 	inline Float fitAvgErr() const { return layout_.fitAvgErr; }
 	inline Float fitAvgAbsErr() const { return layout_.fitAvgAbsErr; }
 	inline Float fitMaxPrcErr() const { return layout_.fitMaxPrcErr; }
@@ -702,10 +704,10 @@ private:
 		UpdateType updateType;
 		Float bidPrice;
 		Float askPrice;
-		UShort bidSize;
-		UShort askSize;
-		UShort cumBidSize;
-		UShort cumAskSize;
+		Int bidSize;
+		Int askSize;
+		Int cumBidSize;
+		Int cumAskSize;
 		OptExch bidExch;
 		OptExch askExch;
 		UInt bidMask;
@@ -714,8 +716,8 @@ private:
 		OpraMktType askMktType;
 		Float bidPrice2;
 		Float askPrice2;
-		UShort cumBidSize2;
-		UShort cumAskSize2;
+		Int cumBidSize2;
+		Int cumAskSize2;
 		Int bidTime;
 		Int askTime;
 		Long srcTimestamp;
@@ -737,10 +739,10 @@ public:
 	inline UpdateType updateType() const { return layout_.updateType; }
 	inline Float bidPrice() const { return layout_.bidPrice; }
 	inline Float askPrice() const { return layout_.askPrice; }
-	inline UShort bidSize() const { return layout_.bidSize; }
-	inline UShort askSize() const { return layout_.askSize; }
-	inline UShort cumBidSize() const { return layout_.cumBidSize; }
-	inline UShort cumAskSize() const { return layout_.cumAskSize; }
+	inline Int bidSize() const { return layout_.bidSize; }
+	inline Int askSize() const { return layout_.askSize; }
+	inline Int cumBidSize() const { return layout_.cumBidSize; }
+	inline Int cumAskSize() const { return layout_.cumAskSize; }
 	inline OptExch bidExch() const { return layout_.bidExch; }
 	inline OptExch askExch() const { return layout_.askExch; }
 	inline UInt bidMask() const { return layout_.bidMask; }
@@ -749,8 +751,8 @@ public:
 	inline OpraMktType askMktType() const { return layout_.askMktType; }
 	inline Float bidPrice2() const { return layout_.bidPrice2; }
 	inline Float askPrice2() const { return layout_.askPrice2; }
-	inline UShort cumBidSize2() const { return layout_.cumBidSize2; }
-	inline UShort cumAskSize2() const { return layout_.cumAskSize2; }
+	inline Int cumBidSize2() const { return layout_.cumBidSize2; }
+	inline Int cumAskSize2() const { return layout_.cumAskSize2; }
 	inline Int bidTime() const { return layout_.bidTime; }
 	inline Int askTime() const { return layout_.askTime; }
 	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
@@ -813,8 +815,8 @@ private:
 		Int askVolume;
 		Float ebid;
 		Float eask;
-		UShort ebsz;
-		UShort easz;
+		Int ebsz;
+		Int easz;
 		Float eage;
 		PrtSide prtSide;
 		Long prtTimestamp;
@@ -849,8 +851,8 @@ public:
 	inline Int askVolume() const { return layout_.askVolume; }
 	inline Float ebid() const { return layout_.ebid; }
 	inline Float eask() const { return layout_.eask; }
-	inline UShort ebsz() const { return layout_.ebsz; }
-	inline UShort easz() const { return layout_.easz; }
+	inline Int ebsz() const { return layout_.ebsz; }
+	inline Int easz() const { return layout_.easz; }
 	inline Float eage() const { return layout_.eage; }
 	inline PrtSide prtSide() const { return layout_.prtSide; }
 	inline Long prtTimestamp() const { return layout_.prtTimestamp; }
@@ -1318,12 +1320,12 @@ private:
 		TickerKey ticker;
 		Double bidPrice1;
 		Double askPrice1;
-		UShort bidSize1;
-		UShort askSize1;
+		Int bidSize1;
+		Int askSize1;
 		Double bidPrice2;
 		Double askPrice2;
-		UShort bidSize2;
-		UShort askSize2;
+		Int bidSize2;
+		Int askSize2;
 		OptExch bidExch1;
 		OptExch askExch1;
 		UInt bidMask1;
@@ -1351,12 +1353,12 @@ public:
 	inline const TickerKey& ticker() const { return layout_.ticker; }
 	inline Double bidPrice1() const { return layout_.bidPrice1; }
 	inline Double askPrice1() const { return layout_.askPrice1; }
-	inline UShort bidSize1() const { return layout_.bidSize1; }
-	inline UShort askSize1() const { return layout_.askSize1; }
+	inline Int bidSize1() const { return layout_.bidSize1; }
+	inline Int askSize1() const { return layout_.askSize1; }
 	inline Double bidPrice2() const { return layout_.bidPrice2; }
 	inline Double askPrice2() const { return layout_.askPrice2; }
-	inline UShort bidSize2() const { return layout_.bidSize2; }
-	inline UShort askSize2() const { return layout_.askSize2; }
+	inline Int bidSize2() const { return layout_.bidSize2; }
+	inline Int askSize2() const { return layout_.askSize2; }
 	inline OptExch bidExch1() const { return layout_.bidExch1; }
 	inline OptExch askExch1() const { return layout_.askExch1; }
 	inline UInt bidMask1() const { return layout_.bidMask1; }
@@ -1413,19 +1415,19 @@ private:
 		UpdateType updateType;
 		MarketStatus marketStatus;
 		Float bidPrice1;
-		UShort bidSize1;
+		Int bidSize1;
 		StkExch bidExch1;
 		UInt bidMask1;
 		Float askPrice1;
-		UShort askSize1;
+		Int askSize1;
 		StkExch askExch1;
 		UInt askMask1;
 		Float bidPrice2;
-		UShort bidSize2;
+		Int bidSize2;
 		StkExch bidExch2;
 		UInt bidMask2;
 		Float askPrice2;
-		UShort askSize2;
+		Int askSize2;
 		StkExch askExch2;
 		UInt askMask2;
 		UInt haltMask;
@@ -1448,19 +1450,19 @@ public:
 	inline UpdateType updateType() const { return layout_.updateType; }
 	inline MarketStatus marketStatus() const { return layout_.marketStatus; }
 	inline Float bidPrice1() const { return layout_.bidPrice1; }
-	inline UShort bidSize1() const { return layout_.bidSize1; }
+	inline Int bidSize1() const { return layout_.bidSize1; }
 	inline StkExch bidExch1() const { return layout_.bidExch1; }
 	inline UInt bidMask1() const { return layout_.bidMask1; }
 	inline Float askPrice1() const { return layout_.askPrice1; }
-	inline UShort askSize1() const { return layout_.askSize1; }
+	inline Int askSize1() const { return layout_.askSize1; }
 	inline StkExch askExch1() const { return layout_.askExch1; }
 	inline UInt askMask1() const { return layout_.askMask1; }
 	inline Float bidPrice2() const { return layout_.bidPrice2; }
-	inline UShort bidSize2() const { return layout_.bidSize2; }
+	inline Int bidSize2() const { return layout_.bidSize2; }
 	inline StkExch bidExch2() const { return layout_.bidExch2; }
 	inline UInt bidMask2() const { return layout_.bidMask2; }
 	inline Float askPrice2() const { return layout_.askPrice2; }
-	inline UShort askSize2() const { return layout_.askSize2; }
+	inline Int askSize2() const { return layout_.askSize2; }
 	inline StkExch askExch2() const { return layout_.askExch2; }
 	inline UInt askMask2() const { return layout_.askMask2; }
 	inline UInt haltMask() const { return layout_.haltMask; }
@@ -1473,103 +1475,6 @@ public:
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
 		layout_ = *reinterpret_cast<StockBookQuote::Layout*>(ptr);
-		ptr += sizeof(layout_);
-		
-
-	}
-
-};
-
- class StockExchImbalance
-{
-public:
-	class Key
-	{
-		TickerKey ticker_;
-		DateTime auctionTime_;
-		AuctionReason auctionType_;
-		
-	public:
-		inline const TickerKey& ticker() const { return ticker_; }
-		inline DateTime auctionTime() const { return auctionTime_; }
-		inline AuctionReason auctionType() const { return auctionType_; }
-
-		inline size_t operator()(const Key& k) const
-		{
-			size_t hash_code = TickerKey()(k.ticker_);
-			hash_code = (hash_code * 397) ^ DateTime()(k.auctionTime_);
-			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.auctionType_));
-
-			return hash_code;
-		}
-		
-		inline bool operator()(const Key& a, const Key& b) const
-		{
-			return
-				a.ticker_ == b.ticker_
-				&& a.auctionTime_ == b.auctionTime_
-				&& a.auctionType_ == b.auctionType_;
-		}
-	};
-	
-
-private:
-	struct Layout
-	{
-		Key pkey;
-		Float referencePx;
-		Int pairedQty;
-		Int totalImbalanceQty;
-		Int marketImbalanceQty;
-		ImbalanceSide imbalanceSide;
-		Float continuousBookClrPx;
-		Float closingOnlyClrPx;
-		Float ssrFillingPx;
-		Float indicativeMatchPx;
-		Float upperCollar;
-		Float lowerCollar;
-		AuctionStatus auctionStatus;
-		YesNo freezeStatus;
-		Byte numExtensions;
-		DateTime sourceTime;
-		Long netTimestamp;
-	};
-	
-	Header header_;
-	Layout layout_;
-	
-	int64_t time_received_;
-
-public:
-	inline Header& header() { return header_; }
-	inline const Key& pkey() const { return layout_.pkey; }
-	
-	inline void time_received(uint64_t value) { time_received_ = value; }
-	inline uint64_t time_received() const { return time_received_; }
-	
-	inline Float referencePx() const { return layout_.referencePx; }
-	inline Int pairedQty() const { return layout_.pairedQty; }
-	inline Int totalImbalanceQty() const { return layout_.totalImbalanceQty; }
-	inline Int marketImbalanceQty() const { return layout_.marketImbalanceQty; }
-	inline ImbalanceSide imbalanceSide() const { return layout_.imbalanceSide; }
-	inline Float continuousBookClrPx() const { return layout_.continuousBookClrPx; }
-	inline Float closingOnlyClrPx() const { return layout_.closingOnlyClrPx; }
-	inline Float ssrFillingPx() const { return layout_.ssrFillingPx; }
-	inline Float indicativeMatchPx() const { return layout_.indicativeMatchPx; }
-	inline Float upperCollar() const { return layout_.upperCollar; }
-	inline Float lowerCollar() const { return layout_.lowerCollar; }
-	inline AuctionStatus auctionStatus() const { return layout_.auctionStatus; }
-	inline YesNo freezeStatus() const { return layout_.freezeStatus; }
-	inline Byte numExtensions() const { return layout_.numExtensions; }
-	inline DateTime sourceTime() const { return layout_.sourceTime; }
-	inline Long netTimestamp() const { return layout_.netTimestamp; }
-	
-	inline void Decode(Header* buf) 
-	{
-		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
-		
-		layout_ = *reinterpret_cast<StockExchImbalance::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 
@@ -1813,8 +1718,8 @@ private:
 		Byte prtCond4;
 		Float ebid;
 		Float eask;
-		UShort ebsz;
-		UShort easz;
+		Int ebsz;
+		Int easz;
 		Float eage;
 		PrtSide prtSide;
 		Long prtTimestamp;
@@ -1849,8 +1754,8 @@ public:
 	inline Byte prtCond4() const { return layout_.prtCond4; }
 	inline Float ebid() const { return layout_.ebid; }
 	inline Float eask() const { return layout_.eask; }
-	inline UShort ebsz() const { return layout_.ebsz; }
-	inline UShort easz() const { return layout_.easz; }
+	inline Int ebsz() const { return layout_.ebsz; }
+	inline Int easz() const { return layout_.easz; }
 	inline Float eage() const { return layout_.eage; }
 	inline PrtSide prtSide() const { return layout_.prtSide; }
 	inline Long prtTimestamp() const { return layout_.prtTimestamp; }

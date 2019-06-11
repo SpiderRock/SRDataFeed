@@ -28,7 +28,6 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType RootDefinition = 240;
  		public static readonly MessageType SpreadBookQuote = 525;
  		public static readonly MessageType StockBookQuote = 430;
- 		public static readonly MessageType StockExchImbalance = 490;
  		public static readonly MessageType StockExchImbalanceV2 = 491;
  		public static readonly MessageType StockMarketSummary = 445;
  		public static readonly MessageType StockPrint = 440;
@@ -55,7 +54,6 @@ namespace SpiderRock.DataFeed
  			isCore[RootDefinition] = true;
  			isCore[SpreadBookQuote] = true;
  			isCore[StockBookQuote] = true;
- 			isCore[StockExchImbalance] = true;
  			isCore[StockExchImbalanceV2] = true;
  			isCore[StockMarketSummary] = true;
  			isCore[StockPrint] = true;
@@ -96,7 +94,6 @@ namespace SpiderRock.DataFeed
  			names[RootDefinition] = "RootDefinition";
  			names[SpreadBookQuote] = "SpreadBookQuote";
  			names[StockBookQuote] = "StockBookQuote";
- 			names[StockExchImbalance] = "StockExchImbalance";
  			names[StockExchImbalanceV2] = "StockExchImbalanceV2";
  			names[StockMarketSummary] = "StockMarketSummary";
  			names[StockPrint] = "StockPrint";

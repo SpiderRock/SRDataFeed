@@ -35,6 +35,7 @@ namespace SpiderRock
 		struct Header
 		{
 			SysEnvironment environment;
+            UShort reserved;
 			MessageType message_type;
 			HeaderBits bits;
 			UShort source_id;

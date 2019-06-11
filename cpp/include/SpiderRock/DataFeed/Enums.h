@@ -181,6 +181,24 @@ namespace SpiderRock
 			UnderlierMap=2
 		};
 
+ 		enum class FitPath : Enum 
+		{
+			None=0,
+			VolUPrc=2,
+			VolUPrcDefault=3,
+			VolSDiv=4,
+			VolSDivDefault=5,
+			BaseDefault=6,
+			BaseDefaultAdj=7,
+			HistVol=8,
+			Default=9,
+			NormalMid=10,
+			WideMid=11,
+			WideGap=12,
+			WideBound=13,
+			AtmRange=14
+		};
+
  		enum class FutExch : Enum 
 		{
 			None=0,
@@ -308,7 +326,8 @@ namespace SpiderRock
 			MPRL=20,
 			SDRK=21,
 			DQTE=22,
-			MEMLD=23
+			MEMLD=23,
+			CFE=24
 		};
 
  		enum class OptPriceInc : Enum 
@@ -417,6 +436,7 @@ namespace SpiderRock
 
  		enum class ProductClass : Enum 
 		{
+			None=0,
 			Equity=1,
 			Index=2,
 			Future=3,
@@ -504,7 +524,8 @@ namespace SpiderRock
 			None=0,
 			Stock=1,
 			Future=2,
-			Option=3
+			Option=3,
+			MLeg=4
 		};
 
  		enum class StkExch : Enum 
@@ -607,7 +628,8 @@ namespace SpiderRock
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			V7_Stable=3
+			V7_Stable=3,
+			V7_Latest=4
 		};
 
  		enum class TapeCode : Enum 

@@ -212,26 +212,26 @@ namespace SpiderRock.DataFeed
 			public MarketStatus marketStatus;
 			public double bidPrice1;
 			public double askPrice1;
-			public ushort bidSize1;
-			public ushort askSize1;
+			public int bidSize1;
+			public int askSize1;
 			public ushort bidOrders1;
 			public ushort askOrders1;
 			public double bidPrice2;
 			public double askPrice2;
-			public ushort bidSize2;
-			public ushort askSize2;
+			public int bidSize2;
+			public int askSize2;
 			public ushort bidOrders2;
 			public ushort askOrders2;
 			public double bidPrice3;
 			public double askPrice3;
-			public ushort bidSize3;
-			public ushort askSize3;
+			public int bidSize3;
+			public int askSize3;
 			public ushort bidOrders3;
 			public ushort askOrders3;
 			public double bidPrice4;
 			public double askPrice4;
-			public ushort bidSize4;
-			public ushort askSize4;
+			public int bidSize4;
+			public int askSize4;
 			public ushort bidOrders4;
 			public ushort askOrders4;
 			public long srcTimestamp;
@@ -260,10 +260,10 @@ namespace SpiderRock.DataFeed
         public double AskPrice1 { get { return body.askPrice1; } set { body.askPrice1 = value; } }
  
 		/// <summary>bid size in contracts</summary>
-        public ushort BidSize1 { get { return body.bidSize1; } set { body.bidSize1 = value; } }
+        public int BidSize1 { get { return body.bidSize1; } set { body.bidSize1 = value; } }
  
 		/// <summary>ask size in contracts</summary>
-        public ushort AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
+        public int AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
  
 		/// <summary>number of participating orders at the bid price</summary>
         public ushort BidOrders1 { get { return body.bidOrders1; } set { body.bidOrders1 = value; } }
@@ -278,10 +278,10 @@ namespace SpiderRock.DataFeed
         public double AskPrice2 { get { return body.askPrice2; } set { body.askPrice2 = value; } }
  
 		/// <summary>bid size in contracts</summary>
-        public ushort BidSize2 { get { return body.bidSize2; } set { body.bidSize2 = value; } }
+        public int BidSize2 { get { return body.bidSize2; } set { body.bidSize2 = value; } }
  
 		/// <summary>ask size in contracts</summary>
-        public ushort AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
+        public int AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
  
 		/// <summary>number of participating orders at the bid price</summary>
         public ushort BidOrders2 { get { return body.bidOrders2; } set { body.bidOrders2 = value; } }
@@ -296,10 +296,10 @@ namespace SpiderRock.DataFeed
         public double AskPrice3 { get { return body.askPrice3; } set { body.askPrice3 = value; } }
  
 		/// <summary>bid size in contracts</summary>
-        public ushort BidSize3 { get { return body.bidSize3; } set { body.bidSize3 = value; } }
+        public int BidSize3 { get { return body.bidSize3; } set { body.bidSize3 = value; } }
  
 		/// <summary>ask size in contracts</summary>
-        public ushort AskSize3 { get { return body.askSize3; } set { body.askSize3 = value; } }
+        public int AskSize3 { get { return body.askSize3; } set { body.askSize3 = value; } }
  
 		/// <summary>number of participating orders at the bid price</summary>
         public ushort BidOrders3 { get { return body.bidOrders3; } set { body.bidOrders3 = value; } }
@@ -314,10 +314,10 @@ namespace SpiderRock.DataFeed
         public double AskPrice4 { get { return body.askPrice4; } set { body.askPrice4 = value; } }
  
 		/// <summary>bid size in contracts</summary>
-        public ushort BidSize4 { get { return body.bidSize4; } set { body.bidSize4 = value; } }
+        public int BidSize4 { get { return body.bidSize4; } set { body.bidSize4 = value; } }
  
 		/// <summary>ask size in contracts</summary>
-        public ushort AskSize4 { get { return body.askSize4; } set { body.askSize4 = value; } }
+        public int AskSize4 { get { return body.askSize4; } set { body.askSize4 = value; } }
  
 		/// <summary>number of participating orders at the bid price</summary>
         public ushort BidOrders4 { get { return body.bidOrders4; } set { body.bidOrders4 = value; } }
@@ -539,8 +539,8 @@ namespace SpiderRock.DataFeed
 			public int prtVolume;
 			public float bid;
 			public float ask;
-			public ushort bsz;
-			public ushort asz;
+			public int bsz;
+			public int asz;
 			public float age;
 			public PrtSide prtSide;
 			public long prtTimestamp;
@@ -591,10 +591,10 @@ namespace SpiderRock.DataFeed
         public float Ask { get { return body.ask; } set { body.ask = value; } }
  
 		/// <summary>cumulative bid size (@ print time)</summary>
-        public ushort Bsz { get { return body.bsz; } set { body.bsz = value; } }
+        public int Bsz { get { return body.bsz; } set { body.bsz = value; } }
  
 		/// <summary>cumulative ask size (@ print time)</summary>
-        public ushort Asz { get { return body.asz; } set { body.asz = value; } }
+        public int Asz { get { return body.asz; } set { body.asz = value; } }
  
 		/// <summary>age of prevailing quote at time of print</summary>
         public float Age { get { return body.age; } set { body.age = value; } }
@@ -1092,8 +1092,8 @@ namespace SpiderRock.DataFeed
 			public GridType gridType;
 			public float minXAxis;
 			public float maxXAxis;
-			public float xAxisScale;
-			public float xAxisOffset;
+			public float skewMinX;
+			public float skewMinY;
 			public float skewD11;
 			public float skewD10;
 			public float skewD9;
@@ -1131,6 +1131,7 @@ namespace SpiderRock.DataFeed
 			public byte cAskMiss;
 			public byte pBidMiss;
 			public byte pAskMiss;
+			public FitPath fitPath;
 			public float fitAvgErr;
 			public float fitAvgAbsErr;
 			public float fitMaxPrcErr;
@@ -1277,17 +1278,17 @@ namespace SpiderRock.DataFeed
 		/// <summary>gridType defines D11 - U12 xAxis points + spline type</summary>
         public GridType GridType { get { return body.gridType; } set { body.gridType = value; } }
  
-		/// <summary>minimum xAxis value;xAxis values to the left extrapolate horizontally</summary>
+		/// <summary>minimum xAxis value; xAxis values to the left extrapolate horizontally</summary>
         public float MinXAxis { get { return body.minXAxis; } set { body.minXAxis = value; } }
  
-		/// <summary>maximum xAxis value;xAxis values to the right extrapolate horizontally</summary>
+		/// <summary>maximum xAxis value; xAxis values to the right extrapolate horizontally</summary>
         public float MaxXAxis { get { return body.maxXAxis; } set { body.maxXAxis = value; } }
  
 		/// <summary>xAxis = (effStrike / effAxisFUPrc - 1.0) / axisVolRT; effStrike = strike * strikeRatio; effAxisFUPrc = axisFUPrc * symbolRatio</summary>
-        public float XAxisScale { get { return body.xAxisScale; } set { body.xAxisScale = value; } }
+        public float SkewMinX { get { return body.skewMinX; } set { body.skewMinX = value; } }
  
-		
-        public float XAxisOffset { get { return body.xAxisOffset; } set { body.xAxisOffset = value; } }
+		/// <summary>skewMinX / skewMinY are the skew curve minimum point (usually a positive x value and a negative y value)</summary>
+        public float SkewMinY { get { return body.skewMinY; } set { body.skewMinY = value; } }
  
 		/// <summary>skew @ D11 point (volatility skew curve)</summary>
         public float SkewD11 { get { return body.skewD11; } set { body.skewD11 = value; } }
@@ -1399,6 +1400,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>number of put ask violations</summary>
         public byte PAskMiss { get { return body.pAskMiss; } set { body.pAskMiss = value; } }
+ 
+		
+        public FitPath FitPath { get { return body.fitPath; } set { body.fitPath = value; } }
  
 		/// <summary>surface fit R2 (mid-market values)</summary>
         public float FitAvgErr { get { return body.fitAvgErr; } set { body.fitAvgErr = value; } }
@@ -2001,10 +2005,10 @@ namespace SpiderRock.DataFeed
 			public UpdateType updateType;
 			public float bidPrice;
 			public float askPrice;
-			public ushort bidSize;
-			public ushort askSize;
-			public ushort cumBidSize;
-			public ushort cumAskSize;
+			public int bidSize;
+			public int askSize;
+			public int cumBidSize;
+			public int cumAskSize;
 			public OptExch bidExch;
 			public OptExch askExch;
 			public uint bidMask;
@@ -2013,8 +2017,8 @@ namespace SpiderRock.DataFeed
 			public OpraMktType askMktType;
 			public float bidPrice2;
 			public float askPrice2;
-			public ushort cumBidSize2;
-			public ushort cumAskSize2;
+			public int cumBidSize2;
+			public int cumAskSize2;
 			public int bidTime;
 			public int askTime;
 			public long srcTimestamp;
@@ -2040,16 +2044,16 @@ namespace SpiderRock.DataFeed
         public float AskPrice { get { return body.askPrice; } set { body.askPrice = value; } }
  
 		/// <summary>bid size in contracts (largest exch quote)</summary>
-        public ushort BidSize { get { return body.bidSize; } set { body.bidSize = value; } }
+        public int BidSize { get { return body.bidSize; } set { body.bidSize = value; } }
  
 		/// <summary>ask size in contracts (largest exch quote)</summary>
-        public ushort AskSize { get { return body.askSize; } set { body.askSize = value; } }
+        public int AskSize { get { return body.askSize; } set { body.askSize = value; } }
  
 		/// <summary>bid size in contracts (total nbbo size)</summary>
-        public ushort CumBidSize { get { return body.cumBidSize; } set { body.cumBidSize = value; } }
+        public int CumBidSize { get { return body.cumBidSize; } set { body.cumBidSize = value; } }
  
 		/// <summary>ask size in contracts (total nbbo size)</summary>
-        public ushort CumAskSize { get { return body.cumAskSize; } set { body.cumAskSize = value; } }
+        public int CumAskSize { get { return body.cumAskSize; } set { body.cumAskSize = value; } }
  
 		/// <summary>first (or largest remaining) exchange at bid price</summary>
         public OptExch BidExch { get { return body.bidExch; } set { body.bidExch = value; } }
@@ -2076,10 +2080,10 @@ namespace SpiderRock.DataFeed
         public float AskPrice2 { get { return body.askPrice2; } set { body.askPrice2 = value; } }
  
 		/// <summary>cumulative size at 2nd price</summary>
-        public ushort CumBidSize2 { get { return body.cumBidSize2; } set { body.cumBidSize2 = value; } }
+        public int CumBidSize2 { get { return body.cumBidSize2; } set { body.cumBidSize2 = value; } }
  
 		/// <summary>cumulative size at 2nd price</summary>
-        public ushort CumAskSize2 { get { return body.cumAskSize2; } set { body.cumAskSize2 = value; } }
+        public int CumAskSize2 { get { return body.cumAskSize2; } set { body.cumAskSize2 = value; } }
  
 		/// <summary>last bid price change (milliseconds since midnight) calculated from the srcTimestamp</summary>
         public int BidTime { get { return body.bidTime; } set { body.bidTime = value; } }
@@ -2305,8 +2309,8 @@ namespace SpiderRock.DataFeed
 			public int askVolume;
 			public float ebid;
 			public float eask;
-			public ushort ebsz;
-			public ushort easz;
+			public int ebsz;
+			public int easz;
 			public float eage;
 			public PrtSide prtSide;
 			public long prtTimestamp;
@@ -2369,10 +2373,10 @@ namespace SpiderRock.DataFeed
         public float Eask { get { return body.eask; } set { body.eask = value; } }
  
 		/// <summary>exchange bid size</summary>
-        public ushort Ebsz { get { return body.ebsz; } set { body.ebsz = value; } }
+        public int Ebsz { get { return body.ebsz; } set { body.ebsz = value; } }
  
 		/// <summary>exchange ask size</summary>
-        public ushort Easz { get { return body.easz; } set { body.easz = value; } }
+        public int Easz { get { return body.easz; } set { body.easz = value; } }
  
 		/// <summary>age of prevailing quote at time of print</summary>
         public float Eage { get { return body.eage; } set { body.eage = value; } }
@@ -3721,12 +3725,12 @@ namespace SpiderRock.DataFeed
 			public TickerKeyLayout ticker;
 			public double bidPrice1;
 			public double askPrice1;
-			public ushort bidSize1;
-			public ushort askSize1;
+			public int bidSize1;
+			public int askSize1;
 			public double bidPrice2;
 			public double askPrice2;
-			public ushort bidSize2;
-			public ushort askSize2;
+			public int bidSize2;
+			public int askSize2;
 			public OptExch bidExch1;
 			public OptExch askExch1;
 			public uint bidMask1;
@@ -3761,10 +3765,10 @@ namespace SpiderRock.DataFeed
         public double AskPrice1 { get { return body.askPrice1; } set { body.askPrice1 = value; } }
  
 		/// <summary>cumulative size at bidPrice</summary>
-        public ushort BidSize1 { get { return body.bidSize1; } set { body.bidSize1 = value; } }
+        public int BidSize1 { get { return body.bidSize1; } set { body.bidSize1 = value; } }
  
 		/// <summary>cumulative size at askPrice</summary>
-        public ushort AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
+        public int AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
  
 		/// <summary>2nd best bid price</summary>
         public double BidPrice2 { get { return body.bidPrice2; } set { body.bidPrice2 = value; } }
@@ -3773,10 +3777,10 @@ namespace SpiderRock.DataFeed
         public double AskPrice2 { get { return body.askPrice2; } set { body.askPrice2 = value; } }
  
 		/// <summary>cumulative size at 2nd price</summary>
-        public ushort BidSize2 { get { return body.bidSize2; } set { body.bidSize2 = value; } }
+        public int BidSize2 { get { return body.bidSize2; } set { body.bidSize2 = value; } }
  
 		/// <summary>cumulative size at 2nd price</summary>
-        public ushort AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
+        public int AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
  
 		/// <summary>exchange at bid price with the largest size (if any)</summary>
         public OptExch BidExch1 { get { return body.bidExch1; } set { body.bidExch1 = value; } }
@@ -4008,19 +4012,19 @@ namespace SpiderRock.DataFeed
 			public UpdateType updateType;
 			public MarketStatus marketStatus;
 			public float bidPrice1;
-			public ushort bidSize1;
+			public int bidSize1;
 			public StkExch bidExch1;
 			public uint bidMask1;
 			public float askPrice1;
-			public ushort askSize1;
+			public int askSize1;
 			public StkExch askExch1;
 			public uint askMask1;
 			public float bidPrice2;
-			public ushort bidSize2;
+			public int bidSize2;
 			public StkExch bidExch2;
 			public uint bidMask2;
 			public float askPrice2;
-			public ushort askSize2;
+			public int askSize2;
 			public StkExch askExch2;
 			public uint askMask2;
 			public uint haltMask;
@@ -4047,7 +4051,7 @@ namespace SpiderRock.DataFeed
         public float BidPrice1 { get { return body.bidPrice1; } set { body.bidPrice1 = value; } }
  
 		/// <summary>bid size for best price level</summary>
-        public ushort BidSize1 { get { return body.bidSize1; } set { body.bidSize1 = value; } }
+        public int BidSize1 { get { return body.bidSize1; } set { body.bidSize1 = value; } }
  
 		
         public StkExch BidExch1 { get { return body.bidExch1; } set { body.bidExch1 = value; } }
@@ -4059,7 +4063,7 @@ namespace SpiderRock.DataFeed
         public float AskPrice1 { get { return body.askPrice1; } set { body.askPrice1 = value; } }
  
 		/// <summary>ask size for best price level</summary>
-        public ushort AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
+        public int AskSize1 { get { return body.askSize1; } set { body.askSize1 = value; } }
  
 		/// <summary>exchange</summary>
         public StkExch AskExch1 { get { return body.askExch1; } set { body.askExch1 = value; } }
@@ -4071,7 +4075,7 @@ namespace SpiderRock.DataFeed
         public float BidPrice2 { get { return body.bidPrice2; } set { body.bidPrice2 = value; } }
  
 		/// <summary>bid size for next best price level</summary>
-        public ushort BidSize2 { get { return body.bidSize2; } set { body.bidSize2 = value; } }
+        public int BidSize2 { get { return body.bidSize2; } set { body.bidSize2 = value; } }
  
 		/// <summary>exchange</summary>
         public StkExch BidExch2 { get { return body.bidExch2; } set { body.bidExch2 = value; } }
@@ -4083,7 +4087,7 @@ namespace SpiderRock.DataFeed
         public float AskPrice2 { get { return body.askPrice2; } set { body.askPrice2 = value; } }
  
 		/// <summary>ask size for next best price level</summary>
-        public ushort AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
+        public int AskSize2 { get { return body.askSize2; } set { body.askSize2 = value; } }
  
 		/// <summary>exchange</summary>
         public StkExch AskExch2 { get { return body.askExch2; } set { body.askExch2 = value; } }
@@ -4104,297 +4108,6 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // StockBookQuote
-
-
-	/// <summary>
-	/// StockExchImbalance:490
-	/// </summary>
-	/// <remarks>
-	/// StockExchImbalance records contain live exchange closing auction imbalance details.  Imbalance information can be available from more than one exchange for each ticker.
-	/// Final StockExchImbalance records are published to the SpiderRock elastic cluster nightly after the auction close.
-	/// </remarks>
-
-    public partial class StockExchImbalance
-    {
-		public StockExchImbalance()
-		{
-		}
-		
-		public StockExchImbalance(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public StockExchImbalance(StockExchImbalance source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal StockExchImbalance(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as StockExchImbalance);
-		}
-		
-		public bool Equals(StockExchImbalance other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(StockExchImbalance target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.StockExchImbalance};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private TickerKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public TickerKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
- 			/// <summary>Projected Auction Time (hhmm).</summary>
-			public DateTime AuctionTime
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.auctionTime; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.auctionTime = value; }
-			}
- 			/// <summary>Auction type: None; Open; Market; Halt; Closing; RegulatoryImbalance</summary>
-			public AuctionReason AuctionType
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.auctionType; }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.auctionType = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // StockExchImbalance.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public TickerKeyLayout ticker;
- 			public DateTimeLayout auctionTime;
- 			public AuctionReason auctionType;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker) &&
-					 	auctionTime.Equals(other.auctionTime) &&
-					 	auctionType.Equals(other.auctionType);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
- 					hashCode = (hashCode*397) ^ (auctionTime.GetHashCode());
- 					hashCode = (hashCode*397) ^ ((int) auctionType);
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // StockExchImbalance.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public float referencePx;
-			public int pairedQty;
-			public int totalImbalanceQty;
-			public int marketImbalanceQty;
-			public ImbalanceSide imbalanceSide;
-			public float continuousBookClrPx;
-			public float closingOnlyClrPx;
-			public float ssrFillingPx;
-			public float indicativeMatchPx;
-			public float upperCollar;
-			public float lowerCollar;
-			public AuctionStatus auctionStatus;
-			public YesNo freezeStatus;
-			public byte numExtensions;
-			public DateTimeLayout sourceTime;
-			public long netTimestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
-		
-		
-
-
-		/// <summary>For Pillar-powered markets, the Reference Price is used to calculate the Indicative Match Price.</summary>
-        public float ReferencePx { get { return body.referencePx; } set { body.referencePx = value; } }
- 
-		/// <summary>For Pillar-powered markets, the number of shares paired off at the Indicative Match Price.</summary>
-        public int PairedQty { get { return body.pairedQty; } set { body.pairedQty = value; } }
- 
-		/// <summary>For Pillar-powered markets, the total imbalance quantity at the Indicative Match Price. If the value is negative, the imbalance is on the sell side; if the value is positive, the imbalance is on the buy side.</summary>
-        public int TotalImbalanceQty { get { return body.totalImbalanceQty; } set { body.totalImbalanceQty = value; } }
- 
-		/// <summary>For Pillar-powered markets, the total market order imbalance quantity at the Indicative Match Price. If the value is negative, the imbalance is on the sell side; if the value is positive the imbalance is on the buy side.</summary>
-        public int MarketImbalanceQty { get { return body.marketImbalanceQty; } set { body.marketImbalanceQty = value; } }
- 
-		/// <summary>The side of the TotalImbalanceQty.</summary>
-        public ImbalanceSide ImbalanceSide { get { return body.imbalanceSide; } set { body.imbalanceSide = value; } }
- 
-		/// <summary>For Pillar-powered markets, the price at which all interest on the book can trade, including auction and imbalance offset interest, and disregarding auction collars.</summary>
-        public float ContinuousBookClrPx { get { return body.continuousBookClrPx; } set { body.continuousBookClrPx = value; } }
- 
-		/// <summary>For Pillar-powered markets, the price at which all eligible auction-only interest would trade, subject to auction collars.</summary>
-        public float ClosingOnlyClrPx { get { return body.closingOnlyClrPx; } set { body.closingOnlyClrPx = value; } }
- 
-		/// <summary>For Pillar-powered markets, not supported and defaulted to 0.</summary>
-        public float SsrFillingPx { get { return body.ssrFillingPx; } set { body.ssrFillingPx = value; } }
- 
-		/// <summary>For Pillar-powered markets, the price that has the highest executable volume of auction-eligible shares, subject to auction collars. It includes the non-displayed quantity of Reserve Orders.</summary>
-        public float IndicativeMatchPx { get { return body.indicativeMatchPx; } set { body.indicativeMatchPx = value; } }
- 
-		/// <summary>If the IndicativeMatchPrice is not strictly between the UpperCollar and the LowerCollar, special auction rules apply. See Rule 7.35P for details.</summary>
-        public float UpperCollar { get { return body.upperCollar; } set { body.upperCollar = value; } }
- 
-		/// <summary>If the IndicativeMatchPrice is not strictly between the UpperCollar and the LowerCollar, special auction rules apply. See Rule 7.35P for details.</summary>
-        public float LowerCollar { get { return body.lowerCollar; } set { body.lowerCollar = value; } }
- 
-		/// <summary>Indicates whether the auction will run.</summary>
-        public AuctionStatus AuctionStatus { get { return body.auctionStatus; } set { body.auctionStatus = value; } }
- 
-		/// <summary>Indicates freeze</summary>
-        public YesNo FreezeStatus { get { return body.freezeStatus; } set { body.freezeStatus = value; } }
- 
-		/// <summary>Number of times the halt period has been extended.</summary>
-        public byte NumExtensions { get { return body.numExtensions; } set { body.numExtensions = value; } }
- 
-		/// <summary>Time record was generated in the order book (in seconds)</summary>
-        public DateTime SourceTime { get { return body.sourceTime; } set { body.sourceTime = value; } }
- 
-		/// <summary>PTP timestamp</summary>
-        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
-
-		
-		#endregion	
-
-    } // StockExchImbalance
 
 
 	/// <summary>
@@ -5178,8 +4891,8 @@ namespace SpiderRock.DataFeed
 			public byte prtCond4;
 			public float ebid;
 			public float eask;
-			public ushort ebsz;
-			public ushort easz;
+			public int ebsz;
+			public int easz;
 			public float eage;
 			public PrtSide prtSide;
 			public long prtTimestamp;
@@ -5242,10 +4955,10 @@ namespace SpiderRock.DataFeed
         public float Eask { get { return body.eask; } set { body.eask = value; } }
  
 		/// <summary>exchange bid size</summary>
-        public ushort Ebsz { get { return body.ebsz; } set { body.ebsz = value; } }
+        public int Ebsz { get { return body.ebsz; } set { body.ebsz = value; } }
  
 		/// <summary>exchange ask size</summary>
-        public ushort Easz { get { return body.easz; } set { body.easz = value; } }
+        public int Easz { get { return body.easz; } set { body.easz = value; } }
  
 		/// <summary>age of prevailing quote at time of print</summary>
         public float Eage { get { return body.eage; } set { body.eage = value; } }
