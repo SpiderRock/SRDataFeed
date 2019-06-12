@@ -29,6 +29,7 @@ namespace SpiderRock.DataFeed
  	public enum IdxSrc : byte { Unknown=0,Indication=1,Quote=2 };		
  	public enum ImbalanceSide : byte { None=0,Buy=1,Sell=2,NoImbalance=3,InsufOrdsToCalc=4 };		
  	public enum LiveSurfaceType : byte { None=0,Live=1,Hist=2,PriorDay=3,Skew=4,LiveSkew=5,LiveAdj=6,Interp=7,Test1=8,Test2=9,Test3=10,LiveC=11,BaseC=12,PrevC=13,HistC=14,InterpC=15,Default=16,BaseEMA_1=17,BaseEMA_2=18,BaseEMA_3=19 };		
+ 	public enum MarketSession : byte { None=0,EarlySession=1,RegularSession=2,LateSession=3,NextDay=4 };		
  	public enum MarketStatus : byte { None=0,PreOpen=1,PreCross=2,Cross=3,Open=4,Closed=5,Halted=6,AfterHours=7 };		
  	public enum MoneynessType : byte { PctStd=0,LogStd=1,NormStd=2 };		
  	public enum Multihedge : byte { None=0,Simple=1,Complex=2,AllCash=3,Binary=4 };		
@@ -49,7 +50,7 @@ namespace SpiderRock.DataFeed
  	public enum StkExch : byte { None=0,AMEX=1,NQBX=2,NSX=3,FNRA=4,ISE=5,EDGA=6,EDGX=7,CHX=8,NYSE=9,ARCA=10,NSDQ=11,CBSX=12,PSX=13,BTSY=14,BATS=15,CBIDX=16,IEX=17,OTC=18 };		
  	public enum StkPriceInc : byte { None=0,FullPenny=1,Nickle=2 };		
  	public enum StkPrintType : byte { None=0,RegularSequence=1,OutOfSequence=2,VolumeOnly=3,ExtendedHours=4 };		
- 	public enum SurfaceResult : byte { None=0,OK=1,EOD=2,Init=3,Cache=4,PrevDay=5,NullExpIdx=6,NoStrikes=7,NoBaseCurve=8,BadBootAtm=9,NoGoodStrikes=10,BadAtmVol=11,Bootstrap=12,NoUPrc=13,NoIVols=14,NoModelPts=15,ZeroYears=16,NoSimpleVol=17,OptMktNotOpn=18,NoBaseSurface=19,UPrcOffCnt=20,SkewKnotCnt=21,Exception=22,AxisError=23,CAskFit1Err=24,CAskFit2Err=25,PAskFit1Err=26,PAskFit2Err=27,CBidFit1Err=28,CBidFit2Err=29,PBidFit1Err=30,PBidFit2Err=31,CobsMidFitErr=31,CobsSampleErr=32,NoPrcFit=33,NumStrikes=34,CMidFitErr=35,PMidFitErr=36,StrikeCount=37,VolKnotCnt=38,InterpError=39 };		
+ 	public enum SurfaceResult : byte { None=0,OK=1,EOD=2,Init=3,Cache=4,PrevDay=5,NullExpIdx=6,NoStrikes=7,NoBaseCurve=8,BadBootAtm=9,NoGoodStrikes=10,BadAtmVol=11,Bootstrap=12,NoUPrc=13,NoIVols=14,NoModelPts=15,ZeroYears=16,NoSimpleVol=17,OptMktNotOpn=18,NoBaseSurface=19,UPrcOffCnt=20,SkewKnotCnt=21,Exception=22,AxisError=23,CAskFit1Err=24,CAskFit2Err=25,PAskFit1Err=26,PAskFit2Err=27,CBidFit1Err=28,CBidFit2Err=29,PBidFit1Err=30,PBidFit2Err=31,CobsMidFitErr=31,CobsSampleErr=32,NoPrcFit=33,NumStrikes=34,CMidFitErr=35,PMidFitErr=36,StrikeCount=37,VolKnotCnt=38,InterpError=39,NoAtmStrike=40 };		
  	public enum SymbolType : byte { None=0,Equity=1,ADR=2,ETF=3,CashIndex=4,MutualFund=5,ShortETF=6,Future=7,Bond=8 };		
  	public enum SysEnvironment : byte { None=0,V7_Stable=3,V7_Latest=4 };		
  	public enum TapeCode : byte { None=0,A=1,B=2,C=3 };		
@@ -57,7 +58,7 @@ namespace SpiderRock.DataFeed
  	public enum TimeMetric : byte { None=0,D252=1,D365=2,SPX=3,WK1=4,WK2=5,WK3=6,WK4=7 };		
  	public enum TkDefSource : byte { None=0,Vendor=1,OTC=2,SR=3,Exchange=4 };		
  	public enum UnderlierMode : byte { None=0,Actual=1,FrontMonth=2,UPrcAdj=3 };		
- 	public enum UpdateType : byte { None=0,PrcChange=1,SizeOnly=2 };		
+ 	public enum UpdateType : byte { None=0,PrcChange=1,SizeOnly=2,PrevPeriod=3 };		
  	public enum VolumeTier : byte { None=0,Top50=1 };		
  	public enum YesNo : byte { None=0,Yes=1,No=2 };		
 

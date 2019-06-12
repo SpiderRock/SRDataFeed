@@ -98,8 +98,9 @@ public:
 private:
 	struct Layout
 	{
+		String<32> appName;
 		Int requestID;
-		String<32> filter;
+		String<255> filter;
 		Int limit;
 	};
 	
@@ -114,11 +115,13 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
+	inline const String<32>& appName() const { return layout_.appName; }
 	inline Int requestID() const { return layout_.requestID; }
-	inline const String<32>& filter() const { return layout_.filter; }
+	inline const String<255>& filter() const { return layout_.filter; }
 	inline Int limit() const { return layout_.limit; }
+	inline void appName(const String<32>& value) { layout_.appName = value; }
 	inline void requestID(Int value) { layout_.requestID = value; }
-	inline void filter(const String<32>& value) { layout_.filter = value; }
+	inline void filter(const String<255>& value) { layout_.filter = value; }
 	inline void limit(Int value) { layout_.limit = value; }
 	inline void msgtype(const std::vector<MsgType> value) { msgtype_.assign(value.begin(), value.end()); }
 	
