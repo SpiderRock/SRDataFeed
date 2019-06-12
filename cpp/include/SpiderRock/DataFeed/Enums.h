@@ -260,6 +260,15 @@ namespace SpiderRock
 			BaseEMA_3=19
 		};
 
+ 		enum class MarketSession : Enum 
+		{
+			None=0,
+			EarlySession=1,
+			RegularSession=2,
+			LateSession=3,
+			NextDay=4
+		};
+
  		enum class MarketStatus : Enum 
 		{
 			None=0,
@@ -609,7 +618,8 @@ namespace SpiderRock
 			PMidFitErr=36,
 			StrikeCount=37,
 			VolKnotCnt=38,
-			InterpError=39
+			InterpError=39,
+			NoAtmStrike=40
 		};
 
  		enum class SymbolType : Enum 
@@ -704,7 +714,8 @@ namespace SpiderRock
 		{
 			None=0,
 			PrcChange=1,
-			SizeOnly=2
+			SizeOnly=2,
+			PrevPeriod=3
 		};
 
  		enum class VolumeTier : Enum 

@@ -1147,6 +1147,8 @@ namespace SpiderRock.DataFeed
 			public int counter;
 			public int skewCounter;
 			public int sdivCounter;
+			public YesNo isTradeable;
+			public MarketSession marketSession;
 			public SurfaceResult surfaceResult;
 			public DateTimeLayout timestamp;
 		}
@@ -1448,6 +1450,12 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>sdiv surface fit counter</summary>
         public int SdivCounter { get { return body.sdivCounter; } set { body.sdivCounter = value; } }
+ 
+		/// <summary>indicates whether the surface is currently tradeable or not (all server surface integrity checks pass)</summary>
+        public YesNo IsTradeable { get { return body.isTradeable; } set { body.isTradeable = value; } }
+ 
+		/// <summary>market session this surface is from</summary>
+        public MarketSession MarketSession { get { return body.marketSession; } set { body.marketSession = value; } }
  
 		
         public SurfaceResult SurfaceResult { get { return body.surfaceResult; } set { body.surfaceResult = value; } }
@@ -5376,8 +5384,9 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
+			public AppNameString appName;
 			public int requestID;
-			public FixedString32Layout filter;
+			public FixedString255Layout filter;
 			public int limit;
 		}
 
@@ -5387,6 +5396,9 @@ namespace SpiderRock.DataFeed
 		
 
 
+		/// <summary>app name of the requesting service (for identification in logs)</summary>
+        public string AppName { get { return body.appName; } set { body.appName = value; } }
+ 
 		/// <summary>unique client generated id returned in CacheComplete message</summary>
         public int RequestID { get { return body.requestID; } set { body.requestID = value; } }
  

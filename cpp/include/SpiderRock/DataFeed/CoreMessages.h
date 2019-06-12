@@ -423,6 +423,8 @@ private:
 		Int counter;
 		Int skewCounter;
 		Int sdivCounter;
+		YesNo isTradeable;
+		MarketSession marketSession;
 		SurfaceResult surfaceResult;
 		DateTime timestamp;
 	};
@@ -533,6 +535,8 @@ public:
 	inline Int counter() const { return layout_.counter; }
 	inline Int skewCounter() const { return layout_.skewCounter; }
 	inline Int sdivCounter() const { return layout_.sdivCounter; }
+	inline YesNo isTradeable() const { return layout_.isTradeable; }
+	inline MarketSession marketSession() const { return layout_.marketSession; }
 	inline SurfaceResult surfaceResult() const { return layout_.surfaceResult; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
