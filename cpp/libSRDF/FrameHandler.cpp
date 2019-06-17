@@ -106,7 +106,7 @@ int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, con
 		{
 			Header* header = reinterpret_cast<Header*>(buffer + offset);
 
-			if ((header->environment != SysEnvironment::V7_Stable) ||
+			if (header->environment != env_ || 
 				!IsValid(header->message_type) || 
 				header->message_length <= (sizeof(Header) + header->key_length))
 			{
