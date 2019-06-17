@@ -1147,8 +1147,8 @@ namespace SpiderRock.DataFeed
 			public int counter;
 			public int skewCounter;
 			public int sdivCounter;
-			public YesNo isTradeable;
 			public MarketSession marketSession;
+			public TradeableStatus tradeableStatus;
 			public SurfaceResult surfaceResult;
 			public DateTimeLayout timestamp;
 		}
@@ -1451,11 +1451,11 @@ namespace SpiderRock.DataFeed
 		/// <summary>sdiv surface fit counter</summary>
         public int SdivCounter { get { return body.sdivCounter; } set { body.sdivCounter = value; } }
  
-		/// <summary>indicates whether the surface is currently tradeable or not (all server surface integrity checks pass)</summary>
-        public YesNo IsTradeable { get { return body.isTradeable; } set { body.isTradeable = value; } }
- 
 		/// <summary>market session this surface is from</summary>
         public MarketSession MarketSession { get { return body.marketSession; } set { body.marketSession = value; } }
+ 
+		/// <summary>indicates whether the surface is currently tradeable or not (all server surface integrity checks pass)</summary>
+        public TradeableStatus TradeableStatus { get { return body.tradeableStatus; } set { body.tradeableStatus = value; } }
  
 		
         public SurfaceResult SurfaceResult { get { return body.surfaceResult; } set { body.surfaceResult = value; } }

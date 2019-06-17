@@ -702,6 +702,21 @@ namespace SpiderRock
 			Exchange=4
 		};
 
+ 		enum class TradeableStatus : Enum 
+		{
+			None=0,
+			OK=1,
+			SurfaceErr=2,
+			LowCCnt=3,
+			LowPCnt=4,
+			FitPrcErr=5,
+			BidAskMiss=6,
+			LowCounter=7,
+			DefaultSkew=8,
+			SessionMiss=9,
+			BaseErr=10
+		};
+
  		enum class UnderlierMode : Enum 
 		{
 			None=0,
