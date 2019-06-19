@@ -14,6 +14,7 @@ namespace SpiderRock.DataFeed.FrameHandling
         public long sentts;
         public ushort msglen;
         public byte keylen;
+        public uint reserved2;
 
         public override string ToString()
         {
