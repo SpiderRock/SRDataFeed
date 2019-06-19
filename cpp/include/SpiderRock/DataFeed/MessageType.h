@@ -34,7 +34,6 @@ namespace SpiderRock
 			RootDefinition = 240,
 			SpreadBookQuote = 525,
 			StockBookQuote = 430,
-			StockExchImbalance = 490,
 			StockExchImbalanceV2 = 491,
 			StockMarketSummary = 445,
 			StockPrint = 440,
