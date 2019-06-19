@@ -35,7 +35,7 @@ namespace SpiderRock
 		struct Header
 		{
 			SysEnvironment environment;
-            UShort reserved;
+			UShort reserved;
 			MessageType message_type;
 			HeaderBits bits;
 			UShort source_id;
@@ -43,6 +43,7 @@ namespace SpiderRock
 			Long sent_time;
 			UShort message_length;
 			Byte key_length;
+			UInt reserved2;
 
 			Header() :
 				environment(SysEnvironment::None),
