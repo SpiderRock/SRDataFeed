@@ -168,8 +168,7 @@ namespace SpiderRock.DataFeed.Diagnostics
 
                 if (numPhysicalThreads == null)
                 {
-                    numPhysicalThreads = GetPerformanceCounter(".NET CLR LocksAndThreads",
-                        "# of current physical threads");
+                    numPhysicalThreads = GetPerformanceCounter(".NET CLR LocksAndThreads", "# of current physical threads");
                 }
 
                 process.Refresh();
@@ -219,15 +218,15 @@ namespace SpiderRock.DataFeed.Diagnostics
                         GC.CollectionCount(1),
                         GC.CollectionCount(2),
                         GC.GetTotalMemory(false),
-                        totalMemory != null ? totalMemory.NextValue() : 0,
-                        gen2Memory != null ? gen2Memory.NextValue() : 0,
-                        largeObjectMemory != null ? largeObjectMemory.NextValue() : 0,
-                        reservedMemory != null ? reservedMemory.NextValue() : 0,
-                        committedMemory != null ? committedMemory.NextValue() : 0,
-                        contentionRate != null ? contentionRate.NextValue() : 0,
-                        currentQueueLen != null ? currentQueueLen.NextValue() : 0,
-                        numLogicalThreads != null ? numLogicalThreads.NextValue() : 0,
-                        numPhysicalThreads != null ? numPhysicalThreads.NextValue() : 0,
+                        NextValue(totalMemory),
+                        NextValue(gen2Memory),
+                        NextValue(largeObjectMemory),
+                        NextValue(reservedMemory),
+                        NextValue(committedMemory),
+                        NextValue(contentionRate),
+                        NextValue(currentQueueLen),
+                        NextValue(numLogicalThreads),
+                        NextValue(numPhysicalThreads),
                         GetNumberOfOutstandingThreadPoolRequests()
                         );
 
@@ -237,6 +236,19 @@ namespace SpiderRock.DataFeed.Diagnostics
             catch (Exception e)
             {
                 SRTrace.Default.TraceError(e, "ProcessStatisticsAggregator failure");
+            }
+        }
+
+        private static float NextValue(PerformanceCounter counter, float defaultValue = 0)
+        {
+            try
+            {
+                return counter == null ? defaultValue : counter.NextValue();
+            }
+            catch (Exception e)
+            {
+                SRTrace.Default.TraceError(e, "ProcessStatisticsAggregator: PerformanceCounter[{0}/{1}/{2}].NextValue() error: {3}", counter.CategoryName, counter.CounterName, counter.InstanceName, e.Message);
+                return defaultValue;
             }
         }
 
