@@ -47,7 +47,6 @@ public:
 	MessageEventSource<RootDefinition::Key, RootDefinition> rootdefinition;
 	MessageEventSource<SpreadBookQuote::Key, SpreadBookQuote> spreadbookquote;
 	MessageEventSource<StockBookQuote::Key, StockBookQuote> stockbookquote;
-	MessageEventSource<StockExchImbalance::Key, StockExchImbalance> stockexchimbalance;
 	MessageEventSource<StockExchImbalanceV2::Key, StockExchImbalanceV2> stockexchimbalancev2;
 	MessageEventSource<StockMarketSummary::Key, StockMarketSummary> stockmarketsummary;
 	MessageEventSource<StockPrint::Key, StockPrint> stockprint;
@@ -80,7 +79,6 @@ SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
 	impl_->frame_handler.RegisterMessageHandler(&impl_->rootdefinition, { MessageType::RootDefinition });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->spreadbookquote, { MessageType::SpreadBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockbookquote, { MessageType::StockBookQuote });
-	impl_->frame_handler.RegisterMessageHandler(&impl_->stockexchimbalance, { MessageType::StockExchImbalance });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockexchimbalancev2, { MessageType::StockExchImbalanceV2 });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockmarketsummary, { MessageType::StockMarketSummary });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockprint, { MessageType::StockPrint });
@@ -95,11 +93,29 @@ void SRDataFeedEngine::MakeCacheRequest(initializer_list<MessageType> message_ty
 {
 	int32_t ipport = 2280 + (static_cast<int32_t>(impl_->environment) * 1000);
 
-	initializer_list<IPEndPoint> endpoints =
-	{
-		IPEndPoint(string("198.102.4.145"), ipport),
-		IPEndPoint(string("198.102.4.146"), ipport)
-	};
+	initializer_list<IPEndPoint> endpoints;
+
+    if (impl_->environment == SysEnvironment::V7_Stable)
+    {
+        endpoints =
+        {
+            IPEndPoint(string("198.102.4.145"), ipport),
+            IPEndPoint(string("198.102.4.146"), ipport)
+        };
+    }
+    else if (impl_->environment == SysEnvironment::V7_Latest)
+    {
+        endpoints =
+        {
+            IPEndPoint(string("10.37.42.107"), ipport),
+            IPEndPoint(string("10.37.42.163"), ipport)
+        };
+    }
+    else
+    {
+        SR_TRACE_ERROR("MakeCacheRequest: unsupported environment");
+        return;
+    }
 
 	for (auto ep : endpoints)
 	{
@@ -133,7 +149,14 @@ IPEndPoint SRDataFeedEngine::GetIPEndPoint(DataChannel channel)
 
 	string ipaddr;
 
-	ipaddr = "233.74.249." + to_string(chnum);
+    if (impl_->environment == SysEnvironment::V7_Stable)
+    {
+        ipaddr = "233.74.249." + to_string(chnum);
+    }
+    else
+    {
+        ipaddr = "233.74." + to_string(static_cast<int32_t>(impl_->environment)) + "." + to_string(chnum);
+    }
 
 	IPEndPoint ep(ipaddr, ipport);
 
@@ -197,7 +220,6 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<ProductDe
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<RootDefinition>> observer) { impl_->rootdefinition.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<SpreadBookQuote>> observer) { impl_->spreadbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
-void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockExchImbalanceV2>> observer) { impl_->stockexchimbalancev2.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockMarketSummary>> observer) { impl_->stockmarketsummary.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
@@ -215,7 +237,6 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<ProductDe
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<RootDefinition>> observer) { impl_->rootdefinition.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<SpreadBookQuote>> observer) { impl_->spreadbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
-void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockExchImbalanceV2>> observer) { impl_->stockexchimbalancev2.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockMarketSummary>> observer) { impl_->stockmarketsummary.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
@@ -233,7 +254,6 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<ProductDe
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<RootDefinition>> observer) { impl_->rootdefinition.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<SpreadBookQuote>> observer) { impl_->spreadbookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockBookQuote>> observer) { impl_->stockbookquote.RegisterObserver(observer); }
-void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockExchImbalance>> observer) { impl_->stockexchimbalance.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockExchImbalanceV2>> observer) { impl_->stockexchimbalancev2.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockMarketSummary>> observer) { impl_->stockmarketsummary.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
