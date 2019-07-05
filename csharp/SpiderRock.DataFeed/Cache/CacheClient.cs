@@ -23,7 +23,7 @@ namespace SpiderRock.DataFeed.Cache
         private Socket client;
         private CacheComplete cacheComplete;
 
-        unsafe public CacheClient(IPEndPoint endPoint, FrameHandler frameHandler, ChannelFactory channelFactory)
+        public unsafe CacheClient(IPEndPoint endPoint, FrameHandler frameHandler, ChannelFactory channelFactory)
         {
             this.endPoint = endPoint;
 

@@ -181,6 +181,24 @@ namespace SpiderRock
 			UnderlierMap=2
 		};
 
+ 		enum class FitPath : Enum 
+		{
+			None=0,
+			VolUPrc=2,
+			VolUPrcDefault=3,
+			VolSDiv=4,
+			VolSDivDefault=5,
+			BaseDefault=6,
+			BaseDefaultAdj=7,
+			HistVol=8,
+			Default=9,
+			NormalMid=10,
+			WideMid=11,
+			WideGap=12,
+			WideBound=13,
+			AtmRange=14
+		};
+
  		enum class FutExch : Enum 
 		{
 			None=0,
@@ -240,6 +258,15 @@ namespace SpiderRock
 			BaseEMA_1=17,
 			BaseEMA_2=18,
 			BaseEMA_3=19
+		};
+
+ 		enum class MarketSession : Enum 
+		{
+			None=0,
+			EarlySession=1,
+			RegularSession=2,
+			LateSession=3,
+			NextDay=4
 		};
 
  		enum class MarketStatus : Enum 
@@ -308,7 +335,8 @@ namespace SpiderRock
 			MPRL=20,
 			SDRK=21,
 			DQTE=22,
-			MEMLD=23
+			MEMLD=23,
+			CFE=24
 		};
 
  		enum class OptPriceInc : Enum 
@@ -417,6 +445,7 @@ namespace SpiderRock
 
  		enum class ProductClass : Enum 
 		{
+			None=0,
 			Equity=1,
 			Index=2,
 			Future=3,
@@ -504,7 +533,8 @@ namespace SpiderRock
 			None=0,
 			Stock=1,
 			Future=2,
-			Option=3
+			Option=3,
+			MLeg=4
 		};
 
  		enum class StkExch : Enum 
@@ -588,7 +618,8 @@ namespace SpiderRock
 			PMidFitErr=36,
 			StrikeCount=37,
 			VolKnotCnt=38,
-			InterpError=39
+			InterpError=39,
+			NoAtmStrike=40
 		};
 
  		enum class SymbolType : Enum 
@@ -607,7 +638,8 @@ namespace SpiderRock
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			V7_Stable=3
+			V7_Stable=3,
+			V7_Latest=4
 		};
 
  		enum class TapeCode : Enum 
@@ -670,6 +702,21 @@ namespace SpiderRock
 			Exchange=4
 		};
 
+ 		enum class TradeableStatus : Enum 
+		{
+			None=0,
+			OK=1,
+			SurfaceErr=2,
+			LowCCnt=3,
+			LowPCnt=4,
+			FitPrcErr=5,
+			BidAskMiss=6,
+			LowCounter=7,
+			DefaultSkew=8,
+			SessionMiss=9,
+			BaseErr=10
+		};
+
  		enum class UnderlierMode : Enum 
 		{
 			None=0,
@@ -682,7 +729,8 @@ namespace SpiderRock
 		{
 			None=0,
 			PrcChange=1,
-			SizeOnly=2
+			SizeOnly=2,
+			PrevPeriod=3
 		};
 
  		enum class VolumeTier : Enum 

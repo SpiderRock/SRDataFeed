@@ -101,8 +101,18 @@ namespace SpiderRock.DataFeed
             get
             {
                 var cacheServerPort = 2280 + (int) sysEnvironment * 1000;
-                yield return new IPEndPoint(IPAddress.Parse("198.102.4.145"), cacheServerPort);
-                yield return new IPEndPoint(IPAddress.Parse("198.102.4.146"), cacheServerPort);
+                switch (sysEnvironment)
+                {
+                    case SysEnvironment.V7_Stable:
+                        yield return new IPEndPoint(IPAddress.Parse("198.102.4.145"), cacheServerPort);
+                        yield return new IPEndPoint(IPAddress.Parse("198.102.4.146"), cacheServerPort);
+                        break;
+
+                    case SysEnvironment.V7_Latest:
+                        yield return new IPEndPoint(IPAddress.Parse("10.37.42.107"), cacheServerPort);
+                        yield return new IPEndPoint(IPAddress.Parse("10.37.42.163"), cacheServerPort);
+                        break;
+                }
             }
         }
 
@@ -414,15 +424,15 @@ namespace SpiderRock.DataFeed
 
             string ipAddress;
 
-            if (sysEnvironment == SysEnvironment.V7_Stable)
+            switch (sysEnvironment)
             {
-                ipAddress = string.Format("233.74.249.{0}", channelNumber);
-            }
-            else
-            {
-                throw new NotSupportedException(
-                    string.Format("GetIPEndPoint() does not support SysEnvironment {0}",
-                        sysEnvironment));
+                case SysEnvironment.V7_Stable:
+                    ipAddress = string.Format("233.74.249.{0}", channelNumber);
+                    break;
+
+                default:
+                    ipAddress = string.Format("239.12.{0}.{1}", (int) sysEnvironment, channelNumber);
+                    break;
             }
 
             return new IPEndPoint(IPAddress.Parse(ipAddress), ipPort);
