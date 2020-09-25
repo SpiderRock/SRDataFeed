@@ -111,10 +111,10 @@ namespace SpiderRock.DataFeed.Cache
 
         public unsafe void SendRequest(MessageType[] requestList)
         {
-            var msg = new GetCache
+            var msg = new GetExtCache
             {
                 RequestID = 1,
-                MsgTypeList = requestList.Select(msgtype => new GetCache.MsgTypeItem(msgtype)).ToArray(),
+                MsgTypeList = requestList.Select(msgtype => new GetExtCache.MsgTypeItem(msgtype)).ToArray(),
                 header = {environment = frameHandler.SysEnvironment}
             };
 

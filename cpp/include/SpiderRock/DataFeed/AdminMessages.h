@@ -22,68 +22,7 @@ namespace SpiderRock {
 
 namespace DataFeed {
 
-class CacheComplete
-{
-public:
-
-private:
-	struct Layout
-	{
-		Int requestID;
-		String<256> result;
-	};
-	
-	Header header_;
-	Layout layout_;
-	
-	int64_t time_received_;
-	
-public:
-	inline Header& header() { return header_; }
-	
-	inline void time_received(uint64_t value) { time_received_ = value; }
-	inline uint64_t time_received() const { return time_received_; }
-	
-	inline Int requestID() const { return layout_.requestID; }
-	inline const String<256>& result() const { return layout_.result; }
-	inline void requestID(Int value) { layout_.requestID = value; }
-	inline void result(const String<256>& value) { layout_.result = value; }
-	
-	
-	inline uint16_t Encode(uint8_t* buf) 
-	{
-		uint8_t* start = buf;
-		buf += sizeof(Header);
-
-		*reinterpret_cast<CacheComplete::Layout*>(buf) = layout_;
-		buf += sizeof(layout_);
-		
-
-
-		header_.message_length = (uint16_t)(buf - start);
-		header_.key_length = 0;
-		header_.message_type = MessageType::CacheComplete;
-		
-		*reinterpret_cast<Header*>(start) = header_;
-		
-		return header_.message_length;
-	}
-
-	inline void Decode(Header* buf) 
-	{
-		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
-		
-		layout_ = *reinterpret_cast<CacheComplete::Layout*>(ptr);
-		ptr += sizeof(layout_);
-		
-
-	}
-
-
-};
-
- class GetCache
+class GetExtCache
 {
 public:
 	class MsgType
@@ -130,7 +69,7 @@ public:
 		uint8_t* start = buf;
 		buf += sizeof(Header);
 
-		*reinterpret_cast<GetCache::Layout*>(buf) = layout_;
+		*reinterpret_cast<GetExtCache::Layout*>(buf) = layout_;
 		buf += sizeof(layout_);
 		
 		// MsgType Repeat Section
@@ -146,7 +85,7 @@ public:
 
 		header_.message_length = (uint16_t)(buf - start);
 		header_.key_length = 0;
-		header_.message_type = MessageType::GetCache;
+		header_.message_type = MessageType::GetExtCache;
 		
 		*reinterpret_cast<Header*>(start) = header_;
 		
@@ -158,7 +97,7 @@ public:
 		header_ = *buf;
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
-		layout_ = *reinterpret_cast<GetCache::Layout*>(ptr);
+		layout_ = *reinterpret_cast<GetExtCache::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 		// MsgType Repeat Section
