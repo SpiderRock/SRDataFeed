@@ -92,6 +92,15 @@ namespace SpiderRock
 			Pair=2
 		};
 
+ 		enum class ClsMarkState : Enum 
+		{
+			None=0,
+			LastPrt=1,
+			SRClose=2,
+			ExchClose=3,
+			Final=4
+		};
+
  		enum class ContractUnit : Enum 
 		{
 			None=0,
@@ -116,7 +125,7 @@ namespace SpiderRock
 			LBS=19,
 			MMBTU=20,
 			MWH=21,
-			MXN=22,
+			MXN=35,
 			MYR=22,
 			NOK=23,
 			NZD=24,
@@ -158,6 +167,34 @@ namespace SpiderRock
 			USX=22
 		};
 
+ 		enum class ExchOrderStatus : Enum 
+		{
+			None=0,
+			Open=1,
+			Cancelled=2,
+			Filled=3,
+			Retry=4
+		};
+
+ 		enum class ExchOrderType : Enum 
+		{
+			None=0,
+			Market=1,
+			Limit=2,
+			Auction=3
+		};
+
+ 		enum class ExchPrtType : Enum 
+		{
+			None=0
+		};
+
+ 		enum class ExecQualifier : Enum 
+		{
+			None=0,
+			AllOrNone=1
+		};
+
  		enum class ExerciseTime : Enum 
 		{
 			None=0,
@@ -179,6 +216,19 @@ namespace SpiderRock
 			None=0,
 			ExactMatch=1,
 			UnderlierMap=2
+		};
+
+ 		enum class FirmType : Enum 
+		{
+			None=0,
+			Customer=1,
+			Firm=2,
+			MarketMaker=3,
+			ProCustomer=4,
+			BrokerDealer=5,
+			AwayMM=6,
+			FirmJBO=7,
+			BrkrDlrCust=8
 		};
 
  		enum class FitPath : Enum 
@@ -257,7 +307,28 @@ namespace SpiderRock
 			Default=16,
 			BaseEMA_1=17,
 			BaseEMA_2=18,
-			BaseEMA_3=19
+			BaseEMA_3=19,
+			Archive=20
+		};
+
+ 		enum class MarkSource : Enum 
+		{
+			None=0,
+			NbboMid=1,
+			SRVol=2,
+			LoBound=3,
+			HiBound=4,
+			SRPricer=5,
+			SRQuote=6,
+			CloseMark=7
+		};
+
+ 		enum class MarketQualifier : Enum 
+		{
+			None=0,
+			NA=1,
+			Opening=2,
+			Implied=3
 		};
 
  		enum class MarketSession : Enum 
@@ -335,7 +406,7 @@ namespace SpiderRock
 			MPRL=20,
 			SDRK=21,
 			DQTE=22,
-			MEMLD=23,
+			EMLD=23,
 			CFE=24
 		};
 
@@ -357,6 +428,14 @@ namespace SpiderRock
 			Warrant=5,
 			Flex=6,
 			MapError=99
+		};
+
+ 		enum class PositionType : Enum 
+		{
+			None=0,
+			Opening=1,
+			Closing=2,
+			Auto=3
 		};
 
  		enum class PriceFormat : Enum 
@@ -528,6 +607,26 @@ namespace SpiderRock
 			Ask=3
 		};
 
+ 		enum class RunStatus : Enum 
+		{
+			None=0,
+			Prod=1,
+			UAT=2,
+			Beta=3,
+			Demo=4,
+			Alpha=5,
+			SysTest=6
+		};
+
+ 		enum class SRDataCenter : Enum 
+		{
+			None=0,
+			NY4=1,
+			NY5=2,
+			CH2=3,
+			CH3=4
+		};
+
  		enum class SpdrKeyType : Enum 
 		{
 			None=0,
@@ -557,7 +656,10 @@ namespace SpiderRock
 			BATS=15,
 			CBIDX=16,
 			IEX=17,
-			OTC=18
+			OTC=18,
+			MPRL=19,
+			LTSE=20,
+			MEMX=21
 		};
 
  		enum class StkPriceInc : Enum 
@@ -610,7 +712,7 @@ namespace SpiderRock
 			CBidFit2Err=29,
 			PBidFit1Err=30,
 			PBidFit2Err=31,
-			CobsMidFitErr=31,
+			CobsMidFitErr=42,
 			CobsSampleErr=32,
 			NoPrcFit=33,
 			NumStrikes=34,
@@ -619,7 +721,8 @@ namespace SpiderRock
 			StrikeCount=37,
 			VolKnotCnt=38,
 			InterpError=39,
-			NoAtmStrike=40
+			NoAtmStrike=40,
+			CobsConvexFitErr=41
 		};
 
  		enum class SymbolType : Enum 
@@ -638,8 +741,14 @@ namespace SpiderRock
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
+			Stable=1,
+			Current=2,
 			V7_Stable=3,
-			V7_Latest=4
+			V7_Latest=4,
+			V7_Stable_UAT=5,
+			V7_Latest_UAT=6,
+			V7_Dev=7,
+			SysTest=8
 		};
 
  		enum class TapeCode : Enum 
@@ -678,7 +787,19 @@ namespace SpiderRock
 			NSDQ=23,
 			MFQS=24,
 			PHLX=25,
-			MIAX=26
+			MIAX=26,
+			TSE=27
+		};
+
+ 		enum class TimeInForce : Enum 
+		{
+			None=0,
+			Day=1,
+			IOC=2,
+			GTD=3,
+			ExtDay=4,
+			Week=5,
+			ExtWeek=6
 		};
 
  		enum class TimeMetric : Enum 
@@ -714,7 +835,17 @@ namespace SpiderRock
 			LowCounter=7,
 			DefaultSkew=8,
 			SessionMiss=9,
-			BaseErr=10
+			BaseErr=10,
+			SwitchDelay=11,
+			WideMktV=12,
+			WideMktP=13,
+			WideUMkt=14,
+			UWidthEma=15,
+			CCntEma=16,
+			PCntEma=17,
+			VWidthEma=18,
+			PWidthEma=19,
+			Closed=20
 		};
 
  		enum class UnderlierMode : Enum 
