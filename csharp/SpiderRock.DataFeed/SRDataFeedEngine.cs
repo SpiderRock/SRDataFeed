@@ -35,9 +35,9 @@ namespace SpiderRock.DataFeed
 
         public SRDataFeedEngine()
         {
-            sysEnvironment = SysEnvironment.V7_Latest;
+            sysEnvironment = SysEnvironment.V7_Stable;
             disposeTokenSource = new CancellationTokenSource();
-            ReceiveBufferSize = 20 * 1024 * 1024; // 20MB default
+            ReceiveBufferSize = 20*1024*1024; // 20MB default
             LatencyMode = GCLatencyMode.SustainedLowLatency;
             LogToConsole = true;
             LogToFile = true;
@@ -85,8 +85,6 @@ namespace SpiderRock.DataFeed
 
         public bool LogToFile { get; set; }
 
-        public bool EnableProcessLog { get; set; } = true;
-
         /// <summary>
         /// Size of the UDP receive buffer.  Set to 20MB by default.
         /// </summary>
@@ -102,7 +100,7 @@ namespace SpiderRock.DataFeed
         {
             get
             {
-                var cacheServerPort = 2280 + (int)sysEnvironment * 1000;
+                var cacheServerPort = 2280 + (int) sysEnvironment * 1000;
                 switch (sysEnvironment)
                 {
                     case SysEnvironment.V7_Stable:
@@ -179,10 +177,7 @@ namespace SpiderRock.DataFeed
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "GCLatencyMode: {0}", GCSettings.LatencyMode);
                 SRTrace.Default.TraceEvent(TraceEventType.Start, 0, "Assembly: {0}", GetType().Assembly.FullName);
 
-                if (EnableProcessLog)
-                {
-                    processStatisticsAggregator = new ProcessStatisticsAggregator();
-                }
+                processStatisticsAggregator = new ProcessStatisticsAggregator();
 
                 InitializeChannelStatsAggregator();
 
@@ -422,10 +417,10 @@ namespace SpiderRock.DataFeed
 
         private IPEndPoint GetIPEndPoint(UdpChannel channel)
         {
-            int envNumber = 30 + (int)sysEnvironment;
-            int channelNumber = (int)channel;
+            int envNumber = 30 + (int) sysEnvironment;
+            int channelNumber = (int) channel;
 
-            int ipPort = 22000 + (envNumber * 250) + channelNumber;
+            int ipPort = 22000 + (envNumber*250) + channelNumber;
 
             string ipAddress;
 
@@ -436,7 +431,7 @@ namespace SpiderRock.DataFeed
                     break;
 
                 default:
-                    ipAddress = string.Format("239.12.{0}.{1}", (int)sysEnvironment, channelNumber);
+                    ipAddress = string.Format("239.12.{0}.{1}", (int) sysEnvironment, channelNumber);
                     break;
             }
 
