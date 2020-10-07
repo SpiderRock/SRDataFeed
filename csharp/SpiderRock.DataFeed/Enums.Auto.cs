@@ -12,8 +12,11 @@ namespace SpiderRock.DataFeed
 
 	public enum AdjConvention : byte { Original=0,OSI=1,SpcOnly=2,OSIAlt=3 };		
  	public enum AssetType : byte { None=0,EQT=1,IDX=2,BND=3,CUR=4,COM=5,FUT=6,SYN=7,WAR=8,FLX=9,MUT=10,SPD=11,MM=12,MF=13,COIN=14,TOKEN=15 };		
+ 	public enum AuctionLimitType : byte { None=0,Market=1,Limit=2 };		
  	public enum AuctionReason : byte { None=0,Open=1,Market=2,Halt=3,Closing=4,RegulatoryImbalance=5 };		
+ 	public enum AuctionState : byte { None=0,Start=1,Update=2,End=3 };		
  	public enum AuctionStatus : byte { None=0,WillRunOpenAndClose=1,WillRunInterest=2,WillNotRunImbalance=3,WillNotRunClsAuction=4 };		
+ 	public enum AuctionType : byte { None=0,Exposure=1,Improvement=2,Faciliation=3,Solicitation=4,Opening=5,Closing=6,RFQ=7 };		
  	public enum BuySell : byte { None=0,Buy=1,Sell=2 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2,Close=3 };		
  	public enum CalcType : byte { Loop=0,Tick=1 };		
@@ -41,6 +44,7 @@ namespace SpiderRock.DataFeed
  	public enum MarketStatus : byte { None=0,PreOpen=1,PreCross=2,Cross=3,Open=4,Closed=5,Halted=6,AfterHours=7 };		
  	public enum MoneynessType : byte { PctStd=0,LogStd=1,NormStd=2 };		
  	public enum Multihedge : byte { None=0,Simple=1,Complex=2,AllCash=3,Binary=4 };		
+ 	public enum NoticeShape : byte { None=0,Single=1,MLeg=2 };		
  	[System.Flags] public enum OpraMktType : byte { None=0,Rotation=1,TradingHalted=2,CustInterest=4,QuoteNotFirm=8 };		
  	public enum OptExch : byte { None=0,AMEX=1,BOX=2,CBOE=3,ISE=4,NYSE=5,PHLX=6,NSDQ=7,BATS=8,C2=9,NQBX=10,MIAX=11,GMNI=12,CME=13,CBOT=14,NYMEX=15,COMEX=16,ICE=17,EDGO=18,MCRY=19,MPRL=20,SDRK=21,DQTE=22,EMLD=23,CFE=24 };		
  	public enum OptPriceInc : byte { None=0,PartPenny=1,PartNickle=2,FullPenny=3 };		

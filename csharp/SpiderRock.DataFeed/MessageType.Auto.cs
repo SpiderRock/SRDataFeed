@@ -33,6 +33,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType OptionRiskFactor = 2320;
  		public static readonly MessageType ProductDefinitionV2 = 2455;
  		public static readonly MessageType RootDefinition = 240;
+ 		public static readonly MessageType SpdrAuctionState = 690;
  		public static readonly MessageType SpreadBookQuote = 525;
  		public static readonly MessageType StockBookQuote = 430;
  		public static readonly MessageType StockExchImbalanceV2 = 491;
@@ -67,6 +68,7 @@ namespace SpiderRock.DataFeed
  			isCore[OptionRiskFactor] = true;
  			isCore[ProductDefinitionV2] = true;
  			isCore[RootDefinition] = true;
+ 			isCore[SpdrAuctionState] = true;
  			isCore[SpreadBookQuote] = true;
  			isCore[StockBookQuote] = true;
  			isCore[StockExchImbalanceV2] = true;
@@ -114,6 +116,7 @@ namespace SpiderRock.DataFeed
  			names[OptionRiskFactor] = "OptionRiskFactor";
  			names[ProductDefinitionV2] = "ProductDefinitionV2";
  			names[RootDefinition] = "RootDefinition";
+ 			names[SpdrAuctionState] = "SpdrAuctionState";
  			names[SpreadBookQuote] = "SpreadBookQuote";
  			names[StockBookQuote] = "StockBookQuote";
  			names[StockExchImbalanceV2] = "StockExchImbalanceV2";

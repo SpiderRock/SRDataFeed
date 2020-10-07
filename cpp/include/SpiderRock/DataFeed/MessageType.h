@@ -39,6 +39,7 @@ namespace SpiderRock
 			OptionRiskFactor = 2320,
 			ProductDefinitionV2 = 2455,
 			RootDefinition = 240,
+			SpdrAuctionState = 690,
 			SpreadBookQuote = 525,
 			StockBookQuote = 430,
 			StockExchImbalanceV2 = 491,

@@ -45,6 +45,13 @@ namespace SpiderRock
 			TOKEN=15
 		};
 
+ 		enum class AuctionLimitType : Enum 
+		{
+			None=0,
+			Market=1,
+			Limit=2
+		};
+
  		enum class AuctionReason : Enum 
 		{
 			None=0,
@@ -55,6 +62,14 @@ namespace SpiderRock
 			RegulatoryImbalance=5
 		};
 
+ 		enum class AuctionState : Enum 
+		{
+			None=0,
+			Start=1,
+			Update=2,
+			End=3
+		};
+
  		enum class AuctionStatus : Enum 
 		{
 			None=0,
@@ -62,6 +77,18 @@ namespace SpiderRock
 			WillRunInterest=2,
 			WillNotRunImbalance=3,
 			WillNotRunClsAuction=4
+		};
+
+ 		enum class AuctionType : Enum 
+		{
+			None=0,
+			Exposure=1,
+			Improvement=2,
+			Faciliation=3,
+			Solicitation=4,
+			Opening=5,
+			Closing=6,
+			RFQ=7
 		};
 
  		enum class BuySell : Enum 
@@ -366,6 +393,13 @@ namespace SpiderRock
 			Complex=2,
 			AllCash=3,
 			Binary=4
+		};
+
+ 		enum class NoticeShape : Enum 
+		{
+			None=0,
+			Single=1,
+			MLeg=2
 		};
 
  		enum class OpraMktType : Flag 

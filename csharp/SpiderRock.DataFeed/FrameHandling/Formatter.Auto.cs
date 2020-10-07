@@ -310,6 +310,40 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, SpdrAuctionState dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(SpdrAuctionState.PKeyLayout) + sizeof(SpdrAuctionState.BodyLayout) > max) throw new IOException("Max exceeded decoding SpdrAuctionState");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((SpdrAuctionState.PKeyLayout*) src); src += sizeof(SpdrAuctionState.PKeyLayout);
+ 				dest.body = *((SpdrAuctionState.BodyLayout*) src); src += sizeof(SpdrAuctionState.BodyLayout);
+ 
+				// LegsItem Repeat Section
+
+				if (src + sizeof(ushort) > max) throw new IOException("Max exceeded decoding SpdrAuctionState.Legs length");
+				ushort size = *((ushort*) src); src += sizeof(ushort);
+				if (src + size * SpdrAuctionState.LegsItem.Length > max) throw new IOException("Max exceeded decoding SpdrAuctionState.Legs items");
+
+				dest.LegsList = new SpdrAuctionState.LegsItem[size];
+				
+				for (int i = 0; i < size; i++)
+				{
+					var item = new SpdrAuctionState.LegsItem();
+					item.LegSecKey = OptionKey.GetCreateOptionKey(*((OptionKeyLayout*) src)); src += sizeof(OptionKeyLayout);
+ 					item.LegSecType = *((SpdrKeyType*) src); src++;
+ 					item.LegSide = *((BuySell*) src); src++;
+ 					item.LegRatio = *((ushort*) src); src += sizeof(ushort);
+
+					dest.LegsList[i] = item;
+				}
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, SpreadBookQuote dest, byte* max)
 		{
 			unchecked

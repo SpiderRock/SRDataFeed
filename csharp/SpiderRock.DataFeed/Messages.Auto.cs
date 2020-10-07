@@ -5775,6 +5775,407 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
+	/// SpdrAuctionState:690
+	/// </summary>
+	/// <remarks>
+
+	/// </remarks>
+
+    public partial class SpdrAuctionState
+    {
+		public SpdrAuctionState()
+		{
+		}
+		
+		public SpdrAuctionState(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public SpdrAuctionState(SpdrAuctionState source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal SpdrAuctionState(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as SpdrAuctionState);
+		}
+		
+		public bool Equals(SpdrAuctionState other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(SpdrAuctionState target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+ 
+			if (LegsList != null)
+			{
+				target.LegsList = new LegsItem[LegsList.Length];
+				for (int i = 0; i < LegsList.Length; i++)
+				{
+					var src = LegsList[i];
+					
+					var dest = new LegsItem();
+					dest.LegSecKey = src.LegSecKey;
+ 					dest.LegSecType = src.LegSecType;
+ 					dest.LegSide = src.LegSide;
+ 					dest.LegRatio = src.LegRatio;
+
+					target.LegsList[i] = dest;
+				}
+			}
+ 			target.Invalidate();
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			Invalidate();
+ 			body = new BodyLayout();
+ 			LegsList = null;
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.SpdrAuctionState};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				
+			}
+			
+			/// <summary>unique SR AUCTION ID (required when responding to an auction notice)</summary>
+			public long SrAuctionID
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return body.srAuctionID; }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.srAuctionID = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // SpdrAuctionState.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public long srAuctionID;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	srAuctionID.Equals(other.srAuctionID);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = srAuctionID.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // SpdrAuctionState.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 		
+		#region Repeats 
+		
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        public class LegsItem
+        {
+            public const int Length = 30;
+
+            public LegsItem() { }
+            
+            public LegsItem(OptionKey legSecKey, SpdrKeyType legSecType, BuySell legSide, ushort legRatio)
+            {
+                this.LegSecKey = legSecKey;
+                this.LegSecType = legSecType;
+                this.LegSide = legSide;
+                this.LegRatio = legRatio;
+            }
+
+            public OptionKey LegSecKey { get; internal set; }
+			public SpdrKeyType LegSecType { get; internal set; }
+			public BuySell LegSide { get; internal set; }
+			public ushort LegRatio { get; internal set; }
+        }
+
+        public LegsItem[] LegsList { get; set; }
+
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public OptionKeyLayout secKey;
+			public SpdrKeyType secType;
+			public FixedString20Layout exchAuctionId;
+			public FixedString4Layout exchAuctionType;
+			public AuctionState auctionState;
+			public NoticeShape auctionShape;
+			public AuctionType auctionType;
+			public OptExch auctionExch;
+			public FixedString12Layout auctionExDest;
+			public BuySell auctionSide;
+			public int auctionSize;
+			public double auctionPrice;
+			public YesNo isAuctionPriceValid;
+			public int auctionDuration;
+			public int auctionStartSize;
+			public double auctionStartPrice;
+			public long auctionStartTimestamp;
+			public int minResponseSize;
+			public AuctionLimitType limitType;
+			public FirmType firmType;
+			public FixedString10Layout memberMPID;
+			public FixedString10Layout clientAccnt;
+			public FixedString16Layout otherDetail;
+			public int matchedSize;
+			public byte numUpdates;
+			public byte numResponses;
+			public int bestResponseSize;
+			public double bestResponsePrice;
+			public int cumFillQuantity;
+			public double avgFillPrice;
+			public MarketStatus marketStatus;
+			public long srcTimestamp;
+			public long netTimestamp;
+			public long dgwTimestamp;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		private volatile int usn;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedOptionKey secKey;
+ 		private CachedFixedLengthString<FixedString20Layout> exchAuctionId;
+ 		private CachedFixedLengthString<FixedString4Layout> exchAuctionType;
+ 		private CachedFixedLengthString<FixedString12Layout> auctionExDest;
+ 		private CachedFixedLengthString<FixedString10Layout> memberMPID;
+ 		private CachedFixedLengthString<FixedString10Layout> clientAccnt;
+ 		private CachedFixedLengthString<FixedString16Layout> otherDetail;
+		
+
+            
+		
+        public OptionKey SecKey { get { return CacheVar.AllocIfNull(ref secKey).Get(ref body.secKey, usn); } set { CacheVar.AllocIfNull(ref secKey).Set(value); body.secKey = value.Layout; } }
+ 
+		
+        public SpdrKeyType SecType { get { return body.secType; } set { body.secType = value; } }
+ 
+		
+        public string ExchAuctionId { get { return CacheVar.AllocIfNull(ref exchAuctionId).Get(ref body.exchAuctionId, usn); } set { CacheVar.AllocIfNull(ref exchAuctionId).Set(value); body.exchAuctionId = value; } }
+ 
+		
+        public string ExchAuctionType { get { return CacheVar.AllocIfNull(ref exchAuctionType).Get(ref body.exchAuctionType, usn); } set { CacheVar.AllocIfNull(ref exchAuctionType).Set(value); body.exchAuctionType = value; } }
+ 
+		
+        public AuctionState AuctionState { get { return body.auctionState; } set { body.auctionState = value; } }
+ 
+		
+        public NoticeShape AuctionShape { get { return body.auctionShape; } set { body.auctionShape = value; } }
+ 
+		
+        public AuctionType AuctionType { get { return body.auctionType; } set { body.auctionType = value; } }
+ 
+		/// <summary>exchange handling the auction</summary>
+        public OptExch AuctionExch { get { return body.auctionExch; } set { body.auctionExch = value; } }
+ 
+		/// <summary>external exDest of auction (usually means auction is off-exchange)</summary>
+        public string AuctionExDest { get { return CacheVar.AllocIfNull(ref auctionExDest).Get(ref body.auctionExDest, usn); } set { CacheVar.AllocIfNull(ref auctionExDest).Set(value); body.auctionExDest = value; } }
+ 
+		/// <summary>Market side (client/imbalance side of auction; if known) [responder should be opposite side]</summary>
+        public BuySell AuctionSide { get { return body.auctionSide; } set { body.auctionSide = value; } }
+ 
+		/// <summary>size available to trade</summary>
+        public int AuctionSize { get { return body.auctionSize; } set { body.auctionSize = value; } }
+ 
+		/// <summary>auction price (can be positive or negative)</summary>
+        public double AuctionPrice { get { return body.auctionPrice; } set { body.auctionPrice = value; } }
+ 
+		
+        public YesNo IsAuctionPriceValid { get { return body.isAuctionPriceValid; } set { body.isAuctionPriceValid = value; } }
+ 
+		/// <summary>expected auction / imbalance action duration (ms)</summary>
+        public int AuctionDuration { get { return body.auctionDuration; } set { body.auctionDuration = value; } }
+ 
+		/// <summary>initial (starting) auction size</summary>
+        public int AuctionStartSize { get { return body.auctionStartSize; } set { body.auctionStartSize = value; } }
+ 
+		/// <summary>initial (starting) auction price</summary>
+        public double AuctionStartPrice { get { return body.auctionStartPrice; } set { body.auctionStartPrice = value; } }
+ 
+		/// <summary>auction start timestamp</summary>
+        public long AuctionStartTimestamp { get { return body.auctionStartTimestamp; } set { body.auctionStartTimestamp = value; } }
+ 
+		/// <summary>minimum size of the response order</summary>
+        public int MinResponseSize { get { return body.minResponseSize; } set { body.minResponseSize = value; } }
+ 
+		/// <summary>client / imbalance limit type (if available)</summary>
+        public AuctionLimitType LimitType { get { return body.limitType; } set { body.limitType = value; } }
+ 
+		/// <summary>firm type of the client side of auction (if available)</summary>
+        public FirmType FirmType { get { return body.firmType; } set { body.firmType = value; } }
+ 
+		/// <summary>exchange member initiating auction (if available)</summary>
+        public string MemberMPID { get { return CacheVar.AllocIfNull(ref memberMPID).Get(ref body.memberMPID, usn); } set { CacheVar.AllocIfNull(ref memberMPID).Set(value); body.memberMPID = value; } }
+ 
+		/// <summary>client account designation (if known)</summary>
+        public string ClientAccnt { get { return CacheVar.AllocIfNull(ref clientAccnt).Get(ref body.clientAccnt, usn); } set { CacheVar.AllocIfNull(ref clientAccnt).Set(value); body.clientAccnt = value; } }
+ 
+		/// <summary>additional auction detail (exchange specific)</summary>
+        public string OtherDetail { get { return CacheVar.AllocIfNull(ref otherDetail).Get(ref body.otherDetail, usn); } set { CacheVar.AllocIfNull(ref otherDetail).Set(value); body.otherDetail = value; } }
+ 
+		/// <summary>size already matched (may still be available to trade at a better price)</summary>
+        public int MatchedSize { get { return body.matchedSize; } set { body.matchedSize = value; } }
+ 
+		/// <summary>number of auction updates received (not counting auction termination message)</summary>
+        public byte NumUpdates { get { return body.numUpdates; } set { body.numUpdates = value; } }
+ 
+		/// <summary>as reported by exchange (if available)</summary>
+        public byte NumResponses { get { return body.numResponses; } set { body.numResponses = value; } }
+ 
+		
+        public int BestResponseSize { get { return body.bestResponseSize; } set { body.bestResponseSize = value; } }
+ 
+		
+        public double BestResponsePrice { get { return body.bestResponsePrice; } set { body.bestResponsePrice = value; } }
+ 
+		/// <summary>as reported by exchange (if available)</summary>
+        public int CumFillQuantity { get { return body.cumFillQuantity; } set { body.cumFillQuantity = value; } }
+ 
+		
+        public double AvgFillPrice { get { return body.avgFillPrice; } set { body.avgFillPrice = value; } }
+ 
+		/// <summary>market status (pre-open, open, closed, etc)</summary>
+        public MarketStatus MarketStatus { get { return body.marketStatus; } set { body.marketStatus = value; } }
+ 
+		/// <summary>source timestamp (nanoseconds) if available</summary>
+        public long SrcTimestamp { get { return body.srcTimestamp; } set { body.srcTimestamp = value; } }
+ 
+		/// <summary>network timestamp message arrival @ direct exchange gateway</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+ 
+		/// <summary>network timestamp mbus message send @ direct exchange gateway</summary>
+        public long DgwTimestamp { get { return body.dgwTimestamp; } set { body.dgwTimestamp = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // SpdrAuctionState
+
+
+	/// <summary>
 	/// SpreadBookQuote:525
 	/// </summary>
 	/// <remarks>

@@ -1442,6 +1442,97 @@ namespace SpiderRock.DataFeed
         }
     }
 
+    public partial class SpdrAuctionState
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "srAuctionID\tsecKey_rt\tsecKey_ts\tsecKey_at\tsecKey_yr\tsecKey_mn\tsecKey_dy\tsecKey_xx\tsecKey_cp\tsecType\texchAuctionId\texchAuctionType\tauctionState\tauctionShape\tauctionType\tauctionExch\tauctionExDest\tauctionSide\tauctionSize\tauctionPrice\tisAuctionPriceValid\tauctionDuration\tauctionStartSize\tauctionStartPrice\tauctionStartTimestamp\tminResponseSize\tlimitType\tfirmType\tmemberMPID\tclientAccnt\totherDetail\tmatchedSize\tnumUpdates\tnumResponses\tbestResponseSize\tbestResponsePrice\tcumFillQuantity\tavgFillPrice\tmarketStatus\tsrcTimestamp\tnetTimestamp\tdgwTimestamp\ttimestamp\tLegs";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.SrAuctionID);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(SecKey.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SecType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExchAuctionId);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExchAuctionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionState);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionShape);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionExch);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionExDest);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionSide);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IsAuctionPriceValid);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionDuration);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStartSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStartPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStartTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinResponseSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(LimitType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(FirmType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MemberMPID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClientAccnt);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OtherDetail);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MatchedSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NumUpdates);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NumResponses);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BestResponseSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BestResponsePrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CumFillQuantity);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AvgFillPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MarketStatus);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SrcTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NetTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DgwTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class SpreadBookQuote
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
