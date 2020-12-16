@@ -83,7 +83,7 @@ public:
 
 };
 
- class GetCache
+ class GetExtCache
 {
 public:
 	class MsgType
@@ -130,7 +130,7 @@ public:
 		uint8_t* start = buf;
 		buf += sizeof(Header);
 
-		*reinterpret_cast<GetCache::Layout*>(buf) = layout_;
+		*reinterpret_cast<GetExtCache::Layout*>(buf) = layout_;
 		buf += sizeof(layout_);
 		
 		// MsgType Repeat Section
@@ -146,7 +146,7 @@ public:
 
 		header_.message_length = (uint16_t)(buf - start);
 		header_.key_length = 0;
-		header_.message_type = MessageType::GetCache;
+		header_.message_type = MessageType::GetExtCache;
 		
 		*reinterpret_cast<Header*>(start) = header_;
 		
@@ -158,7 +158,7 @@ public:
 		header_ = *buf;
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
-		layout_ = *reinterpret_cast<GetCache::Layout*>(ptr);
+		layout_ = *reinterpret_cast<GetExtCache::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 		// MsgType Repeat Section

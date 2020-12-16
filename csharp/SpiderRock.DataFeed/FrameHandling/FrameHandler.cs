@@ -32,7 +32,7 @@ namespace SpiderRock.DataFeed.FrameHandling
                 if (c == max)
                 {
                     SRTrace.Default.TraceWarning(
-                        "Error category '{0}' reached its max of {1} log messages.  Logging for this error category will be suppressed going forward.",
+                        "Warning category '{0}' reached its max of {1} log messages.  Logging for this error category will be suppressed going forward.",
                         Label, max);
                 }
                 else if (c < max)
@@ -51,9 +51,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 
         private readonly ErrorCounter[] messageParseErrors =
             MessageType.CreateSizedArray(messageType => new ErrorCounter(messageType + " message parse error", 20));
-
-        private readonly ErrorCounter[] unknownMessageTypeErrors =
-            MessageType.CreateSizedArray(messageType => new ErrorCounter(messageType + " unknown message type", 1));
 
         private readonly MessageHandler[] messageHandlers;
 
@@ -100,9 +97,6 @@ namespace SpiderRock.DataFeed.FrameHandling
 
                         if (offset + header.msglen > length) break;
 
-                        channel.IncrementMsgCount(header.msgtype, header.msglen);
-                        channel.CheckSeqNumber(header.sourceid, header.msgtype, header.seqnum);
-
                         if (header.environment == SysEnvironment)
                         {
                             try
@@ -111,11 +105,10 @@ namespace SpiderRock.DataFeed.FrameHandling
 
                                 if (handler != null)
                                 {
+                                    channel.IncrementMsgCount(header.msgtype, header.msglen);
+                                    channel.CheckSeqNumber(header.sourceid, header.msgtype, header.seqnum);
+
                                     handler(ptr, buffer.Length, offset, header, netTimestamp, channel);
-                                }
-                                else if (unknownMessageTypeErrors[header.msgtype].TryIncrement())
-                                {
-                                    SRTrace.Default.TraceError("ParseMessage: {0}", unknownMessageTypeErrors[header.msgtype].Label);
                                 }
                             }
                             catch (Exception e)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -287,6 +287,12 @@ namespace SpiderRock.DataFeed
             }
 
             return Empty;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator ExpiryKey(OptionKey key)
+        {
+            return ExpiryKey.GetCreateExpiryKey((ExpiryKeyLayout)key.Layout);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

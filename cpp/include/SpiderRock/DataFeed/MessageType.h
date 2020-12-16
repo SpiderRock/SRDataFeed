@@ -16,7 +16,7 @@ namespace SpiderRock
 { 
 	namespace DataFeed
 	{
-		const UShort MAX_MESSAGE_TYPE = 0x2000;
+		const UShort MAX_MESSAGE_TYPE = 11000;
 
 		enum class MessageType : UShort
 		{
@@ -24,23 +24,34 @@ namespace SpiderRock
 			
 			FutureBookQuote = 360,
 			FuturePrint = 370,
+			FuturePrintMarkup = 3024,
 			IndexQuote = 137,
 			LiveSurfaceAtm = 2160,
+			OptionCloseMark = 292,
+			OptionExchOrder = 270,
+			OptionExchPrint = 275,
 			OptionImpliedQuote = 2300,
 			OptionNbboQuote = 260,
+			OptionOpenInterestV2 = 2131,
 			OptionPrint = 300,
+			OptionPrint2 = 301,
+			OptionPrintMarkup = 3026,
 			OptionRiskFactor = 2320,
 			ProductDefinitionV2 = 2455,
 			RootDefinition = 240,
+			SpdrAuctionState = 690,
 			SpreadBookQuote = 525,
+			SpreadExchOrder = 520,
 			StockBookQuote = 430,
 			StockExchImbalanceV2 = 491,
+			StockImbalance = 495,
 			StockMarketSummary = 445,
 			StockPrint = 440,
+			StockPrintMarkup = 3022,
 			TickerDefinition = 420,
 			
 			CacheComplete = 4106,
-			GetCache = 4096,
+			GetExtCache = 4096,
 			NetPulse = 5000,
 		};
 		
