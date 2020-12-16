@@ -35,6 +35,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType RootDefinition = 240;
  		public static readonly MessageType SpdrAuctionState = 690;
  		public static readonly MessageType SpreadBookQuote = 525;
+ 		public static readonly MessageType SpreadExchOrder = 520;
  		public static readonly MessageType StockBookQuote = 430;
  		public static readonly MessageType StockExchImbalanceV2 = 491;
  		public static readonly MessageType StockImbalance = 495;
@@ -43,7 +44,8 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType StockPrintMarkup = 3022;
  		public static readonly MessageType TickerDefinition = 420;
 
-		internal static readonly MessageType GetExtCache = 4096;
+		internal static readonly MessageType CacheComplete = 4106;
+ 		internal static readonly MessageType GetExtCache = 4096;
  		internal static readonly MessageType NetPulse = 5000;
 
 		
@@ -70,6 +72,7 @@ namespace SpiderRock.DataFeed
  			isCore[RootDefinition] = true;
  			isCore[SpdrAuctionState] = true;
  			isCore[SpreadBookQuote] = true;
+ 			isCore[SpreadExchOrder] = true;
  			isCore[StockBookQuote] = true;
  			isCore[StockExchImbalanceV2] = true;
  			isCore[StockImbalance] = true;
@@ -86,7 +89,8 @@ namespace SpiderRock.DataFeed
 		{
 			var isAdmin = CreateSizedArray<bool>();
 			
-			isAdmin[GetExtCache] = true;
+			isAdmin[CacheComplete] = true;
+ 			isAdmin[GetExtCache] = true;
  			isAdmin[NetPulse] = true;
 
 			
@@ -97,7 +101,8 @@ namespace SpiderRock.DataFeed
 		{
 			var names = CreateSizedArray<string>();
 
-			names[FutureBookQuote] = "FutureBookQuote";
+			names[CacheComplete] = "CacheComplete";
+ 			names[FutureBookQuote] = "FutureBookQuote";
  			names[FuturePrint] = "FuturePrint";
  			names[FuturePrintMarkup] = "FuturePrintMarkup";
  			names[GetExtCache] = "GetExtCache";
@@ -118,6 +123,7 @@ namespace SpiderRock.DataFeed
  			names[RootDefinition] = "RootDefinition";
  			names[SpdrAuctionState] = "SpdrAuctionState";
  			names[SpreadBookQuote] = "SpreadBookQuote";
+ 			names[SpreadExchOrder] = "SpreadExchOrder";
  			names[StockBookQuote] = "StockBookQuote";
  			names[StockExchImbalanceV2] = "StockExchImbalanceV2";
  			names[StockImbalance] = "StockImbalance";

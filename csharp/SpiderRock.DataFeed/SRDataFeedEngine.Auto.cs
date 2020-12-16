@@ -3040,6 +3040,165 @@ namespace SpiderRock.DataFeed
             }
         }   
  
+        private sealed class SpreadExchOrderContainerCache
+        {
+            #region Events
+            
+            [ThreadStatic] private static CreatedEventArgs<SpreadExchOrder> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<SpreadExchOrder> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<SpreadExchOrder> updatedEventArgs;
+
+            public event EventHandler<CreatedEventArgs<SpreadExchOrder>> Created;
+            public event EventHandler<ChangedEventArgs<SpreadExchOrder>> Changed;
+            public event EventHandler<UpdatedEventArgs<SpreadExchOrder>> Updated;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static CreatedEventArgs<SpreadExchOrder> GetCreatedEventArgs()
+            {
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<SpreadExchOrder>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static ChangedEventArgs<SpreadExchOrder> GetChangedEventArgs()
+            {
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<SpreadExchOrder>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static UpdatedEventArgs<SpreadExchOrder> GetUpdatedEventArgs()
+            {
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<SpreadExchOrder>());
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireCreatedEventIfSubscribed(SpreadExchOrder obj, Channel channel)
+            {
+                EventHandler<CreatedEventArgs<SpreadExchOrder>> created = Created;
+                if (created == null) return;
+                try
+                {
+                    CreatedEventArgs<SpreadExchOrder> args = GetCreatedEventArgs();
+                    args.Created = obj;
+                    args.Channel = channel;
+                    created(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "SpreadExchOrder.FireCreatedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireChangedEventIfSubscribed(SpreadExchOrder obj, Channel channel)
+            {
+                EventHandler<ChangedEventArgs<SpreadExchOrder>> changed = Changed;
+                if (changed == null) return;
+                try
+                {
+                    ChangedEventArgs<SpreadExchOrder> args = GetChangedEventArgs();
+                    args.Changed = obj;
+                    args.Channel = channel;
+                    changed(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "SpreadExchOrder.FireChangedEventIfSubscribed exception");
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void FireUpdatedEvent(SpreadExchOrder current, SpreadExchOrder previous, Channel channel)
+            {
+                try
+                {
+                    UpdatedEventArgs<SpreadExchOrder> args = GetUpdatedEventArgs();
+                    args.Current = current;
+                    args.Previous = previous;
+                    args.Channel = channel;                    
+                    Updated(this, args);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, "SpreadExchOrder.FireUpdatedEvent exception");
+                }
+            }
+
+            #endregion
+            
+            private readonly Dictionary<SpreadExchOrder.PKeyLayout, SpreadExchOrder> objectsByKey = new Dictionary<SpreadExchOrder.PKeyLayout, SpreadExchOrder>();
+            
+            [ThreadStatic] private static SpreadExchOrder decodeTarget;
+
+            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
+            {
+                if (hdr.keylen != sizeof(SpreadExchOrder.PKeyLayout))
+                {
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(SpreadExchOrder.PKeyLayout))));
+                }           
+                
+                SpreadExchOrder.PKeyLayout pkey = *(SpreadExchOrder.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                SpreadExchOrder item;        
+                
+                if (!objectsByKey.TryGetValue(pkey, out item))
+                {       
+                    lock (objectsByKey)
+                    {
+                        if (!objectsByKey.TryGetValue(pkey, out item))
+                        {       
+                            item = new SpreadExchOrder(pkey) {TimeRcvd = timestamp};
+                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                            
+                            FireCreatedEventIfSubscribed(item, channel);
+                            if (Updated != null)
+                            {
+                                FireUpdatedEvent(item, null, channel);
+                            }
+                            FireChangedEventIfSubscribed(item, channel);
+
+                            item.header.bits &= ~HeaderBits.FromCache;
+                            
+                            objectsByKey[pkey] = item;
+                            
+                            return;                                         
+                        }   
+                    }   
+                }
+                
+                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
+
+                item.TimeRcvd = timestamp;
+                item.Invalidate();
+
+                if (Updated != null)
+                {
+                    if (decodeTarget == null) decodeTarget = new SpreadExchOrder();
+                    
+                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
+
+                    decodeTarget.Invalidate();
+                    item.pkey.CopyTo(decodeTarget.pkey);
+                    
+                    FireUpdatedEvent(decodeTarget, item, channel);
+                    
+                    decodeTarget.CopyTo(item);                                                                              
+                }
+                else
+                {
+                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
+                }
+
+                FireChangedEventIfSubscribed(item, channel);         
+            }
+            
+            public void Clear()
+            {
+                lock (objectsByKey)
+                {
+                    objectsByKey.Clear();
+                }
+            }
+        }   
+ 
         private sealed class StockBookQuoteContainerCache
         {
             #region Events
@@ -4177,6 +4336,7 @@ namespace SpiderRock.DataFeed
          private readonly RootDefinitionContainerCache rootDefinitionContainerCache = new RootDefinitionContainerCache();
          private readonly SpdrAuctionStateContainerCache spdrAuctionStateContainerCache = new SpdrAuctionStateContainerCache();
          private readonly SpreadBookQuoteContainerCache spreadBookQuoteContainerCache = new SpreadBookQuoteContainerCache();
+         private readonly SpreadExchOrderContainerCache spreadExchOrderContainerCache = new SpreadExchOrderContainerCache();
          private readonly StockBookQuoteContainerCache stockBookQuoteContainerCache = new StockBookQuoteContainerCache();
          private readonly StockExchImbalanceV2ContainerCache stockExchImbalanceV2ContainerCache = new StockExchImbalanceV2ContainerCache();
          private readonly StockImbalanceContainerCache stockImbalanceContainerCache = new StockImbalanceContainerCache();
@@ -4211,6 +4371,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.RootDefinition, rootDefinitionContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.SpdrAuctionState, spdrAuctionStateContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.SpreadBookQuote, spreadBookQuoteContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.SpreadExchOrder, spreadExchOrderContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockBookQuote, stockBookQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockExchImbalanceV2, stockExchImbalanceV2ContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockImbalance, stockImbalanceContainerCache.OnMessage);
@@ -4243,6 +4404,7 @@ namespace SpiderRock.DataFeed
              rootDefinitionContainerCache.Clear();
              spdrAuctionStateContainerCache.Clear();
              spreadBookQuoteContainerCache.Clear();
+             spreadExchOrderContainerCache.Clear();
              stockBookQuoteContainerCache.Clear();
              stockExchImbalanceV2ContainerCache.Clear();
              stockImbalanceContainerCache.Clear();
@@ -4597,6 +4759,24 @@ namespace SpiderRock.DataFeed
         {
             add     { lock (eventLock) { spreadBookQuoteContainerCache.Updated += value; } }
             remove  { lock (eventLock) { spreadBookQuoteContainerCache.Updated -= value; } }
+        }
+         
+        public event EventHandler<CreatedEventArgs<SpreadExchOrder>> SpreadExchOrderCreated
+        {
+            add     { lock (eventLock) { spreadExchOrderContainerCache.Created += value; } }
+            remove  { lock (eventLock) { spreadExchOrderContainerCache.Created -= value; } }
+        }
+        
+        public event EventHandler<ChangedEventArgs<SpreadExchOrder>> SpreadExchOrderChanged
+        {
+            add     { lock (eventLock) { spreadExchOrderContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { spreadExchOrderContainerCache.Changed -= value; } }
+        }
+        
+        public event EventHandler<UpdatedEventArgs<SpreadExchOrder>> SpreadExchOrderUpdated
+        {
+            add     { lock (eventLock) { spreadExchOrderContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { spreadExchOrderContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<StockBookQuote>> StockBookQuoteCreated

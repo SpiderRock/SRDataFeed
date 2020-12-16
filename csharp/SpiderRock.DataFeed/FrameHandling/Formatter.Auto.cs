@@ -359,6 +359,41 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, SpreadExchOrder dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(SpreadExchOrder.PKeyLayout) + sizeof(SpreadExchOrder.BodyLayout) > max) throw new IOException("Max exceeded decoding SpreadExchOrder");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((SpreadExchOrder.PKeyLayout*) src); src += sizeof(SpreadExchOrder.PKeyLayout);
+ 				dest.body = *((SpreadExchOrder.BodyLayout*) src); src += sizeof(SpreadExchOrder.BodyLayout);
+ 
+				// LegsItem Repeat Section
+
+				if (src + sizeof(ushort) > max) throw new IOException("Max exceeded decoding SpreadExchOrder.Legs length");
+				ushort size = *((ushort*) src); src += sizeof(ushort);
+				if (src + size * SpreadExchOrder.LegsItem.Length > max) throw new IOException("Max exceeded decoding SpreadExchOrder.Legs items");
+
+				dest.LegsList = new SpreadExchOrder.LegsItem[size];
+				
+				for (int i = 0; i < size; i++)
+				{
+					var item = new SpreadExchOrder.LegsItem();
+					item.LegSecKey = OptionKey.GetCreateOptionKey(*((OptionKeyLayout*) src)); src += sizeof(OptionKeyLayout);
+ 					item.LegSecType = *((SpdrKeyType*) src); src++;
+ 					item.LegSide = *((BuySell*) src); src++;
+ 					item.LegRatio = *((uint*) src); src += sizeof(uint);
+ 					item.PositionType = *((PositionType*) src); src++;
+
+					dest.LegsList[i] = item;
+				}
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, StockBookQuote dest, byte* max)
 		{
 			unchecked
@@ -464,6 +499,41 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
 
 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Encode(CacheComplete src, byte* dest, byte* max)
+		{
+			unchecked
+			{
+				int length = sizeof(Header) + sizeof(CacheComplete.BodyLayout);
+				if (length > (int) (max - dest)) throw new IOException("Cannot encode CacheComplete because it will exceed the buffer length");
+				
+				src.header.msgtype = MessageType.CacheComplete;
+				src.header.msglen = (ushort) length;
+				src.header.keylen = 0;
+				src.header.sentts = System.DateTime.UtcNow.Ticks;
+				
+				*((Header*) dest) =	src.header; dest += sizeof(Header);
+				
+				*((CacheComplete.BodyLayout*) dest) = src.body; dest += sizeof(CacheComplete.BodyLayout);
+			
+				return dest;
+			}
+		}
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, CacheComplete dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(CacheComplete.BodyLayout) > max) throw new IOException("Max exceeded decoding CacheComplete");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.body = *((CacheComplete.BodyLayout*) src); src += sizeof(CacheComplete.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Encode(GetExtCache src, byte* dest, byte* max)
 		{

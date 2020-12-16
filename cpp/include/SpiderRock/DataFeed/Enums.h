@@ -544,7 +544,7 @@ namespace SpiderRock
 			AMEX=2,
 			Nasdaq=3,
 			NasdaqSmallCap=4,
-			OtcBB=5,
+			Otc=5,
 			Index=6,
 			ARCA=7,
 			CME=8,
@@ -822,7 +822,8 @@ namespace SpiderRock
 			MFQS=24,
 			PHLX=25,
 			MIAX=26,
-			TSE=27
+			TSE=27,
+			DJI=28
 		};
 
  		enum class TimeInForce : Enum 

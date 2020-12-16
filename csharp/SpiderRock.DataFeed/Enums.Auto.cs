@@ -53,7 +53,7 @@ namespace SpiderRock.DataFeed
  	public enum PriceFormat : byte { None=0,N0=1,N1=2,N2=3,N3=4,N4=5,N5=6,N6=7,N7=8,F4=9,F8=10,Q8=11,F16=12,F32=13,H32=14,Q32=15,F64=16,H64=17,FullPenny=18,PartPenny=19,PartNickle=20,EQT=21,V1=22,V2=23,V3=24,V4=25,V5=26,V6=27,V7=28,V8=29,V9=30,V10=31,V11=32,V12=33,V13=34,V14=35,V15=36,A0=37,A1=38,A2=39,A3=40,A4=41,A5=42,A6=43,A7=44 };		
  	public enum PriceQuoteType : byte { Price=0,Vol=1 };		
  	public enum PricingModel : byte { None=0,Equity=1,FutureApprox=2,FutureExact=3,NormalApprox=4,NormalExact=5 };		
- 	public enum PrimaryExch : byte { None=0,NYSE=1,AMEX=2,Nasdaq=3,NasdaqSmallCap=4,OtcBB=5,Index=6,ARCA=7,CME=8,CBOT=9,NYMEX=10,COMEX=11,ICE=12,BATS=13,IEXG=14 };		
+ 	public enum PrimaryExch : byte { None=0,NYSE=1,AMEX=2,Nasdaq=3,NasdaqSmallCap=4,Otc=5,Index=6,ARCA=7,CME=8,CBOT=9,NYMEX=10,COMEX=11,ICE=12,BATS=13,IEXG=14 };		
  	public enum ProductClass : byte { None=0,Equity=1,Index=2,Future=3,Option=4,Spread=5 };		
  	public enum ProductIndexType : byte { None=0,NextDay=1,FirstOfMonth=2,VWA=3,Russel=4 };		
  	public enum ProductTerm : byte { None=0,Month=1,Day=2,Week=3,BalanceOfMonth=4,Quarter=5,Season=6,BalanceOfWeek=7,CalendarYear=8,Variable=9,Custom=10,SameDay=11,NextDay=12,Weekly=13,Pack=14,Bundle=15,IRSAndCDSTenor=16 };		
@@ -69,7 +69,7 @@ namespace SpiderRock.DataFeed
  	public enum SymbolType : byte { None=0,Equity=1,ADR=2,ETF=3,CashIndex=4,MutualFund=5,ShortETF=6,Future=7,Bond=8 };		
  	public enum SysEnvironment : byte { None=0,Stable=1,Current=2,V7_Stable=3,V7_Latest=4,V7_Stable_UAT=5,V7_Latest_UAT=6,V7_Dev=7,SysTest=8 };		
  	public enum TapeCode : byte { None=0,A=1,B=2,C=3 };		
- 	public enum TickerSrc : byte { None=0,SR=1,NMS=2,CME=3,ICE=4,CFE=5,CBOT=6,TD=7,NYMEX=8,COMEX=9,RUT=10,CBOE=11,ISE=12,ARCA=13,NYSE=14,OTC=15,GDAX=16,BSTAMP=17,KRAKEN=18,TST=19,USR1=20,USR2=21,USR3=22,NSDQ=23,MFQS=24,PHLX=25,MIAX=26,TSE=27 };		
+ 	public enum TickerSrc : byte { None=0,SR=1,NMS=2,CME=3,ICE=4,CFE=5,CBOT=6,TD=7,NYMEX=8,COMEX=9,RUT=10,CBOE=11,ISE=12,ARCA=13,NYSE=14,OTC=15,GDAX=16,BSTAMP=17,KRAKEN=18,TST=19,USR1=20,USR2=21,USR3=22,NSDQ=23,MFQS=24,PHLX=25,MIAX=26,TSE=27,DJI=28 };		
  	public enum TimeInForce : byte { None=0,Day=1,IOC=2,GTD=3,ExtDay=4,Week=5,ExtWeek=6 };		
  	public enum TimeMetric : byte { None=0,D252=1,D365=2,SPX=3,WK1=4,WK2=5,WK3=6,WK4=7 };		
  	public enum TkDefSource : byte { None=0,Vendor=1,OTC=2,SR=3,Exchange=4 };		

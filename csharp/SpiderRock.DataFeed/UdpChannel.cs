@@ -99,6 +99,7 @@
 
         OptAuction = 160,
         OptOrder = 161,
+        OptOrderPhlx = 162,
 
         ImbalanceArca = 170,
         ImbalanceNyse = 171,
