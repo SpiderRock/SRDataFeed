@@ -13,6 +13,31 @@ using SpiderRock.DataFeed.Layouts;
 
 namespace SpiderRock.DataFeed
 {
+    internal partial class CacheComplete
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "requestID\tresult";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(RequestID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Result);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class FutureBookQuote
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
@@ -554,7 +579,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tclsMarkState\tuBid\tuAsk\tuSrCls\tuClose\tbidPrc\taskPrc\tsrClsPrc\tclosePrc\tbidIV\taskIV\tsrPrc\tsrVol\tsrSrc\tde\tga\tth\tve\tvo\tva\tdeDecay\trh\tph\tsdiv\tddiv\trate\tyears\terror\topenInterest\tprtCount\tprtVolume\ttimestamp";
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tclsMarkState\tuBid\tuAsk\tuSrCls\tuClose\tbidPrc\taskPrc\tsrClsPrc\tclosePrc\tbidIV\taskIV\tsrPrc\tsrVol\tsrSrc\tde\tga\tth\tve\tvo\tva\tdeDecay\trh\tph\tsdiv\tddiv\trate\tyears\terror\topenInterest\tprtCount\tprtVolume\tsrCloseMarkDttm\ttimestamp";
 
 		public string TabRecord
         {
@@ -627,6 +652,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(PrtCount);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(SrCloseMarkDttm);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 
@@ -1442,6 +1469,97 @@ namespace SpiderRock.DataFeed
         }
     }
 
+    public partial class SpdrAuctionState
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "srAuctionID\tsecKey_rt\tsecKey_ts\tsecKey_at\tsecKey_yr\tsecKey_mn\tsecKey_dy\tsecKey_xx\tsecKey_cp\tsecType\texchAuctionId\texchAuctionType\tauctionState\tauctionShape\tauctionType\tauctionExch\tauctionExDest\tauctionSide\tauctionSize\tauctionPrice\tisAuctionPriceValid\tauctionDuration\tauctionStartSize\tauctionStartPrice\tauctionStartTimestamp\tminResponseSize\tlimitType\tfirmType\tmemberMPID\tclientAccnt\totherDetail\tmatchedSize\tnumUpdates\tnumResponses\tbestResponseSize\tbestResponsePrice\tcumFillQuantity\tavgFillPrice\tmarketStatus\tsrcTimestamp\tnetTimestamp\tdgwTimestamp\ttimestamp\tLegs";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.SrAuctionID);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(SecKey.TabRecord);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SecType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExchAuctionId);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExchAuctionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionState);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionShape);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionExch);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionExDest);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionSide);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IsAuctionPriceValid);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionDuration);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStartSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStartPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AuctionStartTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MinResponseSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(LimitType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(FirmType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MemberMPID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClientAccnt);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OtherDetail);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MatchedSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NumUpdates);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NumResponses);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BestResponseSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(BestResponsePrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(CumFillQuantity);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AvgFillPrice);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MarketStatus);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SrcTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NetTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DgwTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
     public partial class SpreadBookQuote
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
@@ -1503,6 +1621,67 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(SrcTimestamp);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(NetTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.AppendInTabRecordFormat(Timestamp);
+
+				return recordBuilder.ToString();
+			}
+        }
+    }
+
+    public partial class SpreadExchOrder
+    {
+		[ThreadStatic] private static StringBuilder recordBuilder;
+
+		public const string TabHeader = "orderID\texch\tside\tisTest\tskey\tsize\tprice\tisPriceValid\torigOrderSize\torderType\torderStatus\tmarketQualifier\texecQualifier\ttimeInForce\tfirmType\tclearingFirm\tclearingAccnt\tsrcTimestamp\tnetTimestamp\tdgwTimestamp\ttimestamp\tLegs";
+
+		public string TabRecord
+        {
+            get
+			{
+				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
+				else						recordBuilder.Clear();
+
+				recordBuilder.Append(pkey.OrderID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.Exch);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.Side);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(pkey.IsTest);
+				recordBuilder.Append("\t");
+
+				recordBuilder.Append(Skey);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Size);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(Price);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IsPriceValid);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OrigOrderSize);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OrderType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(OrderStatus);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(MarketQualifier);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ExecQualifier);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TimeInForce);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(FirmType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClearingFirm);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(ClearingAccnt);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(SrcTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(NetTimestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(DgwTimestamp);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
 

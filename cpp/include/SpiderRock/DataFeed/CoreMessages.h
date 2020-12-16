@@ -747,6 +747,7 @@ private:
 		Int openInterest;
 		Int prtCount;
 		Int prtVolume;
+		DateTime srCloseMarkDttm;
 		DateTime timestamp;
 	};
 	
@@ -793,6 +794,7 @@ public:
 	inline Int openInterest() const { return layout_.openInterest; }
 	inline Int prtCount() const { return layout_.prtCount; }
 	inline Int prtVolume() const { return layout_.prtVolume; }
+	inline DateTime srCloseMarkDttm() const { return layout_.srCloseMarkDttm; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
@@ -2074,6 +2076,159 @@ public:
 
 };
 
+ class SpdrAuctionState
+{
+public:
+	class Key
+	{
+		Long srAuctionID_;
+		
+	public:
+		inline Long srAuctionID() const { return srAuctionID_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = std::hash<Long>()(k.srAuctionID_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.srAuctionID_ == b.srAuctionID_;
+		}
+	};
+	
+	class Legs
+	{
+		OptionKey legSecKey_;
+		SpdrKeyType legSecType_;
+		BuySell legSide_;
+		UShort legRatio_;
+		
+	public:
+		inline const OptionKey& legSecKey() const { return legSecKey_; }
+		inline SpdrKeyType legSecType() const { return legSecType_; }
+		inline BuySell legSide() const { return legSide_; }
+		inline UShort legRatio() const { return legRatio_; }
+		inline void legSecKey(const OptionKey& value) { legSecKey_ = value; }
+		inline void legSecType(SpdrKeyType value) { legSecType_ = value; }
+		inline void legSide(BuySell value) { legSide_ = value; }
+		inline void legRatio(UShort value) { legRatio_ = value; }
+	};
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		OptionKey secKey;
+		SpdrKeyType secType;
+		String<20> exchAuctionId;
+		String<4> exchAuctionType;
+		AuctionState auctionState;
+		NoticeShape auctionShape;
+		AuctionType auctionType;
+		OptExch auctionExch;
+		String<12> auctionExDest;
+		BuySell auctionSide;
+		Int auctionSize;
+		Double auctionPrice;
+		YesNo isAuctionPriceValid;
+		Int auctionDuration;
+		Int auctionStartSize;
+		Double auctionStartPrice;
+		Long auctionStartTimestamp;
+		Int minResponseSize;
+		AuctionLimitType limitType;
+		FirmType firmType;
+		String<10> memberMPID;
+		String<10> clientAccnt;
+		String<16> otherDetail;
+		Int matchedSize;
+		Byte numUpdates;
+		Byte numResponses;
+		Int bestResponseSize;
+		Double bestResponsePrice;
+		Int cumFillQuantity;
+		Double avgFillPrice;
+		MarketStatus marketStatus;
+		Long srcTimestamp;
+		Long netTimestamp;
+		Long dgwTimestamp;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	vector<Legs>legs_;
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline const OptionKey& secKey() const { return layout_.secKey; }
+	inline SpdrKeyType secType() const { return layout_.secType; }
+	inline const String<20>& exchAuctionId() const { return layout_.exchAuctionId; }
+	inline const String<4>& exchAuctionType() const { return layout_.exchAuctionType; }
+	inline AuctionState auctionState() const { return layout_.auctionState; }
+	inline NoticeShape auctionShape() const { return layout_.auctionShape; }
+	inline AuctionType auctionType() const { return layout_.auctionType; }
+	inline OptExch auctionExch() const { return layout_.auctionExch; }
+	inline const String<12>& auctionExDest() const { return layout_.auctionExDest; }
+	inline BuySell auctionSide() const { return layout_.auctionSide; }
+	inline Int auctionSize() const { return layout_.auctionSize; }
+	inline Double auctionPrice() const { return layout_.auctionPrice; }
+	inline YesNo isAuctionPriceValid() const { return layout_.isAuctionPriceValid; }
+	inline Int auctionDuration() const { return layout_.auctionDuration; }
+	inline Int auctionStartSize() const { return layout_.auctionStartSize; }
+	inline Double auctionStartPrice() const { return layout_.auctionStartPrice; }
+	inline Long auctionStartTimestamp() const { return layout_.auctionStartTimestamp; }
+	inline Int minResponseSize() const { return layout_.minResponseSize; }
+	inline AuctionLimitType limitType() const { return layout_.limitType; }
+	inline FirmType firmType() const { return layout_.firmType; }
+	inline const String<10>& memberMPID() const { return layout_.memberMPID; }
+	inline const String<10>& clientAccnt() const { return layout_.clientAccnt; }
+	inline const String<16>& otherDetail() const { return layout_.otherDetail; }
+	inline Int matchedSize() const { return layout_.matchedSize; }
+	inline Byte numUpdates() const { return layout_.numUpdates; }
+	inline Byte numResponses() const { return layout_.numResponses; }
+	inline Int bestResponseSize() const { return layout_.bestResponseSize; }
+	inline Double bestResponsePrice() const { return layout_.bestResponsePrice; }
+	inline Int cumFillQuantity() const { return layout_.cumFillQuantity; }
+	inline Double avgFillPrice() const { return layout_.avgFillPrice; }
+	inline MarketStatus marketStatus() const { return layout_.marketStatus; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline Long dgwTimestamp() const { return layout_.dgwTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<SpdrAuctionState::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+		// Legs Repeat Section
+		auto legs_count = *reinterpret_cast<uint16_t*>(ptr);
+		ptr += sizeof(legs_count);
+
+		for (int i = 0; i < legs_count; i++)
+		{
+			legs_.push_back(*reinterpret_cast<Legs*>(ptr));
+			ptr += sizeof(Legs);
+		}
+
+	}
+
+};
+
  class SpreadBookQuote
 {
 public:
@@ -2176,6 +2331,138 @@ public:
 		layout_ = *reinterpret_cast<SpreadBookQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
+
+	}
+
+};
+
+ class SpreadExchOrder
+{
+public:
+	class Key
+	{
+		String<24> orderID_;
+		OptExch exch_;
+		BuySell side_;
+		YesNo isTest_;
+		
+	public:
+		inline const String<24>& orderID() const { return orderID_; }
+		inline OptExch exch() const { return exch_; }
+		inline BuySell side() const { return side_; }
+		inline YesNo isTest() const { return isTest_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = String<24>()(k.orderID_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exch_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.side_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.isTest_));
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.orderID_ == b.orderID_
+				&& a.exch_ == b.exch_
+				&& a.side_ == b.side_
+				&& a.isTest_ == b.isTest_;
+		}
+	};
+	
+	class Legs
+	{
+		OptionKey legSecKey_;
+		SpdrKeyType legSecType_;
+		BuySell legSide_;
+		UInt legRatio_;
+		PositionType positionType_;
+		
+	public:
+		inline const OptionKey& legSecKey() const { return legSecKey_; }
+		inline SpdrKeyType legSecType() const { return legSecType_; }
+		inline BuySell legSide() const { return legSide_; }
+		inline UInt legRatio() const { return legRatio_; }
+		inline PositionType positionType() const { return positionType_; }
+		inline void legSecKey(const OptionKey& value) { legSecKey_ = value; }
+		inline void legSecType(SpdrKeyType value) { legSecType_ = value; }
+		inline void legSide(BuySell value) { legSide_ = value; }
+		inline void legRatio(UInt value) { legRatio_ = value; }
+		inline void positionType(PositionType value) { positionType_ = value; }
+	};
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		TickerKey skey;
+		Int size;
+		Double price;
+		YesNo isPriceValid;
+		Int origOrderSize;
+		ExchOrderType orderType;
+		ExchOrderStatus orderStatus;
+		MarketQualifier marketQualifier;
+		ExecQualifier execQualifier;
+		TimeInForce timeInForce;
+		FirmType firmType;
+		String<5> clearingFirm;
+		String<8> clearingAccnt;
+		Long srcTimestamp;
+		Long netTimestamp;
+		Long dgwTimestamp;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	vector<Legs>legs_;
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline const TickerKey& skey() const { return layout_.skey; }
+	inline Int size() const { return layout_.size; }
+	inline Double price() const { return layout_.price; }
+	inline YesNo isPriceValid() const { return layout_.isPriceValid; }
+	inline Int origOrderSize() const { return layout_.origOrderSize; }
+	inline ExchOrderType orderType() const { return layout_.orderType; }
+	inline ExchOrderStatus orderStatus() const { return layout_.orderStatus; }
+	inline MarketQualifier marketQualifier() const { return layout_.marketQualifier; }
+	inline ExecQualifier execQualifier() const { return layout_.execQualifier; }
+	inline TimeInForce timeInForce() const { return layout_.timeInForce; }
+	inline FirmType firmType() const { return layout_.firmType; }
+	inline const String<5>& clearingFirm() const { return layout_.clearingFirm; }
+	inline const String<8>& clearingAccnt() const { return layout_.clearingAccnt; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline Long dgwTimestamp() const { return layout_.dgwTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<SpreadExchOrder::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+		// Legs Repeat Section
+		auto legs_count = *reinterpret_cast<uint16_t*>(ptr);
+		ptr += sizeof(legs_count);
+
+		for (int i = 0; i < legs_count; i++)
+		{
+			legs_.push_back(*reinterpret_cast<Legs*>(ptr));
+			ptr += sizeof(Legs);
+		}
 
 	}
 
