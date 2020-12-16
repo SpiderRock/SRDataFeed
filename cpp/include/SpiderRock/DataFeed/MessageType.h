@@ -39,7 +39,9 @@ namespace SpiderRock
 			OptionRiskFactor = 2320,
 			ProductDefinitionV2 = 2455,
 			RootDefinition = 240,
+			SpdrAuctionState = 690,
 			SpreadBookQuote = 525,
+			SpreadExchOrder = 520,
 			StockBookQuote = 430,
 			StockExchImbalanceV2 = 491,
 			StockImbalance = 495,
@@ -48,6 +50,7 @@ namespace SpiderRock
 			StockPrintMarkup = 3022,
 			TickerDefinition = 420,
 			
+			CacheComplete = 4106,
 			GetExtCache = 4096,
 			NetPulse = 5000,
 		};

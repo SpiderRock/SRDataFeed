@@ -56,7 +56,9 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionRiskFactor>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<ProductDefinitionV2>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<RootDefinition>> observer);
+			void RegisterObserver(std::shared_ptr<CreateEventObserver<SpdrAuctionState>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<SpreadBookQuote>> observer);
+			void RegisterObserver(std::shared_ptr<CreateEventObserver<SpreadExchOrder>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockExchImbalanceV2>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockImbalance>> observer);
@@ -82,7 +84,9 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionRiskFactor>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<ProductDefinitionV2>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<RootDefinition>> observer);
+			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SpdrAuctionState>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SpreadBookQuote>> observer);
+			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SpreadExchOrder>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockExchImbalanceV2>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockImbalance>> observer);
@@ -108,7 +112,9 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionRiskFactor>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<ProductDefinitionV2>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<RootDefinition>> observer);
+			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SpdrAuctionState>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SpreadBookQuote>> observer);
+			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SpreadExchOrder>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockExchImbalanceV2>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockImbalance>> observer);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -112,6 +112,18 @@ namespace SpiderRock.DataFeed.Layouts
         public static bool operator !=(OptionKeyLayout left, OptionKeyLayout right)
         {
             return !left.Equals(right);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static explicit operator ExpiryKeyLayout(OptionKeyLayout okeyLayout)
+        {
+            return new ExpiryKeyLayout(
+                okeyLayout.AssetType,
+                okeyLayout.TickerSrc,
+                okeyLayout.Ticker,
+                okeyLayout.Year,
+                okeyLayout.Month,
+                okeyLayout.Day);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
