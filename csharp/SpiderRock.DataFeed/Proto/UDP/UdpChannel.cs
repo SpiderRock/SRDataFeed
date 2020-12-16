@@ -12,7 +12,7 @@ namespace SpiderRock.DataFeed.Proto.UDP
         private static readonly long NanosecondsUpToUnixEpoch = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks) * 100;
 
         private static readonly double Frequency = Stopwatch.Frequency;
-        private readonly byte[] buffer = new byte[1500];
+        private readonly byte[] buffer = new byte[ushort.MaxValue];
 
         private readonly UdpDevice device;
         private readonly FrameHandler frameHandler;

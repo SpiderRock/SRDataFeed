@@ -182,12 +182,12 @@ void CacheClient::SendRequest(initializer_list<MessageType> message_types)
 {
 	uint8_t buf[MAX_MESSAGE_LENGTH];
 
-	GetCache get_cache;
+	GetExtCache get_cache;
 	get_cache.requestID(1);
-	vector<GetCache::MsgType> msg_types;
+	vector<GetExtCache::MsgType> msg_types;
 	for (MessageType t : message_types)
 	{
-		GetCache::MsgType i;
+		GetExtCache::MsgType i;
 		i.msgtype(static_cast<UShort>(t));
 		msg_types.push_back(i);
 	}
@@ -198,7 +198,7 @@ void CacheClient::SendRequest(initializer_list<MessageType> message_types)
 	Connect();
 
 	int sent = send(socket_, reinterpret_cast<char*>(&buf[0]), length, 0);
-	send_channel_->IncrementMessageTypeCounters(MessageType::GetCache, length);
+	send_channel_->IncrementMessageTypeCounters(MessageType::GetExtCache, length);
 	if (sent != length) 
 	{
 		ThrowLastErrorAs<CacheClientException>();

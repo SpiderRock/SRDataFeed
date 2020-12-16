@@ -23,10 +23,14 @@ namespace SpiderRock
 			StkNbboQuote3 = 3,
 			StkNbboQuote4 = 4,
 
+			OTCNbboQuote = 5,
+
 			OptNbboQuote1 = 11,
 			OptNbboQuote2 = 12,
 			OptNbboQuote3 = 13,
 			OptNbboQuote4 = 14,
+
+			OptNbboQuoteSpx = 15,
 
 			FutQuoteIce = 20,
 			FutQuoteCme = 21,
@@ -63,6 +67,20 @@ namespace SpiderRock
 			ImpliedQuoteNms3 = 73,
 			ImpliedQuoteNms4 = 74,
 
+			StkQuoteProb1 = 81,
+			StkQuoteProb2 = 82,
+			StkQuoteProb3 = 83,
+			StkQuoteProb4 = 84,
+
+			FutQuoteProbX = 89,
+
+			OptQuoteProb1 = 91,
+			OptQuoteProb2 = 92,
+			OptQuoteProb3 = 93,
+			OptQuoteProb4 = 94,
+
+			OptQuoteProbX = 99,
+
 			Pulse = 100,
 
 			StkExchQuote1Nsdq = 101,
@@ -94,6 +112,10 @@ namespace SpiderRock
 			CobExchQuoteCboe = 151,
 			CobExchQuotePhlx = 152,
 			CobExchQuoteIce = 153,
+
+			OptAuction = 160,
+			OptOrder = 161,
+			OptOrderPhlx = 162,
 
 			ImbalanceArca = 170,
 			ImbalanceNyse = 171,

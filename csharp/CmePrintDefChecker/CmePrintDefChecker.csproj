@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <PlatformTarget>x64</PlatformTarget>
-    <ProjectGuid>{5F79B2DD-37DF-421B-A57A-FAC5D30D1542}</ProjectGuid>
+    <ProjectGuid>{647BAAB4-25B8-400D-853B-018871A7D688}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ServerExample</RootNamespace>
-    <AssemblyName>ServerExample</AssemblyName>
+    <RootNamespace>CmePrintDefChecker</RootNamespace>
+    <AssemblyName>CmePrintDefChecker</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,13 +39,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OptionBookQuoteHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="$(SolutionDir)SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="StockBookQuoteHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
