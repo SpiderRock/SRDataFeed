@@ -28,13 +28,13 @@ namespace CmePrintDefChecker
 
                 using (var futQuoteEngine = new SRDataFeedEngine
                 {
-                    IFAddress = IPAddress.Parse(DBL_IFADDR),
+                    IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
                     Protocol = Protocol.DBL,
                     Channels = new[] { UdpChannel.FutQuoteCme }
                 })
                 using (var defEngine = new SRDataFeedEngine
                 {
-                    IFAddress = IPAddress.Parse(UDP_IFADDR),
+                    IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
                     Protocol = Protocol.UDP,
                     Channels = new[] { UdpChannel.CmeAdmin }
                 })

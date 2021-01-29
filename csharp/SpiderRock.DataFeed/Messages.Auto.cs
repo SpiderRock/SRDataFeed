@@ -1151,6 +1151,370 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
+	/// LiveImpliedQuote:2305
+	/// </summary>
+	/// <remarks>
+	/// CalcSource=Tick records are computed and published each time an option NBBO price changes.  CalcSource=Loop records are computed in a 2-3 minute background loop.
+	/// Note that the underlier price (uPrc) will be the same for all options an underlier when CalcSource=Loop.  This is not true for CalcSource=Tick where uPrc will be the underlier price that prevailed when the option price changed.
+	/// If you are consuming multicast data and only want records with consistent uPrc values for all options you should ignore Tick records. Alternatively, you can use an independent underlier price source (our StockBookQuote feed or some other) and 'adjust' the values in this table to the new underlier value.
+	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automatically applies the appropriate underlier adjustments as records are being returned.
+	/// </remarks>
+
+    public partial class LiveImpliedQuote
+    {
+		public LiveImpliedQuote()
+		{
+		}
+		
+		public LiveImpliedQuote(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public LiveImpliedQuote(LiveImpliedQuote source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal LiveImpliedQuote(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as LiveImpliedQuote);
+		}
+		
+		public bool Equals(LiveImpliedQuote other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(LiveImpliedQuote target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+ 			target.Invalidate();
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			Invalidate();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.LiveImpliedQuote};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private OptionKey okey;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				okey = other.okey;
+				
+			}
+			
+			
+			public OptionKey Okey
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return okey ?? (okey = OptionKey.GetCreateOptionKey(body.okey)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.okey = value.Layout; okey = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				okey = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.okey = okey;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.okey = okey;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // LiveImpliedQuote.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public OptionKeyLayout okey;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	okey.Equals(other.okey);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = okey.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // LiveImpliedQuote.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public TickerKeyLayout ticker;
+			public float uPrc;
+			public float uOff;
+			public float years;
+			public float xAxis;
+			public float rate;
+			public float sdiv;
+			public float ddiv;
+			public float oBid;
+			public float oAsk;
+			public float oBidIv;
+			public float oAskIv;
+			public float atmVol;
+			public float sVol;
+			public float sPrc;
+			public float sMark;
+			public float veSlope;
+			public float de;
+			public float ga;
+			public float th;
+			public float ve;
+			public float va;
+			public float vo;
+			public float ro;
+			public float ph;
+			public float deDecay;
+			public float up50;
+			public float dn50;
+			public float up15;
+			public float dn15;
+			public float up06;
+			public float dn08;
+			public ImpliedQuoteError calcErr;
+			public CalcSource calcSource;
+			public long srcTimestamp;
+			public long netTimestamp;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		private volatile int usn;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedTickerKey ticker;
+		
+
+            
+		/// <summary>SR Ticker that this option rolls up to</summary>
+        public TickerKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+ 
+		/// <summary>underlier price (usually mid-market)</summary>
+        public float UPrc { get { return body.uPrc; } set { body.uPrc = value; } }
+ 
+		/// <summary>implied underlier price offset (if any)</summary>
+        public float UOff { get { return body.uOff; } set { body.uOff = value; } }
+ 
+		/// <summary>years to expiration</summary>
+        public float Years { get { return body.years; } set { body.years = value; } }
+ 
+		/// <summary>option moneyness</summary>
+        public float XAxis { get { return body.xAxis; } set { body.xAxis = value; } }
+ 
+		/// <summary>discount rate</summary>
+        public float Rate { get { return body.rate; } set { body.rate = value; } }
+ 
+		/// <summary>sdiv (continuous stock dividend) rate</summary>
+        public float Sdiv { get { return body.sdiv; } set { body.sdiv = value; } }
+ 
+		/// <summary>cumulative discrete dividend value</summary>
+        public float Ddiv { get { return body.ddiv; } set { body.ddiv = value; } }
+ 
+		/// <summary>option bid price</summary>
+        public float OBid { get { return body.oBid; } set { body.oBid = value; } }
+ 
+		/// <summary>option ask price</summary>
+        public float OAsk { get { return body.oAsk; } set { body.oAsk = value; } }
+ 
+		/// <summary>volatility implied by option bid price</summary>
+        public float OBidIv { get { return body.oBidIv; } set { body.oBidIv = value; } }
+ 
+		/// <summary>volatility implied by option ask price</summary>
+        public float OAskIv { get { return body.oAskIv; } set { body.oAskIv = value; } }
+ 
+		/// <summary>option atm volatility (from SR surface)</summary>
+        public float AtmVol { get { return body.atmVol; } set { body.atmVol = value; } }
+ 
+		/// <summary>option surface volatility (SR surface fit model)</summary>
+        public float SVol { get { return body.sVol; } set { body.sVol = value; } }
+ 
+		/// <summary>option surface price; ie. PRICE(sVol, uPrc + uOff, years, rate, sDiv, {discrete dividends, if any})</summary>
+        public float SPrc { get { return body.sPrc; } set { body.sPrc = value; } }
+ 
+		/// <summary>option surface mark (option surface price w/bounding rules; always between bid/ask)</summary>
+        public float SMark { get { return body.sMark; } set { body.sMark = value; } }
+ 
+		/// <summary>veSlope = dVol / dUprc (assuming vol @ xAxis = 0 remains constant); hedgeDelta = (de + ve * 100 * veSlope) if hedging with this assumption</summary>
+        public float VeSlope { get { return body.veSlope; } set { body.veSlope = value; } }
+ 
+		/// <summary>option delta</summary>
+        public float De { get { return body.de; } set { body.de = value; } }
+ 
+		/// <summary>option gamma</summary>
+        public float Ga { get { return body.ga; } set { body.ga = value; } }
+ 
+		/// <summary>option theta</summary>
+        public float Th { get { return body.th; } set { body.th = value; } }
+ 
+		/// <summary>option vega</summary>
+        public float Ve { get { return body.ve; } set { body.ve = value; } }
+ 
+		/// <summary>option vanna</summary>
+        public float Va { get { return body.va; } set { body.va = value; } }
+ 
+		/// <summary>option volga</summary>
+        public float Vo { get { return body.vo; } set { body.vo = value; } }
+ 
+		/// <summary>option rho</summary>
+        public float Ro { get { return body.ro; } set { body.ro = value; } }
+ 
+		/// <summary>option phi</summary>
+        public float Ph { get { return body.ph; } set { body.ph = value; } }
+ 
+		/// <summary>option delta decay</summary>
+        public float DeDecay { get { return body.deDecay; } set { body.deDecay = value; } }
+ 
+		/// <summary>underlier up 50% slide</summary>
+        public float Up50 { get { return body.up50; } set { body.up50 = value; } }
+ 
+		/// <summary>underlier dn 50% slide</summary>
+        public float Dn50 { get { return body.dn50; } set { body.dn50 = value; } }
+ 
+		/// <summary>underlier up 15% slide</summary>
+        public float Up15 { get { return body.up15; } set { body.up15 = value; } }
+ 
+		/// <summary>underlier dn 15% slide</summary>
+        public float Dn15 { get { return body.dn15; } set { body.dn15 = value; } }
+ 
+		/// <summary>underlier up 6% slide</summary>
+        public float Up06 { get { return body.up06; } set { body.up06 = value; } }
+ 
+		/// <summary>underlier dn 8% slide</summary>
+        public float Dn08 { get { return body.dn08; } set { body.dn08 = value; } }
+ 
+		/// <summary>option pricing calculation error (if any)</summary>
+        public ImpliedQuoteError CalcErr { get { return body.calcErr; } set { body.calcErr = value; } }
+ 
+		
+        public CalcSource CalcSource { get { return body.calcSource; } set { body.calcSource = value; } }
+ 
+		/// <summary>OPRA source timestamp (nanoseconds since epoch); will be zero if calcSource != Tick</summary>
+        public long SrcTimestamp { get { return body.srcTimestamp; } set { body.srcTimestamp = value; } }
+ 
+		/// <summary>SR timestamp @ publish time</summary>
+        public long NetTimestamp { get { return body.netTimestamp; } set { body.netTimestamp = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // LiveImpliedQuote
+
+
+	/// <summary>
 	/// LiveSurfaceAtm:2160
 	/// </summary>
 	/// <remarks>
@@ -1887,6 +2251,7 @@ namespace SpiderRock.DataFeed
 			target.header = header;
  			pkey.CopyTo(target.pkey);
  			target.body = body;
+ 			target.Invalidate();
 
         }
 
@@ -1894,6 +2259,7 @@ namespace SpiderRock.DataFeed
         public void Clear()
         {
 			pkey.Clear();
+ 			Invalidate();
  			body = new BodyLayout();
 
         }
@@ -2022,6 +2388,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
+			public DateKeyLayout tradeDate;
 			public ClsMarkState clsMarkState;
 			public double uBid;
 			public double uAsk;
@@ -2031,6 +2398,8 @@ namespace SpiderRock.DataFeed
 			public float askPrc;
 			public double srClsPrc;
 			public double closePrc;
+			public YesNo hasSRClsPrc;
+			public YesNo hasClosePrc;
 			public float bidIV;
 			public float askIV;
 			public float srPrc;
@@ -2042,9 +2411,10 @@ namespace SpiderRock.DataFeed
 			public float ve;
 			public float vo;
 			public float va;
-			public float deDecay;
 			public float rh;
 			public float ph;
+			public float srSlope;
+			public float deDecay;
 			public float sdiv;
 			public float ddiv;
 			public float rate;
@@ -2060,12 +2430,18 @@ namespace SpiderRock.DataFeed
 		// ReSharper disable once InconsistentNaming
 		internal BodyLayout body;
 		
+		private volatile int usn;
+		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
+		internal void Invalidate() { ++usn; }
 		
+ 		private CachedDateKey tradeDate;
 		
 
-
+            
+		
+        public DateKey TradeDate { get { return CacheVar.AllocIfNull(ref tradeDate).Get(ref body.tradeDate, usn); } set { CacheVar.AllocIfNull(ref tradeDate).Set(value); body.tradeDate = value.Layout; } }
+ 
 		/// <summary>LastPrt = last print received; SRClose = SpiderRock snapshot; ExchClose = official exchange close price; Final = Final close mark</summary>
         public ClsMarkState ClsMarkState { get { return body.clsMarkState; } set { body.clsMarkState = value; } }
  
@@ -2092,6 +2468,12 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>official exchange closing mark (last print;then official close)</summary>
         public double ClosePrc { get { return body.closePrc; } set { body.closePrc = value; } }
+ 
+		
+        public YesNo HasSRClsPrc { get { return body.hasSRClsPrc; } set { body.hasSRClsPrc = value; } }
+ 
+		
+        public YesNo HasClosePrc { get { return body.hasClosePrc; } set { body.hasClosePrc = value; } }
  
 		/// <summary>implied vol of SpiderRock closing bid price (C - 1m)</summary>
         public float BidIV { get { return body.bidIV; } set { body.bidIV = value; } }
@@ -2126,14 +2508,17 @@ namespace SpiderRock.DataFeed
 		/// <summary>vanna (SR surface)</summary>
         public float Va { get { return body.va; } set { body.va = value; } }
  
-		/// <summary>delta decay (SR surface)</summary>
-        public float DeDecay { get { return body.deDecay; } set { body.deDecay = value; } }
- 
 		/// <summary>rho (SR surrface)</summary>
         public float Rh { get { return body.rh; } set { body.rh = value; } }
  
 		/// <summary>phi (SR surface)</summary>
         public float Ph { get { return body.ph; } set { body.ph = value; } }
+ 
+		/// <summary>surface slope (SR surface)</summary>
+        public float SrSlope { get { return body.srSlope; } set { body.srSlope = value; } }
+ 
+		/// <summary>delta decay (SR surface)</summary>
+        public float DeDecay { get { return body.deDecay; } set { body.deDecay = value; } }
  
 		/// <summary>SpiderRock sdiv rate</summary>
         public float Sdiv { get { return body.sdiv; } set { body.sdiv = value; } }
@@ -3058,7 +3443,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>option pricing error, otherwise, an empty string.  pertains to the Greeks (de, ga, th, ve, ro, ph) and sprc</summary>
         public string CalcErr { get { return CacheVar.AllocIfNull(ref calcErr).Get(ref body.calcErr, usn); } set { CacheVar.AllocIfNull(ref calcErr).Set(value); body.calcErr = value; } }
  
-		/// <summary>Tick=nbbo tick; Loop=from background loop; Close=Final EOD record;</summary>
+		/// <summary>Tick=nbbo tick; Loop=from background loop;</summary>
         public CalcSource CalcSource { get { return body.calcSource; } set { body.calcSource = value; } }
  
 		
@@ -7885,7 +8270,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
-			public double iniPrice;
+			public double opnPrice;
 			public double mrkPrice;
 			public double clsPrice;
 			public double minPrice;
@@ -7917,9 +8302,9 @@ namespace SpiderRock.DataFeed
 
 
 		/// <summary>first print price of the day during regular market hours</summary>
-        public double IniPrice { get { return body.iniPrice; } set { body.iniPrice = value; } }
+        public double OpnPrice { get { return body.opnPrice; } set { body.opnPrice = value; } }
  
-		/// <summary>last print handling during regular market hours</summary>
+		/// <summary>last print handled during regular market hours</summary>
         public double MrkPrice { get { return body.mrkPrice; } set { body.mrkPrice = value; } }
  
 		/// <summary>official exchange closing price</summary>
@@ -8906,6 +9291,411 @@ namespace SpiderRock.DataFeed
 		#endregion	
 
     } // TickerDefinition
+
+
+	/// <summary>
+	/// TickerDefinitionV2:421
+	/// </summary>
+	/// <remarks>
+	/// TickerDefinitionV2 records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
+	/// TickerDefinitionV2 records are published nightly to the SpiderRock elastic cluster during product rotation windows.
+	/// </remarks>
+
+    public partial class TickerDefinitionV2
+    {
+		public TickerDefinitionV2()
+		{
+		}
+		
+		public TickerDefinitionV2(PKey pkey)
+		{
+			this.pkey.body = pkey.body;
+		}
+		
+        public TickerDefinitionV2(TickerDefinitionV2 source)
+        {
+            source.CopyTo(this);
+        }
+		
+		internal TickerDefinitionV2(PKeyLayout pkey)
+		{
+			this.pkey.body = pkey;
+		}
+
+		public override bool Equals(object other)
+		{
+			return Equals(other as TickerDefinitionV2);
+		}
+		
+		public bool Equals(TickerDefinitionV2 other)
+		{
+			if (ReferenceEquals(other, null)) return false;
+			if (ReferenceEquals(other, this)) return true;
+			return pkey.Equals(other.pkey);
+		}
+		
+		public override int GetHashCode()
+		{
+			return pkey.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return TabRecord;
+		}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void CopyTo(TickerDefinitionV2 target)
+        {			
+			target.header = header;
+ 			pkey.CopyTo(target.pkey);
+ 			target.body = body;
+ 			target.Invalidate();
+
+        }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Clear()
+        {
+			pkey.Clear();
+ 			Invalidate();
+ 			body = new BodyLayout();
+
+        }
+
+		public long TimeRcvd { get; internal set; }
+		
+		public long TimeSent { get { return header.sentts; } }
+		
+		public SourceId SourceId { get { return header.sourceid; } }
+		
+		public byte SeqNum { get { return header.seqnum; } }
+
+		public PKey Key { get { return pkey; } }
+
+		// ReSharper disable once InconsistentNaming
+        internal Header header = new Header {msgtype = MessageType.TickerDefinitionV2};
+ 	
+		#region PKey
+		
+		public sealed class PKey : IEquatable<PKey>, ICloneable
+		{
+			private TickerKey ticker;
+
+			// ReSharper disable once InconsistentNaming
+			internal PKeyLayout body;
+			
+			public PKey()					{ }
+			internal PKey(PKeyLayout body)	{ this.body = body; }
+			public PKey(PKey other)
+			{
+				if (other == null) throw new ArgumentNullException("other");
+				body = other.body;
+				ticker = other.ticker;
+				
+			}
+			
+			
+			public TickerKey Ticker
+			{
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
+				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
+			}
+
+			public void Clear()
+			{
+				body = new PKeyLayout();
+				ticker = null;
+
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public void CopyTo(PKey target)
+			{
+				target.body = body;
+				target.ticker = ticker;
+
+			}
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public object Clone()
+			{
+				var target = new PKey(body);
+				target.ticker = ticker;
+
+				return target;
+			}
+			
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+				return Equals(obj as PKey);
+            }
+			
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKey other)
+			{
+				if (ReferenceEquals(null, other)) return false;
+				return body.Equals(other.body);
+			}
+			
+			public override int GetHashCode()
+			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
+				return body.GetHashCode();
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+			}
+        } // TickerDefinitionV2.PKey        
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal struct PKeyLayout : IEquatable<PKeyLayout>
+        {
+			public TickerKeyLayout ticker;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public bool Equals(PKeyLayout other)
+            {
+                return	ticker.Equals(other.ticker);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			public override bool Equals(object obj)
+            {
+                return Equals((PKeyLayout) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+					// ReSharper disable NonReadonlyFieldInGetHashCode
+					var hashCode = ticker.GetHashCode();
+
+                    return hashCode;
+					// ReSharper restore NonReadonlyFieldInGetHashCode
+                }
+            }
+        } // TickerDefinitionV2.PKeyLayout
+
+		// ReSharper disable once InconsistentNaming
+        internal readonly PKey pkey = new PKey();
+
+		#endregion
+ 
+		#region Body
+		
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+		internal struct BodyLayout
+		{
+			public SymbolType symbolType;
+			public FixedString72Layout name;
+			public FixedString72Layout issuerName;
+			public FixedString2Layout cntryOfIncorp;
+			public float parValue;
+			public FixedString3Layout parValueCurrency;
+			public PrimaryExchV2 primaryExch;
+			public FixedString4Layout mic;
+			public FixedString4Layout micSeg;
+			public FixedString12Layout symbol;
+			public FixedString1Layout issueClass;
+			public int securityID;
+			public FixedString4Layout sic;
+			public FixedString10Layout cik;
+			public FixedString8Layout gics;
+			public FixedString20Layout lei;
+			public FixedString6Layout naics;
+			public FixedString6Layout cfi;
+			public FixedString4Layout cic;
+			public FixedString40Layout fisn;
+			public FixedString12Layout isin;
+			public FixedString12Layout bbgCompositeTicker;
+			public FixedString28Layout bbgExchangeTicker;
+			public FixedString12Layout bbgCompositeGlobalID;
+			public FixedString12Layout bbgGlobalID;
+			public FixedString3Layout bbgCurrency;
+			public StkPriceInc stkPriceInc;
+			public float stkVolume;
+			public float futVolume;
+			public float optVolume;
+			public FixedString8Layout exchString;
+			public int numOptions;
+			public int sharesOutstanding;
+			public TimeMetric timeMetric;
+			public OTCPrimaryMarket otcPrimaryMarket;
+			public OTCTier otcTier;
+			public FixedString1Layout otcReportingStatus;
+			public int otcDisclosureStatus;
+			public int otcFlags;
+			public TkDefSource tkDefSource;
+			public TkStatusFlag statusFlag;
+			public DateTimeLayout timestamp;
+		}
+
+		// ReSharper disable once InconsistentNaming
+		internal BodyLayout body;
+		
+		private volatile int usn;
+		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedFixedLengthString<FixedString72Layout> name;
+ 		private CachedFixedLengthString<FixedString72Layout> issuerName;
+ 		private CachedFixedLengthString<FixedString2Layout> cntryOfIncorp;
+ 		private CachedFixedLengthString<FixedString3Layout> parValueCurrency;
+ 		private CachedFixedLengthString<FixedString4Layout> mic;
+ 		private CachedFixedLengthString<FixedString4Layout> micSeg;
+ 		private CachedFixedLengthString<FixedString12Layout> symbol;
+ 		private CachedFixedLengthString<FixedString1Layout> issueClass;
+ 		private CachedFixedLengthString<FixedString4Layout> sic;
+ 		private CachedFixedLengthString<FixedString10Layout> cik;
+ 		private CachedFixedLengthString<FixedString8Layout> gics;
+ 		private CachedFixedLengthString<FixedString20Layout> lei;
+ 		private CachedFixedLengthString<FixedString6Layout> naics;
+ 		private CachedFixedLengthString<FixedString6Layout> cfi;
+ 		private CachedFixedLengthString<FixedString4Layout> cic;
+ 		private CachedFixedLengthString<FixedString40Layout> fisn;
+ 		private CachedFixedLengthString<FixedString12Layout> isin;
+ 		private CachedFixedLengthString<FixedString12Layout> bbgCompositeTicker;
+ 		private CachedFixedLengthString<FixedString28Layout> bbgExchangeTicker;
+ 		private CachedFixedLengthString<FixedString12Layout> bbgCompositeGlobalID;
+ 		private CachedFixedLengthString<FixedString12Layout> bbgGlobalID;
+ 		private CachedFixedLengthString<FixedString3Layout> bbgCurrency;
+ 		private CachedFixedLengthString<FixedString8Layout> exchString;
+ 		private CachedFixedLengthString<FixedString1Layout> otcReportingStatus;
+		
+
+
+		
+        public SymbolType SymbolType { get { return body.symbolType; } set { body.symbolType = value; } }
+ 
+		/// <summary>Symbol name</summary>
+        public string Name { get { return CacheVar.AllocIfNull(ref name).Get(ref body.name, usn); } set { CacheVar.AllocIfNull(ref name).Set(value); body.name = value; } }
+ 
+		/// <summary>Name of issuer</summary>
+        public string IssuerName { get { return CacheVar.AllocIfNull(ref issuerName).Get(ref body.issuerName, usn); } set { CacheVar.AllocIfNull(ref issuerName).Set(value); body.issuerName = value; } }
+ 
+		/// <summary>ISO Issuer Country Code</summary>
+        public string CntryOfIncorp { get { return CacheVar.AllocIfNull(ref cntryOfIncorp).Get(ref body.cntryOfIncorp, usn); } set { CacheVar.AllocIfNull(ref cntryOfIncorp).Set(value); body.cntryOfIncorp = value; } }
+ 
+		/// <summary>Security Parvalue</summary>
+        public float ParValue { get { return body.parValue; } set { body.parValue = value; } }
+ 
+		/// <summary>Security Parvalue currency</summary>
+        public string ParValueCurrency { get { return CacheVar.AllocIfNull(ref parValueCurrency).Get(ref body.parValueCurrency, usn); } set { CacheVar.AllocIfNull(ref parValueCurrency).Set(value); body.parValueCurrency = value; } }
+ 
+		
+        public PrimaryExchV2 PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
+ 
+		/// <summary>ISO Market Identification Code</summary>
+        public string Mic { get { return CacheVar.AllocIfNull(ref mic).Get(ref body.mic, usn); } set { CacheVar.AllocIfNull(ref mic).Set(value); body.mic = value; } }
+ 
+		/// <summary>ISO Market Indentification Segment Code</summary>
+        public string MicSeg { get { return CacheVar.AllocIfNull(ref micSeg).Get(ref body.micSeg, usn); } set { CacheVar.AllocIfNull(ref micSeg).Set(value); body.micSeg = value; } }
+ 
+		/// <summary>stock symbol</summary>
+        public string Symbol { get { return CacheVar.AllocIfNull(ref symbol).Get(ref body.symbol, usn); } set { CacheVar.AllocIfNull(ref symbol).Set(value); body.symbol = value; } }
+ 
+		/// <summary>issue class of stock symbol.  if no issue class field will be blank.</summary>
+        public string IssueClass { get { return CacheVar.AllocIfNull(ref issueClass).Get(ref body.issueClass, usn); } set { CacheVar.AllocIfNull(ref issueClass).Set(value); body.issueClass = value; } }
+ 
+		/// <summary>Security ID number from the source - Vendor, SR, Feed</summary>
+        public int SecurityID { get { return body.securityID; } set { body.securityID = value; } }
+ 
+		/// <summary>SIC (Standard Industrial Classification) code</summary>
+        public string Sic { get { return CacheVar.AllocIfNull(ref sic).Get(ref body.sic, usn); } set { CacheVar.AllocIfNull(ref sic).Set(value); body.sic = value; } }
+ 
+		/// <summary>Central Index Key (US specific)</summary>
+        public string Cik { get { return CacheVar.AllocIfNull(ref cik).Get(ref body.cik, usn); } set { CacheVar.AllocIfNull(ref cik).Set(value); body.cik = value; } }
+ 
+		/// <summary>Global Industry Classification Standard</summary>
+        public string Gics { get { return CacheVar.AllocIfNull(ref gics).Get(ref body.gics, usn); } set { CacheVar.AllocIfNull(ref gics).Set(value); body.gics = value; } }
+ 
+		/// <summary>Legal Entity Identifier</summary>
+        public string Lei { get { return CacheVar.AllocIfNull(ref lei).Get(ref body.lei, usn); } set { CacheVar.AllocIfNull(ref lei).Set(value); body.lei = value; } }
+ 
+		/// <summary>North American Industry Classification System</summary>
+        public string Naics { get { return CacheVar.AllocIfNull(ref naics).Get(ref body.naics, usn); } set { CacheVar.AllocIfNull(ref naics).Set(value); body.naics = value; } }
+ 
+		/// <summary>ISO Classification of Financial Instruments</summary>
+        public string Cfi { get { return CacheVar.AllocIfNull(ref cfi).Get(ref body.cfi, usn); } set { CacheVar.AllocIfNull(ref cfi).Set(value); body.cfi = value; } }
+ 
+		/// <summary>Complementay Identification Code</summary>
+        public string Cic { get { return CacheVar.AllocIfNull(ref cic).Get(ref body.cic, usn); } set { CacheVar.AllocIfNull(ref cic).Set(value); body.cic = value; } }
+ 
+		/// <summary>Financial Instrument Short Name</summary>
+        public string Fisn { get { return CacheVar.AllocIfNull(ref fisn).Get(ref body.fisn, usn); } set { CacheVar.AllocIfNull(ref fisn).Set(value); body.fisn = value; } }
+ 
+		/// <summary>ISIN code</summary>
+        public string Isin { get { return CacheVar.AllocIfNull(ref isin).Get(ref body.isin, usn); } set { CacheVar.AllocIfNull(ref isin).Set(value); body.isin = value; } }
+ 
+		/// <summary>Bloomberg Composite Ticker</summary>
+        public string BbgCompositeTicker { get { return CacheVar.AllocIfNull(ref bbgCompositeTicker).Get(ref body.bbgCompositeTicker, usn); } set { CacheVar.AllocIfNull(ref bbgCompositeTicker).Set(value); body.bbgCompositeTicker = value; } }
+ 
+		/// <summary>Bloomberg Exchange Ticker</summary>
+        public string BbgExchangeTicker { get { return CacheVar.AllocIfNull(ref bbgExchangeTicker).Get(ref body.bbgExchangeTicker, usn); } set { CacheVar.AllocIfNull(ref bbgExchangeTicker).Set(value); body.bbgExchangeTicker = value; } }
+ 
+		/// <summary>Bloomberg Composite Global ID</summary>
+        public string BbgCompositeGlobalID { get { return CacheVar.AllocIfNull(ref bbgCompositeGlobalID).Get(ref body.bbgCompositeGlobalID, usn); } set { CacheVar.AllocIfNull(ref bbgCompositeGlobalID).Set(value); body.bbgCompositeGlobalID = value; } }
+ 
+		/// <summary>Bloomberg Global ID</summary>
+        public string BbgGlobalID { get { return CacheVar.AllocIfNull(ref bbgGlobalID).Get(ref body.bbgGlobalID, usn); } set { CacheVar.AllocIfNull(ref bbgGlobalID).Set(value); body.bbgGlobalID = value; } }
+ 
+		/// <summary>Bloomberg Trading Currency</summary>
+        public string BbgCurrency { get { return CacheVar.AllocIfNull(ref bbgCurrency).Get(ref body.bbgCurrency, usn); } set { CacheVar.AllocIfNull(ref bbgCurrency).Set(value); body.bbgCurrency = value; } }
+ 
+		/// <summary>Price increment: None; FullPenny; Nickle</summary>
+        public StkPriceInc StkPriceInc { get { return body.stkPriceInc; } set { body.stkPriceInc = value; } }
+ 
+		/// <summary>trailing average daily stock volume</summary>
+        public float StkVolume { get { return body.stkVolume; } set { body.stkVolume = value; } }
+ 
+		/// <summary>trailing average daily future volume</summary>
+        public float FutVolume { get { return body.futVolume; } set { body.futVolume = value; } }
+ 
+		/// <summary>trailing average daily option volume</summary>
+        public float OptVolume { get { return body.optVolume; } set { body.optVolume = value; } }
+ 
+		/// <summary>exchanges listing any options on this underlying</summary>
+        public string ExchString { get { return CacheVar.AllocIfNull(ref exchString).Get(ref body.exchString, usn); } set { CacheVar.AllocIfNull(ref exchString).Set(value); body.exchString = value; } }
+ 
+		/// <summary>total number of listed options</summary>
+        public int NumOptions { get { return body.numOptions; } set { body.numOptions = value; } }
+ 
+		/// <summary>symbol shares outstanding</summary>
+        public int SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
+ 
+		/// <summary>trading time metric - 252 or 365 trading days or a weekly cycle type</summary>
+        public TimeMetric TimeMetric { get { return body.timeMetric; } set { body.timeMetric = value; } }
+ 
+		
+        public OTCPrimaryMarket OtcPrimaryMarket { get { return body.otcPrimaryMarket; } set { body.otcPrimaryMarket = value; } }
+ 
+		
+        public OTCTier OtcTier { get { return body.otcTier; } set { body.otcTier = value; } }
+ 
+		
+        public string OtcReportingStatus { get { return CacheVar.AllocIfNull(ref otcReportingStatus).Get(ref body.otcReportingStatus, usn); } set { CacheVar.AllocIfNull(ref otcReportingStatus).Set(value); body.otcReportingStatus = value; } }
+ 
+		
+        public int OtcDisclosureStatus { get { return body.otcDisclosureStatus; } set { body.otcDisclosureStatus = value; } }
+ 
+		
+        public int OtcFlags { get { return body.otcFlags; } set { body.otcFlags = value; } }
+ 
+		/// <summary>Ticker definition source: None; Vendor; OTC; SR; Exchange</summary>
+        public TkDefSource TkDefSource { get { return body.tkDefSource; } set { body.tkDefSource = value; } }
+ 
+		
+        public TkStatusFlag StatusFlag { get { return body.statusFlag; } set { body.statusFlag = value; } }
+ 
+		
+        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+
+		
+		#endregion	
+
+    } // TickerDefinitionV2
 
 
 	#endregion
