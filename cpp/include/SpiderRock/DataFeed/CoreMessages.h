@@ -400,6 +400,137 @@ public:
 
 };
 
+ class LiveImpliedQuote
+{
+public:
+	class Key
+	{
+		OptionKey okey_;
+		
+	public:
+		inline const OptionKey& okey() const { return okey_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = OptionKey()(k.okey_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.okey_ == b.okey_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		TickerKey ticker;
+		Float uPrc;
+		Float uOff;
+		Float years;
+		Float xAxis;
+		Float rate;
+		Float sdiv;
+		Float ddiv;
+		Float oBid;
+		Float oAsk;
+		Float oBidIv;
+		Float oAskIv;
+		Float atmVol;
+		Float sVol;
+		Float sPrc;
+		Float sMark;
+		Float veSlope;
+		Float de;
+		Float ga;
+		Float th;
+		Float ve;
+		Float va;
+		Float vo;
+		Float ro;
+		Float ph;
+		Float deDecay;
+		Float up50;
+		Float dn50;
+		Float up15;
+		Float dn15;
+		Float up06;
+		Float dn08;
+		ImpliedQuoteError calcErr;
+		CalcSource calcSource;
+		Long srcTimestamp;
+		Long netTimestamp;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline const TickerKey& ticker() const { return layout_.ticker; }
+	inline Float uPrc() const { return layout_.uPrc; }
+	inline Float uOff() const { return layout_.uOff; }
+	inline Float years() const { return layout_.years; }
+	inline Float xAxis() const { return layout_.xAxis; }
+	inline Float rate() const { return layout_.rate; }
+	inline Float sdiv() const { return layout_.sdiv; }
+	inline Float ddiv() const { return layout_.ddiv; }
+	inline Float oBid() const { return layout_.oBid; }
+	inline Float oAsk() const { return layout_.oAsk; }
+	inline Float oBidIv() const { return layout_.oBidIv; }
+	inline Float oAskIv() const { return layout_.oAskIv; }
+	inline Float atmVol() const { return layout_.atmVol; }
+	inline Float sVol() const { return layout_.sVol; }
+	inline Float sPrc() const { return layout_.sPrc; }
+	inline Float sMark() const { return layout_.sMark; }
+	inline Float veSlope() const { return layout_.veSlope; }
+	inline Float de() const { return layout_.de; }
+	inline Float ga() const { return layout_.ga; }
+	inline Float th() const { return layout_.th; }
+	inline Float ve() const { return layout_.ve; }
+	inline Float va() const { return layout_.va; }
+	inline Float vo() const { return layout_.vo; }
+	inline Float ro() const { return layout_.ro; }
+	inline Float ph() const { return layout_.ph; }
+	inline Float deDecay() const { return layout_.deDecay; }
+	inline Float up50() const { return layout_.up50; }
+	inline Float dn50() const { return layout_.dn50; }
+	inline Float up15() const { return layout_.up15; }
+	inline Float dn15() const { return layout_.dn15; }
+	inline Float up06() const { return layout_.up06; }
+	inline Float dn08() const { return layout_.dn08; }
+	inline ImpliedQuoteError calcErr() const { return layout_.calcErr; }
+	inline CalcSource calcSource() const { return layout_.calcSource; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<LiveImpliedQuote::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
  class LiveSurfaceAtm
 {
 public:
@@ -716,6 +847,7 @@ private:
 	struct Layout
 	{
 		Key pkey;
+		DateKey tradeDate;
 		ClsMarkState clsMarkState;
 		Double uBid;
 		Double uAsk;
@@ -725,6 +857,8 @@ private:
 		Float askPrc;
 		Double srClsPrc;
 		Double closePrc;
+		YesNo hasSRClsPrc;
+		YesNo hasClosePrc;
 		Float bidIV;
 		Float askIV;
 		Float srPrc;
@@ -736,9 +870,10 @@ private:
 		Float ve;
 		Float vo;
 		Float va;
-		Float deDecay;
 		Float rh;
 		Float ph;
+		Float srSlope;
+		Float deDecay;
 		Float sdiv;
 		Float ddiv;
 		Float rate;
@@ -763,6 +898,7 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
+	inline DateKey tradeDate() const { return layout_.tradeDate; }
 	inline ClsMarkState clsMarkState() const { return layout_.clsMarkState; }
 	inline Double uBid() const { return layout_.uBid; }
 	inline Double uAsk() const { return layout_.uAsk; }
@@ -772,6 +908,8 @@ public:
 	inline Float askPrc() const { return layout_.askPrc; }
 	inline Double srClsPrc() const { return layout_.srClsPrc; }
 	inline Double closePrc() const { return layout_.closePrc; }
+	inline YesNo hasSRClsPrc() const { return layout_.hasSRClsPrc; }
+	inline YesNo hasClosePrc() const { return layout_.hasClosePrc; }
 	inline Float bidIV() const { return layout_.bidIV; }
 	inline Float askIV() const { return layout_.askIV; }
 	inline Float srPrc() const { return layout_.srPrc; }
@@ -783,9 +921,10 @@ public:
 	inline Float ve() const { return layout_.ve; }
 	inline Float vo() const { return layout_.vo; }
 	inline Float va() const { return layout_.va; }
-	inline Float deDecay() const { return layout_.deDecay; }
 	inline Float rh() const { return layout_.rh; }
 	inline Float ph() const { return layout_.ph; }
+	inline Float srSlope() const { return layout_.srSlope; }
+	inline Float deDecay() const { return layout_.deDecay; }
 	inline Float sdiv() const { return layout_.sdiv; }
 	inline Float ddiv() const { return layout_.ddiv; }
 	inline Float rate() const { return layout_.rate; }
@@ -2774,7 +2913,7 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		Double iniPrice;
+		Double opnPrice;
 		Double mrkPrice;
 		Double clsPrice;
 		Double minPrice;
@@ -2808,7 +2947,7 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline Double iniPrice() const { return layout_.iniPrice; }
+	inline Double opnPrice() const { return layout_.opnPrice; }
 	inline Double mrkPrice() const { return layout_.mrkPrice; }
 	inline Double clsPrice() const { return layout_.clsPrice; }
 	inline Double minPrice() const { return layout_.minPrice; }
@@ -3150,6 +3289,147 @@ public:
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
 		layout_ = *reinterpret_cast<TickerDefinition::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
+ class TickerDefinitionV2
+{
+public:
+	class Key
+	{
+		TickerKey ticker_;
+		
+	public:
+		inline const TickerKey& ticker() const { return ticker_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = TickerKey()(k.ticker_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ticker_ == b.ticker_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		SymbolType symbolType;
+		String<72> name;
+		String<72> issuerName;
+		String<2> cntryOfIncorp;
+		Float parValue;
+		String<3> parValueCurrency;
+		PrimaryExchV2 primaryExch;
+		String<4> mic;
+		String<4> micSeg;
+		String<12> symbol;
+		String<1> issueClass;
+		Int securityID;
+		String<4> sic;
+		String<10> cik;
+		String<8> gics;
+		String<20> lei;
+		String<6> naics;
+		String<6> cfi;
+		String<4> cic;
+		String<40> fisn;
+		String<12> isin;
+		String<12> bbgCompositeTicker;
+		String<28> bbgExchangeTicker;
+		String<12> bbgCompositeGlobalID;
+		String<12> bbgGlobalID;
+		String<3> bbgCurrency;
+		StkPriceInc stkPriceInc;
+		Float stkVolume;
+		Float futVolume;
+		Float optVolume;
+		String<8> exchString;
+		Int numOptions;
+		Int sharesOutstanding;
+		TimeMetric timeMetric;
+		OTCPrimaryMarket otcPrimaryMarket;
+		OTCTier otcTier;
+		String<1> otcReportingStatus;
+		Int otcDisclosureStatus;
+		Int otcFlags;
+		TkDefSource tkDefSource;
+		TkStatusFlag statusFlag;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline SymbolType symbolType() const { return layout_.symbolType; }
+	inline const String<72>& name() const { return layout_.name; }
+	inline const String<72>& issuerName() const { return layout_.issuerName; }
+	inline const String<2>& cntryOfIncorp() const { return layout_.cntryOfIncorp; }
+	inline Float parValue() const { return layout_.parValue; }
+	inline const String<3>& parValueCurrency() const { return layout_.parValueCurrency; }
+	inline PrimaryExchV2 primaryExch() const { return layout_.primaryExch; }
+	inline const String<4>& mic() const { return layout_.mic; }
+	inline const String<4>& micSeg() const { return layout_.micSeg; }
+	inline const String<12>& symbol() const { return layout_.symbol; }
+	inline const String<1>& issueClass() const { return layout_.issueClass; }
+	inline Int securityID() const { return layout_.securityID; }
+	inline const String<4>& sic() const { return layout_.sic; }
+	inline const String<10>& cik() const { return layout_.cik; }
+	inline const String<8>& gics() const { return layout_.gics; }
+	inline const String<20>& lei() const { return layout_.lei; }
+	inline const String<6>& naics() const { return layout_.naics; }
+	inline const String<6>& cfi() const { return layout_.cfi; }
+	inline const String<4>& cic() const { return layout_.cic; }
+	inline const String<40>& fisn() const { return layout_.fisn; }
+	inline const String<12>& isin() const { return layout_.isin; }
+	inline const String<12>& bbgCompositeTicker() const { return layout_.bbgCompositeTicker; }
+	inline const String<28>& bbgExchangeTicker() const { return layout_.bbgExchangeTicker; }
+	inline const String<12>& bbgCompositeGlobalID() const { return layout_.bbgCompositeGlobalID; }
+	inline const String<12>& bbgGlobalID() const { return layout_.bbgGlobalID; }
+	inline const String<3>& bbgCurrency() const { return layout_.bbgCurrency; }
+	inline StkPriceInc stkPriceInc() const { return layout_.stkPriceInc; }
+	inline Float stkVolume() const { return layout_.stkVolume; }
+	inline Float futVolume() const { return layout_.futVolume; }
+	inline Float optVolume() const { return layout_.optVolume; }
+	inline const String<8>& exchString() const { return layout_.exchString; }
+	inline Int numOptions() const { return layout_.numOptions; }
+	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
+	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
+	inline OTCPrimaryMarket otcPrimaryMarket() const { return layout_.otcPrimaryMarket; }
+	inline OTCTier otcTier() const { return layout_.otcTier; }
+	inline const String<1>& otcReportingStatus() const { return layout_.otcReportingStatus; }
+	inline Int otcDisclosureStatus() const { return layout_.otcDisclosureStatus; }
+	inline Int otcFlags() const { return layout_.otcFlags; }
+	inline TkDefSource tkDefSource() const { return layout_.tkDefSource; }
+	inline TkStatusFlag statusFlag() const { return layout_.statusFlag; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		
+		layout_ = *reinterpret_cast<TickerDefinitionV2::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 

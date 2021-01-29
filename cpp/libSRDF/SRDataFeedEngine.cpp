@@ -39,6 +39,7 @@ public:
 	MessageEventSource<FuturePrint::Key, FuturePrint> futureprint;
 	MessageEventSource<FuturePrintMarkup::Key, FuturePrintMarkup> futureprintmarkup;
 	MessageEventSource<IndexQuote::Key, IndexQuote> indexquote;
+	MessageEventSource<LiveImpliedQuote::Key, LiveImpliedQuote> liveimpliedquote;
 	MessageEventSource<LiveSurfaceAtm::Key, LiveSurfaceAtm> livesurfaceatm;
 	MessageEventSource<OptionCloseMark::Key, OptionCloseMark> optionclosemark;
 	MessageEventSource<OptionExchOrder::Key, OptionExchOrder> optionexchorder;
@@ -61,7 +62,8 @@ public:
 	MessageEventSource<StockMarketSummary::Key, StockMarketSummary> stockmarketsummary;
 	MessageEventSource<StockPrint::Key, StockPrint> stockprint;
 	MessageEventSource<StockPrintMarkup::Key, StockPrintMarkup> stockprintmarkup;
-	MessageEventSource<TickerDefinition::Key, TickerDefinition> tickerdefinition;			
+	MessageEventSource<TickerDefinition::Key, TickerDefinition> tickerdefinition;
+	MessageEventSource<TickerDefinitionV2::Key, TickerDefinitionV2> tickerdefinitionv2;			
 
 	impl(SysEnvironment environment, IPAddress if_addr)
 		: environment(environment), frame_handler(environment), if_addr(if_addr)
@@ -82,6 +84,7 @@ SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprintmarkup, { MessageType::FuturePrintMarkup });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->indexquote, { MessageType::IndexQuote });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->liveimpliedquote, { MessageType::LiveImpliedQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->livesurfaceatm, { MessageType::LiveSurfaceAtm });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->optionclosemark, { MessageType::OptionCloseMark });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->optionexchorder, { MessageType::OptionExchOrder });
@@ -105,6 +108,7 @@ SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockprint, { MessageType::StockPrint });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->stockprintmarkup, { MessageType::StockPrintMarkup });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->tickerdefinition, { MessageType::TickerDefinition });
+	impl_->frame_handler.RegisterMessageHandler(&impl_->tickerdefinitionv2, { MessageType::TickerDefinitionV2 });
 }
 
 SRDataFeedEngine::~SRDataFeedEngine()
@@ -234,6 +238,7 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<FutureBoo
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<FuturePrint>> observer) { impl_->futureprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<FuturePrintMarkup>> observer) { impl_->futureprintmarkup.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<IndexQuote>> observer) { impl_->indexquote.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<LiveImpliedQuote>> observer) { impl_->liveimpliedquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<LiveSurfaceAtm>> observer) { impl_->livesurfaceatm.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<OptionCloseMark>> observer) { impl_->optionclosemark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<OptionExchOrder>> observer) { impl_->optionexchorder.RegisterObserver(observer); }
@@ -257,11 +262,13 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockMark
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<StockPrintMarkup>> observer) { impl_->stockprintmarkup.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<TickerDefinition>> observer) { impl_->tickerdefinition.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<CreateEventObserver<TickerDefinitionV2>> observer) { impl_->tickerdefinitionv2.RegisterObserver(observer); }
 
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<FutureBookQuote>> observer) { impl_->futurebookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<FuturePrint>> observer) { impl_->futureprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<FuturePrintMarkup>> observer) { impl_->futureprintmarkup.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<IndexQuote>> observer) { impl_->indexquote.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<LiveImpliedQuote>> observer) { impl_->liveimpliedquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<LiveSurfaceAtm>> observer) { impl_->livesurfaceatm.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<OptionCloseMark>> observer) { impl_->optionclosemark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<OptionExchOrder>> observer) { impl_->optionexchorder.RegisterObserver(observer); }
@@ -285,11 +292,13 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockMark
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<StockPrintMarkup>> observer) { impl_->stockprintmarkup.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<TickerDefinition>> observer) { impl_->tickerdefinition.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<ChangeEventObserver<TickerDefinitionV2>> observer) { impl_->tickerdefinitionv2.RegisterObserver(observer); }
 
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<FutureBookQuote>> observer) { impl_->futurebookquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<FuturePrint>> observer) { impl_->futureprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<FuturePrintMarkup>> observer) { impl_->futureprintmarkup.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<IndexQuote>> observer) { impl_->indexquote.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<LiveImpliedQuote>> observer) { impl_->liveimpliedquote.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<LiveSurfaceAtm>> observer) { impl_->livesurfaceatm.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<OptionCloseMark>> observer) { impl_->optionclosemark.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<OptionExchOrder>> observer) { impl_->optionexchorder.RegisterObserver(observer); }
@@ -313,3 +322,4 @@ void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockMark
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockPrint>> observer) { impl_->stockprint.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<StockPrintMarkup>> observer) { impl_->stockprintmarkup.RegisterObserver(observer); }
 void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<TickerDefinition>> observer) { impl_->tickerdefinition.RegisterObserver(observer); }
+void SRDataFeedEngine::RegisterObserver(shared_ptr<UpdateEventObserver<TickerDefinitionV2>> observer) { impl_->tickerdefinitionv2.RegisterObserver(observer); }

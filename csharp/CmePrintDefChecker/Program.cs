@@ -26,22 +26,15 @@ namespace CmePrintDefChecker
 
                 SRTrace.AggregateEventFrequency = TimeSpan.FromSeconds(10);
 
-                using (var futQuoteEngine = new SRDataFeedEngine
+                using (var engine = new SRDataFeedEngine
                 {
-                    IFAddress = IPAddress.Parse(DBL_IFADDR),
-                    Protocol = Protocol.DBL,
-                    Channels = new[] { UdpChannel.FutQuoteCme }
-                })
-                using (var defEngine = new SRDataFeedEngine
-                {
-                    IFAddress = IPAddress.Parse(UDP_IFADDR),
-                    Protocol = Protocol.UDP,
-                    Channels = new[] { UdpChannel.CmeAdmin }
+                    IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
+                    Channels = new[] { UdpChannel.FutQuoteCme, UdpChannel.CmeAdmin }
                 })
                 {
                     var definitions = new Dictionary<ExpiryKey, ProductDefinitionV2>();
 
-                    futQuoteEngine.FuturePrintCreated += (_, args) =>
+                    engine.FuturePrintCreated += (_, args) =>
                     {
                         if (!definitions.TryGetValue(args.Created.Key.Fkey, out var def))
                         {
@@ -49,7 +42,7 @@ namespace CmePrintDefChecker
                         }
                     };
 
-                    defEngine.ProductDefinitionV2Created += (_, args) =>
+                    engine.ProductDefinitionV2Created += (_, args) =>
                     {
                         var key = args.Created.Key;
 
@@ -64,8 +57,7 @@ namespace CmePrintDefChecker
                         }
                     };
 
-                    defEngine.StartWith(MessageType.ProductDefinitionV2);
-                    futQuoteEngine.Start();
+                    engine.StartWith(MessageType.ProductDefinitionV2);
 
                     Console.ReadLine();
                 }
