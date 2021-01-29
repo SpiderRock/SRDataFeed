@@ -102,8 +102,7 @@ namespace SpiderRock
 		{
 			None=0,
 			Tick=1,
-			Loop=2,
-			Close=3
+			Loop=2
 		};
 
  		enum class CalcType : Enum 
@@ -124,8 +123,8 @@ namespace SpiderRock
 			None=0,
 			LastPrt=1,
 			SRClose=2,
-			ExchClose=3,
-			Final=4
+			ExchClose=4,
+			Final=8
 		};
 
  		enum class ContractUnit : Enum 
@@ -313,6 +312,14 @@ namespace SpiderRock
 			InsufOrdsToCalc=4
 		};
 
+ 		enum class ImpliedQuoteError : Enum 
+		{
+			None=0,
+			InvalidUPrc=1,
+			InvalidSVol=2,
+			PricingError=3
+		};
+
  		enum class LiveSurfaceType : Enum 
 		{
 			None=0,
@@ -347,7 +354,8 @@ namespace SpiderRock
 			HiBound=4,
 			SRPricer=5,
 			SRQuote=6,
-			CloseMark=7
+			CloseMark=7,
+			OpenMark=8
 		};
 
  		enum class MarketQualifier : Enum 
@@ -400,6 +408,33 @@ namespace SpiderRock
 			None=0,
 			Single=1,
 			MLeg=2
+		};
+
+ 		enum class OTCPrimaryMarket : Enum 
+		{
+			None=0,
+			OTCLink=1,
+			OTCBB=2,
+			OTCLinkBB=3,
+			GreyMarket=4,
+			OTCBonds=5
+		};
+
+ 		enum class OTCTier : Enum 
+		{
+			None=0,
+			OTCQXUSPrem=1,
+			OTCQXUS=2,
+			OTCQXIntPrem=3,
+			OTCQXInt=4,
+			OTCQB=5,
+			OTCBBOnly=6,
+			PinkCurr=7,
+			PinkLim=8,
+			PinkNoInfo=9,
+			Grey=10,
+			Expert=11,
+			OTCBonds=12
 		};
 
  		enum class OpraMktType : Flag 
@@ -554,6 +589,29 @@ namespace SpiderRock
 			ICE=12,
 			BATS=13,
 			IEXG=14
+		};
+
+ 		enum class PrimaryExchV2 : Enum 
+		{
+			None=0,
+			NYSE=1,
+			NYSEArca=2,
+			NYSEMkt=3,
+			NASDAQ=4,
+			NASDAQBOS=5,
+			BATS=6,
+			PHLX=7,
+			IEXG=8,
+			CSE=9,
+			NSE=10,
+			FINRA=11,
+			PORTAL=12,
+			OTC=13,
+			CME=14,
+			CBOT=15,
+			NYMEX=16,
+			COMEX=17,
+			ICE=18
 		};
 
  		enum class ProductClass : Enum 
@@ -746,7 +804,6 @@ namespace SpiderRock
 			CBidFit2Err=29,
 			PBidFit1Err=30,
 			PBidFit2Err=31,
-			CobsMidFitErr=42,
 			CobsSampleErr=32,
 			NoPrcFit=33,
 			NumStrikes=34,
@@ -756,7 +813,9 @@ namespace SpiderRock
 			VolKnotCnt=38,
 			InterpError=39,
 			NoAtmStrike=40,
-			CobsConvexFitErr=41
+			CobsConvexFitErr=41,
+			CobsMidFitErr=42,
+			ProxyError=43
 		};
 
  		enum class SymbolType : Enum 
@@ -856,6 +915,13 @@ namespace SpiderRock
 			OTC=2,
 			SR=3,
 			Exchange=4
+		};
+
+ 		enum class TkStatusFlag : Enum 
+		{
+			None=0,
+			Active=1,
+			Delisted=2
 		};
 
  		enum class TradeableStatus : Enum 

@@ -76,6 +76,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, LiveImpliedQuote dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(LiveImpliedQuote.PKeyLayout) + sizeof(LiveImpliedQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding LiveImpliedQuote");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((LiveImpliedQuote.PKeyLayout*) src); src += sizeof(LiveImpliedQuote.PKeyLayout);
+ 				dest.body = *((LiveImpliedQuote.BodyLayout*) src); src += sizeof(LiveImpliedQuote.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public byte* Decode(byte* src, LiveSurfaceAtm dest, byte* max)
 		{
 			unchecked
@@ -493,6 +508,21 @@ namespace SpiderRock.DataFeed.FrameHandling
 				dest.header = *((Header*) src); src += sizeof(Header);
 				dest.pkey.body = *((TickerDefinition.PKeyLayout*) src); src += sizeof(TickerDefinition.PKeyLayout);
  				dest.body = *((TickerDefinition.BodyLayout*) src); src += sizeof(TickerDefinition.BodyLayout);
+			
+				return src;
+			}
+		}
+ 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public byte* Decode(byte* src, TickerDefinitionV2 dest, byte* max)
+		{
+			unchecked
+			{
+				if (src + sizeof(Header) + sizeof(TickerDefinitionV2.PKeyLayout) + sizeof(TickerDefinitionV2.BodyLayout) > max) throw new IOException("Max exceeded decoding TickerDefinitionV2");
+				
+				dest.header = *((Header*) src); src += sizeof(Header);
+				dest.pkey.body = *((TickerDefinitionV2.PKeyLayout*) src); src += sizeof(TickerDefinitionV2.PKeyLayout);
+ 				dest.body = *((TickerDefinitionV2.BodyLayout*) src); src += sizeof(TickerDefinitionV2.BodyLayout);
 			
 				return src;
 			}

@@ -26,6 +26,7 @@ namespace SpiderRock
 			FuturePrint = 370,
 			FuturePrintMarkup = 3024,
 			IndexQuote = 137,
+			LiveImpliedQuote = 2305,
 			LiveSurfaceAtm = 2160,
 			OptionCloseMark = 292,
 			OptionExchOrder = 270,
@@ -49,6 +50,7 @@ namespace SpiderRock
 			StockPrint = 440,
 			StockPrintMarkup = 3022,
 			TickerDefinition = 420,
+			TickerDefinitionV2 = 421,
 			
 			CacheComplete = 4106,
 			GetExtCache = 4096,
