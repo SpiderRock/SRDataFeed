@@ -69,6 +69,7 @@
     <Compile Include="Layouts\TickerKeyLayout.cs" />
     <Compile Include="PropertyValueCaching\CachedExpiryKey.cs" />
     <Compile Include="PropertyValueCaching\CachedTickerKey.cs" />
+    <Compile Include="Protocol.cs" />
     <Compile Include="Proto\UDP\ReadLoopState.cs" />
     <Compile Include="Proto\UDP\UdpDevice.cs" />
     <Compile Include="Proto\UDP\UdpChannel.cs" />

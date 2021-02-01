@@ -20,6 +20,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType FuturePrint = 370;
  		public static readonly MessageType FuturePrintMarkup = 3024;
  		public static readonly MessageType IndexQuote = 137;
+ 		public static readonly MessageType LiveImpliedQuote = 2305;
  		public static readonly MessageType LiveSurfaceAtm = 2160;
  		public static readonly MessageType OptionCloseMark = 292;
  		public static readonly MessageType OptionExchOrder = 270;
@@ -43,6 +44,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType StockPrint = 440;
  		public static readonly MessageType StockPrintMarkup = 3022;
  		public static readonly MessageType TickerDefinition = 420;
+ 		public static readonly MessageType TickerDefinitionV2 = 421;
 
 		internal static readonly MessageType CacheComplete = 4106;
  		internal static readonly MessageType GetExtCache = 4096;
@@ -57,6 +59,7 @@ namespace SpiderRock.DataFeed
  			isCore[FuturePrint] = true;
  			isCore[FuturePrintMarkup] = true;
  			isCore[IndexQuote] = true;
+ 			isCore[LiveImpliedQuote] = true;
  			isCore[LiveSurfaceAtm] = true;
  			isCore[OptionCloseMark] = true;
  			isCore[OptionExchOrder] = true;
@@ -80,6 +83,7 @@ namespace SpiderRock.DataFeed
  			isCore[StockPrint] = true;
  			isCore[StockPrintMarkup] = true;
  			isCore[TickerDefinition] = true;
+ 			isCore[TickerDefinitionV2] = true;
 
 			
 			return isCore;
@@ -107,6 +111,7 @@ namespace SpiderRock.DataFeed
  			names[FuturePrintMarkup] = "FuturePrintMarkup";
  			names[GetExtCache] = "GetExtCache";
  			names[IndexQuote] = "IndexQuote";
+ 			names[LiveImpliedQuote] = "LiveImpliedQuote";
  			names[LiveSurfaceAtm] = "LiveSurfaceAtm";
  			names[NetPulse] = "NetPulse";
  			names[OptionCloseMark] = "OptionCloseMark";
@@ -131,6 +136,7 @@ namespace SpiderRock.DataFeed
  			names[StockPrint] = "StockPrint";
  			names[StockPrintMarkup] = "StockPrintMarkup";
  			names[TickerDefinition] = "TickerDefinition";
+ 			names[TickerDefinitionV2] = "TickerDefinitionV2";
 
 			
 			return names;
