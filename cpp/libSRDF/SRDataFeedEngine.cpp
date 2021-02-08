@@ -79,7 +79,7 @@ public:
 };
 
 SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
-	: impl_{ new impl(SysEnvironment::V7_Latest, device_address) }
+	: impl_{ new impl(SysEnvironment::V7_Stable, device_address) }
 {
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote, { MessageType::FutureBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
