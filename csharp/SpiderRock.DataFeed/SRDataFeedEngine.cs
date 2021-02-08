@@ -33,7 +33,7 @@ namespace SpiderRock.DataFeed
 
         public SRDataFeedEngine()
         {
-            sysEnvironment = SysEnvironment.V7_Latest;
+            sysEnvironment = SysEnvironment.V7_Stable;
             disposeTokenSource = new CancellationTokenSource();
             ReceiveBufferSize = 20*1024*1024; // 20MB default
             LatencyMode = GCLatencyMode.SustainedLowLatency;
