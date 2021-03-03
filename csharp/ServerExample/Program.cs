@@ -21,12 +21,6 @@ namespace ServerExample
 
                     IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
 
-                    // Protocol is set to UDP by default but can be switched to DBL(Myricom)
-                    //Protocol = Protocol.DBL,
-
-                    // Channel subscriptions.  A dedicated thread is used
-                    // to process incoming messages when Protocol = DBL
-
                     Channels = new[]
                     {
                         UdpChannel.OptNbboQuote1,

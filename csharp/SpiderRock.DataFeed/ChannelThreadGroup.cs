@@ -13,8 +13,6 @@ namespace SpiderRock.DataFeed
             Priority = ThreadPriority.Normal;
         }
 
-        public abstract Protocol Proto { get; }
-
         public ThreadPriority Priority { get; set; }
 
         public IEnumerator<UdpChannel> GetEnumerator()
