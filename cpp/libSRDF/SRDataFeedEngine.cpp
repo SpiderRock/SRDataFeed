@@ -16,7 +16,6 @@
 #include "SpiderRock/Net/IPAddress.h"
 #include "SpiderRock/Net/IPEndPoint.h"
 #include "SpiderRock/Net/Proto/Receiver.h"
-#include "SpiderRock/Net/Proto/DBL/Receiver.h"
 #include "SpiderRock/Net/Proto/UDP/Receiver.h"
 #include "SpiderRock/DataFeed/MessageEventSource.h"
 #include "SpiderRock/DataFeed/FrameHandler.h"
@@ -79,7 +78,7 @@ public:
 };
 
 SRDataFeedEngine::SRDataFeedEngine(in_addr device_address)
-	: impl_{ new impl(SysEnvironment::V7_Stable, device_address) }
+	: impl_{ new impl(SysEnvironment::V7_Latest, device_address) }
 {
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futurebookquote, { MessageType::FutureBookQuote });
 	impl_->frame_handler.RegisterMessageHandler(&impl_->futureprint, { MessageType::FuturePrint });
@@ -194,12 +193,7 @@ void SRDataFeedEngine::CreateThreadGroup(Protocol protocol, initializer_list<Dat
 {
 	unique_ptr<Receiver<Channel>> receiver;
 
-	if (protocol == Protocol::DBL)
-	{
-		receiver = unique_ptr<Receiver<Channel>>(
-			dynamic_cast<Receiver<Channel>*>(new DBL::Receiver<Channel>(impl_->if_addr, &impl_->frame_handler)));
-	}
-	else if (protocol == Protocol::UDP)
+	if (protocol == Protocol::UDP)
 	{
 		receiver = unique_ptr<Receiver<Channel>>(
 			dynamic_cast<Receiver<Channel>*>(new UDP::Receiver<Channel>(impl_->if_addr, &impl_->frame_handler)));
@@ -215,11 +209,7 @@ void SRDataFeedEngine::CreateThreadGroup(Protocol protocol, initializer_list<Dat
 
 		shared_ptr<Channel> channel;
 		
-		if (protocol == Protocol::DBL)
-		{
-			channel = make_shared<Channel>("dbl.recv(" + ep.label() + ")");
-		}
-		else if (protocol == Protocol::UDP)
+		if (protocol == Protocol::UDP)
 		{
 			channel = make_shared<Channel>("udp.recv(" + ep.label() + ")");
 		}

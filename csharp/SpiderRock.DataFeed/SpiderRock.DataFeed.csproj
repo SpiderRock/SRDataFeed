@@ -61,7 +61,6 @@
     <Compile Include="ChannelCreatedEventArgs.cs" />
     <Compile Include="ChannelFactory.cs" />
     <Compile Include="ChannelThreadGroup.cs" />
-    <Compile Include="DblChannelThreadGroup.cs" />
     <Compile Include="Diagnostics\ChannelStatisticsAggregator.cs" />
     <Compile Include="CreatedEventArgs.cs" />
     <Compile Include="Diagnostics\ProcessStatisticsAggregator.cs" />
@@ -77,18 +76,11 @@
     <Compile Include="SRDataFeedEngine.Auto.cs" />
     <Compile Include="UdpChannelThreadGroup.cs" />
     <Compile Include="SRDataFeedEngine.cs" />
-    <Compile Include="Proto\DBL\Myricom\MyricomAdapter.cs" />
     <Compile Include="Diagnostics\SRTrace.cs" />
     <Compile Include="Diagnostics\SRConsoleTraceListener.cs" />
     <Compile Include="Diagnostics\SRFileTraceListener.cs" />
     <Compile Include="Diagnostics\SRTraceListener.cs" />
     <Compile Include="Diagnostics\SRTraceSource.cs" />
-    <Compile Include="Proto\DBL\Myricom\DblChannel.cs" />
-    <Compile Include="Proto\DBL\Myricom\DblDevice.cs" />
-    <Compile Include="Proto\DBL\Myricom\DblException.cs" />
-    <Compile Include="Proto\DBL\Myricom\DblLibrary.cs" />
-    <Compile Include="Proto\DBL\Myricom\DblReadHandler.cs" />
-    <Compile Include="Proto\DBL\Myricom\ReadLoopState.cs" />
     <Compile Include="FrameHandling\SourceId.cs" />
     <Compile Include="Channel.SeqNumber.cs" />
     <Compile Include="SysEnvironmentExtensions.cs" />
@@ -123,7 +115,6 @@
     <Compile Include="FrameHandling\HeaderBits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Channel.cs" />
-    <Compile Include="Proto\DBL\DblManager.cs" />
     <Compile Include="UdpChannel.cs" />
     <Compile Include="UpdatedEventArgs.cs" />
   </ItemGroup>
