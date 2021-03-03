@@ -108,11 +108,10 @@ namespace SpiderRock.DataFeed
 
                 CallPut cp = CallPut;
 
-                if (yr < 1901 || yr > 2150) return false;
                 if (mn < 1 || mn > 12) return false;
                 if (dy < 1 || dy > 31) return false;
 
-                return cp == CallPut.Call || cp == CallPut.Put;
+                return cp == CallPut.Call || cp == CallPut.Put || cp == CallPut.Pair;
             }
         }
 
@@ -260,12 +259,6 @@ namespace SpiderRock.DataFeed
                 if (!KeyCache.TryGetValue(key, out cacheKey))
                 {
                     KeyCache[key] = cacheKey = new OptionKey(key);
-
-                    if (!cacheKey.IsValid)
-                    {
-                        SRTrace.KeyErrors.TraceError("GetCreateOptionKey: Invalid: {0}",
-                            cacheKey.StringKey);
-                    }
                 }
 
                 return cacheKey;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -140,12 +140,6 @@ namespace SpiderRock.DataFeed
                 if (!KeyCache.TryGetValue(key, out cacheKey))
                 {
                     KeyCache[key] = cacheKey = new TickerKey(key);
-
-                    if (!cacheKey.IsValid)
-                    {
-                        SRTrace.KeyErrors.TraceError("GetCreateTickerKey: Invalid: {0}",
-                            cacheKey.StringKey);
-                    }
                 }
 
                 return cacheKey;
@@ -167,50 +161,6 @@ namespace SpiderRock.DataFeed
             }
 
             return Empty;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TickerKey GetCreateTickerKey(string stockKeyStr)
-        {
-            if (stockKeyStr == null)
-            {
-                SRTrace.KeyErrors.TraceError("GetCreateTickerKey: stockKeyStr Null");
-
-                return Empty;
-            }
-
-            string[] tokens = stockKeyStr.Split('-');
-
-            if (tokens.Length != 3)
-            {
-                SRTrace.KeyErrors.TraceError("GetCreateTickerKey: StockKeyStr: [{0}]", stockKeyStr);
-
-                return Empty;
-            }
-
-            string tk = tokens[0];
-            string ts = tokens[1];
-            string at = tokens[2];
-
-            return GetCreateTickerKey(at, ts, tk);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TickerKey GetCreateTickerKey(string assetType, string tickerSrc, string ticker)
-        {
-            AssetType at;
-            Enum.TryParse(assetType, out at);
-
-            TickerSrc ts;
-            Enum.TryParse(tickerSrc, out ts);
-
-            return GetCreateTickerKey(at, ts, ticker);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TickerKey GetCreateTickerKey(AssetType assetType, TickerSrc tickerSrc, string ticker)
-        {
-            return GetCreateTickerKey(new TickerKeyLayout(assetType, tickerSrc, ticker));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

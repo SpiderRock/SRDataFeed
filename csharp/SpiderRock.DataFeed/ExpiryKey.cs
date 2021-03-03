@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -70,13 +70,12 @@ namespace SpiderRock.DataFeed
         {
             get
             {
-                if (string.IsNullOrEmpty(CCode)) return false;
+                if (Layout.IsEmpty || Layout.Ticker.IsEmpty) return false;
 
                 int yr = Year;
                 int mn = Month;
                 int dy = Day;
 
-                if (yr < 1901 || yr > 2150) return false;
                 if (mn < 1 || mn > 12) return false;
                 if (dy < 1 || dy > 31) return false;
 
@@ -181,19 +180,13 @@ namespace SpiderRock.DataFeed
                 if (!KeyCache.TryGetValue(key, out cacheKey))
                 {
                     KeyCache[key] = cacheKey = new ExpiryKey(key);
-
-                    if (!cacheKey.IsValid)
-                    {
-                        SRTrace.KeyErrors.TraceError("GetCreateFutureKey: Invalid: {0}, trace={1}",
-                            cacheKey.StringKey, Environment.StackTrace);
-                    }
                 }
 
                 return cacheKey;
             }
             catch (Exception e)
             {
-                SRTrace.KeyErrors.TraceError(e, "GetCreateFutureKey: Cache Exception");
+                SRTrace.KeyErrors.TraceError(e, "GetCreateExpirtyKey: Cache Exception");
             }
             finally
             {
@@ -203,7 +196,7 @@ namespace SpiderRock.DataFeed
                 }
                 else
                 {
-                    SRTrace.KeyErrors.TraceError("GetCreateFutureKey: SpinLock Miss");
+                    SRTrace.KeyErrors.TraceError("GetCreateExpirtyKey: SpinLock Miss");
                 }
             }
 
