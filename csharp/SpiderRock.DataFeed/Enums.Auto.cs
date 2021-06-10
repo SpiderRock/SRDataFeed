@@ -47,7 +47,7 @@ namespace SpiderRock.DataFeed
  	public enum Multihedge : byte { None=0,Simple=1,Complex=2,AllCash=3,Binary=4 };		
  	public enum NoticeShape : byte { None=0,Single=1,MLeg=2 };		
  	public enum OTCPrimaryMarket : byte { None=0,OTCLink=1,OTCBB=2,OTCLinkBB=3,GreyMarket=4,OTCBonds=5 };		
- 	public enum OTCTier : byte { None=0,OTCQXUSPrem=1,OTCQXUS=2,OTCQXIntPrem=3,OTCQXInt=4,OTCQB=5,OTCBBOnly=6,PinkCurr=7,PinkLim=8,PinkNoInfo=9,Grey=10,Expert=11,OTCBonds=12 };		
+ 	public enum OTCTier : byte { None=0,OtcNoTier=1,OTCQXUSPrem=2,OTCQXUS=3,OTCQXIntPrem=4,OTCQXInt=5,OTCQB=6,OTCBBOnly=7,PinkCurr=8,PinkLim=9,PinkNoInfo=10,Grey=11,Expert=12,OTCBonds=13 };		
  	[System.Flags] public enum OpraMktType : byte { None=0,Rotation=1,TradingHalted=2,CustInterest=4,QuoteNotFirm=8 };		
  	public enum OptExch : byte { None=0,AMEX=1,BOX=2,CBOE=3,ISE=4,NYSE=5,PHLX=6,NSDQ=7,BATS=8,C2=9,NQBX=10,MIAX=11,GMNI=12,CME=13,CBOT=14,NYMEX=15,COMEX=16,ICE=17,EDGO=18,MCRY=19,MPRL=20,SDRK=21,DQTE=22,EMLD=23,CFE=24 };		
  	public enum OptPriceInc : byte { None=0,PartPenny=1,PartNickle=2,FullPenny=3 };		
@@ -66,14 +66,14 @@ namespace SpiderRock.DataFeed
  	public enum RunStatus : byte { None=0,Prod=1,UAT=2,Beta=3,Demo=4,Alpha=5,SysTest=6 };		
  	public enum SRDataCenter : byte { None=0,NY4=1,NY5=2,CH2=3,CH3=4 };		
  	public enum SpdrKeyType : byte { None=0,Stock=1,Future=2,Option=3,MLeg=4 };		
- 	public enum StkExch : byte { None=0,AMEX=1,NQBX=2,NSX=3,FNRA=4,ISE=5,EDGA=6,EDGX=7,CHX=8,NYSE=9,ARCA=10,NSDQ=11,CBSX=12,PSX=13,BTSY=14,BATS=15,CBIDX=16,IEX=17,OTC=18,MPRL=19,LTSE=20,MEMX=21 };		
+ 	public enum StkExch : byte { None=0,AMEX=1,NQBX=2,NSX=3,FNRA=4,ISE=5,EDGA=6,EDGX=7,CHX=8,NYSE=9,ARCA=10,NSDQ=11,CBSX=12,PSX=13,BTSY=14,BATS=15,CBIDX=16,IEX=17,OTC=18,MPRL=19,LTSE=20,MEMX=21,MXIDX=22,DJIDX=23 };		
  	public enum StkPriceInc : byte { None=0,FullPenny=1,Nickle=2 };		
- 	public enum StkPrintType : byte { None=0,RegularSequence=1,OutOfSequence=2,VolumeOnly=3,ExtendedHours=4 };		
+ 	public enum StkPrintType : byte { None=0,RegularSequence=1,OutOfSequence=2,VolumeOnly=3,ExtendedHours=4,OddLot=5,OddLotExtendedHours=6 };		
  	public enum SurfaceResult : byte { None=0,OK=1,EOD=2,Init=3,Cache=4,PrevDay=5,NullExpIdx=6,NoStrikes=7,NoBaseCurve=8,BadBootAtm=9,NoGoodStrikes=10,BadAtmVol=11,Bootstrap=12,NoUPrc=13,NoIVols=14,NoModelPts=15,ZeroYears=16,NoSimpleVol=17,OptMktNotOpn=18,NoBaseSurface=19,UPrcOffCnt=20,SkewKnotCnt=21,Exception=22,AxisError=23,CAskFit1Err=24,CAskFit2Err=25,PAskFit1Err=26,PAskFit2Err=27,CBidFit1Err=28,CBidFit2Err=29,PBidFit1Err=30,PBidFit2Err=31,CobsSampleErr=32,NoPrcFit=33,NumStrikes=34,CMidFitErr=35,PMidFitErr=36,StrikeCount=37,VolKnotCnt=38,InterpError=39,NoAtmStrike=40,CobsConvexFitErr=41,CobsMidFitErr=42,ProxyError=43 };		
- 	public enum SymbolType : byte { None=0,Equity=1,ADR=2,ETF=3,CashIndex=4,MutualFund=5,ShortETF=6,Future=7,Bond=8 };		
- 	public enum SysEnvironment : byte { None=0,Stable=1,Current=2,V7_Stable=3,V7_Latest=4,V7_Stable_UAT=5,V7_Latest_UAT=6,V7_Dev=7,SysTest=8 };		
+ 	public enum SymbolType : byte { None=0,Equity=1,ADR=2,ETF=3,CashIndex=4,MutualFund=5,ShortETF=6,Future=7,Bond=8,DepReceipts=9,PreferredSec=10,PreferenceShare=11,StructuredProd=12,StapledSec=13,TradeableRights=14,Unit=15,Warrant=16 };		
+ 	public enum SysEnvironment : byte { None=0,V7_Current=1,Current=2,V7_Stable=3,V7_Latest=4,V7_Stable_UAT=5,V7_Current_UAT=6,V7_Dev=7,SysTest=8 };		
  	public enum TapeCode : byte { None=0,A=1,B=2,C=3 };		
- 	public enum TickerSrc : byte { None=0,SR=1,NMS=2,CME=3,ICE=4,CFE=5,CBOT=6,TD=7,NYMEX=8,COMEX=9,RUT=10,CBOE=11,ISE=12,ARCA=13,NYSE=14,OTC=15,GDAX=16,BSTAMP=17,KRAKEN=18,TST=19,USR1=20,USR2=21,USR3=22,NSDQ=23,MFQS=24,PHLX=25,MIAX=26,TSE=27,DJI=28 };		
+ 	public enum TickerSrc : byte { None=0,SR=1,NMS=2,CME=3,ICE=4,CFE=5,CBOT=6,TD=7,NYMEX=8,COMEX=9,RUT=10,CBOE=11,ISE=12,ARCA=13,NYSE=14,OTC=15,TST1=16,TST2=17,TST3=18,TST=19,USR1=20,USR2=21,USR3=22,NSDQ=23,MFQS=24,PHLX=25,MIAX=26,TSE=27,DJI=28 };		
  	public enum TimeInForce : byte { None=0,Day=1,IOC=2,GTD=3,ExtDay=4,Week=5,ExtWeek=6 };		
  	public enum TimeMetric : byte { None=0,D252=1,D365=2,SPX=3,WK1=4,WK2=5,WK3=6,WK4=7 };		
  	public enum TkDefSource : byte { None=0,Vendor=1,OTC=2,SR=3,Exchange=4 };		
