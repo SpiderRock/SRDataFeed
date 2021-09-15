@@ -2842,7 +2842,7 @@ namespace SpiderRock.DataFeed
 		
         public string OtherDetail { get { return CacheVar.AllocIfNull(ref otherDetail).Get(ref body.otherDetail, usn); } set { CacheVar.AllocIfNull(ref otherDetail).Set(value); body.otherDetail = value; } }
  
-		/// <summary>source high precision timestamp (if available)</summary>
+		/// <summary>source (exch) high precision timestamp (if available)</summary>
         public long SrcTimestamp { get { return body.srcTimestamp; } set { body.srcTimestamp = value; } }
  
 		/// <summary>SpiderRock network PTP timestamp</summary>
