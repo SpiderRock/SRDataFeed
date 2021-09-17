@@ -103,6 +103,11 @@
 
         ImbalanceArca = 170,
         ImbalanceNyse = 171,
-        ImbalanceNasdaq = 172
+        ImbalanceNasdaq = 172,
+
+        UTPNbboQuote1 = 200,
+        UTPNbboQuote2 = 201,
+        UTPNbboQuote3 = 202,
+        UTPNbboQuote4 = 203,
     }
 }
