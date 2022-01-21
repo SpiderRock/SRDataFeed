@@ -1768,78 +1768,78 @@ namespace SpiderRock.DataFeed
             }
         }   
  
-        private sealed class OptionOpenInterestV2ContainerCache
+        private sealed class OptionOpenInterestContainerCache
         {
             #region Events
             
-            [ThreadStatic] private static CreatedEventArgs<OptionOpenInterestV2> createdEventArgs;
-            [ThreadStatic] private static ChangedEventArgs<OptionOpenInterestV2> changedEventArgs;
-            [ThreadStatic] private static UpdatedEventArgs<OptionOpenInterestV2> updatedEventArgs;
+            [ThreadStatic] private static CreatedEventArgs<OptionOpenInterest> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<OptionOpenInterest> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<OptionOpenInterest> updatedEventArgs;
 
-            public event EventHandler<CreatedEventArgs<OptionOpenInterestV2>> Created;
-            public event EventHandler<ChangedEventArgs<OptionOpenInterestV2>> Changed;
-            public event EventHandler<UpdatedEventArgs<OptionOpenInterestV2>> Updated;
+            public event EventHandler<CreatedEventArgs<OptionOpenInterest>> Created;
+            public event EventHandler<ChangedEventArgs<OptionOpenInterest>> Changed;
+            public event EventHandler<UpdatedEventArgs<OptionOpenInterest>> Updated;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static CreatedEventArgs<OptionOpenInterestV2> GetCreatedEventArgs()
+            private static CreatedEventArgs<OptionOpenInterest> GetCreatedEventArgs()
             {
-                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<OptionOpenInterestV2>());
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<OptionOpenInterest>());
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static ChangedEventArgs<OptionOpenInterestV2> GetChangedEventArgs()
+            private static ChangedEventArgs<OptionOpenInterest> GetChangedEventArgs()
             {
-                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<OptionOpenInterestV2>());
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<OptionOpenInterest>());
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static UpdatedEventArgs<OptionOpenInterestV2> GetUpdatedEventArgs()
+            private static UpdatedEventArgs<OptionOpenInterest> GetUpdatedEventArgs()
             {
-                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<OptionOpenInterestV2>());
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<OptionOpenInterest>());
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(OptionOpenInterestV2 obj, Channel channel)
+            private void FireCreatedEventIfSubscribed(OptionOpenInterest obj, Channel channel)
             {
-                EventHandler<CreatedEventArgs<OptionOpenInterestV2>> created = Created;
+                EventHandler<CreatedEventArgs<OptionOpenInterest>> created = Created;
                 if (created == null) return;
                 try
                 {
-                    CreatedEventArgs<OptionOpenInterestV2> args = GetCreatedEventArgs();
+                    CreatedEventArgs<OptionOpenInterest> args = GetCreatedEventArgs();
                     args.Created = obj;
                     args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
                 {
-                    SRTrace.Default.TraceError(e, "OptionOpenInterestV2.FireCreatedEventIfSubscribed exception");
+                    SRTrace.Default.TraceError(e, "OptionOpenInterest.FireCreatedEventIfSubscribed exception");
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(OptionOpenInterestV2 obj, Channel channel)
+            private void FireChangedEventIfSubscribed(OptionOpenInterest obj, Channel channel)
             {
-                EventHandler<ChangedEventArgs<OptionOpenInterestV2>> changed = Changed;
+                EventHandler<ChangedEventArgs<OptionOpenInterest>> changed = Changed;
                 if (changed == null) return;
                 try
                 {
-                    ChangedEventArgs<OptionOpenInterestV2> args = GetChangedEventArgs();
+                    ChangedEventArgs<OptionOpenInterest> args = GetChangedEventArgs();
                     args.Changed = obj;
                     args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
                 {
-                    SRTrace.Default.TraceError(e, "OptionOpenInterestV2.FireChangedEventIfSubscribed exception");
+                    SRTrace.Default.TraceError(e, "OptionOpenInterest.FireChangedEventIfSubscribed exception");
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(OptionOpenInterestV2 current, OptionOpenInterestV2 previous, Channel channel)
+            private void FireUpdatedEvent(OptionOpenInterest current, OptionOpenInterest previous, Channel channel)
             {
                 try
                 {
-                    UpdatedEventArgs<OptionOpenInterestV2> args = GetUpdatedEventArgs();
+                    UpdatedEventArgs<OptionOpenInterest> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
                     args.Channel = channel;                    
@@ -1847,25 +1847,25 @@ namespace SpiderRock.DataFeed
                 }
                 catch (Exception e)
                 {
-                    SRTrace.Default.TraceError(e, "OptionOpenInterestV2.FireUpdatedEvent exception");
+                    SRTrace.Default.TraceError(e, "OptionOpenInterest.FireUpdatedEvent exception");
                 }
             }
 
             #endregion
             
-            private readonly Dictionary<OptionOpenInterestV2.PKeyLayout, OptionOpenInterestV2> objectsByKey = new Dictionary<OptionOpenInterestV2.PKeyLayout, OptionOpenInterestV2>();
+            private readonly Dictionary<OptionOpenInterest.PKeyLayout, OptionOpenInterest> objectsByKey = new Dictionary<OptionOpenInterest.PKeyLayout, OptionOpenInterest>();
             
-            [ThreadStatic] private static OptionOpenInterestV2 decodeTarget;
+            [ThreadStatic] private static OptionOpenInterest decodeTarget;
 
             public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
-                if (hdr.keylen != sizeof(OptionOpenInterestV2.PKeyLayout))
+                if (hdr.keylen != sizeof(OptionOpenInterest.PKeyLayout))
                 {
-                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(OptionOpenInterestV2.PKeyLayout))));
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(OptionOpenInterest.PKeyLayout))));
                 }           
                 
-                OptionOpenInterestV2.PKeyLayout pkey = *(OptionOpenInterestV2.PKeyLayout*)(ptr + offset + sizeof(Header)); 
-                OptionOpenInterestV2 item;        
+                OptionOpenInterest.PKeyLayout pkey = *(OptionOpenInterest.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                OptionOpenInterest item;        
                 
                 if (!objectsByKey.TryGetValue(pkey, out item))
                 {       
@@ -1873,7 +1873,7 @@ namespace SpiderRock.DataFeed
                     {
                         if (!objectsByKey.TryGetValue(pkey, out item))
                         {       
-                            item = new OptionOpenInterestV2(pkey) {TimeRcvd = timestamp};
+                            item = new OptionOpenInterest(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
                             FireCreatedEventIfSubscribed(item, channel);
@@ -1899,7 +1899,7 @@ namespace SpiderRock.DataFeed
 
                 if (Updated != null)
                 {
-                    if (decodeTarget == null) decodeTarget = new OptionOpenInterestV2();
+                    if (decodeTarget == null) decodeTarget = new OptionOpenInterest();
                     
                     unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
 
@@ -4312,78 +4312,78 @@ namespace SpiderRock.DataFeed
             }
         }   
  
-        private sealed class TickerDefinitionContainerCache
+        private sealed class TickerDefinitionExtContainerCache
         {
             #region Events
             
-            [ThreadStatic] private static CreatedEventArgs<TickerDefinition> createdEventArgs;
-            [ThreadStatic] private static ChangedEventArgs<TickerDefinition> changedEventArgs;
-            [ThreadStatic] private static UpdatedEventArgs<TickerDefinition> updatedEventArgs;
+            [ThreadStatic] private static CreatedEventArgs<TickerDefinitionExt> createdEventArgs;
+            [ThreadStatic] private static ChangedEventArgs<TickerDefinitionExt> changedEventArgs;
+            [ThreadStatic] private static UpdatedEventArgs<TickerDefinitionExt> updatedEventArgs;
 
-            public event EventHandler<CreatedEventArgs<TickerDefinition>> Created;
-            public event EventHandler<ChangedEventArgs<TickerDefinition>> Changed;
-            public event EventHandler<UpdatedEventArgs<TickerDefinition>> Updated;
+            public event EventHandler<CreatedEventArgs<TickerDefinitionExt>> Created;
+            public event EventHandler<ChangedEventArgs<TickerDefinitionExt>> Changed;
+            public event EventHandler<UpdatedEventArgs<TickerDefinitionExt>> Updated;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static CreatedEventArgs<TickerDefinition> GetCreatedEventArgs()
+            private static CreatedEventArgs<TickerDefinitionExt> GetCreatedEventArgs()
             {
-                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<TickerDefinition>());
+                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<TickerDefinitionExt>());
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static ChangedEventArgs<TickerDefinition> GetChangedEventArgs()
+            private static ChangedEventArgs<TickerDefinitionExt> GetChangedEventArgs()
             {
-                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<TickerDefinition>());
+                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<TickerDefinitionExt>());
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static UpdatedEventArgs<TickerDefinition> GetUpdatedEventArgs()
+            private static UpdatedEventArgs<TickerDefinitionExt> GetUpdatedEventArgs()
             {
-                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<TickerDefinition>());
+                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<TickerDefinitionExt>());
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(TickerDefinition obj, Channel channel)
+            private void FireCreatedEventIfSubscribed(TickerDefinitionExt obj, Channel channel)
             {
-                EventHandler<CreatedEventArgs<TickerDefinition>> created = Created;
+                EventHandler<CreatedEventArgs<TickerDefinitionExt>> created = Created;
                 if (created == null) return;
                 try
                 {
-                    CreatedEventArgs<TickerDefinition> args = GetCreatedEventArgs();
+                    CreatedEventArgs<TickerDefinitionExt> args = GetCreatedEventArgs();
                     args.Created = obj;
                     args.Channel = channel;
                     created(this, args);
                 }
                 catch (Exception e)
                 {
-                    SRTrace.Default.TraceError(e, "TickerDefinition.FireCreatedEventIfSubscribed exception");
+                    SRTrace.Default.TraceError(e, "TickerDefinitionExt.FireCreatedEventIfSubscribed exception");
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(TickerDefinition obj, Channel channel)
+            private void FireChangedEventIfSubscribed(TickerDefinitionExt obj, Channel channel)
             {
-                EventHandler<ChangedEventArgs<TickerDefinition>> changed = Changed;
+                EventHandler<ChangedEventArgs<TickerDefinitionExt>> changed = Changed;
                 if (changed == null) return;
                 try
                 {
-                    ChangedEventArgs<TickerDefinition> args = GetChangedEventArgs();
+                    ChangedEventArgs<TickerDefinitionExt> args = GetChangedEventArgs();
                     args.Changed = obj;
                     args.Channel = channel;
                     changed(this, args);
                 }
                 catch (Exception e)
                 {
-                    SRTrace.Default.TraceError(e, "TickerDefinition.FireChangedEventIfSubscribed exception");
+                    SRTrace.Default.TraceError(e, "TickerDefinitionExt.FireChangedEventIfSubscribed exception");
                 }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(TickerDefinition current, TickerDefinition previous, Channel channel)
+            private void FireUpdatedEvent(TickerDefinitionExt current, TickerDefinitionExt previous, Channel channel)
             {
                 try
                 {
-                    UpdatedEventArgs<TickerDefinition> args = GetUpdatedEventArgs();
+                    UpdatedEventArgs<TickerDefinitionExt> args = GetUpdatedEventArgs();
                     args.Current = current;
                     args.Previous = previous;
                     args.Channel = channel;                    
@@ -4391,25 +4391,25 @@ namespace SpiderRock.DataFeed
                 }
                 catch (Exception e)
                 {
-                    SRTrace.Default.TraceError(e, "TickerDefinition.FireUpdatedEvent exception");
+                    SRTrace.Default.TraceError(e, "TickerDefinitionExt.FireUpdatedEvent exception");
                 }
             }
 
             #endregion
             
-            private readonly Dictionary<TickerDefinition.PKeyLayout, TickerDefinition> objectsByKey = new Dictionary<TickerDefinition.PKeyLayout, TickerDefinition>();
+            private readonly Dictionary<TickerDefinitionExt.PKeyLayout, TickerDefinitionExt> objectsByKey = new Dictionary<TickerDefinitionExt.PKeyLayout, TickerDefinitionExt>();
             
-            [ThreadStatic] private static TickerDefinition decodeTarget;
+            [ThreadStatic] private static TickerDefinitionExt decodeTarget;
 
             public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
             {
-                if (hdr.keylen != sizeof(TickerDefinition.PKeyLayout))
+                if (hdr.keylen != sizeof(TickerDefinitionExt.PKeyLayout))
                 {
-                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(TickerDefinition.PKeyLayout))));
+                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(TickerDefinitionExt.PKeyLayout))));
                 }           
                 
-                TickerDefinition.PKeyLayout pkey = *(TickerDefinition.PKeyLayout*)(ptr + offset + sizeof(Header)); 
-                TickerDefinition item;        
+                TickerDefinitionExt.PKeyLayout pkey = *(TickerDefinitionExt.PKeyLayout*)(ptr + offset + sizeof(Header)); 
+                TickerDefinitionExt item;        
                 
                 if (!objectsByKey.TryGetValue(pkey, out item))
                 {       
@@ -4417,7 +4417,7 @@ namespace SpiderRock.DataFeed
                     {
                         if (!objectsByKey.TryGetValue(pkey, out item))
                         {       
-                            item = new TickerDefinition(pkey) {TimeRcvd = timestamp};
+                            item = new TickerDefinitionExt(pkey) {TimeRcvd = timestamp};
                             unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
                             
                             FireCreatedEventIfSubscribed(item, channel);
@@ -4443,166 +4443,7 @@ namespace SpiderRock.DataFeed
 
                 if (Updated != null)
                 {
-                    if (decodeTarget == null) decodeTarget = new TickerDefinition();
-                    
-                    unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
-
-                    decodeTarget.Invalidate();
-                    item.pkey.CopyTo(decodeTarget.pkey);
-                    
-                    FireUpdatedEvent(decodeTarget, item, channel);
-                    
-                    decodeTarget.CopyTo(item);                                                                              
-                }
-                else
-                {
-                    unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-                }
-
-                FireChangedEventIfSubscribed(item, channel);         
-            }
-            
-            public void Clear()
-            {
-                lock (objectsByKey)
-                {
-                    objectsByKey.Clear();
-                }
-            }
-        }   
- 
-        private sealed class TickerDefinitionV2ContainerCache
-        {
-            #region Events
-            
-            [ThreadStatic] private static CreatedEventArgs<TickerDefinitionV2> createdEventArgs;
-            [ThreadStatic] private static ChangedEventArgs<TickerDefinitionV2> changedEventArgs;
-            [ThreadStatic] private static UpdatedEventArgs<TickerDefinitionV2> updatedEventArgs;
-
-            public event EventHandler<CreatedEventArgs<TickerDefinitionV2>> Created;
-            public event EventHandler<ChangedEventArgs<TickerDefinitionV2>> Changed;
-            public event EventHandler<UpdatedEventArgs<TickerDefinitionV2>> Updated;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static CreatedEventArgs<TickerDefinitionV2> GetCreatedEventArgs()
-            {
-                return createdEventArgs ?? (createdEventArgs = new CreatedEventArgs<TickerDefinitionV2>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static ChangedEventArgs<TickerDefinitionV2> GetChangedEventArgs()
-            {
-                return changedEventArgs ?? (changedEventArgs = new ChangedEventArgs<TickerDefinitionV2>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static UpdatedEventArgs<TickerDefinitionV2> GetUpdatedEventArgs()
-            {
-                return updatedEventArgs ?? (updatedEventArgs = new UpdatedEventArgs<TickerDefinitionV2>());
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireCreatedEventIfSubscribed(TickerDefinitionV2 obj, Channel channel)
-            {
-                EventHandler<CreatedEventArgs<TickerDefinitionV2>> created = Created;
-                if (created == null) return;
-                try
-                {
-                    CreatedEventArgs<TickerDefinitionV2> args = GetCreatedEventArgs();
-                    args.Created = obj;
-                    args.Channel = channel;
-                    created(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "TickerDefinitionV2.FireCreatedEventIfSubscribed exception");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireChangedEventIfSubscribed(TickerDefinitionV2 obj, Channel channel)
-            {
-                EventHandler<ChangedEventArgs<TickerDefinitionV2>> changed = Changed;
-                if (changed == null) return;
-                try
-                {
-                    ChangedEventArgs<TickerDefinitionV2> args = GetChangedEventArgs();
-                    args.Changed = obj;
-                    args.Channel = channel;
-                    changed(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "TickerDefinitionV2.FireChangedEventIfSubscribed exception");
-                }
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void FireUpdatedEvent(TickerDefinitionV2 current, TickerDefinitionV2 previous, Channel channel)
-            {
-                try
-                {
-                    UpdatedEventArgs<TickerDefinitionV2> args = GetUpdatedEventArgs();
-                    args.Current = current;
-                    args.Previous = previous;
-                    args.Channel = channel;                    
-                    Updated(this, args);
-                }
-                catch (Exception e)
-                {
-                    SRTrace.Default.TraceError(e, "TickerDefinitionV2.FireUpdatedEvent exception");
-                }
-            }
-
-            #endregion
-            
-            private readonly Dictionary<TickerDefinitionV2.PKeyLayout, TickerDefinitionV2> objectsByKey = new Dictionary<TickerDefinitionV2.PKeyLayout, TickerDefinitionV2>();
-            
-            [ThreadStatic] private static TickerDefinitionV2 decodeTarget;
-
-            public unsafe void OnMessage(byte* ptr, int maxptr, int offset, Header hdr, long timestamp, Channel channel)
-            {
-                if (hdr.keylen != sizeof(TickerDefinitionV2.PKeyLayout))
-                {
-                    throw (new Exception(string.Format("Invalid MBUS Record: msg.keylen={0}, obj.keylen={1}", hdr.keylen, sizeof(TickerDefinitionV2.PKeyLayout))));
-                }           
-                
-                TickerDefinitionV2.PKeyLayout pkey = *(TickerDefinitionV2.PKeyLayout*)(ptr + offset + sizeof(Header)); 
-                TickerDefinitionV2 item;        
-                
-                if (!objectsByKey.TryGetValue(pkey, out item))
-                {       
-                    lock (objectsByKey)
-                    {
-                        if (!objectsByKey.TryGetValue(pkey, out item))
-                        {       
-                            item = new TickerDefinitionV2(pkey) {TimeRcvd = timestamp};
-                            unchecked { Formatter.Default.Decode(ptr + offset, item, ptr + maxptr); }
-                            
-                            FireCreatedEventIfSubscribed(item, channel);
-                            if (Updated != null)
-                            {
-                                FireUpdatedEvent(item, null, channel);
-                            }
-                            FireChangedEventIfSubscribed(item, channel);
-
-                            item.header.bits &= ~HeaderBits.FromCache;
-                            
-                            objectsByKey[pkey] = item;
-                            
-                            return;                                         
-                        }   
-                    }   
-                }
-                
-                if ((hdr.bits & HeaderBits.FromCache) == HeaderBits.FromCache) return;  
-
-                item.TimeRcvd = timestamp;
-                item.Invalidate();
-
-                if (Updated != null)
-                {
-                    if (decodeTarget == null) decodeTarget = new TickerDefinitionV2();
+                    if (decodeTarget == null) decodeTarget = new TickerDefinitionExt();
                     
                     unchecked { Formatter.Default.Decode(ptr + offset, decodeTarget, ptr + maxptr); }
 
@@ -4646,7 +4487,7 @@ namespace SpiderRock.DataFeed
          private readonly OptionExchPrintContainerCache optionExchPrintContainerCache = new OptionExchPrintContainerCache();
          private readonly OptionImpliedQuoteContainerCache optionImpliedQuoteContainerCache = new OptionImpliedQuoteContainerCache();
          private readonly OptionNbboQuoteContainerCache optionNbboQuoteContainerCache = new OptionNbboQuoteContainerCache();
-         private readonly OptionOpenInterestV2ContainerCache optionOpenInterestV2ContainerCache = new OptionOpenInterestV2ContainerCache();
+         private readonly OptionOpenInterestContainerCache optionOpenInterestContainerCache = new OptionOpenInterestContainerCache();
          private readonly OptionPrintContainerCache optionPrintContainerCache = new OptionPrintContainerCache();
          private readonly OptionPrint2ContainerCache optionPrint2ContainerCache = new OptionPrint2ContainerCache();
          private readonly OptionPrintMarkupContainerCache optionPrintMarkupContainerCache = new OptionPrintMarkupContainerCache();
@@ -4662,8 +4503,7 @@ namespace SpiderRock.DataFeed
          private readonly StockMarketSummaryContainerCache stockMarketSummaryContainerCache = new StockMarketSummaryContainerCache();
          private readonly StockPrintContainerCache stockPrintContainerCache = new StockPrintContainerCache();
          private readonly StockPrintMarkupContainerCache stockPrintMarkupContainerCache = new StockPrintMarkupContainerCache();
-         private readonly TickerDefinitionContainerCache tickerDefinitionContainerCache = new TickerDefinitionContainerCache();
-         private readonly TickerDefinitionV2ContainerCache tickerDefinitionV2ContainerCache = new TickerDefinitionV2ContainerCache();
+         private readonly TickerDefinitionExtContainerCache tickerDefinitionExtContainerCache = new TickerDefinitionExtContainerCache();
 
         #endregion
         
@@ -4683,7 +4523,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.OptionExchPrint, optionExchPrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionImpliedQuote, optionImpliedQuoteContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionNbboQuote, optionNbboQuoteContainerCache.OnMessage);
-                 frameHandler.OnMessage(MessageType.OptionOpenInterestV2, optionOpenInterestV2ContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.OptionOpenInterest, optionOpenInterestContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionPrint, optionPrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionPrint2, optionPrint2ContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.OptionPrintMarkup, optionPrintMarkupContainerCache.OnMessage);
@@ -4699,8 +4539,7 @@ namespace SpiderRock.DataFeed
                  frameHandler.OnMessage(MessageType.StockMarketSummary, stockMarketSummaryContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockPrint, stockPrintContainerCache.OnMessage);
                  frameHandler.OnMessage(MessageType.StockPrintMarkup, stockPrintMarkupContainerCache.OnMessage);
-                 frameHandler.OnMessage(MessageType.TickerDefinition, tickerDefinitionContainerCache.OnMessage);
-                 frameHandler.OnMessage(MessageType.TickerDefinitionV2, tickerDefinitionV2ContainerCache.OnMessage);
+                 frameHandler.OnMessage(MessageType.TickerDefinitionExt, tickerDefinitionExtContainerCache.OnMessage);
 
             }
         }
@@ -4718,7 +4557,7 @@ namespace SpiderRock.DataFeed
              optionExchPrintContainerCache.Clear();
              optionImpliedQuoteContainerCache.Clear();
              optionNbboQuoteContainerCache.Clear();
-             optionOpenInterestV2ContainerCache.Clear();
+             optionOpenInterestContainerCache.Clear();
              optionPrintContainerCache.Clear();
              optionPrint2ContainerCache.Clear();
              optionPrintMarkupContainerCache.Clear();
@@ -4734,8 +4573,7 @@ namespace SpiderRock.DataFeed
              stockMarketSummaryContainerCache.Clear();
              stockPrintContainerCache.Clear();
              stockPrintMarkupContainerCache.Clear();
-             tickerDefinitionContainerCache.Clear();
-             tickerDefinitionV2ContainerCache.Clear();
+             tickerDefinitionExtContainerCache.Clear();
 
         }
 
@@ -4941,22 +4779,22 @@ namespace SpiderRock.DataFeed
             remove  { lock (eventLock) { optionNbboQuoteContainerCache.Updated -= value; } }
         }
          
-        public event EventHandler<CreatedEventArgs<OptionOpenInterestV2>> OptionOpenInterestV2Created
+        public event EventHandler<CreatedEventArgs<OptionOpenInterest>> OptionOpenInterestCreated
         {
-            add     { lock (eventLock) { optionOpenInterestV2ContainerCache.Created += value; } }
-            remove  { lock (eventLock) { optionOpenInterestV2ContainerCache.Created -= value; } }
+            add     { lock (eventLock) { optionOpenInterestContainerCache.Created += value; } }
+            remove  { lock (eventLock) { optionOpenInterestContainerCache.Created -= value; } }
         }
         
-        public event EventHandler<ChangedEventArgs<OptionOpenInterestV2>> OptionOpenInterestV2Changed
+        public event EventHandler<ChangedEventArgs<OptionOpenInterest>> OptionOpenInterestChanged
         {
-            add     { lock (eventLock) { optionOpenInterestV2ContainerCache.Changed += value; } }
-            remove  { lock (eventLock) { optionOpenInterestV2ContainerCache.Changed -= value; } }
+            add     { lock (eventLock) { optionOpenInterestContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { optionOpenInterestContainerCache.Changed -= value; } }
         }
         
-        public event EventHandler<UpdatedEventArgs<OptionOpenInterestV2>> OptionOpenInterestV2Updated
+        public event EventHandler<UpdatedEventArgs<OptionOpenInterest>> OptionOpenInterestUpdated
         {
-            add     { lock (eventLock) { optionOpenInterestV2ContainerCache.Updated += value; } }
-            remove  { lock (eventLock) { optionOpenInterestV2ContainerCache.Updated -= value; } }
+            add     { lock (eventLock) { optionOpenInterestContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { optionOpenInterestContainerCache.Updated -= value; } }
         }
          
         public event EventHandler<CreatedEventArgs<OptionPrint>> OptionPrintCreated
@@ -5229,40 +5067,22 @@ namespace SpiderRock.DataFeed
             remove  { lock (eventLock) { stockPrintMarkupContainerCache.Updated -= value; } }
         }
          
-        public event EventHandler<CreatedEventArgs<TickerDefinition>> TickerDefinitionCreated
+        public event EventHandler<CreatedEventArgs<TickerDefinitionExt>> TickerDefinitionExtCreated
         {
-            add     { lock (eventLock) { tickerDefinitionContainerCache.Created += value; } }
-            remove  { lock (eventLock) { tickerDefinitionContainerCache.Created -= value; } }
+            add     { lock (eventLock) { tickerDefinitionExtContainerCache.Created += value; } }
+            remove  { lock (eventLock) { tickerDefinitionExtContainerCache.Created -= value; } }
         }
         
-        public event EventHandler<ChangedEventArgs<TickerDefinition>> TickerDefinitionChanged
+        public event EventHandler<ChangedEventArgs<TickerDefinitionExt>> TickerDefinitionExtChanged
         {
-            add     { lock (eventLock) { tickerDefinitionContainerCache.Changed += value; } }
-            remove  { lock (eventLock) { tickerDefinitionContainerCache.Changed -= value; } }
+            add     { lock (eventLock) { tickerDefinitionExtContainerCache.Changed += value; } }
+            remove  { lock (eventLock) { tickerDefinitionExtContainerCache.Changed -= value; } }
         }
         
-        public event EventHandler<UpdatedEventArgs<TickerDefinition>> TickerDefinitionUpdated
+        public event EventHandler<UpdatedEventArgs<TickerDefinitionExt>> TickerDefinitionExtUpdated
         {
-            add     { lock (eventLock) { tickerDefinitionContainerCache.Updated += value; } }
-            remove  { lock (eventLock) { tickerDefinitionContainerCache.Updated -= value; } }
-        }
-         
-        public event EventHandler<CreatedEventArgs<TickerDefinitionV2>> TickerDefinitionV2Created
-        {
-            add     { lock (eventLock) { tickerDefinitionV2ContainerCache.Created += value; } }
-            remove  { lock (eventLock) { tickerDefinitionV2ContainerCache.Created -= value; } }
-        }
-        
-        public event EventHandler<ChangedEventArgs<TickerDefinitionV2>> TickerDefinitionV2Changed
-        {
-            add     { lock (eventLock) { tickerDefinitionV2ContainerCache.Changed += value; } }
-            remove  { lock (eventLock) { tickerDefinitionV2ContainerCache.Changed -= value; } }
-        }
-        
-        public event EventHandler<UpdatedEventArgs<TickerDefinitionV2>> TickerDefinitionV2Updated
-        {
-            add     { lock (eventLock) { tickerDefinitionV2ContainerCache.Updated += value; } }
-            remove  { lock (eventLock) { tickerDefinitionV2ContainerCache.Updated -= value; } }
+            add     { lock (eventLock) { tickerDefinitionExtContainerCache.Updated += value; } }
+            remove  { lock (eventLock) { tickerDefinitionExtContainerCache.Updated -= value; } }
         }
 
         
