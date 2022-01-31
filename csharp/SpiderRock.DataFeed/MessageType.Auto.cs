@@ -27,7 +27,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType OptionExchPrint = 275;
  		public static readonly MessageType OptionImpliedQuote = 2300;
  		public static readonly MessageType OptionNbboQuote = 260;
- 		public static readonly MessageType OptionOpenInterestV2 = 2131;
+ 		public static readonly MessageType OptionOpenInterest = 2131;
  		public static readonly MessageType OptionPrint = 300;
  		public static readonly MessageType OptionPrint2 = 301;
  		public static readonly MessageType OptionPrintMarkup = 3026;
@@ -43,8 +43,7 @@ namespace SpiderRock.DataFeed
  		public static readonly MessageType StockMarketSummary = 445;
  		public static readonly MessageType StockPrint = 440;
  		public static readonly MessageType StockPrintMarkup = 3022;
- 		public static readonly MessageType TickerDefinition = 420;
- 		public static readonly MessageType TickerDefinitionV2 = 421;
+ 		public static readonly MessageType TickerDefinitionExt = 421;
 
 		internal static readonly MessageType CacheComplete = 4106;
  		internal static readonly MessageType GetExtCache = 4096;
@@ -66,7 +65,7 @@ namespace SpiderRock.DataFeed
  			isCore[OptionExchPrint] = true;
  			isCore[OptionImpliedQuote] = true;
  			isCore[OptionNbboQuote] = true;
- 			isCore[OptionOpenInterestV2] = true;
+ 			isCore[OptionOpenInterest] = true;
  			isCore[OptionPrint] = true;
  			isCore[OptionPrint2] = true;
  			isCore[OptionPrintMarkup] = true;
@@ -82,8 +81,7 @@ namespace SpiderRock.DataFeed
  			isCore[StockMarketSummary] = true;
  			isCore[StockPrint] = true;
  			isCore[StockPrintMarkup] = true;
- 			isCore[TickerDefinition] = true;
- 			isCore[TickerDefinitionV2] = true;
+ 			isCore[TickerDefinitionExt] = true;
 
 			
 			return isCore;
@@ -119,7 +117,7 @@ namespace SpiderRock.DataFeed
  			names[OptionExchPrint] = "OptionExchPrint";
  			names[OptionImpliedQuote] = "OptionImpliedQuote";
  			names[OptionNbboQuote] = "OptionNbboQuote";
- 			names[OptionOpenInterestV2] = "OptionOpenInterestV2";
+ 			names[OptionOpenInterest] = "OptionOpenInterest";
  			names[OptionPrint] = "OptionPrint";
  			names[OptionPrint2] = "OptionPrint2";
  			names[OptionPrintMarkup] = "OptionPrintMarkup";
@@ -135,8 +133,7 @@ namespace SpiderRock.DataFeed
  			names[StockMarketSummary] = "StockMarketSummary";
  			names[StockPrint] = "StockPrint";
  			names[StockPrintMarkup] = "StockPrintMarkup";
- 			names[TickerDefinition] = "TickerDefinition";
- 			names[TickerDefinitionV2] = "TickerDefinitionV2";
+ 			names[TickerDefinitionExt] = "TickerDefinitionExt";
 
 			
 			return names;

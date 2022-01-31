@@ -1347,7 +1347,7 @@ public:
 
 };
 
- class OptionOpenInterestV2
+ class OptionOpenInterest
 {
 public:
 	class Key
@@ -1400,7 +1400,7 @@ public:
 		header_ = *buf;
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
-		layout_ = *reinterpret_cast<OptionOpenInterestV2::Layout*>(ptr);
+		layout_ = *reinterpret_cast<OptionOpenInterest::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 
@@ -3189,114 +3189,7 @@ public:
 
 };
 
- class TickerDefinition
-{
-public:
-	class Key
-	{
-		TickerKey ticker_;
-		
-	public:
-		inline const TickerKey& ticker() const { return ticker_; }
-
-		inline size_t operator()(const Key& k) const
-		{
-			size_t hash_code = TickerKey()(k.ticker_);
-
-			return hash_code;
-		}
-		
-		inline bool operator()(const Key& a, const Key& b) const
-		{
-			return
-				a.ticker_ == b.ticker_;
-		}
-	};
-	
-
-private:
-	struct Layout
-	{
-		Key pkey;
-		SymbolType symbolType;
-		String<32> name;
-		Short indNum;
-		Short subNum;
-		Short grpNum;
-		PrimaryExch primaryExch;
-		String<6> symbol;
-		String<1> issueClass;
-		Int securityID;
-		String<4> sic;
-		String<10> cusip;
-		String<16> isin;
-		String<16> figi;
-		TapeCode tapeCode;
-		StkPriceInc stkPriceInc;
-		Float stkVolume;
-		Float futVolume;
-		Float optVolume;
-		String<8> exchString;
-		Int numOptions;
-		Int sharesOutstanding;
-		TimeMetric timeMetric;
-		String<2> tickPilotGroup;
-		TkDefSource tkDefSource;
-		DateTime timestamp;
-	};
-	
-	Header header_;
-	Layout layout_;
-	
-	int64_t time_received_;
-
-public:
-	inline Header& header() { return header_; }
-	inline const Key& pkey() const { return layout_.pkey; }
-	
-	inline void time_received(uint64_t value) { time_received_ = value; }
-	inline uint64_t time_received() const { return time_received_; }
-	
-	inline SymbolType symbolType() const { return layout_.symbolType; }
-	inline const String<32>& name() const { return layout_.name; }
-	inline Short indNum() const { return layout_.indNum; }
-	inline Short subNum() const { return layout_.subNum; }
-	inline Short grpNum() const { return layout_.grpNum; }
-	inline PrimaryExch primaryExch() const { return layout_.primaryExch; }
-	inline const String<6>& symbol() const { return layout_.symbol; }
-	inline const String<1>& issueClass() const { return layout_.issueClass; }
-	inline Int securityID() const { return layout_.securityID; }
-	inline const String<4>& sic() const { return layout_.sic; }
-	inline const String<10>& cusip() const { return layout_.cusip; }
-	inline const String<16>& isin() const { return layout_.isin; }
-	inline const String<16>& figi() const { return layout_.figi; }
-	inline TapeCode tapeCode() const { return layout_.tapeCode; }
-	inline StkPriceInc stkPriceInc() const { return layout_.stkPriceInc; }
-	inline Float stkVolume() const { return layout_.stkVolume; }
-	inline Float futVolume() const { return layout_.futVolume; }
-	inline Float optVolume() const { return layout_.optVolume; }
-	inline const String<8>& exchString() const { return layout_.exchString; }
-	inline Int numOptions() const { return layout_.numOptions; }
-	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
-	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
-	inline const String<2>& tickPilotGroup() const { return layout_.tickPilotGroup; }
-	inline TkDefSource tkDefSource() const { return layout_.tkDefSource; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
-	
-	inline void Decode(Header* buf) 
-	{
-		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
-		
-		layout_ = *reinterpret_cast<TickerDefinition::Layout*>(ptr);
-		ptr += sizeof(layout_);
-		
-
-	}
-
-};
-
- class TickerDefinitionV2
+ class TickerDefinitionExt
 {
 public:
 	class Key
@@ -3331,7 +3224,7 @@ private:
 		String<2> cntryOfIncorp;
 		Float parValue;
 		String<3> parValueCurrency;
-		PrimaryExchV2 primaryExch;
+		PrimaryExchange primaryExch;
 		String<4> mic;
 		String<4> micSeg;
 		String<12> symbol;
@@ -3387,7 +3280,7 @@ public:
 	inline const String<2>& cntryOfIncorp() const { return layout_.cntryOfIncorp; }
 	inline Float parValue() const { return layout_.parValue; }
 	inline const String<3>& parValueCurrency() const { return layout_.parValueCurrency; }
-	inline PrimaryExchV2 primaryExch() const { return layout_.primaryExch; }
+	inline PrimaryExchange primaryExch() const { return layout_.primaryExch; }
 	inline const String<4>& mic() const { return layout_.mic; }
 	inline const String<4>& micSeg() const { return layout_.micSeg; }
 	inline const String<12>& symbol() const { return layout_.symbol; }
@@ -3429,7 +3322,7 @@ public:
 		header_ = *buf;
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
 		
-		layout_ = *reinterpret_cast<TickerDefinitionV2::Layout*>(ptr);
+		layout_ = *reinterpret_cast<TickerDefinitionExt::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 

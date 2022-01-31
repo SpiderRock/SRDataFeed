@@ -84,7 +84,7 @@ namespace SpiderRock
 			None=0,
 			Exposure=1,
 			Improvement=2,
-			Faciliation=3,
+			Facilitation=3,
 			Solicitation=4,
 			Opening=5,
 			Closing=6,
@@ -423,18 +423,19 @@ namespace SpiderRock
  		enum class OTCTier : Enum 
 		{
 			None=0,
-			OTCQXUSPrem=1,
-			OTCQXUS=2,
-			OTCQXIntPrem=3,
-			OTCQXInt=4,
-			OTCQB=5,
-			OTCBBOnly=6,
-			PinkCurr=7,
-			PinkLim=8,
-			PinkNoInfo=9,
-			Grey=10,
-			Expert=11,
-			OTCBonds=12
+			OtcNoTier=1,
+			OTCQXUSPrem=2,
+			OTCQXUS=3,
+			OTCQXIntPrem=4,
+			OTCQXInt=5,
+			OTCQB=6,
+			OTCBBOnly=7,
+			PinkCurr=8,
+			PinkLim=9,
+			PinkNoInfo=10,
+			Grey=11,
+			Expert=12,
+			OTCBonds=13
 		};
 
  		enum class OpraMktType : Flag 
@@ -572,26 +573,7 @@ namespace SpiderRock
 			NormalExact=5
 		};
 
- 		enum class PrimaryExch : Enum 
-		{
-			None=0,
-			NYSE=1,
-			AMEX=2,
-			Nasdaq=3,
-			NasdaqSmallCap=4,
-			Otc=5,
-			Index=6,
-			ARCA=7,
-			CME=8,
-			CBOT=9,
-			NYMEX=10,
-			COMEX=11,
-			ICE=12,
-			BATS=13,
-			IEXG=14
-		};
-
- 		enum class PrimaryExchV2 : Enum 
+ 		enum class PrimaryExchange : Enum 
 		{
 			None=0,
 			NYSE=1,
@@ -751,7 +733,9 @@ namespace SpiderRock
 			OTC=18,
 			MPRL=19,
 			LTSE=20,
-			MEMX=21
+			MEMX=21,
+			MXIDX=22,
+			DJIDX=23
 		};
 
  		enum class StkPriceInc : Enum 
@@ -767,7 +751,9 @@ namespace SpiderRock
 			RegularSequence=1,
 			OutOfSequence=2,
 			VolumeOnly=3,
-			ExtendedHours=4
+			ExtendedHours=4,
+			OddLot=5,
+			OddLotExtendedHours=6
 		};
 
  		enum class SurfaceResult : Enum 
@@ -828,28 +814,28 @@ namespace SpiderRock
 			MutualFund=5,
 			ShortETF=6,
 			Future=7,
-			Bond=8
+			Bond=8,
+			DepReceipts=9,
+			PreferredSec=10,
+			PreferenceShare=11,
+			StructuredProd=12,
+			StapledSec=13,
+			TradeableRights=14,
+			Unit=15,
+			Warrant=16
 		};
 
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			Stable=1,
+			V7_Current=1,
 			Current=2,
 			V7_Stable=3,
 			V7_Latest=4,
 			V7_Stable_UAT=5,
-			V7_Latest_UAT=6,
+			V7_Current_UAT=6,
 			V7_Dev=7,
 			SysTest=8
-		};
-
- 		enum class TapeCode : Enum 
-		{
-			None=0,
-			A=1,
-			B=2,
-			C=3
 		};
 
  		enum class TickerSrc : Enum 
@@ -870,9 +856,9 @@ namespace SpiderRock
 			ARCA=13,
 			NYSE=14,
 			OTC=15,
-			GDAX=16,
-			BSTAMP=17,
-			KRAKEN=18,
+			TST1=16,
+			TST2=17,
+			TST3=18,
 			TST=19,
 			USR1=20,
 			USR2=21,
@@ -882,7 +868,8 @@ namespace SpiderRock
 			PHLX=25,
 			MIAX=26,
 			TSE=27,
-			DJI=28
+			DJI=28,
+			CBX=29
 		};
 
  		enum class TimeInForce : Enum 

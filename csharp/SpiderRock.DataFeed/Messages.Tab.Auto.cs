@@ -1013,7 +1013,7 @@ namespace SpiderRock.DataFeed
         }
     }
 
-    public partial class OptionOpenInterestV2
+    public partial class OptionOpenInterest
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
@@ -2153,78 +2153,7 @@ namespace SpiderRock.DataFeed
         }
     }
 
-    public partial class TickerDefinition
-    {
-		[ThreadStatic] private static StringBuilder recordBuilder;
-
-		public const string TabHeader = "ticker\tsymbolType\tname\tindNum\tsubNum\tgrpNum\tprimaryExch\tsymbol\tissueClass\tsecurityID\tsic\tcusip\tisin\tfigi\ttapeCode\tstkPriceInc\tstkVolume\tfutVolume\toptVolume\texchString\tnumOptions\tsharesOutstanding\ttimeMetric\ttickPilotGroup\ttkDefSource\ttimestamp";
-
-		public string TabRecord
-        {
-            get
-			{
-				if (recordBuilder == null)	recordBuilder = new StringBuilder(4096);
-				else						recordBuilder.Clear();
-
-				recordBuilder.Append(pkey.Ticker);
-				recordBuilder.Append("\t");
-
-				recordBuilder.Append(SymbolType);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Name);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(IndNum);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(SubNum);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(GrpNum);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(PrimaryExch);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Symbol);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(IssueClass);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(SecurityID);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Sic);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Cusip);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Isin);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(Figi);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(TapeCode);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(StkPriceInc);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(StkVolume);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(FutVolume);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(OptVolume);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(ExchString);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(NumOptions);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(SharesOutstanding);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(TimeMetric);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(TickPilotGroup);
-				recordBuilder.Append("\t");
-				recordBuilder.Append(TkDefSource);
-				recordBuilder.Append("\t");
-				recordBuilder.AppendInTabRecordFormat(Timestamp);
-
-				return recordBuilder.ToString();
-			}
-        }
-    }
-
-    public partial class TickerDefinitionV2
+    public partial class TickerDefinitionExt
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
