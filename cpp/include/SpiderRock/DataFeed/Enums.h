@@ -84,11 +84,12 @@ namespace SpiderRock
 			None=0,
 			Exposure=1,
 			Improvement=2,
-			Faciliation=3,
+			Facilitation=3,
 			Solicitation=4,
 			Opening=5,
 			Closing=6,
-			RFQ=7
+			RFQ=7,
+			Block=8
 		};
 
  		enum class BuySell : Enum 
@@ -573,26 +574,7 @@ namespace SpiderRock
 			NormalExact=5
 		};
 
- 		enum class PrimaryExch : Enum 
-		{
-			None=0,
-			NYSE=1,
-			AMEX=2,
-			Nasdaq=3,
-			NasdaqSmallCap=4,
-			Otc=5,
-			Index=6,
-			ARCA=7,
-			CME=8,
-			CBOT=9,
-			NYMEX=10,
-			COMEX=11,
-			ICE=12,
-			BATS=13,
-			IEXG=14
-		};
-
- 		enum class PrimaryExchV2 : Enum 
+ 		enum class PrimaryExchange : Enum 
 		{
 			None=0,
 			NYSE=1,
@@ -857,14 +839,6 @@ namespace SpiderRock
 			SysTest=8
 		};
 
- 		enum class TapeCode : Enum 
-		{
-			None=0,
-			A=1,
-			B=2,
-			C=3
-		};
-
  		enum class TickerSrc : Enum 
 		{
 			None=0,
@@ -895,7 +869,8 @@ namespace SpiderRock
 			PHLX=25,
 			MIAX=26,
 			TSE=27,
-			DJI=28
+			DJI=28,
+			CBX=29
 		};
 
  		enum class TimeInForce : Enum 

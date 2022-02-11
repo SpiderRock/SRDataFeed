@@ -115,8 +115,10 @@ namespace SpiderRock
 
 			OptAuction = 160,
 			OptOrder = 161,
-			OptOrderPhlx = 162,
 
+			OptOrderPhlx = 162,
+			OptOrderCboe = 163,
+			
 			ImbalanceArca = 170,
 			ImbalanceNyse = 171,
 			ImbalanceNasdaq = 172,
