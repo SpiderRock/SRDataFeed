@@ -181,15 +181,15 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, OptionOpenInterestV2 dest, byte* max)
+		public byte* Decode(byte* src, OptionOpenInterest dest, byte* max)
 		{
 			unchecked
 			{
-				if (src + sizeof(Header) + sizeof(OptionOpenInterestV2.PKeyLayout) + sizeof(OptionOpenInterestV2.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionOpenInterestV2");
+				if (src + sizeof(Header) + sizeof(OptionOpenInterest.PKeyLayout) + sizeof(OptionOpenInterest.BodyLayout) > max) throw new IOException("Max exceeded decoding OptionOpenInterest");
 				
 				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((OptionOpenInterestV2.PKeyLayout*) src); src += sizeof(OptionOpenInterestV2.PKeyLayout);
- 				dest.body = *((OptionOpenInterestV2.BodyLayout*) src); src += sizeof(OptionOpenInterestV2.BodyLayout);
+				dest.pkey.body = *((OptionOpenInterest.PKeyLayout*) src); src += sizeof(OptionOpenInterest.PKeyLayout);
+ 				dest.body = *((OptionOpenInterest.BodyLayout*) src); src += sizeof(OptionOpenInterest.BodyLayout);
 			
 				return src;
 			}
@@ -499,30 +499,15 @@ namespace SpiderRock.DataFeed.FrameHandling
 		}
  		
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, TickerDefinition dest, byte* max)
+		public byte* Decode(byte* src, TickerDefinitionExt dest, byte* max)
 		{
 			unchecked
 			{
-				if (src + sizeof(Header) + sizeof(TickerDefinition.PKeyLayout) + sizeof(TickerDefinition.BodyLayout) > max) throw new IOException("Max exceeded decoding TickerDefinition");
+				if (src + sizeof(Header) + sizeof(TickerDefinitionExt.PKeyLayout) + sizeof(TickerDefinitionExt.BodyLayout) > max) throw new IOException("Max exceeded decoding TickerDefinitionExt");
 				
 				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((TickerDefinition.PKeyLayout*) src); src += sizeof(TickerDefinition.PKeyLayout);
- 				dest.body = *((TickerDefinition.BodyLayout*) src); src += sizeof(TickerDefinition.BodyLayout);
-			
-				return src;
-			}
-		}
- 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public byte* Decode(byte* src, TickerDefinitionV2 dest, byte* max)
-		{
-			unchecked
-			{
-				if (src + sizeof(Header) + sizeof(TickerDefinitionV2.PKeyLayout) + sizeof(TickerDefinitionV2.BodyLayout) > max) throw new IOException("Max exceeded decoding TickerDefinitionV2");
-				
-				dest.header = *((Header*) src); src += sizeof(Header);
-				dest.pkey.body = *((TickerDefinitionV2.PKeyLayout*) src); src += sizeof(TickerDefinitionV2.PKeyLayout);
- 				dest.body = *((TickerDefinitionV2.BodyLayout*) src); src += sizeof(TickerDefinitionV2.BodyLayout);
+				dest.pkey.body = *((TickerDefinitionExt.PKeyLayout*) src); src += sizeof(TickerDefinitionExt.PKeyLayout);
+ 				dest.body = *((TickerDefinitionExt.BodyLayout*) src); src += sizeof(TickerDefinitionExt.BodyLayout);
 			
 				return src;
 			}

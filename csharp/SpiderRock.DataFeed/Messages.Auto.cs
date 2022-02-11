@@ -3748,39 +3748,39 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// OptionOpenInterestV2:2131
+	/// OptionOpenInterest:2131
 	/// </summary>
 	/// <remarks>
 	/// Open interest for each option series. Records are from the live OPRA feed.
 	/// </remarks>
 
-    public partial class OptionOpenInterestV2
+    public partial class OptionOpenInterest
     {
-		public OptionOpenInterestV2()
+		public OptionOpenInterest()
 		{
 		}
 		
-		public OptionOpenInterestV2(PKey pkey)
+		public OptionOpenInterest(PKey pkey)
 		{
 			this.pkey.body = pkey.body;
 		}
 		
-        public OptionOpenInterestV2(OptionOpenInterestV2 source)
+        public OptionOpenInterest(OptionOpenInterest source)
         {
             source.CopyTo(this);
         }
 		
-		internal OptionOpenInterestV2(PKeyLayout pkey)
+		internal OptionOpenInterest(PKeyLayout pkey)
 		{
 			this.pkey.body = pkey;
 		}
 
 		public override bool Equals(object other)
 		{
-			return Equals(other as OptionOpenInterestV2);
+			return Equals(other as OptionOpenInterest);
 		}
 		
-		public bool Equals(OptionOpenInterestV2 other)
+		public bool Equals(OptionOpenInterest other)
 		{
 			if (ReferenceEquals(other, null)) return false;
 			if (ReferenceEquals(other, this)) return true;
@@ -3798,7 +3798,7 @@ namespace SpiderRock.DataFeed
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(OptionOpenInterestV2 target)
+		public void CopyTo(OptionOpenInterest target)
         {			
 			target.header = header;
  			pkey.CopyTo(target.pkey);
@@ -3825,7 +3825,7 @@ namespace SpiderRock.DataFeed
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.OptionOpenInterestV2};
+        internal Header header = new Header {msgtype = MessageType.OptionOpenInterest};
  	
 		#region PKey
 		
@@ -3896,7 +3896,7 @@ namespace SpiderRock.DataFeed
 				return body.GetHashCode();
                 // ReSharper restore NonReadonlyFieldInGetHashCode
 			}
-        } // OptionOpenInterestV2.PKey        
+        } // OptionOpenInterest.PKey        
 
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
@@ -3926,7 +3926,7 @@ namespace SpiderRock.DataFeed
 					// ReSharper restore NonReadonlyFieldInGetHashCode
                 }
             }
-        } // OptionOpenInterestV2.PKeyLayout
+        } // OptionOpenInterest.PKeyLayout
 
 		// ReSharper disable once InconsistentNaming
         internal readonly PKey pkey = new PKey();
@@ -3960,7 +3960,7 @@ namespace SpiderRock.DataFeed
 		
 		#endregion	
 
-    } // OptionOpenInterestV2
+    } // OptionOpenInterest
 
 
 	/// <summary>
@@ -8972,40 +8972,39 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// TickerDefinition:420
+	/// TickerDefinitionExt:421
 	/// </summary>
 	/// <remarks>
-	/// TickerDefinition records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
-	/// TickerDefinition records are published nightly to the SpiderRock elastic cluster during product rotation windows.
+	/// TickerDefinitionExt (external) records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
 	/// </remarks>
 
-    public partial class TickerDefinition
+    public partial class TickerDefinitionExt
     {
-		public TickerDefinition()
+		public TickerDefinitionExt()
 		{
 		}
 		
-		public TickerDefinition(PKey pkey)
+		public TickerDefinitionExt(PKey pkey)
 		{
 			this.pkey.body = pkey.body;
 		}
 		
-        public TickerDefinition(TickerDefinition source)
+        public TickerDefinitionExt(TickerDefinitionExt source)
         {
             source.CopyTo(this);
         }
 		
-		internal TickerDefinition(PKeyLayout pkey)
+		internal TickerDefinitionExt(PKeyLayout pkey)
 		{
 			this.pkey.body = pkey;
 		}
 
 		public override bool Equals(object other)
 		{
-			return Equals(other as TickerDefinition);
+			return Equals(other as TickerDefinitionExt);
 		}
 		
-		public bool Equals(TickerDefinition other)
+		public bool Equals(TickerDefinitionExt other)
 		{
 			if (ReferenceEquals(other, null)) return false;
 			if (ReferenceEquals(other, this)) return true;
@@ -9023,7 +9022,7 @@ namespace SpiderRock.DataFeed
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(TickerDefinition target)
+		public void CopyTo(TickerDefinitionExt target)
         {			
 			target.header = header;
  			pkey.CopyTo(target.pkey);
@@ -9052,7 +9051,7 @@ namespace SpiderRock.DataFeed
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.TickerDefinition};
+        internal Header header = new Header {msgtype = MessageType.TickerDefinitionExt};
  	
 		#region PKey
 		
@@ -9123,7 +9122,7 @@ namespace SpiderRock.DataFeed
 				return body.GetHashCode();
                 // ReSharper restore NonReadonlyFieldInGetHashCode
 			}
-        } // TickerDefinition.PKey        
+        } // TickerDefinitionExt.PKey        
 
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
@@ -9153,329 +9152,7 @@ namespace SpiderRock.DataFeed
 					// ReSharper restore NonReadonlyFieldInGetHashCode
                 }
             }
-        } // TickerDefinition.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public SymbolType symbolType;
-			public FixedString32Layout name;
-			public short indNum;
-			public short subNum;
-			public short grpNum;
-			public PrimaryExch primaryExch;
-			public FixedString6Layout symbol;
-			public FixedString1Layout issueClass;
-			public int securityID;
-			public FixedString4Layout sic;
-			public FixedString10Layout cusip;
-			public FixedString16Layout isin;
-			public FixedString16Layout figi;
-			public TapeCode tapeCode;
-			public StkPriceInc stkPriceInc;
-			public float stkVolume;
-			public float futVolume;
-			public float optVolume;
-			public FixedString8Layout exchString;
-			public int numOptions;
-			public int sharesOutstanding;
-			public TimeMetric timeMetric;
-			public FixedString2Layout tickPilotGroup;
-			public TkDefSource tkDefSource;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedFixedLengthString<FixedString32Layout> name;
- 		private CachedFixedLengthString<FixedString6Layout> symbol;
- 		private CachedFixedLengthString<FixedString1Layout> issueClass;
- 		private CachedFixedLengthString<FixedString4Layout> sic;
- 		private CachedFixedLengthString<FixedString10Layout> cusip;
- 		private CachedFixedLengthString<FixedString16Layout> isin;
- 		private CachedFixedLengthString<FixedString16Layout> figi;
- 		private CachedFixedLengthString<FixedString8Layout> exchString;
- 		private CachedFixedLengthString<FixedString2Layout> tickPilotGroup;
-		
-
-
-		
-        public SymbolType SymbolType { get { return body.symbolType; } set { body.symbolType = value; } }
- 
-		/// <summary>Symbol name</summary>
-        public string Name { get { return CacheVar.AllocIfNull(ref name).Get(ref body.name, usn); } set { CacheVar.AllocIfNull(ref name).Set(value); body.name = value; } }
- 
-		/// <summary>industry code number</summary>
-        public short IndNum { get { return body.indNum; } set { body.indNum = value; } }
- 
-		/// <summary>sub-industry code number</summary>
-        public short SubNum { get { return body.subNum; } set { body.subNum = value; } }
- 
-		/// <summary>industry group code</summary>
-        public short GrpNum { get { return body.grpNum; } set { body.grpNum = value; } }
- 
-		
-        public PrimaryExch PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
- 
-		/// <summary>stock symbol</summary>
-        public string Symbol { get { return CacheVar.AllocIfNull(ref symbol).Get(ref body.symbol, usn); } set { CacheVar.AllocIfNull(ref symbol).Set(value); body.symbol = value; } }
- 
-		/// <summary>issue class of stock symbol.  if no issue class field will be blank.</summary>
-        public string IssueClass { get { return CacheVar.AllocIfNull(ref issueClass).Get(ref body.issueClass, usn); } set { CacheVar.AllocIfNull(ref issueClass).Set(value); body.issueClass = value; } }
- 
-		/// <summary>Security ID number</summary>
-        public int SecurityID { get { return body.securityID; } set { body.securityID = value; } }
- 
-		/// <summary>SIC code</summary>
-        public string Sic { get { return CacheVar.AllocIfNull(ref sic).Get(ref body.sic, usn); } set { CacheVar.AllocIfNull(ref sic).Set(value); body.sic = value; } }
- 
-		/// <summary>Cusip</summary>
-        public string Cusip { get { return CacheVar.AllocIfNull(ref cusip).Get(ref body.cusip, usn); } set { CacheVar.AllocIfNull(ref cusip).Set(value); body.cusip = value; } }
- 
-		/// <summary>ISIN code</summary>
-        public string Isin { get { return CacheVar.AllocIfNull(ref isin).Get(ref body.isin, usn); } set { CacheVar.AllocIfNull(ref isin).Set(value); body.isin = value; } }
- 
-		/// <summary>FIGI code</summary>
-        public string Figi { get { return CacheVar.AllocIfNull(ref figi).Get(ref body.figi, usn); } set { CacheVar.AllocIfNull(ref figi).Set(value); body.figi = value; } }
- 
-		/// <summary>None; A; B; C</summary>
-        public TapeCode TapeCode { get { return body.tapeCode; } set { body.tapeCode = value; } }
- 
-		/// <summary>Price increment: None; FullPenny; Nickle</summary>
-        public StkPriceInc StkPriceInc { get { return body.stkPriceInc; } set { body.stkPriceInc = value; } }
- 
-		/// <summary>trailing average daily stock volume</summary>
-        public float StkVolume { get { return body.stkVolume; } set { body.stkVolume = value; } }
- 
-		/// <summary>trailing average daily future volume</summary>
-        public float FutVolume { get { return body.futVolume; } set { body.futVolume = value; } }
- 
-		/// <summary>trailing average daily option volume</summary>
-        public float OptVolume { get { return body.optVolume; } set { body.optVolume = value; } }
- 
-		/// <summary>exchanges listing any options on this underlying</summary>
-        public string ExchString { get { return CacheVar.AllocIfNull(ref exchString).Get(ref body.exchString, usn); } set { CacheVar.AllocIfNull(ref exchString).Set(value); body.exchString = value; } }
- 
-		/// <summary>total number of listed options</summary>
-        public int NumOptions { get { return body.numOptions; } set { body.numOptions = value; } }
- 
-		/// <summary>symbol shares outstanding</summary>
-        public int SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
- 
-		/// <summary>trading time metric - 252 or 365 trading days or a weekly cycle type</summary>
-        public TimeMetric TimeMetric { get { return body.timeMetric; } set { body.timeMetric = value; } }
- 
-		/// <summary>SEC Tick Size Pilot Group: C = Quote/Trade in pennies, G1 = Quote in 0.05, trade in pennies, G2 = Quote/Trade = 0.05 with some exemptions, G3 = Quote/Trade in 0.05</summary>
-        public string TickPilotGroup { get { return CacheVar.AllocIfNull(ref tickPilotGroup).Get(ref body.tickPilotGroup, usn); } set { CacheVar.AllocIfNull(ref tickPilotGroup).Set(value); body.tickPilotGroup = value; } }
- 
-		/// <summary>Ticker definition source: None; Vendor; OTC; SR; Exchange</summary>
-        public TkDefSource TkDefSource { get { return body.tkDefSource; } set { body.tkDefSource = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // TickerDefinition
-
-
-	/// <summary>
-	/// TickerDefinitionV2:421
-	/// </summary>
-	/// <remarks>
-	/// TickerDefinitionV2 records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
-	/// TickerDefinitionV2 records are published nightly to the SpiderRock elastic cluster during product rotation windows.
-	/// </remarks>
-
-    public partial class TickerDefinitionV2
-    {
-		public TickerDefinitionV2()
-		{
-		}
-		
-		public TickerDefinitionV2(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public TickerDefinitionV2(TickerDefinitionV2 source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal TickerDefinitionV2(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as TickerDefinitionV2);
-		}
-		
-		public bool Equals(TickerDefinitionV2 other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(TickerDefinitionV2 target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.TickerDefinitionV2};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private TickerKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public TickerKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // TickerDefinitionV2.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public TickerKeyLayout ticker;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // TickerDefinitionV2.PKeyLayout
+        } // TickerDefinitionExt.PKeyLayout
 
 		// ReSharper disable once InconsistentNaming
         internal readonly PKey pkey = new PKey();
@@ -9493,7 +9170,7 @@ namespace SpiderRock.DataFeed
 			public FixedString2Layout cntryOfIncorp;
 			public float parValue;
 			public FixedString3Layout parValueCurrency;
-			public PrimaryExchV2 primaryExch;
+			public PrimaryExchange primaryExch;
 			public FixedString4Layout mic;
 			public FixedString4Layout micSeg;
 			public FixedString12Layout symbol;
@@ -9585,7 +9262,7 @@ namespace SpiderRock.DataFeed
         public string ParValueCurrency { get { return CacheVar.AllocIfNull(ref parValueCurrency).Get(ref body.parValueCurrency, usn); } set { CacheVar.AllocIfNull(ref parValueCurrency).Set(value); body.parValueCurrency = value; } }
  
 		
-        public PrimaryExchV2 PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
+        public PrimaryExchange PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
  
 		/// <summary>ISO Market Identification Code</summary>
         public string Mic { get { return CacheVar.AllocIfNull(ref mic).Get(ref body.mic, usn); } set { CacheVar.AllocIfNull(ref mic).Set(value); body.mic = value; } }
@@ -9695,7 +9372,7 @@ namespace SpiderRock.DataFeed
 		
 		#endregion	
 
-    } // TickerDefinitionV2
+    } // TickerDefinitionExt
 
 
 	#endregion
