@@ -33,7 +33,7 @@ namespace SpiderRock
 			OptionExchPrint = 275,
 			OptionImpliedQuote = 2300,
 			OptionNbboQuote = 260,
-			OptionOpenInterestV2 = 2131,
+			OptionOpenInterest = 2131,
 			OptionPrint = 300,
 			OptionPrint2 = 301,
 			OptionPrintMarkup = 3026,
@@ -49,8 +49,7 @@ namespace SpiderRock
 			StockMarketSummary = 445,
 			StockPrint = 440,
 			StockPrintMarkup = 3022,
-			TickerDefinition = 420,
-			TickerDefinitionV2 = 421,
+			TickerDefinitionExt = 421,
 			
 			CacheComplete = 4106,
 			GetExtCache = 4096,

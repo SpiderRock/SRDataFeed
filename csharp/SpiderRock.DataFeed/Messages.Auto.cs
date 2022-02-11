@@ -22,6 +22,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live future quote records from the listing exchange.  Each record contains up to four price levels and represents a live snapshot of the book for a specific future.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class FutureBookQuote
@@ -342,6 +343,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for each active futures market.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class FuturePrint
@@ -622,6 +624,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// FuturePrintMarkup records are created for all future prints
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class FuturePrintMarkup
@@ -923,6 +926,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// Live index levels and quotes including SpiderRock synthetic index levels and quotes.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class IndexQuote
@@ -1158,6 +1162,7 @@ namespace SpiderRock.DataFeed
 	/// Note that the underlier price (uPrc) will be the same for all options an underlier when CalcSource=Loop.  This is not true for CalcSource=Tick where uPrc will be the underlier price that prevailed when the option price changed.
 	/// If you are consuming multicast data and only want records with consistent uPrc values for all options you should ignore Tick records. Alternatively, you can use an independent underlier price source (our StockBookQuote feed or some other) and 'adjust' the values in this table to the new underlier value.
 	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automatically applies the appropriate underlier adjustments as records are being returned.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class LiveImpliedQuote
@@ -1521,6 +1526,7 @@ namespace SpiderRock.DataFeed
 	/// LiveSurfaceAtm (surfaceType = 'Live') records are computed and publish continuously during trading hours and represent a current best implied volatility market fit.
 	/// SurfaceType = 'PriorDay' records contain the `closing surface record from the prior trading period (usually from just before the last main session close).
 	/// SurfaceType = 'Live' records are published to the SpiderRock elastic cluster at 5 minute intervals.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class LiveSurfaceAtm
@@ -2200,6 +2206,7 @@ namespace SpiderRock.DataFeed
 	/// <remarks>
 	/// OptionCloseMark records are created immediately after the market close (clsMarkState=SRClose), when exchanges publish official marks (clsMarkState=ExchClose), and again during top of day rotation (clsMarkState=Final).  These records contain closing quotes and prices as well as markup details for all outright options.
 	/// OptionCloseMark records are published to the SpiderRock elastic cluster when clsMarkState=Final
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionCloseMark
@@ -2560,7 +2567,7 @@ namespace SpiderRock.DataFeed
 	/// OptionExchOrder:270
 	/// </summary>
 	/// <remarks>
-
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionExchOrder
@@ -2861,7 +2868,7 @@ namespace SpiderRock.DataFeed
 	/// OptionExchPrint:275
 	/// </summary>
 	/// <remarks>
-
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionExchPrint
@@ -3113,6 +3120,7 @@ namespace SpiderRock.DataFeed
 	/// Note that the underlier price (uPrc) will be the same for all options an underlier when CalcSource=Loop|Close.  This is not true for CalcSource=Tick where uPrc will be the underlier price that prevailed when the option price changed.
 	/// If you are consuming multicast data and only want records with consistent uPrc values for all options you should ignore Tick records. Alternatively, you can use an independent underlier price source (our StockBookQuote feed or some other) and 'adjust' the values in this table to the new underlier value.
 	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automatically applies the appropriate underlier adjustments as records are being returned.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionImpliedQuote
@@ -3460,6 +3468,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live option quote records from OPRA (equities) or the listing exchange (futures).  Each record contains up to two price levels and represents a live snapshot of the book for a specific option series.  There are typically 1mm+ records in this table if all ticker sources are enabled.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionNbboQuote
@@ -3748,39 +3757,40 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// OptionOpenInterestV2:2131
+	/// OptionOpenInterest:2131
 	/// </summary>
 	/// <remarks>
 	/// Open interest for each option series. Records are from the live OPRA feed.
+	/// VLanBridging: None
 	/// </remarks>
 
-    public partial class OptionOpenInterestV2
+    public partial class OptionOpenInterest
     {
-		public OptionOpenInterestV2()
+		public OptionOpenInterest()
 		{
 		}
 		
-		public OptionOpenInterestV2(PKey pkey)
+		public OptionOpenInterest(PKey pkey)
 		{
 			this.pkey.body = pkey.body;
 		}
 		
-        public OptionOpenInterestV2(OptionOpenInterestV2 source)
+        public OptionOpenInterest(OptionOpenInterest source)
         {
             source.CopyTo(this);
         }
 		
-		internal OptionOpenInterestV2(PKeyLayout pkey)
+		internal OptionOpenInterest(PKeyLayout pkey)
 		{
 			this.pkey.body = pkey;
 		}
 
 		public override bool Equals(object other)
 		{
-			return Equals(other as OptionOpenInterestV2);
+			return Equals(other as OptionOpenInterest);
 		}
 		
-		public bool Equals(OptionOpenInterestV2 other)
+		public bool Equals(OptionOpenInterest other)
 		{
 			if (ReferenceEquals(other, null)) return false;
 			if (ReferenceEquals(other, this)) return true;
@@ -3798,7 +3808,7 @@ namespace SpiderRock.DataFeed
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(OptionOpenInterestV2 target)
+		public void CopyTo(OptionOpenInterest target)
         {			
 			target.header = header;
  			pkey.CopyTo(target.pkey);
@@ -3825,7 +3835,7 @@ namespace SpiderRock.DataFeed
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.OptionOpenInterestV2};
+        internal Header header = new Header {msgtype = MessageType.OptionOpenInterest};
  	
 		#region PKey
 		
@@ -3896,7 +3906,7 @@ namespace SpiderRock.DataFeed
 				return body.GetHashCode();
                 // ReSharper restore NonReadonlyFieldInGetHashCode
 			}
-        } // OptionOpenInterestV2.PKey        
+        } // OptionOpenInterest.PKey        
 
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
@@ -3926,7 +3936,7 @@ namespace SpiderRock.DataFeed
 					// ReSharper restore NonReadonlyFieldInGetHashCode
                 }
             }
-        } // OptionOpenInterestV2.PKeyLayout
+        } // OptionOpenInterest.PKeyLayout
 
 		// ReSharper disable once InconsistentNaming
         internal readonly PKey pkey = new PKey();
@@ -3960,7 +3970,7 @@ namespace SpiderRock.DataFeed
 		
 		#endregion	
 
-    } // OptionOpenInterestV2
+    } // OptionOpenInterest
 
 
 	/// <summary>
@@ -3968,6 +3978,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for each active equity and future option series.  Quote markup represents quote that existed just prior to the print on the reporting exchange.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionPrint
@@ -4264,6 +4275,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for each active equity and future option series.  Quote markup represents quote that existed just prior to the print on the reporting exchange.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionPrint2
@@ -4596,6 +4608,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// OptionPrintMarkup records contain every option print along with quote, surface details at print time
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionPrintMarkup
@@ -5047,6 +5060,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains the up/dn underlier price slides used in OCC risk calculations.  Note that these values are computed by SpiderRock using similar methods but may not exactly match OCC values.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionRiskFactor
@@ -5337,6 +5351,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// SpiderRock normalized exchange product definitions.  Includes future, option, and spread definitions from a number of exchanges.  TickerDefinitions, RootDefinitions and CCodeDefinitions are consistent with these records.
+	/// VLanBridging: Down
 	/// </remarks>
 
     public partial class ProductDefinitionV2
@@ -5786,6 +5801,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// RootDefinition records are sourced from the listing exchange for future options and from OCC for US equity options.  Records are updated as SpiderRock receives changes.
+	/// VLanBridging: Down
 	/// </remarks>
 
     public partial class RootDefinition
@@ -6167,7 +6183,7 @@ namespace SpiderRock.DataFeed
 	/// SpdrAuctionState:690
 	/// </summary>
 	/// <remarks>
-
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class SpdrAuctionState
@@ -6402,6 +6418,7 @@ namespace SpiderRock.DataFeed
 			public SpdrKeyType secType;
 			public FixedString20Layout exchAuctionId;
 			public FixedString4Layout exchAuctionType;
+			public YesNo isTestAuction;
 			public AuctionState auctionState;
 			public NoticeShape auctionShape;
 			public AuctionType auctionType;
@@ -6464,6 +6481,9 @@ namespace SpiderRock.DataFeed
  
 		
         public string ExchAuctionType { get { return CacheVar.AllocIfNull(ref exchAuctionType).Get(ref body.exchAuctionType, usn); } set { CacheVar.AllocIfNull(ref exchAuctionType).Set(value); body.exchAuctionType = value; } }
+ 
+		/// <summary>test auction (should only respond from T.accnts)</summary>
+        public YesNo IsTestAuction { get { return body.isTestAuction; } set { body.isTestAuction = value; } }
  
 		
         public AuctionState AuctionState { get { return body.auctionState; } set { body.auctionState = value; } }
@@ -6569,6 +6589,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live spread quote records from the individual equity option exchanges.  Each record contains up to two price levels and represents a live snapshot of the book for a specific spread.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class SpreadBookQuote
@@ -6882,7 +6903,7 @@ namespace SpiderRock.DataFeed
 	/// SpreadExchOrder:520
 	/// </summary>
 	/// <remarks>
-
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class SpreadExchOrder
@@ -7243,6 +7264,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live equity quote records for all CQS/UQDF securities as well as US OTC equity securities, SpiderRock synthetic markets, and a number of major indexes.  Each record contains up to two price levels and represents a live snapshot of the book for a specific market.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockBookQuote
@@ -7536,6 +7558,7 @@ namespace SpiderRock.DataFeed
 	/// <remarks>
 	/// StockExchImbalanceV2 records contain live exchange closing auction imbalance details.  Imbalance information can be available from more than one exchange for each ticker.
 	/// Final StockExchImbalanceV2 records are published to the SpiderRock elastic cluster nightly after the auction close.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockExchImbalanceV2
@@ -7823,6 +7846,7 @@ namespace SpiderRock.DataFeed
 	/// <remarks>
 	/// StockImbalance records contain live exchange closing auction imbalance details.  Imbalance information in aggregated across exchanges with imbalance feeds.
 	/// Final StockImbalance records are published to the SpiderRock elastic cluster nightly after the auction close.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockImbalance
@@ -8084,6 +8108,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// These records represent live market summary snapshots for equity, index, and synthetic markets.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockMarketSummary
@@ -8372,6 +8397,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for CTS/UTDF markets as well as SpiderRock synthetic markets.  Records also incorporate some summary detail and closing mark information as well.
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockPrint
@@ -8668,6 +8694,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// StockPrintMarkup records are created/published for all stock prints
+	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockPrintMarkup
@@ -8972,40 +8999,40 @@ namespace SpiderRock.DataFeed
 
 
 	/// <summary>
-	/// TickerDefinition:420
+	/// TickerDefinitionExt:421
 	/// </summary>
 	/// <remarks>
-	/// TickerDefinition records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
-	/// TickerDefinition records are published nightly to the SpiderRock elastic cluster during product rotation windows.
+	/// TickerDefinitionExt (external) records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
+	/// VLanBridging: Down
 	/// </remarks>
 
-    public partial class TickerDefinition
+    public partial class TickerDefinitionExt
     {
-		public TickerDefinition()
+		public TickerDefinitionExt()
 		{
 		}
 		
-		public TickerDefinition(PKey pkey)
+		public TickerDefinitionExt(PKey pkey)
 		{
 			this.pkey.body = pkey.body;
 		}
 		
-        public TickerDefinition(TickerDefinition source)
+        public TickerDefinitionExt(TickerDefinitionExt source)
         {
             source.CopyTo(this);
         }
 		
-		internal TickerDefinition(PKeyLayout pkey)
+		internal TickerDefinitionExt(PKeyLayout pkey)
 		{
 			this.pkey.body = pkey;
 		}
 
 		public override bool Equals(object other)
 		{
-			return Equals(other as TickerDefinition);
+			return Equals(other as TickerDefinitionExt);
 		}
 		
-		public bool Equals(TickerDefinition other)
+		public bool Equals(TickerDefinitionExt other)
 		{
 			if (ReferenceEquals(other, null)) return false;
 			if (ReferenceEquals(other, this)) return true;
@@ -9023,7 +9050,7 @@ namespace SpiderRock.DataFeed
 		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(TickerDefinition target)
+		public void CopyTo(TickerDefinitionExt target)
         {			
 			target.header = header;
  			pkey.CopyTo(target.pkey);
@@ -9052,7 +9079,7 @@ namespace SpiderRock.DataFeed
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.TickerDefinition};
+        internal Header header = new Header {msgtype = MessageType.TickerDefinitionExt};
  	
 		#region PKey
 		
@@ -9123,7 +9150,7 @@ namespace SpiderRock.DataFeed
 				return body.GetHashCode();
                 // ReSharper restore NonReadonlyFieldInGetHashCode
 			}
-        } // TickerDefinition.PKey        
+        } // TickerDefinitionExt.PKey        
 
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
         internal struct PKeyLayout : IEquatable<PKeyLayout>
@@ -9153,329 +9180,7 @@ namespace SpiderRock.DataFeed
 					// ReSharper restore NonReadonlyFieldInGetHashCode
                 }
             }
-        } // TickerDefinition.PKeyLayout
-
-		// ReSharper disable once InconsistentNaming
-        internal readonly PKey pkey = new PKey();
-
-		#endregion
- 
-		#region Body
-		
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-		internal struct BodyLayout
-		{
-			public SymbolType symbolType;
-			public FixedString32Layout name;
-			public short indNum;
-			public short subNum;
-			public short grpNum;
-			public PrimaryExch primaryExch;
-			public FixedString6Layout symbol;
-			public FixedString1Layout issueClass;
-			public int securityID;
-			public FixedString4Layout sic;
-			public FixedString10Layout cusip;
-			public FixedString16Layout isin;
-			public FixedString16Layout figi;
-			public TapeCode tapeCode;
-			public StkPriceInc stkPriceInc;
-			public float stkVolume;
-			public float futVolume;
-			public float optVolume;
-			public FixedString8Layout exchString;
-			public int numOptions;
-			public int sharesOutstanding;
-			public TimeMetric timeMetric;
-			public FixedString2Layout tickPilotGroup;
-			public TkDefSource tkDefSource;
-			public DateTimeLayout timestamp;
-		}
-
-		// ReSharper disable once InconsistentNaming
-		internal BodyLayout body;
-		
-		private volatile int usn;
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { ++usn; }
-		
- 		private CachedFixedLengthString<FixedString32Layout> name;
- 		private CachedFixedLengthString<FixedString6Layout> symbol;
- 		private CachedFixedLengthString<FixedString1Layout> issueClass;
- 		private CachedFixedLengthString<FixedString4Layout> sic;
- 		private CachedFixedLengthString<FixedString10Layout> cusip;
- 		private CachedFixedLengthString<FixedString16Layout> isin;
- 		private CachedFixedLengthString<FixedString16Layout> figi;
- 		private CachedFixedLengthString<FixedString8Layout> exchString;
- 		private CachedFixedLengthString<FixedString2Layout> tickPilotGroup;
-		
-
-
-		
-        public SymbolType SymbolType { get { return body.symbolType; } set { body.symbolType = value; } }
- 
-		/// <summary>Symbol name</summary>
-        public string Name { get { return CacheVar.AllocIfNull(ref name).Get(ref body.name, usn); } set { CacheVar.AllocIfNull(ref name).Set(value); body.name = value; } }
- 
-		/// <summary>industry code number</summary>
-        public short IndNum { get { return body.indNum; } set { body.indNum = value; } }
- 
-		/// <summary>sub-industry code number</summary>
-        public short SubNum { get { return body.subNum; } set { body.subNum = value; } }
- 
-		/// <summary>industry group code</summary>
-        public short GrpNum { get { return body.grpNum; } set { body.grpNum = value; } }
- 
-		
-        public PrimaryExch PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
- 
-		/// <summary>stock symbol</summary>
-        public string Symbol { get { return CacheVar.AllocIfNull(ref symbol).Get(ref body.symbol, usn); } set { CacheVar.AllocIfNull(ref symbol).Set(value); body.symbol = value; } }
- 
-		/// <summary>issue class of stock symbol.  if no issue class field will be blank.</summary>
-        public string IssueClass { get { return CacheVar.AllocIfNull(ref issueClass).Get(ref body.issueClass, usn); } set { CacheVar.AllocIfNull(ref issueClass).Set(value); body.issueClass = value; } }
- 
-		/// <summary>Security ID number</summary>
-        public int SecurityID { get { return body.securityID; } set { body.securityID = value; } }
- 
-		/// <summary>SIC code</summary>
-        public string Sic { get { return CacheVar.AllocIfNull(ref sic).Get(ref body.sic, usn); } set { CacheVar.AllocIfNull(ref sic).Set(value); body.sic = value; } }
- 
-		/// <summary>Cusip</summary>
-        public string Cusip { get { return CacheVar.AllocIfNull(ref cusip).Get(ref body.cusip, usn); } set { CacheVar.AllocIfNull(ref cusip).Set(value); body.cusip = value; } }
- 
-		/// <summary>ISIN code</summary>
-        public string Isin { get { return CacheVar.AllocIfNull(ref isin).Get(ref body.isin, usn); } set { CacheVar.AllocIfNull(ref isin).Set(value); body.isin = value; } }
- 
-		/// <summary>FIGI code</summary>
-        public string Figi { get { return CacheVar.AllocIfNull(ref figi).Get(ref body.figi, usn); } set { CacheVar.AllocIfNull(ref figi).Set(value); body.figi = value; } }
- 
-		/// <summary>None; A; B; C</summary>
-        public TapeCode TapeCode { get { return body.tapeCode; } set { body.tapeCode = value; } }
- 
-		/// <summary>Price increment: None; FullPenny; Nickle</summary>
-        public StkPriceInc StkPriceInc { get { return body.stkPriceInc; } set { body.stkPriceInc = value; } }
- 
-		/// <summary>trailing average daily stock volume</summary>
-        public float StkVolume { get { return body.stkVolume; } set { body.stkVolume = value; } }
- 
-		/// <summary>trailing average daily future volume</summary>
-        public float FutVolume { get { return body.futVolume; } set { body.futVolume = value; } }
- 
-		/// <summary>trailing average daily option volume</summary>
-        public float OptVolume { get { return body.optVolume; } set { body.optVolume = value; } }
- 
-		/// <summary>exchanges listing any options on this underlying</summary>
-        public string ExchString { get { return CacheVar.AllocIfNull(ref exchString).Get(ref body.exchString, usn); } set { CacheVar.AllocIfNull(ref exchString).Set(value); body.exchString = value; } }
- 
-		/// <summary>total number of listed options</summary>
-        public int NumOptions { get { return body.numOptions; } set { body.numOptions = value; } }
- 
-		/// <summary>symbol shares outstanding</summary>
-        public int SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
- 
-		/// <summary>trading time metric - 252 or 365 trading days or a weekly cycle type</summary>
-        public TimeMetric TimeMetric { get { return body.timeMetric; } set { body.timeMetric = value; } }
- 
-		/// <summary>SEC Tick Size Pilot Group: C = Quote/Trade in pennies, G1 = Quote in 0.05, trade in pennies, G2 = Quote/Trade = 0.05 with some exemptions, G3 = Quote/Trade in 0.05</summary>
-        public string TickPilotGroup { get { return CacheVar.AllocIfNull(ref tickPilotGroup).Get(ref body.tickPilotGroup, usn); } set { CacheVar.AllocIfNull(ref tickPilotGroup).Set(value); body.tickPilotGroup = value; } }
- 
-		/// <summary>Ticker definition source: None; Vendor; OTC; SR; Exchange</summary>
-        public TkDefSource TkDefSource { get { return body.tkDefSource; } set { body.tkDefSource = value; } }
- 
-		
-        public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
-
-		
-		#endregion	
-
-    } // TickerDefinition
-
-
-	/// <summary>
-	/// TickerDefinitionV2:421
-	/// </summary>
-	/// <remarks>
-	/// TickerDefinitionV2 records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
-	/// TickerDefinitionV2 records are published nightly to the SpiderRock elastic cluster during product rotation windows.
-	/// </remarks>
-
-    public partial class TickerDefinitionV2
-    {
-		public TickerDefinitionV2()
-		{
-		}
-		
-		public TickerDefinitionV2(PKey pkey)
-		{
-			this.pkey.body = pkey.body;
-		}
-		
-        public TickerDefinitionV2(TickerDefinitionV2 source)
-        {
-            source.CopyTo(this);
-        }
-		
-		internal TickerDefinitionV2(PKeyLayout pkey)
-		{
-			this.pkey.body = pkey;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals(other as TickerDefinitionV2);
-		}
-		
-		public bool Equals(TickerDefinitionV2 other)
-		{
-			if (ReferenceEquals(other, null)) return false;
-			if (ReferenceEquals(other, this)) return true;
-			return pkey.Equals(other.pkey);
-		}
-		
-		public override int GetHashCode()
-		{
-			return pkey.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return TabRecord;
-		}
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void CopyTo(TickerDefinitionV2 target)
-        {			
-			target.header = header;
- 			pkey.CopyTo(target.pkey);
- 			target.body = body;
- 			target.Invalidate();
-
-        }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Clear()
-        {
-			pkey.Clear();
- 			Invalidate();
- 			body = new BodyLayout();
-
-        }
-
-		public long TimeRcvd { get; internal set; }
-		
-		public long TimeSent { get { return header.sentts; } }
-		
-		public SourceId SourceId { get { return header.sourceid; } }
-		
-		public byte SeqNum { get { return header.seqnum; } }
-
-		public PKey Key { get { return pkey; } }
-
-		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.TickerDefinitionV2};
- 	
-		#region PKey
-		
-		public sealed class PKey : IEquatable<PKey>, ICloneable
-		{
-			private TickerKey ticker;
-
-			// ReSharper disable once InconsistentNaming
-			internal PKeyLayout body;
-			
-			public PKey()					{ }
-			internal PKey(PKeyLayout body)	{ this.body = body; }
-			public PKey(PKey other)
-			{
-				if (other == null) throw new ArgumentNullException("other");
-				body = other.body;
-				ticker = other.ticker;
-				
-			}
-			
-			
-			public TickerKey Ticker
-			{
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] get { return ticker ?? (ticker = TickerKey.GetCreateTickerKey(body.ticker)); }
-				[MethodImpl(MethodImplOptions.AggressiveInlining)] set { body.ticker = value.Layout; ticker = value; }
-			}
-
-			public void Clear()
-			{
-				body = new PKeyLayout();
-				ticker = null;
-
-			}
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public void CopyTo(PKey target)
-			{
-				target.body = body;
-				target.ticker = ticker;
-
-			}
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public object Clone()
-			{
-				var target = new PKey(body);
-				target.ticker = ticker;
-
-				return target;
-			}
-			
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-				return Equals(obj as PKey);
-            }
-			
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKey other)
-			{
-				if (ReferenceEquals(null, other)) return false;
-				return body.Equals(other.body);
-			}
-			
-			public override int GetHashCode()
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return body.GetHashCode();
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-			}
-        } // TickerDefinitionV2.PKey        
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal struct PKeyLayout : IEquatable<PKeyLayout>
-        {
-			public TickerKeyLayout ticker;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool Equals(PKeyLayout other)
-            {
-                return	ticker.Equals(other.ticker);
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public override bool Equals(object obj)
-            {
-                return Equals((PKeyLayout) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-					// ReSharper disable NonReadonlyFieldInGetHashCode
-					var hashCode = ticker.GetHashCode();
-
-                    return hashCode;
-					// ReSharper restore NonReadonlyFieldInGetHashCode
-                }
-            }
-        } // TickerDefinitionV2.PKeyLayout
+        } // TickerDefinitionExt.PKeyLayout
 
 		// ReSharper disable once InconsistentNaming
         internal readonly PKey pkey = new PKey();
@@ -9493,7 +9198,7 @@ namespace SpiderRock.DataFeed
 			public FixedString2Layout cntryOfIncorp;
 			public float parValue;
 			public FixedString3Layout parValueCurrency;
-			public PrimaryExchV2 primaryExch;
+			public PrimaryExchange primaryExch;
 			public FixedString4Layout mic;
 			public FixedString4Layout micSeg;
 			public FixedString12Layout symbol;
@@ -9585,7 +9290,7 @@ namespace SpiderRock.DataFeed
         public string ParValueCurrency { get { return CacheVar.AllocIfNull(ref parValueCurrency).Get(ref body.parValueCurrency, usn); } set { CacheVar.AllocIfNull(ref parValueCurrency).Set(value); body.parValueCurrency = value; } }
  
 		
-        public PrimaryExchV2 PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
+        public PrimaryExchange PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
  
 		/// <summary>ISO Market Identification Code</summary>
         public string Mic { get { return CacheVar.AllocIfNull(ref mic).Get(ref body.mic, usn); } set { CacheVar.AllocIfNull(ref mic).Set(value); body.mic = value; } }
@@ -9695,7 +9400,7 @@ namespace SpiderRock.DataFeed
 		
 		#endregion	
 
-    } // TickerDefinitionV2
+    } // TickerDefinitionExt
 
 
 	#endregion
