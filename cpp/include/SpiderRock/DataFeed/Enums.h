@@ -88,7 +88,8 @@ namespace SpiderRock
 			Solicitation=4,
 			Opening=5,
 			Closing=6,
-			RFQ=7
+			RFQ=7,
+			Block=8
 		};
 
  		enum class BuySell : Enum 

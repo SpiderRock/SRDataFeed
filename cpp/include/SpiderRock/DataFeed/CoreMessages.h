@@ -2265,6 +2265,7 @@ private:
 		SpdrKeyType secType;
 		String<20> exchAuctionId;
 		String<4> exchAuctionType;
+		YesNo isTestAuction;
 		AuctionState auctionState;
 		NoticeShape auctionShape;
 		AuctionType auctionType;
@@ -2314,6 +2315,7 @@ public:
 	inline SpdrKeyType secType() const { return layout_.secType; }
 	inline const String<20>& exchAuctionId() const { return layout_.exchAuctionId; }
 	inline const String<4>& exchAuctionType() const { return layout_.exchAuctionType; }
+	inline YesNo isTestAuction() const { return layout_.isTestAuction; }
 	inline AuctionState auctionState() const { return layout_.auctionState; }
 	inline NoticeShape auctionShape() const { return layout_.auctionShape; }
 	inline AuctionType auctionType() const { return layout_.auctionType; }

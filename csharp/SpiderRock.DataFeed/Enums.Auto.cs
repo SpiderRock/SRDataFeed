@@ -16,7 +16,7 @@ namespace SpiderRock.DataFeed
  	public enum AuctionReason : byte { None=0,Open=1,Market=2,Halt=3,Closing=4,RegulatoryImbalance=5 };		
  	public enum AuctionState : byte { None=0,Start=1,Update=2,End=3 };		
  	public enum AuctionStatus : byte { None=0,WillRunOpenAndClose=1,WillRunInterest=2,WillNotRunImbalance=3,WillNotRunClsAuction=4 };		
- 	public enum AuctionType : byte { None=0,Exposure=1,Improvement=2,Facilitation=3,Solicitation=4,Opening=5,Closing=6,RFQ=7 };		
+ 	public enum AuctionType : byte { None=0,Exposure=1,Improvement=2,Facilitation=3,Solicitation=4,Opening=5,Closing=6,RFQ=7,Block=8 };		
  	public enum BuySell : byte { None=0,Buy=1,Sell=2 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2 };		
  	public enum CalcType : byte { Loop=0,Tick=1 };		

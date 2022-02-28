@@ -1576,7 +1576,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "srAuctionID\tsecKey_rt\tsecKey_ts\tsecKey_at\tsecKey_yr\tsecKey_mn\tsecKey_dy\tsecKey_xx\tsecKey_cp\tsecType\texchAuctionId\texchAuctionType\tauctionState\tauctionShape\tauctionType\tauctionExch\tauctionExDest\tauctionSide\tauctionSize\tauctionPrice\tisAuctionPriceValid\tauctionDuration\tauctionStartSize\tauctionStartPrice\tauctionStartTimestamp\tminResponseSize\tlimitType\tfirmType\tmemberMPID\tclientAccnt\totherDetail\tmatchedSize\tnumUpdates\tnumResponses\tbestResponseSize\tbestResponsePrice\tcumFillQuantity\tavgFillPrice\tmarketStatus\tsrcTimestamp\tnetTimestamp\tdgwTimestamp\ttimestamp\tLegs";
+		public const string TabHeader = "srAuctionID\tsecKey_rt\tsecKey_ts\tsecKey_at\tsecKey_yr\tsecKey_mn\tsecKey_dy\tsecKey_xx\tsecKey_cp\tsecType\texchAuctionId\texchAuctionType\tisTestAuction\tauctionState\tauctionShape\tauctionType\tauctionExch\tauctionExDest\tauctionSide\tauctionSize\tauctionPrice\tisAuctionPriceValid\tauctionDuration\tauctionStartSize\tauctionStartPrice\tauctionStartTimestamp\tminResponseSize\tlimitType\tfirmType\tmemberMPID\tclientAccnt\totherDetail\tmatchedSize\tnumUpdates\tnumResponses\tbestResponseSize\tbestResponsePrice\tcumFillQuantity\tavgFillPrice\tmarketStatus\tsrcTimestamp\tnetTimestamp\tdgwTimestamp\ttimestamp\tLegs";
 
 		public string TabRecord
         {
@@ -1595,6 +1595,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(ExchAuctionId);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(ExchAuctionType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IsTestAuction);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(AuctionState);
 				recordBuilder.Append("\t");
