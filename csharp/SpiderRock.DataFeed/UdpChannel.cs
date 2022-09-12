@@ -105,6 +105,16 @@
         ImbalanceNyse = 171,
         ImbalanceNasdaq = 172,
 
+		LiveImpliedQuote1 = 190,
+		LiveImpliedQuote2 = 191,
+		LiveImpliedQuote3 = 192,
+		LiveImpliedQuote4 = 193,
+
+		LiveImpliedQuoteCme = 194,
+		LiveImpliedQuoteCbot = 195,
+		LiveImpliedQuoteNymex = 196,
+		LiveImpliedQuoteComex = 197,
+
         UTPNbboQuote1 = 200,
         UTPNbboQuote2 = 201,
         UTPNbboQuote3 = 202,
