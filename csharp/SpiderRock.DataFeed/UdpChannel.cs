@@ -101,6 +101,8 @@
         OptOrder = 161,
         OptOrderPhlx = 162,
 
+        OptOrderMiax = 167,
+
         ImbalanceArca = 170,
         ImbalanceNyse = 171,
         ImbalanceNasdaq = 172,
