@@ -1,173 +1,206 @@
-﻿using System;
+﻿#define MULTI_CHANNEL_THREAD_GROUPS
+#define TRACK_LATENCIES
+
+using System;
 using System.Net;
-using SpiderRock.DataFeed;
+using SpiderRock.SpiderStream;
+using SpiderRock.SpiderStream.Diagnostics;
 
-namespace ServerExample
+namespace ServerExample;
+
+internal class Program
 {
-    internal class Program
+    private static void Main()
     {
-        private static void Main()
+        MbusClient mbusClient = null;
+
+        try
         {
-            SRDataFeedEngine engine = null;
+            /////////////////////////////////////////////
+            // Instantiate and configure a MBUS client
 
-            try
+            mbusClient = new MbusClient
             {
-                /////////////////////////////////////////////
-                // Instantiate and configure a new engine
+                // if set, will be implicitly used when creating channel thread groups
+                LocalInterface = IPAddress.Parse("NIC_IPv4_ADDRESS"),
 
-                engine = new SRDataFeedEngine
-                {
-                    // TODO: Substitute the address of the adapter
+                //////////////////////////////////////////////////////////
+                // Cache requests
 
-                    IFAddress = IPAddress.Parse("YOUR.LOCAL.ADAPTER.ADDRESS"),
+                // SpiderRock will assign you an API key to use for
+                // retrieving cache data (late joins).  If cache data is
+                // unavailable processing will continue with a 30 second delay
+                ApiKey = "ASSIGNED_API_KEY",
 
-                    // Protocol is set to UDP by default but can be switched to DBL(Myricom)
-                    //Protocol = Protocol.DBL,
+                //////////////////////////////////////////////////////////
+                // Logging
 
-                    // Channel subscriptions.  A dedicated thread is used
-                    // to process incoming messages when Protocol = DBL
+                // Default: LogBaseDirectory = @"C:\SRLog"
+                // Default: LogToConsole = true
 
-                    Channels = new[]
-                    {
-                        UdpChannel.OptNbboQuote1,
-                        UdpChannel.OptNbboQuote2,
+                //////////////////////////////////////////////////////////
+                // Performance tuning 
 
-                        UdpChannel.StkNbboQuote1,
-                        UdpChannel.StkNbboQuote2,
+                // For maximum performance, we recommend the following settings:
 
-                        UdpChannel.OptNbboQuote3,
-                        UdpChannel.OptNbboQuote4,
+                // in runtimeconfig.template.json (preset this way for this project):
 
-                        UdpChannel.StkNbboQuote3,
-                        UdpChannel.StkNbboQuote4
-                    },
+                //  "configProperties": {
+                //      "System.GC.Server": true,
+                //      "System.GC.HeapCount": 12,
+                //      "System.GC.CpuGroup":  true
+                //  }
 
-                    // Alternatively, it's possible to assign sets of channels to 
-                    // dedicated threads by creating channel thread groups.
+                // LatencyMode = GCLatencyMode.SustainedLowLatency (default)
+            };
 
-                    //ChannelThreadGroups = new[]
-                    //{
-                    //    new DblChannelThreadGroup
-                    //    {
-                    //        UdpChannel.OptNbboQuote1,
-                    //        UdpChannel.OptNbboQuote2,
+            //////////////////////////////////////////////////////////
+            // Parallel processing / load distribution
 
-                    //        UdpChannel.StkNbboQuote1,
-                    //        UdpChannel.StkNbboQuote2
-                    //    },
+            // MbusClient allows for sets of mutually exclusive channels to be
+            // assigned to a worker thread which is termed a channel thread group.
+            // The MbusClient.AddChannelThreadGroup(...) method overloads
+            // are the mechanism for doing so
 
-                    //    new DblChannelThreadGroup
-                    //    {
-                    //        UdpChannel.OptNbboQuote3,
-                    //        UdpChannel.OptNbboQuote4,
+#if MULTI_CHANNEL_THREAD_GROUPS
+            mbusClient.AddChannelThreadGroup("Opt/Stk[ABCD]",
+                 MbusChannel.OptNbboQuoteA,
+                 MbusChannel.OptNbboQuoteB,
+                 MbusChannel.OptNbboQuoteC,
+                 MbusChannel.OptNbboQuoteD,
+                 MbusChannel.StkNbboQuoteABCD);
 
-                    //        UdpChannel.StkNbboQuote3,
-                    //        UdpChannel.StkNbboQuote4
-                    //    },
+            mbusClient.AddChannelThreadGroup("Opt/Stk[EFGH]",
+                MbusChannel.OptNbboQuoteE,
+                MbusChannel.OptNbboQuoteF,
+                MbusChannel.OptNbboQuoteG,
+                MbusChannel.OptNbboQuoteH,
+                MbusChannel.StkNbboQuoteEFGH);
 
-                    //    new UdpChannelThreadGroup
-                    //    {
-                    //        UdpChannel.ImpliedQuoteNmsLoop
-                    //    }
+            mbusClient.AddChannelThreadGroup("Opt[MTX]",
+                MbusChannel.OptNbboQuoteM,
+                MbusChannel.OptNbboQuoteT,
+                MbusChannel.OptNbboQuoteX1,
+                MbusChannel.OptNbboQuoteX2,
+                MbusChannel.OptNbboQuoteX3,
+                MbusChannel.OptNbboQuoteX4);
+#else
+            engine.AddChannelThreadGroup("Opt[A-HMTX]/Stk[A-H]",
+                MbusChannel.OptNbboQuoteA,
+                MbusChannel.OptNbboQuoteB,
+                MbusChannel.OptNbboQuoteC,
+                MbusChannel.OptNbboQuoteD,
+                MbusChannel.OptNbboQuoteE,
+                MbusChannel.OptNbboQuoteF,
+                MbusChannel.OptNbboQuoteG,
+                MbusChannel.OptNbboQuoteH,
+                MbusChannel.OptNbboQuoteM,
+                MbusChannel.OptNbboQuoteT,
+                MbusChannel.OptNbboQuoteX1,
+                MbusChannel.OptNbboQuoteX2,
+                MbusChannel.OptNbboQuoteX3,
+                MbusChannel.OptNbboQuoteX4,
+                MbusChannel.StkNbboQuoteABCD,
+                MbusChannel.StkNbboQuoteEFGH);
+#endif
+            //SRTrace.AggregateEventFrequency = TimeSpan.FromSeconds(10);
 
-                    //},
+            //////////////////////////////////
+            // Configuring diagnostic tracing
 
-                    //////////////////////////////////////////////////////////
-                    // Logging
+            // SpiderRock uses .NET's native tracing mechanisms from the 
+            // System.Diagnostics namespace so any built-in TraceListener can be 
+            // used along with a few SpiderRock's custom ones.
 
-                    // Default: LogBaseDirectory = @"C:\SRLog"
-                    // Default: LogToConsole = true
+            // Default: SRTrace.GlobalSwitch = new SourceSwitch("SRTraceSource (All)") {Level = SourceLevels.All};
 
-                    //////////////////////////////////////////////////////////
-                    // GC configuration 
+            // The frequency with which summary tables are logged can be adjusted like so:
+            // Default: SRTrace.AggregateEventFrequency = TimeSpan.FromMinutes(1);
 
-                    // By default, the engine optimizes GC for sustained low latency.
-                    // Together with the App.config settings (below) this can greatly
-                    // improve the responsiveness of the application by minimizing "jitter" 
-                    // at the expense of memory.  If memory is a consideration, then 
-                    // the engine and the App.config should be adjusted accordingly.
+            // The example above configures all trace sources uniformly.  However, each 
+            // trace source (SRTrace.Default, SRTrace.KeyErrors, SRTrace.Net.Channels, 
+            // SRTrace.Net.UDP.FastSockets, SRTrace.NetTcp) can be configured independently. For example, 
+            // let's send all critical Mellanox related diagnostic information to the EventViewer:
+            //
+            // SRTrace.Net.UDP.FastSockets.Switch = new SourceSwitch("SpiderRockCritical") {Level = SourceLevels.Critical};
+            // SRTrace.Net.UDP.FastSockets.Listeners.Add(new EventLogTraceListener(new EventLog("MyCompany")));
+            // 
+            // alternatively, via app.config:
+            //
+            // <configuration>
+            //   <system.diagnostics>
+            //     <sources>
+            //       <source name="SpiderRock.Net.UDP.FastSockets"
+            //               switchName="SpiderRockCritical"
+            //               switchType="System.Diagnostics.SourceSwitch" >
+            //         <listeners>
+            //           <clear/>
+            //           <add name="eventLogListener"
+            //             type="System.Diagnostics.EventLogTraceListener"
+            //             initializeData="MyCompany"
+            //             traceOutputOptions="ProcessId, DateTime, Callstack" />
+            //         </listeners>
+            //       </source>
+            //     </sources>
+            //     <switches>
+            //       <add name="SpiderRockCritical" value="Critical" />
+            //     </switches>
+            //   </system.diagnostics>
+            // </configuration>
 
-                    //<configuration><runtime><gcServer enabled="true" /></runtime></configuration>
 
-                    // Default: LatencyMode = GCLatencyMode.SustainedLowLatency
-                };
+#if TRACK_LATENCIES
+            ///////////////////////////////////////////////////
+            // Latency tracking can be enabled with the help
+            // of the LatencyTracker type.  Keep in mind that
+            // there's a slight performance overhead associated
+            // tracking latencies.  SRBenchmark (the Benchmark
+            // project) can assist with establishing some
+            // baseline latency characteristics
 
-                //////////////////////////////////
-                // Configuring diagnostic tracing
+            using LatencyTracker latencyTracker = new();
+            latencyTracker.Track(mbusClient.StockBookQuote);
+            latencyTracker.Track(mbusClient.StockPrint, TimeSpan.FromMilliseconds(1));
+            latencyTracker.Track(mbusClient.IndexQuote);
+            latencyTracker.Track(mbusClient.OptionNbboQuote);
+            latencyTracker.Track(mbusClient.OptionPrint, TimeSpan.FromMilliseconds(1));
+#endif
 
-                // SpiderRock uses .NET's native tracing mechanisms from the 
-                // System.Diagnostics namespace so any built-in TraceListener can be 
-                // used along with a few SpiderRock's custom ones.
+            ///////////////////////////////////////////////////
+            // Attach event handlers before starting the engine
 
-                // Default: SRTrace.GlobalSwitch = new SourceSwitch("SRTraceSource (All)") {Level = SourceLevels.All};
+            // Attaching event handlers also drives which message types
+            // will be tuned into and requested from the cache
 
-                // The frequency with which summary tables are logged can be adjusted like so:
-                // Default: SRTrace.AggregateEventFrequency = TimeSpan.FromMinutes(1);
+            // Attach by passing IMessageEvents<T> into the constructor
+            var stockBookQuoteHandler = new StockBookQuoteHandler(mbusClient.StockBookQuote);
 
-                // The example above configures all trace sources uniformly.  However, each 
-                // trace source (SRTrace.Default, SRTrace.KeyErrors, SRTrace.NetChannels, 
-                // SRTrace.NetDbl, SRTrace.NetTcp) can be configured independently. For example, 
-                // let's send all critical DBL related diagnostic information to the EventViewer:
-                //
-                // SRTrace.NetDbl.Switch = new SourceSwitch("SpiderRockCritical") {Level = SourceLevels.Critical};
-                // SRTrace.NetDbl.Listeners.Add(new EventLogTraceListener(new EventLog("MyCompany")));
-                // 
-                // alternatively, via app.config:
-                //
-                // <configuration>
-                //   <system.diagnostics>
-                //     <sources>
-                //       <source name="SpiderRock.Net.DBL"
-                //               switchName="SpiderRockCritical"
-                //               switchType="System.Diagnostics.SourceSwitch" >
-                //         <listeners>
-                //           <clear/>
-                //           <add name="eventLogListener"
-                //             type="System.Diagnostics.EventLogTraceListener"
-                //             initializeData="MyCompany"
-                //             traceOutputOptions="ProcessId, DateTime, Callstack" />
-                //         </listeners>
-                //       </source>
-                //     </sources>
-                //     <switches>
-                //       <add name="SpiderRockCritical" value="Critical" />
-                //     </switches>
-                //   </system.diagnostics>
-                // </configuration>
+            // Attach the event handlers externally
+            var optionBookQuoteHandler = new OptionBookQuoteHandler();
+            mbusClient.OptionNbboQuote.Created += optionBookQuoteHandler.OnCreate;
+            mbusClient.OptionNbboQuote.Changed += optionBookQuoteHandler.OnChange;
 
-                /////////////////////////////////////////////
-                // Attach handlers before starting the engine
+            // This activates the client by first initiating a cache request
+            // and downloading all of the messages that were subscribed.  Once
+            // completed, multicast groups are joined and the processing of
+            // live data commences.  In parallel, another cache request
+            // is initiated to ensure that no messages were missed in between
+            // the first cache request and the initialization of the realtime
+            // feed.
+            mbusClient.Start();
 
-                var stockBookQuoteHandler = new StockBookQuoteHandler();
-                engine.StockBookQuoteCreated += stockBookQuoteHandler.OnCreate;
-                engine.StockBookQuoteUpdated += stockBookQuoteHandler.OnUpdate;
-                engine.StockBookQuoteChanged += stockBookQuoteHandler.OnChange;
-
-                var optionBookQuoteHandler = new OptionBookQuoteHandler();
-                engine.OptionNbboQuoteCreated += optionBookQuoteHandler.OnCreate;
-                engine.OptionNbboQuoteUpdated += optionBookQuoteHandler.OnUpdate;
-                engine.OptionNbboQuoteChanged += optionBookQuoteHandler.OnChange;
-
-                // This will start the engine and request all of the state corresponding
-                // to the message types being requested
-                engine.StartWith(MessageType.OptionNbboQuote, MessageType.StockBookQuote);
-
-                // Alternatively, start without cache data
-                // engine.Start();
-
-                Console.ReadLine();
-            }
-            catch (Exception e)
+            Console.ReadLine();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Engine failed to start: {e}");
+            Console.ReadLine();
+        }
+        finally
+        {
+            if (mbusClient != null)
             {
-                Console.Error.WriteLine("Engine failed to start: {0}", e);
-                Console.ReadLine();
-            }
-            finally
-            {
-                if (engine != null)
-                {
-                    engine.Dispose();
-                }
+                mbusClient.Dispose();
             }
         }
     }

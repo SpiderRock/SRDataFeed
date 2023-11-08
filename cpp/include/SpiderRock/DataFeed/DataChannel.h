@@ -117,8 +117,6 @@ namespace SpiderRock
 			OptOrder = 161,
 			OptOrderPhlx = 162,
 
-			OptOrderMiax = 167,
-
 			ImbalanceArca = 170,
 			ImbalanceNyse = 171,
 			ImbalanceNasdaq = 172,
@@ -132,7 +130,7 @@ namespace SpiderRock
 			LiveImpliedQuoteCbot = 195,
 			LiveImpliedQuoteNymex = 196,
 			LiveImpliedQuoteComex = 197,
-
+			
 			UTPNbboQuote1 = 200,
 			UTPNbboQuote2 = 201,
 			UTPNbboQuote3 = 202,

@@ -2,7 +2,7 @@
 //
 // Machine generated.  Do not edit directly.
 //
-// Copyright 2014, SpiderRock Technology
+// Copyright 2023, SpiderRock Technology
 //
 // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -19,10 +19,11 @@ namespace SpiderRock
 
 		enum class AdjConvention : Enum 
 		{
-			Original=0,
-			OSI=1,
-			SpcOnly=2,
-			OSIAlt=3
+			None=0,
+			Original=1,
+			OSI=2,
+			SpcOnly=3,
+			OSIAlt=4
 		};
 
  		enum class AssetType : Enum 
@@ -88,7 +89,8 @@ namespace SpiderRock
 			Solicitation=4,
 			Opening=5,
 			Closing=6,
-			RFQ=7
+			RFQ=7,
+			Block=8
 		};
 
  		enum class BuySell : Enum 
@@ -103,12 +105,6 @@ namespace SpiderRock
 			None=0,
 			Tick=1,
 			Loop=2
-		};
-
- 		enum class CalcType : Enum 
-		{
-			Loop=0,
-			Tick=1
 		};
 
  		enum class CallPut : Enum 
@@ -257,24 +253,6 @@ namespace SpiderRock
 			BrkrDlrCust=8
 		};
 
- 		enum class FitPath : Enum 
-		{
-			None=0,
-			VolUPrc=2,
-			VolUPrcDefault=3,
-			VolSDiv=4,
-			VolSDivDefault=5,
-			BaseDefault=6,
-			BaseDefaultAdj=7,
-			HistVol=8,
-			Default=9,
-			NormalMid=10,
-			WideMid=11,
-			WideGap=12,
-			WideBound=13,
-			AtmRange=14
-		};
-
  		enum class FutExch : Enum 
 		{
 			None=0,
@@ -320,29 +298,14 @@ namespace SpiderRock
 			PricingError=3
 		};
 
- 		enum class LiveSurfaceType : Enum 
+ 		enum class MLinkStreamState : Enum 
 		{
 			None=0,
-			Live=1,
-			Hist=2,
-			PriorDay=3,
-			Skew=4,
-			LiveSkew=5,
-			LiveAdj=6,
-			Interp=7,
-			Test1=8,
-			Test2=9,
-			Test3=10,
-			LiveC=11,
-			BaseC=12,
-			PrevC=13,
-			HistC=14,
-			InterpC=15,
-			Default=16,
-			BaseEMA_1=17,
-			BaseEMA_2=18,
-			BaseEMA_3=19,
-			Archive=20
+			Begin=1,
+			Active=2,
+			Complete=3,
+			Replaced=4,
+			Terminated=5
 		};
 
  		enum class MarkSource : Enum 
@@ -389,9 +352,10 @@ namespace SpiderRock
 
  		enum class MoneynessType : Enum 
 		{
-			PctStd=0,
-			LogStd=1,
-			NormStd=2
+			None=0,
+			PctStd=1,
+			LogStd=2,
+			NormStd=3
 		};
 
  		enum class Multihedge : Enum 
@@ -400,7 +364,8 @@ namespace SpiderRock
 			Simple=1,
 			Complex=2,
 			AllCash=3,
-			Binary=4
+			Binary=4,
+			Fragment=5
 		};
 
  		enum class NoticeShape : Enum 
@@ -477,7 +442,8 @@ namespace SpiderRock
 			SDRK=21,
 			DQTE=22,
 			EMLD=23,
-			CFE=24
+			CFE=24,
+			MEMX=25
 		};
 
  		enum class OptPriceInc : Enum 
@@ -559,8 +525,9 @@ namespace SpiderRock
 
  		enum class PriceQuoteType : Enum 
 		{
-			Price=0,
-			Vol=1
+			None=0,
+			Price=1,
+			Vol=2
 		};
 
  		enum class PricingModel : Enum 
@@ -571,6 +538,13 @@ namespace SpiderRock
 			FutureExact=3,
 			NormalApprox=4,
 			NormalExact=5
+		};
+
+ 		enum class PricingSource : Enum 
+		{
+			None=0,
+			Native=1,
+			SyntheticExpiry=2
 		};
 
  		enum class PrimaryExchange : Enum 
@@ -681,24 +655,51 @@ namespace SpiderRock
 			Ask=3
 		};
 
+ 		enum class PrtType : Enum 
+		{
+			None=0,
+			CANC=1,
+			OSEQ=2,
+			CNCL=3,
+			LATE=4,
+			CNCO=5,
+			OPEN=6,
+			CNOL=7,
+			OPNL=8,
+			AUTO=9,
+			REOP=10,
+			ISOI=11,
+			SLAN=12,
+			SLAI=13,
+			SLCN=14,
+			SCLI=15,
+			SLFT=16,
+			MLET=17,
+			MLAT=18,
+			MLCT=19,
+			MLFT=20,
+			MESL=21,
+			TLAT=22,
+			MASL=23,
+			MFSL=24,
+			TLET=25,
+			TLCT=26,
+			TLFT=27,
+			TESL=28,
+			TASL=29,
+			TFSL=30,
+			CBMO=31,
+			MCTP=32,
+			EXHT=33
+		};
+
  		enum class RunStatus : Enum 
 		{
 			None=0,
 			Prod=1,
-			UAT=2,
-			Beta=3,
-			Demo=4,
-			Alpha=5,
-			SysTest=6
-		};
-
- 		enum class SRDataCenter : Enum 
-		{
-			None=0,
-			NY4=1,
-			NY5=2,
-			CH2=3,
-			CH3=4
+			Beta=2,
+			UAT=3,
+			SysTest=4
 		};
 
  		enum class SpdrKeyType : Enum 
@@ -756,6 +757,21 @@ namespace SpiderRock
 			OddLotExtendedHours=6
 		};
 
+ 		enum class StrategyClass : Enum 
+		{
+			None=0,
+			Single=1,
+			Covered=2,
+			Synthetic=3,
+			Straddle=4,
+			RevCon=5,
+			OptRoll=6,
+			Box=7,
+			Vertical=8,
+			Horizontal=9,
+			Mixed=10
+		};
+
  		enum class SurfaceResult : Enum 
 		{
 			None=0,
@@ -801,7 +817,18 @@ namespace SpiderRock
 			NoAtmStrike=40,
 			CobsConvexFitErr=41,
 			CobsMidFitErr=42,
-			ProxyError=43
+			ProxyError=43,
+			NoOptExp=44,
+			Expired=45,
+			NoUnderlier=46,
+			NoBaseUnderlier=47,
+			InvalidUPrc=48,
+			ZeroUPrc=49,
+			WideUMkt=50,
+			StalePrcFit=51,
+			NoPrcCurves=52,
+			PriceError=53,
+			ConvergeFail=54
 		};
 
  		enum class SymbolType : Enum 
@@ -822,20 +849,42 @@ namespace SpiderRock
 			StapledSec=13,
 			TradeableRights=14,
 			Unit=15,
-			Warrant=16
+			Warrant=16,
+			WhenIssued=17,
+			ForeignIssue=18
+		};
+
+ 		enum class SyntheticSource : Enum 
+		{
+			None=0,
+			StockBasket=1,
+			StockRoll=2,
+			NativeFuture=3,
+			FutureRoll=4,
+			IndexCalc=5,
+			IndexRatio=6
 		};
 
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			V7_Current=1,
-			Current=2,
+			Neptune=1,
+			Pluto=2,
 			V7_Stable=3,
 			V7_Latest=4,
-			V7_Stable_UAT=5,
-			V7_Current_UAT=6,
-			V7_Dev=7,
-			SysTest=8
+			Saturn=5,
+			Venus=6,
+			Mars=7,
+			SysTest=8,
+			V7_Current=9
+		};
+
+ 		enum class SysRealm : Enum 
+		{
+			None=0,
+			SysTest=1,
+			NMS=2,
+			CME=3
 		};
 
  		enum class TickerSrc : Enum 
@@ -847,29 +896,19 @@ namespace SpiderRock
 			ICE=4,
 			CFE=5,
 			CBOT=6,
-			TD=7,
-			NYMEX=8,
-			COMEX=9,
-			RUT=10,
-			CBOE=11,
-			ISE=12,
-			ARCA=13,
-			NYSE=14,
-			OTC=15,
-			TST1=16,
-			TST2=17,
-			TST3=18,
-			TST=19,
-			USR1=20,
-			USR2=21,
-			USR3=22,
-			NSDQ=23,
-			MFQS=24,
-			PHLX=25,
-			MIAX=26,
-			TSE=27,
-			DJI=28,
-			CBX=29
+			NYMEX=7,
+			COMEX=8,
+			RUT=9,
+			CIDX=10,
+			ARCA=11,
+			NYSE=12,
+			OTC=13,
+			NSDQ=14,
+			MFQS=15,
+			MIAX=16,
+			DJI=17,
+			CUSIP=18,
+			ISIN=19
 		};
 
  		enum class TimeInForce : Enum 

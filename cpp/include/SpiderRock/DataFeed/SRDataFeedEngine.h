@@ -2,7 +2,7 @@
 //
 // Machine generated.  Do not edit directly.
 //
-// Copyright 2014, SpiderRock Technology
+// Copyright 2023, SpiderRock Technology
 //
 // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionCloseMark>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionExchOrder>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionExchPrint>> observer);
-			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionImpliedQuote>> observer);
+			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionMarketSummary>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionNbboQuote>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionOpenInterest>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<OptionPrint>> observer);
@@ -60,12 +60,15 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<SpdrAuctionState>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<SpreadBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<SpreadExchOrder>> observer);
+			void RegisterObserver(std::shared_ptr<CreateEventObserver<SpreadExchPrint>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockExchImbalanceV2>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockImbalance>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockMarketSummary>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockPrint>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<StockPrintMarkup>> observer);
+			void RegisterObserver(std::shared_ptr<CreateEventObserver<SyntheticPrint>> observer);
+			void RegisterObserver(std::shared_ptr<CreateEventObserver<SyntheticQuote>> observer);
 			void RegisterObserver(std::shared_ptr<CreateEventObserver<TickerDefinitionExt>> observer);
 			
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<FutureBookQuote>> observer);
@@ -77,7 +80,7 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionCloseMark>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionExchOrder>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionExchPrint>> observer);
-			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionImpliedQuote>> observer);
+			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionMarketSummary>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionNbboQuote>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionOpenInterest>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<OptionPrint>> observer);
@@ -89,12 +92,15 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SpdrAuctionState>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SpreadBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SpreadExchOrder>> observer);
+			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SpreadExchPrint>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockExchImbalanceV2>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockImbalance>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockMarketSummary>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockPrint>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<StockPrintMarkup>> observer);
+			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SyntheticPrint>> observer);
+			void RegisterObserver(std::shared_ptr<ChangeEventObserver<SyntheticQuote>> observer);
 			void RegisterObserver(std::shared_ptr<ChangeEventObserver<TickerDefinitionExt>> observer);
 			
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<FutureBookQuote>> observer);
@@ -106,7 +112,7 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionCloseMark>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionExchOrder>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionExchPrint>> observer);
-			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionImpliedQuote>> observer);
+			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionMarketSummary>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionNbboQuote>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionOpenInterest>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<OptionPrint>> observer);
@@ -118,12 +124,15 @@ namespace SpiderRock
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SpdrAuctionState>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SpreadBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SpreadExchOrder>> observer);
+			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SpreadExchPrint>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockBookQuote>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockExchImbalanceV2>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockImbalance>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockMarketSummary>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockPrint>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<StockPrintMarkup>> observer);
+			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SyntheticPrint>> observer);
+			void RegisterObserver(std::shared_ptr<UpdateEventObserver<SyntheticQuote>> observer);
 			void RegisterObserver(std::shared_ptr<UpdateEventObserver<TickerDefinitionExt>> observer);			
 		};
 	}

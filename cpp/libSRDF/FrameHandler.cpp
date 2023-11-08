@@ -106,8 +106,7 @@ int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, con
 		{
 			Header* header = reinterpret_cast<Header*>(buffer + offset);
 
-			if (header->environment != env_ || 
-				!IsValid(header->message_type) || 
+			if (!IsValid(header->message_type) || 
 				header->message_length <= (sizeof(Header) + header->key_length))
 			{
 				channel->SetLastError(INVALID_HEADER_ENCOUNTERED);
@@ -118,47 +117,30 @@ int FrameHandler::Handle(uint8_t* buffer, uint32_t length, Channel* channel, con
 
 			channel->IncrementMessageTypeCounters(header->message_type, header->message_length);
 
-			if (header->environment == env_)
+			try
 			{
-				try
+				MessageHandler* handler = msg_handlers_[static_cast<size_t>(header->message_type)];
+				if (handler)
 				{
-					MessageHandler* handler = msg_handlers_[static_cast<size_t>(header->message_type)];
-					if (handler)
-					{
-						msg_handlers_[static_cast<size_t>(header->message_type)]->Handle(header, timestamp);
-					}
-					else if (unknown_msg_type_errors_[static_cast<size_t>(header->message_type)]->ShouldLog())
-					{
-						auto label = unknown_msg_type_errors_[static_cast<size_t>(header->message_type)]->label();
-						channel->SetLastError(label.c_str());
-						SR_LOG_ERR(label);
-					}
+					msg_handlers_[static_cast<size_t>(header->message_type)]->Handle(header, timestamp);
 				}
-				catch (const exception& e)
+				else if (unknown_msg_type_errors_[static_cast<size_t>(header->message_type)]->ShouldLog())
 				{
-					auto error_counter = msg_parse_errors_[static_cast<size_t>(header->message_type)].get();
-
-					if (error_counter->ShouldLog())
-					{
-						SR_LOG_ERR(e.what());
-					}
-
-					channel->SetLastError(e.what());
+					auto label = unknown_msg_type_errors_[static_cast<size_t>(header->message_type)]->label();
+					channel->SetLastError(label.c_str());
+					SR_LOG_ERR(label);
 				}
 			}
-			else
+			catch (const exception& e)
 			{
-				auto error_counter = channel_cross_errors_[static_cast<size_t>(header->message_type)].get();
+				auto error_counter = msg_parse_errors_[static_cast<size_t>(header->message_type)].get();
 
 				if (error_counter->ShouldLog())
 				{
-					SR_LOG_ERR(
-						"Channel cross: MessageType=" + to_string(static_cast<UShort>(header->message_type)) +
-						", SysEnvironment=" + to_string(static_cast<int>(header->environment)) +
-						", Channel=" + channel->label() + ", Source=" + string(inet_ntoa(source.sin_addr)) + ":" + to_string(source.sin_port));
+					SR_LOG_ERR(e.what());
 				}
 
-				channel->SetLastError(error_counter->label().c_str());
+				channel->SetLastError(e.what());
 			}
 
 			offset += header->message_length;

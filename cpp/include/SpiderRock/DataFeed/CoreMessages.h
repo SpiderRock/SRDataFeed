@@ -2,7 +2,7 @@
 //
 // Machine generated.  Do not edit directly.
 //
-// Copyright 2014, SpiderRock Technology
+// Copyright 2023, SpiderRock Technology
 //
 // ------------------------------------------------------------------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<FutureBookQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -220,7 +220,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<FuturePrint::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -321,7 +321,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<FuturePrintMarkup::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -390,7 +390,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<IndexQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -521,7 +521,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<LiveImpliedQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -537,16 +537,13 @@ public:
 	class Key
 	{
 		ExpiryKey ekey_;
-		LiveSurfaceType surfaceType_;
 		
 	public:
 		inline const ExpiryKey& ekey() const { return ekey_; }
-		inline LiveSurfaceType surfaceType() const { return surfaceType_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = ExpiryKey()(k.ekey_);
-			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.surfaceType_));
 
 			return hash_code;
 		}
@@ -554,8 +551,7 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.ekey_ == b.ekey_
-				&& a.surfaceType_ == b.surfaceType_;
+				a.ekey_ == b.ekey_;
 		}
 	};
 	
@@ -564,11 +560,6 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		RunStatus runStatus;
-		SRDataCenter dataCenter;
-		SysEnvironment sysEnvironment;
-		String<10> date;
-		String<8> time;
 		TickerKey ticker;
 		ExpiryKey fkey;
 		Float uBid;
@@ -651,7 +642,6 @@ private:
 		Byte cAskMiss;
 		Byte pBidMiss;
 		Byte pAskMiss;
-		FitPath fitPath;
 		Float fitAvgErr;
 		Float fitAvgAbsErr;
 		Float fitMaxPrcErr;
@@ -662,14 +652,6 @@ private:
 		Float fitErrAsk;
 		Float fitErrPrc;
 		Float fitErrVol;
-		Byte cBidMissT;
-		Byte cAskMissT;
-		Byte pBidMissT;
-		Byte pAskMissT;
-		Float fitAvgAbsErrT;
-		ExpiryKey sEKey;
-		LiveSurfaceType sType;
-		DateTime sTimestamp;
 		Int counter;
 		Int skewCounter;
 		Int sdivCounter;
@@ -691,11 +673,6 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline RunStatus runStatus() const { return layout_.runStatus; }
-	inline SRDataCenter dataCenter() const { return layout_.dataCenter; }
-	inline SysEnvironment sysEnvironment() const { return layout_.sysEnvironment; }
-	inline const String<10>& date() const { return layout_.date; }
-	inline const String<8>& time() const { return layout_.time; }
 	inline const TickerKey& ticker() const { return layout_.ticker; }
 	inline const ExpiryKey& fkey() const { return layout_.fkey; }
 	inline Float uBid() const { return layout_.uBid; }
@@ -778,7 +755,6 @@ public:
 	inline Byte cAskMiss() const { return layout_.cAskMiss; }
 	inline Byte pBidMiss() const { return layout_.pBidMiss; }
 	inline Byte pAskMiss() const { return layout_.pAskMiss; }
-	inline FitPath fitPath() const { return layout_.fitPath; }
 	inline Float fitAvgErr() const { return layout_.fitAvgErr; }
 	inline Float fitAvgAbsErr() const { return layout_.fitAvgAbsErr; }
 	inline Float fitMaxPrcErr() const { return layout_.fitMaxPrcErr; }
@@ -789,14 +765,6 @@ public:
 	inline Float fitErrAsk() const { return layout_.fitErrAsk; }
 	inline Float fitErrPrc() const { return layout_.fitErrPrc; }
 	inline Float fitErrVol() const { return layout_.fitErrVol; }
-	inline Byte cBidMissT() const { return layout_.cBidMissT; }
-	inline Byte cAskMissT() const { return layout_.cAskMissT; }
-	inline Byte pBidMissT() const { return layout_.pBidMissT; }
-	inline Byte pAskMissT() const { return layout_.pAskMissT; }
-	inline Float fitAvgAbsErrT() const { return layout_.fitAvgAbsErrT; }
-	inline const ExpiryKey& sEKey() const { return layout_.sEKey; }
-	inline LiveSurfaceType sType() const { return layout_.sType; }
-	inline DateTime sTimestamp() const { return layout_.sTimestamp; }
 	inline Int counter() const { return layout_.counter; }
 	inline Int skewCounter() const { return layout_.skewCounter; }
 	inline Int sdivCounter() const { return layout_.sdivCounter; }
@@ -808,7 +776,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<LiveSurfaceAtm::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -939,7 +907,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionCloseMark::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1038,7 +1006,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionExchOrder::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1115,7 +1083,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionExchPrint::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1125,22 +1093,19 @@ public:
 
 };
 
- class OptionImpliedQuote
+ class OptionMarketSummary
 {
 public:
 	class Key
 	{
 		OptionKey okey_;
-		CalcType calcType_;
 		
 	public:
 		inline const OptionKey& okey() const { return okey_; }
-		inline CalcType calcType() const { return calcType_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = OptionKey()(k.okey_);
-			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.calcType_));
 
 			return hash_code;
 		}
@@ -1148,8 +1113,7 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.okey_ == b.okey_
-				&& a.calcType_ == b.calcType_;
+				a.okey_ == b.okey_;
 		}
 	};
 	
@@ -1158,36 +1122,28 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		TickerKey ticker;
-		Float uprc;
-		Float years;
-		Float rate;
-		Float sdiv;
-		Float ddiv;
-		Float obid;
-		Float oask;
-		Float obiv;
-		Float oaiv;
-		Float satm;
-		Float smny;
-		Float svol;
-		Float sprc;
-		Float smrk;
-		Float veSlope;
-		Float de;
-		Float ga;
-		Float th;
-		Float ve;
-		Float ro;
-		Float ph;
-		Float up50;
-		Float dn50;
-		Float up15;
-		Float dn15;
-		Float up06;
-		Float dn08;
-		String<24> calcErr;
-		CalcSource calcSource;
+		Double opnPrice;
+		Double opnVolatility;
+		Double clsPrice;
+		Double clsVolatility;
+		Double minPrtPrc;
+		Double minPrtVol;
+		Double maxPrtPrc;
+		Double maxPrtVol;
+		Int openInterest;
+		Int bidCount;
+		Int bidVolume;
+		Int askCount;
+		Int askVolume;
+		Int midCount;
+		Int midVolume;
+		Int prtCount;
+		Double lastPrtPrice;
+		Float lastPrtVolatility;
+		Double avgWidth;
+		Float avgBidSize;
+		Float avgAskSize;
+		DateTime lastPrint;
 		DateTime timestamp;
 	};
 	
@@ -1203,44 +1159,36 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline const TickerKey& ticker() const { return layout_.ticker; }
-	inline Float uprc() const { return layout_.uprc; }
-	inline Float years() const { return layout_.years; }
-	inline Float rate() const { return layout_.rate; }
-	inline Float sdiv() const { return layout_.sdiv; }
-	inline Float ddiv() const { return layout_.ddiv; }
-	inline Float obid() const { return layout_.obid; }
-	inline Float oask() const { return layout_.oask; }
-	inline Float obiv() const { return layout_.obiv; }
-	inline Float oaiv() const { return layout_.oaiv; }
-	inline Float satm() const { return layout_.satm; }
-	inline Float smny() const { return layout_.smny; }
-	inline Float svol() const { return layout_.svol; }
-	inline Float sprc() const { return layout_.sprc; }
-	inline Float smrk() const { return layout_.smrk; }
-	inline Float veSlope() const { return layout_.veSlope; }
-	inline Float de() const { return layout_.de; }
-	inline Float ga() const { return layout_.ga; }
-	inline Float th() const { return layout_.th; }
-	inline Float ve() const { return layout_.ve; }
-	inline Float ro() const { return layout_.ro; }
-	inline Float ph() const { return layout_.ph; }
-	inline Float up50() const { return layout_.up50; }
-	inline Float dn50() const { return layout_.dn50; }
-	inline Float up15() const { return layout_.up15; }
-	inline Float dn15() const { return layout_.dn15; }
-	inline Float up06() const { return layout_.up06; }
-	inline Float dn08() const { return layout_.dn08; }
-	inline const String<24>& calcErr() const { return layout_.calcErr; }
-	inline CalcSource calcSource() const { return layout_.calcSource; }
+	inline Double opnPrice() const { return layout_.opnPrice; }
+	inline Double opnVolatility() const { return layout_.opnVolatility; }
+	inline Double clsPrice() const { return layout_.clsPrice; }
+	inline Double clsVolatility() const { return layout_.clsVolatility; }
+	inline Double minPrtPrc() const { return layout_.minPrtPrc; }
+	inline Double minPrtVol() const { return layout_.minPrtVol; }
+	inline Double maxPrtPrc() const { return layout_.maxPrtPrc; }
+	inline Double maxPrtVol() const { return layout_.maxPrtVol; }
+	inline Int openInterest() const { return layout_.openInterest; }
+	inline Int bidCount() const { return layout_.bidCount; }
+	inline Int bidVolume() const { return layout_.bidVolume; }
+	inline Int askCount() const { return layout_.askCount; }
+	inline Int askVolume() const { return layout_.askVolume; }
+	inline Int midCount() const { return layout_.midCount; }
+	inline Int midVolume() const { return layout_.midVolume; }
+	inline Int prtCount() const { return layout_.prtCount; }
+	inline Double lastPrtPrice() const { return layout_.lastPrtPrice; }
+	inline Float lastPrtVolatility() const { return layout_.lastPrtVolatility; }
+	inline Double avgWidth() const { return layout_.avgWidth; }
+	inline Float avgBidSize() const { return layout_.avgBidSize; }
+	inline Float avgAskSize() const { return layout_.avgAskSize; }
+	inline DateTime lastPrint() const { return layout_.lastPrint; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
-		layout_ = *reinterpret_cast<OptionImpliedQuote::Layout*>(ptr);
+		layout_ = *reinterpret_cast<OptionMarketSummary::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 
@@ -1337,7 +1285,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionNbboQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1398,7 +1346,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionOpenInterest::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1442,7 +1390,7 @@ private:
 		Float prtPrice;
 		Int prtClusterNum;
 		Int prtClusterSize;
-		Byte prtType;
+		PrtType prtType;
 		UShort prtOrders;
 		Int prtVolume;
 		Int cxlVolume;
@@ -1455,9 +1403,22 @@ private:
 		Int ebsz;
 		Int easz;
 		Float eage;
+		Float bidPrice;
+		Float askPrice;
+		Float bidPrice2;
+		Float askPrice2;
+		Int bidSize;
+		Int askSize;
+		Int cumBidSize;
+		Int cumAskSize;
+		Int cumBidSize2;
+		Int cumAskSize2;
+		UInt bidMask;
+		UInt askMask;
 		PrtSide prtSide;
 		Long prtTimestamp;
 		Long netTimestamp;
+		Long oqNetTimestamp;
 		DateTime timestamp;
 	};
 	
@@ -1478,7 +1439,7 @@ public:
 	inline Float prtPrice() const { return layout_.prtPrice; }
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
 	inline Int prtClusterSize() const { return layout_.prtClusterSize; }
-	inline Byte prtType() const { return layout_.prtType; }
+	inline PrtType prtType() const { return layout_.prtType; }
 	inline UShort prtOrders() const { return layout_.prtOrders; }
 	inline Int prtVolume() const { return layout_.prtVolume; }
 	inline Int cxlVolume() const { return layout_.cxlVolume; }
@@ -1491,15 +1452,28 @@ public:
 	inline Int ebsz() const { return layout_.ebsz; }
 	inline Int easz() const { return layout_.easz; }
 	inline Float eage() const { return layout_.eage; }
+	inline Float bidPrice() const { return layout_.bidPrice; }
+	inline Float askPrice() const { return layout_.askPrice; }
+	inline Float bidPrice2() const { return layout_.bidPrice2; }
+	inline Float askPrice2() const { return layout_.askPrice2; }
+	inline Int bidSize() const { return layout_.bidSize; }
+	inline Int askSize() const { return layout_.askSize; }
+	inline Int cumBidSize() const { return layout_.cumBidSize; }
+	inline Int cumAskSize() const { return layout_.cumAskSize; }
+	inline Int cumBidSize2() const { return layout_.cumBidSize2; }
+	inline Int cumAskSize2() const { return layout_.cumAskSize2; }
+	inline UInt bidMask() const { return layout_.bidMask; }
+	inline UInt askMask() const { return layout_.askMask; }
 	inline PrtSide prtSide() const { return layout_.prtSide; }
 	inline Long prtTimestamp() const { return layout_.prtTimestamp; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline Long oqNetTimestamp() const { return layout_.oqNetTimestamp; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionPrint::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1543,7 +1517,7 @@ private:
 		Float prtPrice;
 		Int prtClusterNum;
 		Int prtClusterSize;
-		Byte prtType;
+		PrtType prtType;
 		UShort prtOrders;
 		Int prtVolume;
 		Int oosVolume;
@@ -1588,7 +1562,7 @@ public:
 	inline Float prtPrice() const { return layout_.prtPrice; }
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
 	inline Int prtClusterSize() const { return layout_.prtClusterSize; }
-	inline Byte prtType() const { return layout_.prtType; }
+	inline PrtType prtType() const { return layout_.prtType; }
 	inline UShort prtOrders() const { return layout_.prtOrders; }
 	inline Int prtVolume() const { return layout_.prtVolume; }
 	inline Int oosVolume() const { return layout_.oosVolume; }
@@ -1618,7 +1592,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionPrint2::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1663,7 +1637,7 @@ private:
 		OptExch prtExch;
 		Int prtSize;
 		Float prtPrice;
-		Byte prtType;
+		PrtType prtType;
 		UShort prtOrders;
 		Int prtClusterNum;
 		Int prtClusterSize;
@@ -1736,7 +1710,7 @@ public:
 	inline OptExch prtExch() const { return layout_.prtExch; }
 	inline Int prtSize() const { return layout_.prtSize; }
 	inline Float prtPrice() const { return layout_.prtPrice; }
-	inline Byte prtType() const { return layout_.prtType; }
+	inline PrtType prtType() const { return layout_.prtType; }
 	inline UShort prtOrders() const { return layout_.prtOrders; }
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
 	inline Int prtClusterSize() const { return layout_.prtClusterSize; }
@@ -1793,7 +1767,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionPrintMarkup::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1888,7 +1862,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<OptionRiskFactor::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -1958,6 +1932,7 @@ private:
 	{
 		Key pkey;
 		String<24> securityID;
+		TickerKey ticker;
 		ProductClass productClass;
 		Long underlierID;
 		ExpiryKey undKey;
@@ -2013,6 +1988,7 @@ public:
 	inline uint64_t time_received() const { return time_received_; }
 	
 	inline const String<24>& securityID() const { return layout_.securityID; }
+	inline const TickerKey& ticker() const { return layout_.ticker; }
 	inline ProductClass productClass() const { return layout_.productClass; }
 	inline Long underlierID() const { return layout_.underlierID; }
 	inline const ExpiryKey& undKey() const { return layout_.undKey; }
@@ -2057,7 +2033,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<ProductDefinitionV2::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -2121,6 +2097,7 @@ private:
 		TickerKey ccode;
 		ExpirationMap expirationMap;
 		UnderlierMode underlierMode;
+		PricingSource pricingSource;
 		OptionType optionType;
 		Multihedge multihedge;
 		ExerciseTime exerciseTime;
@@ -2134,6 +2111,7 @@ private:
 		String<24> exchanges;
 		Float tickValue;
 		Float pointValue;
+		Currency pointCurrency;
 		Double strikeScale;
 		Float strikeRatio;
 		Float cashOnExercise;
@@ -2166,6 +2144,7 @@ public:
 	inline const TickerKey& ccode() const { return layout_.ccode; }
 	inline ExpirationMap expirationMap() const { return layout_.expirationMap; }
 	inline UnderlierMode underlierMode() const { return layout_.underlierMode; }
+	inline PricingSource pricingSource() const { return layout_.pricingSource; }
 	inline OptionType optionType() const { return layout_.optionType; }
 	inline Multihedge multihedge() const { return layout_.multihedge; }
 	inline ExerciseTime exerciseTime() const { return layout_.exerciseTime; }
@@ -2179,6 +2158,7 @@ public:
 	inline const String<24>& exchanges() const { return layout_.exchanges; }
 	inline Float tickValue() const { return layout_.tickValue; }
 	inline Float pointValue() const { return layout_.pointValue; }
+	inline Currency pointCurrency() const { return layout_.pointCurrency; }
 	inline Double strikeScale() const { return layout_.strikeScale; }
 	inline Float strikeRatio() const { return layout_.strikeRatio; }
 	inline Float cashOnExercise() const { return layout_.cashOnExercise; }
@@ -2196,7 +2176,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<RootDefinition::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -2220,14 +2200,23 @@ public:
 public:
 	class Key
 	{
-		Long srAuctionID_;
+		OptionKey secKey_;
+		SpdrKeyType secType_;
+		OptExch auctionExch_;
+		String<16> auctionExDest_;
 		
 	public:
-		inline Long srAuctionID() const { return srAuctionID_; }
+		inline const OptionKey& secKey() const { return secKey_; }
+		inline SpdrKeyType secType() const { return secType_; }
+		inline OptExch auctionExch() const { return auctionExch_; }
+		inline const String<16>& auctionExDest() const { return auctionExDest_; }
 
 		inline size_t operator()(const Key& k) const
 		{
-			size_t hash_code = std::hash<Long>()(k.srAuctionID_);
+			size_t hash_code = OptionKey()(k.secKey_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.secType_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.auctionExch_));
+			hash_code = (hash_code * 397) ^ String<16>()(k.auctionExDest_);
 
 			return hash_code;
 		}
@@ -2235,7 +2224,10 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.srAuctionID_ == b.srAuctionID_;
+				a.secKey_ == b.secKey_
+				&& a.secType_ == b.secType_
+				&& a.auctionExch_ == b.auctionExch_
+				&& a.auctionExDest_ == b.auctionExDest_;
 		}
 	};
 	
@@ -2261,15 +2253,13 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		OptionKey secKey;
-		SpdrKeyType secType;
+		Long srAuctionID;
 		String<20> exchAuctionId;
 		String<4> exchAuctionType;
+		YesNo isTestAuction;
 		AuctionState auctionState;
 		NoticeShape auctionShape;
 		AuctionType auctionType;
-		OptExch auctionExch;
-		String<12> auctionExDest;
 		BuySell auctionSide;
 		Int auctionSize;
 		Double auctionPrice;
@@ -2310,15 +2300,13 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline const OptionKey& secKey() const { return layout_.secKey; }
-	inline SpdrKeyType secType() const { return layout_.secType; }
+	inline Long srAuctionID() const { return layout_.srAuctionID; }
 	inline const String<20>& exchAuctionId() const { return layout_.exchAuctionId; }
 	inline const String<4>& exchAuctionType() const { return layout_.exchAuctionType; }
+	inline YesNo isTestAuction() const { return layout_.isTestAuction; }
 	inline AuctionState auctionState() const { return layout_.auctionState; }
 	inline NoticeShape auctionShape() const { return layout_.auctionShape; }
 	inline AuctionType auctionType() const { return layout_.auctionType; }
-	inline OptExch auctionExch() const { return layout_.auctionExch; }
-	inline const String<12>& auctionExDest() const { return layout_.auctionExDest; }
 	inline BuySell auctionSide() const { return layout_.auctionSide; }
 	inline Int auctionSize() const { return layout_.auctionSize; }
 	inline Double auctionPrice() const { return layout_.auctionPrice; }
@@ -2349,7 +2337,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<SpdrAuctionState::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -2465,7 +2453,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<SpreadBookQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -2480,20 +2468,20 @@ public:
 public:
 	class Key
 	{
-		String<24> orderID_;
+		TickerKey skey_;
 		OptExch exch_;
 		BuySell side_;
 		YesNo isTest_;
 		
 	public:
-		inline const String<24>& orderID() const { return orderID_; }
+		inline const TickerKey& skey() const { return skey_; }
 		inline OptExch exch() const { return exch_; }
 		inline BuySell side() const { return side_; }
 		inline YesNo isTest() const { return isTest_; }
 
 		inline size_t operator()(const Key& k) const
 		{
-			size_t hash_code = String<24>()(k.orderID_);
+			size_t hash_code = TickerKey()(k.skey_);
 			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exch_));
 			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.side_));
 			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.isTest_));
@@ -2504,7 +2492,7 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.orderID_ == b.orderID_
+				a.skey_ == b.skey_
 				&& a.exch_ == b.exch_
 				&& a.side_ == b.side_
 				&& a.isTest_ == b.isTest_;
@@ -2536,7 +2524,8 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		TickerKey skey;
+		TickerKey ticker;
+		String<24> orderID;
 		Int size;
 		Double price;
 		YesNo isPriceValid;
@@ -2567,7 +2556,8 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline const TickerKey& skey() const { return layout_.skey; }
+	inline const TickerKey& ticker() const { return layout_.ticker; }
+	inline const String<24>& orderID() const { return layout_.orderID; }
 	inline Int size() const { return layout_.size; }
 	inline Double price() const { return layout_.price; }
 	inline YesNo isPriceValid() const { return layout_.isPriceValid; }
@@ -2588,9 +2578,139 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<SpreadExchOrder::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+		// Legs Repeat Section
+		auto legs_count = *reinterpret_cast<uint16_t*>(ptr);
+		ptr += sizeof(legs_count);
+
+		for (int i = 0; i < legs_count; i++)
+		{
+			legs_.push_back(*reinterpret_cast<Legs*>(ptr));
+			ptr += sizeof(Legs);
+		}
+
+	}
+
+};
+
+ class SpreadExchPrint
+{
+public:
+	class Key
+	{
+		Long printNumber_;
+		OptExch exch_;
+		
+	public:
+		inline Long printNumber() const { return printNumber_; }
+		inline OptExch exch() const { return exch_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = std::hash<Long>()(k.printNumber_);
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exch_));
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.printNumber_ == b.printNumber_
+				&& a.exch_ == b.exch_;
+		}
+	};
+	
+	class Legs
+	{
+		OptionKey legSecKey_;
+		SpdrKeyType legSecType_;
+		BuySell legSide_;
+		UInt legRatio_;
+		PositionType positionType_;
+		
+	public:
+		inline const OptionKey& legSecKey() const { return legSecKey_; }
+		inline SpdrKeyType legSecType() const { return legSecType_; }
+		inline BuySell legSide() const { return legSide_; }
+		inline UInt legRatio() const { return legRatio_; }
+		inline PositionType positionType() const { return positionType_; }
+		inline void legSecKey(const OptionKey& value) { legSecKey_ = value; }
+		inline void legSecType(SpdrKeyType value) { legSecType_ = value; }
+		inline void legSide(BuySell value) { legSide_ = value; }
+		inline void legRatio(UInt value) { legRatio_ = value; }
+		inline void positionType(PositionType value) { positionType_ = value; }
+	};
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		TickerKey skey;
+		String<24> strategyID;
+		TickerKey ticker;
+		BuySell side;
+		Int printSize;
+		Double printPrice;
+		YesNo isPrintPriceValid;
+		BuySell minAnchorSide;
+		OptionKey minAnchorLeg;
+		BuySell maxAnchorSide;
+		OptionKey maxAnchorLeg;
+		YesNo hasFlexLeg;
+		YesNo hasHedgeLeg;
+		BuySell stockLegSide;
+		BuySell futureLegSide;
+		StrategyClass strategyClass;
+		Byte numOptLegs;
+		Long srcTimestamp;
+		Long netTimestamp;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	vector<Legs>legs_;
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline const TickerKey& skey() const { return layout_.skey; }
+	inline const String<24>& strategyID() const { return layout_.strategyID; }
+	inline const TickerKey& ticker() const { return layout_.ticker; }
+	inline BuySell side() const { return layout_.side; }
+	inline Int printSize() const { return layout_.printSize; }
+	inline Double printPrice() const { return layout_.printPrice; }
+	inline YesNo isPrintPriceValid() const { return layout_.isPrintPriceValid; }
+	inline BuySell minAnchorSide() const { return layout_.minAnchorSide; }
+	inline const OptionKey& minAnchorLeg() const { return layout_.minAnchorLeg; }
+	inline BuySell maxAnchorSide() const { return layout_.maxAnchorSide; }
+	inline const OptionKey& maxAnchorLeg() const { return layout_.maxAnchorLeg; }
+	inline YesNo hasFlexLeg() const { return layout_.hasFlexLeg; }
+	inline YesNo hasHedgeLeg() const { return layout_.hasHedgeLeg; }
+	inline BuySell stockLegSide() const { return layout_.stockLegSide; }
+	inline BuySell futureLegSide() const { return layout_.futureLegSide; }
+	inline StrategyClass strategyClass() const { return layout_.strategyClass; }
+	inline Byte numOptLegs() const { return layout_.numOptLegs; }
+	inline Long srcTimestamp() const { return layout_.srcTimestamp; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
+		
+		layout_ = *reinterpret_cast<SpreadExchPrint::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 		// Legs Repeat Section
@@ -2696,7 +2816,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<StockBookQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -2714,17 +2834,20 @@ public:
 		TickerKey ticker_;
 		DateTime auctionTime_;
 		AuctionReason auctionType_;
+		PrimaryExchange exchange_;
 		
 	public:
 		inline const TickerKey& ticker() const { return ticker_; }
 		inline DateTime auctionTime() const { return auctionTime_; }
 		inline AuctionReason auctionType() const { return auctionType_; }
+		inline PrimaryExchange exchange() const { return exchange_; }
 
 		inline size_t operator()(const Key& k) const
 		{
 			size_t hash_code = TickerKey()(k.ticker_);
 			hash_code = (hash_code * 397) ^ DateTime()(k.auctionTime_);
 			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.auctionType_));
+			hash_code = (hash_code * 397) ^ std::hash<Byte>()(static_cast<Byte>(k.exchange_));
 
 			return hash_code;
 		}
@@ -2734,7 +2857,8 @@ public:
 			return
 				a.ticker_ == b.ticker_
 				&& a.auctionTime_ == b.auctionTime_
-				&& a.auctionType_ == b.auctionType_;
+				&& a.auctionType_ == b.auctionType_
+				&& a.exchange_ == b.exchange_;
 		}
 	};
 	
@@ -2791,7 +2915,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<StockExchImbalanceV2::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -2874,7 +2998,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<StockImbalance::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -2971,7 +3095,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<StockMarketSummary::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -3072,7 +3196,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<StockPrint::Layout*>(ptr);
 		ptr += sizeof(layout_);
@@ -3179,9 +3303,181 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<StockPrintMarkup::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
+ class SyntheticPrint
+{
+public:
+	class Key
+	{
+		ExpiryKey ekey_;
+		
+	public:
+		inline const ExpiryKey& ekey() const { return ekey_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = ExpiryKey()(k.ekey_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ekey_ == b.ekey_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		Double printPrice;
+		Int printSize;
+		ExpiryKey prtKey;
+		SpdrKeyType prtSecType;
+		SyntheticSource prtSource;
+		Long netTimestamp;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline Double printPrice() const { return layout_.printPrice; }
+	inline Int printSize() const { return layout_.printSize; }
+	inline const ExpiryKey& prtKey() const { return layout_.prtKey; }
+	inline SpdrKeyType prtSecType() const { return layout_.prtSecType; }
+	inline SyntheticSource prtSource() const { return layout_.prtSource; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
+		
+		layout_ = *reinterpret_cast<SyntheticPrint::Layout*>(ptr);
+		ptr += sizeof(layout_);
+		
+
+	}
+
+};
+
+ class SyntheticQuote
+{
+public:
+	class Key
+	{
+		ExpiryKey ekey_;
+		
+	public:
+		inline const ExpiryKey& ekey() const { return ekey_; }
+
+		inline size_t operator()(const Key& k) const
+		{
+			size_t hash_code = ExpiryKey()(k.ekey_);
+
+			return hash_code;
+		}
+		
+		inline bool operator()(const Key& a, const Key& b) const
+		{
+			return
+				a.ekey_ == b.ekey_;
+		}
+	};
+	
+
+private:
+	struct Layout
+	{
+		Key pkey;
+		Double bidPrice;
+		Double askPrice;
+		Int bidSize;
+		Int askSize;
+		ExpiryKey bidKey;
+		SpdrKeyType bidKeyType;
+		ExpiryKey askKey;
+		SpdrKeyType askKeyType;
+		SyntheticSource bidSource;
+		SyntheticSource askSource;
+		Double undBidPrice;
+		Double undAskPrice;
+		Int undBidSize;
+		Int undAskSize;
+		ExpiryKey undKey;
+		SpdrKeyType undKeyType;
+		MarketStatus undMarketStatus;
+		Double uOffPrice;
+		ExpiryKey uOffKey;
+		SpdrKeyType uOffKeyType;
+		Long netTimestamp;
+		DateTime timestamp;
+	};
+	
+	Header header_;
+	Layout layout_;
+	
+	int64_t time_received_;
+
+public:
+	inline Header& header() { return header_; }
+	inline const Key& pkey() const { return layout_.pkey; }
+	
+	inline void time_received(uint64_t value) { time_received_ = value; }
+	inline uint64_t time_received() const { return time_received_; }
+	
+	inline Double bidPrice() const { return layout_.bidPrice; }
+	inline Double askPrice() const { return layout_.askPrice; }
+	inline Int bidSize() const { return layout_.bidSize; }
+	inline Int askSize() const { return layout_.askSize; }
+	inline const ExpiryKey& bidKey() const { return layout_.bidKey; }
+	inline SpdrKeyType bidKeyType() const { return layout_.bidKeyType; }
+	inline const ExpiryKey& askKey() const { return layout_.askKey; }
+	inline SpdrKeyType askKeyType() const { return layout_.askKeyType; }
+	inline SyntheticSource bidSource() const { return layout_.bidSource; }
+	inline SyntheticSource askSource() const { return layout_.askSource; }
+	inline Double undBidPrice() const { return layout_.undBidPrice; }
+	inline Double undAskPrice() const { return layout_.undAskPrice; }
+	inline Int undBidSize() const { return layout_.undBidSize; }
+	inline Int undAskSize() const { return layout_.undAskSize; }
+	inline const ExpiryKey& undKey() const { return layout_.undKey; }
+	inline SpdrKeyType undKeyType() const { return layout_.undKeyType; }
+	inline MarketStatus undMarketStatus() const { return layout_.undMarketStatus; }
+	inline Double uOffPrice() const { return layout_.uOffPrice; }
+	inline const ExpiryKey& uOffKey() const { return layout_.uOffKey; }
+	inline SpdrKeyType uOffKeyType() const { return layout_.uOffKeyType; }
+	inline Long netTimestamp() const { return layout_.netTimestamp; }
+	inline DateTime timestamp() const { return layout_.timestamp; }
+	
+	inline void Decode(Header* buf) 
+	{
+		header_ = *buf;
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
+		
+		layout_ = *reinterpret_cast<SyntheticQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 
@@ -3224,7 +3520,10 @@ private:
 		String<2> cntryOfIncorp;
 		Float parValue;
 		String<3> parValueCurrency;
+		Float pointValue;
+		Currency pointCurrency;
 		PrimaryExchange primaryExch;
+		Int altID;
 		String<4> mic;
 		String<4> micSeg;
 		String<12> symbol;
@@ -3249,6 +3548,7 @@ private:
 		Float futVolume;
 		Float optVolume;
 		String<8> exchString;
+		YesNo hasOptions;
 		Int numOptions;
 		Int sharesOutstanding;
 		TimeMetric timeMetric;
@@ -3280,7 +3580,10 @@ public:
 	inline const String<2>& cntryOfIncorp() const { return layout_.cntryOfIncorp; }
 	inline Float parValue() const { return layout_.parValue; }
 	inline const String<3>& parValueCurrency() const { return layout_.parValueCurrency; }
+	inline Float pointValue() const { return layout_.pointValue; }
+	inline Currency pointCurrency() const { return layout_.pointCurrency; }
 	inline PrimaryExchange primaryExch() const { return layout_.primaryExch; }
+	inline Int altID() const { return layout_.altID; }
 	inline const String<4>& mic() const { return layout_.mic; }
 	inline const String<4>& micSeg() const { return layout_.micSeg; }
 	inline const String<12>& symbol() const { return layout_.symbol; }
@@ -3305,6 +3608,7 @@ public:
 	inline Float futVolume() const { return layout_.futVolume; }
 	inline Float optVolume() const { return layout_.optVolume; }
 	inline const String<8>& exchString() const { return layout_.exchString; }
+	inline YesNo hasOptions() const { return layout_.hasOptions; }
 	inline Int numOptions() const { return layout_.numOptions; }
 	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
 	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
@@ -3320,7 +3624,7 @@ public:
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
-		auto ptr = reinterpret_cast<uint8_t*>(buf) + sizeof(Header);
+		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
 		layout_ = *reinterpret_cast<TickerDefinitionExt::Layout*>(ptr);
 		ptr += sizeof(layout_);

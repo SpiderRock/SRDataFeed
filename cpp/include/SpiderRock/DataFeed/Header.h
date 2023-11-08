@@ -34,8 +34,6 @@ namespace SpiderRock
 #pragma pack(1)
 		struct Header
 		{
-			SysEnvironment environment;
-			UShort reserved;
 			MessageType message_type;
 			HeaderBits bits;
 			UShort source_id;
@@ -43,17 +41,16 @@ namespace SpiderRock
 			Long sent_time;
 			UShort message_length;
 			Byte key_length;
-			UInt reserved2;
+			Byte len;
 
 			Header() :
-				environment(SysEnvironment::None),
-				message_type(MessageType::None),
 				bits(HeaderBits::None),
 				source_id(0),
 				sequence_number(0),
 				sent_time(0),
 				message_length(0),
-				key_length(0)
+				key_length(0),
+				len(sizeof(Header))
 			{
 			}
 		};
