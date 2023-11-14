@@ -19,10 +19,11 @@ namespace SpiderRock
 
 		enum class AdjConvention : Enum 
 		{
-			Original=0,
-			OSI=1,
-			SpcOnly=2,
-			OSIAlt=3
+			None=0,
+			Original=1,
+			OSI=2,
+			SpcOnly=3,
+			OSIAlt=4
 		};
 
  		enum class AssetType : Enum 
@@ -390,9 +391,10 @@ namespace SpiderRock
 
  		enum class MoneynessType : Enum 
 		{
-			PctStd=0,
-			LogStd=1,
-			NormStd=2
+			None=0,
+			PctStd=1,
+			LogStd=2,
+			NormStd=3
 		};
 
  		enum class Multihedge : Enum 
@@ -401,7 +403,8 @@ namespace SpiderRock
 			Simple=1,
 			Complex=2,
 			AllCash=3,
-			Binary=4
+			Binary=4,
+			Fragment=5
 		};
 
  		enum class NoticeShape : Enum 
@@ -478,7 +481,8 @@ namespace SpiderRock
 			SDRK=21,
 			DQTE=22,
 			EMLD=23,
-			CFE=24
+			CFE=24,
+			MEMX=25
 		};
 
  		enum class OptPriceInc : Enum 
@@ -555,13 +559,15 @@ namespace SpiderRock
 			A4=41,
 			A5=42,
 			A6=43,
-			A7=44
+			A7=44,
+			E32=45
 		};
 
  		enum class PriceQuoteType : Enum 
 		{
-			Price=0,
-			Vol=1
+			None=0,
+			Price=1,
+			Vol=2
 		};
 
  		enum class PricingModel : Enum 
@@ -572,6 +578,13 @@ namespace SpiderRock
 			FutureExact=3,
 			NormalApprox=4,
 			NormalExact=5
+		};
+
+ 		enum class PricingSource : Enum 
+		{
+			None=0,
+			Native=1,
+			SyntheticExpiry=2
 		};
 
  		enum class PrimaryExchange : Enum 
@@ -686,11 +699,9 @@ namespace SpiderRock
 		{
 			None=0,
 			Prod=1,
-			UAT=2,
-			Beta=3,
-			Demo=4,
-			Alpha=5,
-			SysTest=6
+			Beta=2,
+			UAT=3,
+			SysTest=4
 		};
 
  		enum class SRDataCenter : Enum 
@@ -802,7 +813,18 @@ namespace SpiderRock
 			NoAtmStrike=40,
 			CobsConvexFitErr=41,
 			CobsMidFitErr=42,
-			ProxyError=43
+			ProxyError=43,
+			NoOptExp=44,
+			Expired=45,
+			NoUnderlier=46,
+			NoBaseUnderlier=47,
+			InvalidUPrc=48,
+			ZeroUPrc=49,
+			WideUMkt=50,
+			StalePrcFit=51,
+			NoPrcCurves=52,
+			PriceError=53,
+			ConvergeFail=54
 		};
 
  		enum class SymbolType : Enum 
@@ -823,20 +845,23 @@ namespace SpiderRock
 			StapledSec=13,
 			TradeableRights=14,
 			Unit=15,
-			Warrant=16
+			Warrant=16,
+			WhenIssued=17,
+			ForeignIssue=18
 		};
 
  		enum class SysEnvironment : Enum 
 		{
 			None=0,
-			V7_Current=1,
-			Current=2,
+			Neptune=1,
+			Pluto=2,
 			V7_Stable=3,
 			V7_Latest=4,
-			V7_Stable_UAT=5,
-			V7_Current_UAT=6,
-			V7_Dev=7,
-			SysTest=8
+			Saturn=5,
+			Venus=6,
+			Mars=7,
+			SysTest=8,
+			V7_Current=9
 		};
 
  		enum class TickerSrc : Enum 

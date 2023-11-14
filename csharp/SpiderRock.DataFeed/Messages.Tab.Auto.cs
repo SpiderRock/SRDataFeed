@@ -1388,7 +1388,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "secKey_rt\tsecKey_ts\tsecKey_at\tsecKey_yr\tsecKey_mn\tsecKey_dy\tsecKey_xx\tsecKey_cp\tsecType\tsecurityID\tproductClass\tunderlierID\tundKey\tundType\tproductGroup\tsecurityGroup\tmarketSegmentID\tsecurityDesc\texchange\tproductType\tproductTerm\tproductIndexType\tproductRate\tcontractSize\tcontractUnit\tpriceFormat\tminTickSize\tdisplayFactor\tstrikeScale\tminLotSize\tbookDepth\timpliedBookDepth\timpMarketInd\tminPriceIncrementAmount\tparValue\tcontMultiplier\tcabPrice\ttradeCurr\tsettleCurr\tstrikeCurr\texpiration\tmaturity\texerciseType\tuserDefined\tdecayStartYear\tdecayStartMonth\tdecayStartDay\tdecayQty\tpriceRatio\ttimestamp\tLegs";
+		public const string TabHeader = "secKey_rt\tsecKey_ts\tsecKey_at\tsecKey_yr\tsecKey_mn\tsecKey_dy\tsecKey_xx\tsecKey_cp\tsecType\tticker\tsecurityID\tproductClass\tunderlierID\tundKey\tundType\tproductGroup\tsecurityGroup\tmarketSegmentID\tsecurityDesc\texchange\tproductType\tproductTerm\tproductIndexType\tproductRate\tcontractSize\tcontractUnit\tpriceFormat\tminTickSize\tdisplayFactor\tstrikeScale\tminLotSize\tbookDepth\timpliedBookDepth\timpMarketInd\tminPriceIncrementAmount\tparValue\tcontMultiplier\tcabPrice\ttradeCurr\tsettleCurr\tstrikeCurr\texpiration\tmaturity\texerciseType\tuserDefined\tdecayStartYear\tdecayStartMonth\tdecayStartDay\tdecayQty\tpriceRatio\ttimestamp\tLegs";
 
 		public string TabRecord
         {
@@ -1402,6 +1402,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(pkey.SecType);
 				recordBuilder.Append("\t");
 
+				recordBuilder.Append(Ticker);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(SecurityID);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(ProductClass);
@@ -1493,7 +1495,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "root\tticker\tosiRoot\tccode\texpirationMap\tunderlierMode\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tmoneynessType\tpriceQuoteType\tvolumeTier\tpositionLimit\texchanges\ttickValue\tpointValue\tstrikeScale\tstrikeRatio\tcashOnExercise\tunderliersPerCn\tpremiumMult\tadjConvention\toptPriceInc\tpriceFormat\ttradeCurr\tsettleCurr\tstrikeCurr\tdefaultSurfaceRoot\ttimestamp\tUnderlying";
+		public const string TabHeader = "root\tticker\tosiRoot\tccode\texpirationMap\tunderlierMode\tpricingSource\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tmoneynessType\tpriceQuoteType\tvolumeTier\tpositionLimit\texchanges\ttickValue\tpointValue\tpointCurrency\tstrikeScale\tstrikeRatio\tcashOnExercise\tunderliersPerCn\tpremiumMult\tadjConvention\toptPriceInc\tpriceFormat\ttradeCurr\tsettleCurr\tstrikeCurr\tdefaultSurfaceRoot\ttimestamp\tUnderlying";
 
 		public string TabRecord
         {
@@ -1514,6 +1516,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(ExpirationMap);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(UnderlierMode);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PricingSource);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(OptionType);
 				recordBuilder.Append("\t");
@@ -1540,6 +1544,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(TickValue);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PointValue);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PointCurrency);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(StrikeScale);
 				recordBuilder.Append("\t");
@@ -2159,7 +2165,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "ticker\tsymbolType\tname\tissuerName\tcntryOfIncorp\tparValue\tparValueCurrency\tprimaryExch\tmic\tmicSeg\tsymbol\tissueClass\tsecurityID\tsic\tcik\tgics\tlei\tnaics\tcfi\tcic\tfisn\tisin\tbbgCompositeTicker\tbbgExchangeTicker\tbbgCompositeGlobalID\tbbgGlobalID\tbbgCurrency\tstkPriceInc\tstkVolume\tfutVolume\toptVolume\texchString\tnumOptions\tsharesOutstanding\ttimeMetric\totcPrimaryMarket\totcTier\totcReportingStatus\totcDisclosureStatus\totcFlags\ttkDefSource\tstatusFlag\ttimestamp";
+		public const string TabHeader = "ticker\tsymbolType\tname\tissuerName\tcntryOfIncorp\tparValue\tparValueCurrency\tpointValue\tpointCurrency\tprimaryExch\tmic\tmicSeg\tsymbol\tissueClass\tsecurityID\taltID\tsic\tcik\tgics\tlei\tnaics\tcfi\tcic\tfisn\tisin\tbbgCompositeTicker\tbbgExchangeTicker\tbbgCompositeGlobalID\tbbgGlobalID\tbbgCurrency\tstkPriceInc\tstkVolume\tfutVolume\toptVolume\texchString\thasOptions\tnumOptions\tsharesOutstanding\ttimeMetric\totcPrimaryMarket\totcTier\totcReportingStatus\totcDisclosureStatus\totcFlags\ttkDefSource\tstatusFlag\ttimestamp";
 
 		public string TabRecord
         {
@@ -2183,6 +2189,10 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(ParValueCurrency);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(PointValue);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PointCurrency);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(PrimaryExch);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Mic);
@@ -2194,6 +2204,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(IssueClass);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(SecurityID);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(AltID);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(Sic);
 				recordBuilder.Append("\t");
@@ -2232,6 +2244,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(OptVolume);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(ExchString);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(HasOptions);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(NumOptions);
 				recordBuilder.Append("\t");

@@ -1957,6 +1957,7 @@ private:
 	struct Layout
 	{
 		Key pkey;
+		TickerKey ticker;
 		String<24> securityID;
 		ProductClass productClass;
 		Long underlierID;
@@ -2012,6 +2013,7 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
+	inline const TickerKey& ticker() const { return layout_.ticker; }
 	inline const String<24>& securityID() const { return layout_.securityID; }
 	inline ProductClass productClass() const { return layout_.productClass; }
 	inline Long underlierID() const { return layout_.underlierID; }
@@ -2121,6 +2123,7 @@ private:
 		TickerKey ccode;
 		ExpirationMap expirationMap;
 		UnderlierMode underlierMode;
+		PricingSource pricingSource;
 		OptionType optionType;
 		Multihedge multihedge;
 		ExerciseTime exerciseTime;
@@ -2134,6 +2137,7 @@ private:
 		String<24> exchanges;
 		Float tickValue;
 		Float pointValue;
+		Currency pointCurrency;
 		Double strikeScale;
 		Float strikeRatio;
 		Float cashOnExercise;
@@ -2166,6 +2170,7 @@ public:
 	inline const TickerKey& ccode() const { return layout_.ccode; }
 	inline ExpirationMap expirationMap() const { return layout_.expirationMap; }
 	inline UnderlierMode underlierMode() const { return layout_.underlierMode; }
+	inline PricingSource pricingSource() const { return layout_.pricingSource; }
 	inline OptionType optionType() const { return layout_.optionType; }
 	inline Multihedge multihedge() const { return layout_.multihedge; }
 	inline ExerciseTime exerciseTime() const { return layout_.exerciseTime; }
@@ -2179,6 +2184,7 @@ public:
 	inline const String<24>& exchanges() const { return layout_.exchanges; }
 	inline Float tickValue() const { return layout_.tickValue; }
 	inline Float pointValue() const { return layout_.pointValue; }
+	inline Currency pointCurrency() const { return layout_.pointCurrency; }
 	inline Double strikeScale() const { return layout_.strikeScale; }
 	inline Float strikeRatio() const { return layout_.strikeRatio; }
 	inline Float cashOnExercise() const { return layout_.cashOnExercise; }
@@ -2270,7 +2276,7 @@ private:
 		NoticeShape auctionShape;
 		AuctionType auctionType;
 		OptExch auctionExch;
-		String<12> auctionExDest;
+		String<16> auctionExDest;
 		BuySell auctionSide;
 		Int auctionSize;
 		Double auctionPrice;
@@ -2320,7 +2326,7 @@ public:
 	inline NoticeShape auctionShape() const { return layout_.auctionShape; }
 	inline AuctionType auctionType() const { return layout_.auctionType; }
 	inline OptExch auctionExch() const { return layout_.auctionExch; }
-	inline const String<12>& auctionExDest() const { return layout_.auctionExDest; }
+	inline const String<16>& auctionExDest() const { return layout_.auctionExDest; }
 	inline BuySell auctionSide() const { return layout_.auctionSide; }
 	inline Int auctionSize() const { return layout_.auctionSize; }
 	inline Double auctionPrice() const { return layout_.auctionPrice; }
@@ -3226,12 +3232,15 @@ private:
 		String<2> cntryOfIncorp;
 		Float parValue;
 		String<3> parValueCurrency;
+		Float pointValue;
+		Currency pointCurrency;
 		PrimaryExchange primaryExch;
 		String<4> mic;
 		String<4> micSeg;
 		String<12> symbol;
 		String<1> issueClass;
 		Int securityID;
+		Int altID;
 		String<4> sic;
 		String<10> cik;
 		String<8> gics;
@@ -3251,6 +3260,7 @@ private:
 		Float futVolume;
 		Float optVolume;
 		String<8> exchString;
+		YesNo hasOptions;
 		Int numOptions;
 		Int sharesOutstanding;
 		TimeMetric timeMetric;
@@ -3282,12 +3292,15 @@ public:
 	inline const String<2>& cntryOfIncorp() const { return layout_.cntryOfIncorp; }
 	inline Float parValue() const { return layout_.parValue; }
 	inline const String<3>& parValueCurrency() const { return layout_.parValueCurrency; }
+	inline Float pointValue() const { return layout_.pointValue; }
+	inline Currency pointCurrency() const { return layout_.pointCurrency; }
 	inline PrimaryExchange primaryExch() const { return layout_.primaryExch; }
 	inline const String<4>& mic() const { return layout_.mic; }
 	inline const String<4>& micSeg() const { return layout_.micSeg; }
 	inline const String<12>& symbol() const { return layout_.symbol; }
 	inline const String<1>& issueClass() const { return layout_.issueClass; }
 	inline Int securityID() const { return layout_.securityID; }
+	inline Int altID() const { return layout_.altID; }
 	inline const String<4>& sic() const { return layout_.sic; }
 	inline const String<10>& cik() const { return layout_.cik; }
 	inline const String<8>& gics() const { return layout_.gics; }
@@ -3307,6 +3320,7 @@ public:
 	inline Float futVolume() const { return layout_.futVolume; }
 	inline Float optVolume() const { return layout_.optVolume; }
 	inline const String<8>& exchString() const { return layout_.exchString; }
+	inline YesNo hasOptions() const { return layout_.hasOptions; }
 	inline Int numOptions() const { return layout_.numOptions; }
 	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
 	inline TimeMetric timeMetric() const { return layout_.timeMetric; }

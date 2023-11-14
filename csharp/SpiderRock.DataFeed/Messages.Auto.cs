@@ -22,7 +22,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live future quote records from the listing exchange.  Each record contains up to four price levels and represents a live snapshot of the book for a specific future.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class FutureBookQuote
@@ -343,7 +342,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for each active futures market.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class FuturePrint
@@ -624,7 +622,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// FuturePrintMarkup records are created for all future prints
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class FuturePrintMarkup
@@ -926,7 +923,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// Live index levels and quotes including SpiderRock synthetic index levels and quotes.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class IndexQuote
@@ -1162,7 +1158,6 @@ namespace SpiderRock.DataFeed
 	/// Note that the underlier price (uPrc) will be the same for all options an underlier when CalcSource=Loop.  This is not true for CalcSource=Tick where uPrc will be the underlier price that prevailed when the option price changed.
 	/// If you are consuming multicast data and only want records with consistent uPrc values for all options you should ignore Tick records. Alternatively, you can use an independent underlier price source (our StockBookQuote feed or some other) and 'adjust' the values in this table to the new underlier value.
 	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automatically applies the appropriate underlier adjustments as records are being returned.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class LiveImpliedQuote
@@ -1526,7 +1521,6 @@ namespace SpiderRock.DataFeed
 	/// LiveSurfaceAtm (surfaceType = 'Live') records are computed and publish continuously during trading hours and represent a current best implied volatility market fit.
 	/// SurfaceType = 'PriorDay' records contain the `closing surface record from the prior trading period (usually from just before the last main session close).
 	/// SurfaceType = 'Live' records are published to the SpiderRock elastic cluster at 5 minute intervals.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class LiveSurfaceAtm
@@ -2206,7 +2200,6 @@ namespace SpiderRock.DataFeed
 	/// <remarks>
 	/// OptionCloseMark records are created immediately after the market close (clsMarkState=SRClose), when exchanges publish official marks (clsMarkState=ExchClose), and again during top of day rotation (clsMarkState=Final).  These records contain closing quotes and prices as well as markup details for all outright options.
 	/// OptionCloseMark records are published to the SpiderRock elastic cluster when clsMarkState=Final
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionCloseMark
@@ -2567,7 +2560,7 @@ namespace SpiderRock.DataFeed
 	/// OptionExchOrder:270
 	/// </summary>
 	/// <remarks>
-	/// VLanBridging: None
+
 	/// </remarks>
 
     public partial class OptionExchOrder
@@ -2868,7 +2861,7 @@ namespace SpiderRock.DataFeed
 	/// OptionExchPrint:275
 	/// </summary>
 	/// <remarks>
-	/// VLanBridging: None
+
 	/// </remarks>
 
     public partial class OptionExchPrint
@@ -3120,7 +3113,6 @@ namespace SpiderRock.DataFeed
 	/// Note that the underlier price (uPrc) will be the same for all options an underlier when CalcSource=Loop|Close.  This is not true for CalcSource=Tick where uPrc will be the underlier price that prevailed when the option price changed.
 	/// If you are consuming multicast data and only want records with consistent uPrc values for all options you should ignore Tick records. Alternatively, you can use an independent underlier price source (our StockBookQuote feed or some other) and 'adjust' the values in this table to the new underlier value.
 	/// If you are selecting records from SRSE you should note that OptionImpliedQuoteAdj table is a proxy implementation of this table that automatically applies the appropriate underlier adjustments as records are being returned.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionImpliedQuote
@@ -3468,7 +3460,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live option quote records from OPRA (equities) or the listing exchange (futures).  Each record contains up to two price levels and represents a live snapshot of the book for a specific option series.  There are typically 1mm+ records in this table if all ticker sources are enabled.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionNbboQuote
@@ -3761,7 +3752,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// Open interest for each option series. Records are from the live OPRA feed.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionOpenInterest
@@ -3978,7 +3968,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for each active equity and future option series.  Quote markup represents quote that existed just prior to the print on the reporting exchange.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionPrint
@@ -4275,7 +4264,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for each active equity and future option series.  Quote markup represents quote that existed just prior to the print on the reporting exchange.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionPrint2
@@ -4608,7 +4596,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// OptionPrintMarkup records contain every option print along with quote, surface details at print time
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionPrintMarkup
@@ -5060,7 +5047,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains the up/dn underlier price slides used in OCC risk calculations.  Note that these values are computed by SpiderRock using similar methods but may not exactly match OCC values.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class OptionRiskFactor
@@ -5351,7 +5337,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// SpiderRock normalized exchange product definitions.  Includes future, option, and spread definitions from a number of exchanges.  TickerDefinitions, RootDefinitions and CCodeDefinitions are consistent with these records.
-	/// VLanBridging: Down
 	/// </remarks>
 
     public partial class ProductDefinitionV2
@@ -5606,6 +5591,7 @@ namespace SpiderRock.DataFeed
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
 		internal struct BodyLayout
 		{
+			public TickerKeyLayout ticker;
 			public FixedString24Layout securityID;
 			public ProductClass productClass;
 			public long underlierID;
@@ -5657,6 +5643,7 @@ namespace SpiderRock.DataFeed
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Invalidate() { ++usn; }
 		
+ 		private CachedTickerKey ticker;
  		private CachedFixedLengthString<FixedString24Layout> securityID;
  		private CachedExpiryKey undKey;
  		private CachedFixedLengthString<FixedString6Layout> productGroup;
@@ -5666,7 +5653,10 @@ namespace SpiderRock.DataFeed
  		private CachedDateKey maturity;
 		
 
-
+            
+		
+        public TickerKey Ticker { get { return CacheVar.AllocIfNull(ref ticker).Get(ref body.ticker, usn); } set { CacheVar.AllocIfNull(ref ticker).Set(value); body.ticker = value.Layout; } }
+ 
 		/// <summary>unique exchange id (exch assigned)</summary>
         public string SecurityID { get { return CacheVar.AllocIfNull(ref securityID).Get(ref body.securityID, usn); } set { CacheVar.AllocIfNull(ref securityID).Set(value); body.securityID = value; } }
  
@@ -5801,7 +5791,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// RootDefinition records are sourced from the listing exchange for future options and from OCC for US equity options.  Records are updated as SpiderRock receives changes.
-	/// VLanBridging: Down
 	/// </remarks>
 
     public partial class RootDefinition
@@ -6036,6 +6025,7 @@ namespace SpiderRock.DataFeed
 			public TickerKeyLayout ccode;
 			public ExpirationMap expirationMap;
 			public UnderlierMode underlierMode;
+			public PricingSource pricingSource;
 			public OptionType optionType;
 			public Multihedge multihedge;
 			public ExerciseTime exerciseTime;
@@ -6049,6 +6039,7 @@ namespace SpiderRock.DataFeed
 			public FixedString24Layout exchanges;
 			public float tickValue;
 			public float pointValue;
+			public Currency pointCurrency;
 			public double strikeScale;
 			public float strikeRatio;
 			public float cashOnExercise;
@@ -6095,6 +6086,9 @@ namespace SpiderRock.DataFeed
 		
         public UnderlierMode UnderlierMode { get { return body.underlierMode; } set { body.underlierMode = value; } }
  
+		/// <summary>note: synthetics are priced by root + expiry (from the SyntheticQuote/SyntheticPrint messages)</summary>
+        public PricingSource PricingSource { get { return body.pricingSource; } set { body.pricingSource = value; } }
+ 
 		/// <summary>indicator for option type</summary>
         public OptionType OptionType { get { return body.optionType; } set { body.optionType = value; } }
  
@@ -6133,6 +6127,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>$NLV value of a single point change in display premium (pointValue = tickValue / tickSize)</summary>
         public float PointValue { get { return body.pointValue; } set { body.pointValue = value; } }
+ 
+		
+        public Currency PointCurrency { get { return body.pointCurrency; } set { body.pointCurrency = value; } }
  
 		/// <summary>manual strike price adjustment multiplier (used for some CME products if set, otherwise displayFactor is used) (okey_xx = strikePrice * manualStrikeScale)</summary>
         public double StrikeScale { get { return body.strikeScale; } set { body.strikeScale = value; } }
@@ -6183,7 +6180,7 @@ namespace SpiderRock.DataFeed
 	/// SpdrAuctionState:690
 	/// </summary>
 	/// <remarks>
-	/// VLanBridging: None
+
 	/// </remarks>
 
     public partial class SpdrAuctionState
@@ -6423,7 +6420,7 @@ namespace SpiderRock.DataFeed
 			public NoticeShape auctionShape;
 			public AuctionType auctionType;
 			public OptExch auctionExch;
-			public FixedString12Layout auctionExDest;
+			public FixedString16Layout auctionExDest;
 			public BuySell auctionSide;
 			public int auctionSize;
 			public double auctionPrice;
@@ -6463,7 +6460,7 @@ namespace SpiderRock.DataFeed
  		private CachedOptionKey secKey;
  		private CachedFixedLengthString<FixedString20Layout> exchAuctionId;
  		private CachedFixedLengthString<FixedString4Layout> exchAuctionType;
- 		private CachedFixedLengthString<FixedString12Layout> auctionExDest;
+ 		private CachedFixedLengthString<FixedString16Layout> auctionExDest;
  		private CachedFixedLengthString<FixedString10Layout> memberMPID;
  		private CachedFixedLengthString<FixedString10Layout> clientAccnt;
  		private CachedFixedLengthString<FixedString16Layout> otherDetail;
@@ -6484,7 +6481,7 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>test auction (should only respond from T.accnts)</summary>
         public YesNo IsTestAuction { get { return body.isTestAuction; } set { body.isTestAuction = value; } }
-		
+ 
 		
         public AuctionState AuctionState { get { return body.auctionState; } set { body.auctionState = value; } }
  
@@ -6589,7 +6586,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live spread quote records from the individual equity option exchanges.  Each record contains up to two price levels and represents a live snapshot of the book for a specific spread.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class SpreadBookQuote
@@ -6903,7 +6899,7 @@ namespace SpiderRock.DataFeed
 	/// SpreadExchOrder:520
 	/// </summary>
 	/// <remarks>
-	/// VLanBridging: None
+
 	/// </remarks>
 
     public partial class SpreadExchOrder
@@ -7264,7 +7260,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// This table contains live equity quote records for all CQS/UQDF securities as well as US OTC equity securities, SpiderRock synthetic markets, and a number of major indexes.  Each record contains up to two price levels and represents a live snapshot of the book for a specific market.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockBookQuote
@@ -7558,7 +7553,6 @@ namespace SpiderRock.DataFeed
 	/// <remarks>
 	/// StockExchImbalanceV2 records contain live exchange closing auction imbalance details.  Imbalance information can be available from more than one exchange for each ticker.
 	/// Final StockExchImbalanceV2 records are published to the SpiderRock elastic cluster nightly after the auction close.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockExchImbalanceV2
@@ -7846,7 +7840,6 @@ namespace SpiderRock.DataFeed
 	/// <remarks>
 	/// StockImbalance records contain live exchange closing auction imbalance details.  Imbalance information in aggregated across exchanges with imbalance feeds.
 	/// Final StockImbalance records are published to the SpiderRock elastic cluster nightly after the auction close.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockImbalance
@@ -8108,7 +8101,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// These records represent live market summary snapshots for equity, index, and synthetic markets.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockMarketSummary
@@ -8397,7 +8389,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// The most recent (last) print record for CTS/UTDF markets as well as SpiderRock synthetic markets.  Records also incorporate some summary detail and closing mark information as well.
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockPrint
@@ -8694,7 +8685,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// StockPrintMarkup records are created/published for all stock prints
-	/// VLanBridging: None
 	/// </remarks>
 
     public partial class StockPrintMarkup
@@ -9003,7 +8993,6 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// TickerDefinitionExt (external) records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
-	/// VLanBridging: Down
 	/// </remarks>
 
     public partial class TickerDefinitionExt
@@ -9198,12 +9187,15 @@ namespace SpiderRock.DataFeed
 			public FixedString2Layout cntryOfIncorp;
 			public float parValue;
 			public FixedString3Layout parValueCurrency;
+			public float pointValue;
+			public Currency pointCurrency;
 			public PrimaryExchange primaryExch;
 			public FixedString4Layout mic;
 			public FixedString4Layout micSeg;
 			public FixedString12Layout symbol;
 			public FixedString1Layout issueClass;
 			public int securityID;
+			public int altID;
 			public FixedString4Layout sic;
 			public FixedString10Layout cik;
 			public FixedString8Layout gics;
@@ -9223,6 +9215,7 @@ namespace SpiderRock.DataFeed
 			public float futVolume;
 			public float optVolume;
 			public FixedString8Layout exchString;
+			public YesNo hasOptions;
 			public int numOptions;
 			public int sharesOutstanding;
 			public TimeMetric timeMetric;
@@ -9290,6 +9283,12 @@ namespace SpiderRock.DataFeed
         public string ParValueCurrency { get { return CacheVar.AllocIfNull(ref parValueCurrency).Get(ref body.parValueCurrency, usn); } set { CacheVar.AllocIfNull(ref parValueCurrency).Set(value); body.parValueCurrency = value; } }
  
 		
+        public float PointValue { get { return body.pointValue; } set { body.pointValue = value; } }
+ 
+		
+        public Currency PointCurrency { get { return body.pointCurrency; } set { body.pointCurrency = value; } }
+ 
+		
         public PrimaryExchange PrimaryExch { get { return body.primaryExch; } set { body.primaryExch = value; } }
  
 		/// <summary>ISO Market Identification Code</summary>
@@ -9306,6 +9305,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>Security ID number from the source - Vendor, SR, Feed</summary>
         public int SecurityID { get { return body.securityID; } set { body.securityID = value; } }
+ 
+		/// <summary>Alt Security ID number</summary>
+        public int AltID { get { return body.altID; } set { body.altID = value; } }
  
 		/// <summary>SIC (Standard Industrial Classification) code</summary>
         public string Sic { get { return CacheVar.AllocIfNull(ref sic).Get(ref body.sic, usn); } set { CacheVar.AllocIfNull(ref sic).Set(value); body.sic = value; } }
@@ -9363,6 +9365,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>exchanges listing any options on this underlying</summary>
         public string ExchString { get { return CacheVar.AllocIfNull(ref exchString).Get(ref body.exchString, usn); } set { CacheVar.AllocIfNull(ref exchString).Set(value); body.exchString = value; } }
+ 
+		
+        public YesNo HasOptions { get { return body.hasOptions; } set { body.hasOptions = value; } }
  
 		/// <summary>total number of listed options</summary>
         public int NumOptions { get { return body.numOptions; } set { body.numOptions = value; } }
