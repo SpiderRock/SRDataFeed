@@ -50,8 +50,8 @@ namespace SpiderRock
 			StockMarketSummary = 3040,
 			StockPrint = 3045,
 			StockPrintMarkup = 3055,
-			SyntheticPrint = 2690,
-			SyntheticQuote = 2695,
+			SyntheticExpiryQuote = 2700,
+			SyntheticFutureQuote = 2695,
 			TickerDefinitionExt = 4380,
 			
 			MLinkCacheRequest = 3355,

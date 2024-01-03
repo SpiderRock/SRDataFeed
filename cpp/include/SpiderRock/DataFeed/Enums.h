@@ -403,19 +403,6 @@ namespace SpiderRock
 			OTCBonds=13
 		};
 
- 		enum class OpraMktType : Flag 
-		{
-			None=0,
-			Rotation=1,
-			TradingHalted=2,
-			CustInterest=4,
-			QuoteNotFirm=8
-		};		
-		inline OpraMktType operator|(OpraMktType a, OpraMktType b)
-		{
-			return static_cast<OpraMktType>(static_cast<int>(a) | static_cast<int>(b));
-		}
-			
  		enum class OptExch : Enum 
 		{
 			None=0,
@@ -446,6 +433,22 @@ namespace SpiderRock
 			MEMX=25
 		};
 
+ 		enum class OptMktType : Flag 
+		{
+			None=0,
+			Rotation=1,
+			TradingHalted=2,
+			CustInterest=4,
+			QuoteNotFirm=8,
+			Indicative=16,
+			AutoEligible=32,
+			Regular=64
+		};		
+		inline OptMktType operator|(OptMktType a, OptMktType b)
+		{
+			return static_cast<OptMktType>(static_cast<int>(a) | static_cast<int>(b));
+		}
+			
  		enum class OptPriceInc : Enum 
 		{
 			None=0,
@@ -538,13 +541,6 @@ namespace SpiderRock
 			FutureExact=3,
 			NormalApprox=4,
 			NormalExact=5
-		};
-
- 		enum class PricingSource : Enum 
-		{
-			None=0,
-			Native=1,
-			SyntheticExpiry=2
 		};
 
  		enum class PrimaryExchange : Enum 
@@ -828,7 +824,9 @@ namespace SpiderRock
 			StalePrcFit=51,
 			NoPrcCurves=52,
 			PriceError=53,
-			ConvergeFail=54
+			ConvergeFail=54,
+			NoUPrcRatio=55,
+			NoSDivValue=56
 		};
 
  		enum class SymbolType : Enum 
@@ -857,12 +855,9 @@ namespace SpiderRock
  		enum class SyntheticSource : Enum 
 		{
 			None=0,
-			StockBasket=1,
-			StockRoll=2,
-			NativeFuture=3,
-			FutureRoll=4,
-			IndexCalc=5,
-			IndexRatio=6
+			Future=1,
+			FutureRoll=2,
+			Stock=3
 		};
 
  		enum class SysEnvironment : Enum 

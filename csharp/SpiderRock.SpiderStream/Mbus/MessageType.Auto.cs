@@ -44,8 +44,8 @@ public partial struct MessageType
     internal static readonly MessageType StockMarketSummary = 3040;
     internal static readonly MessageType StockPrint = 3045;
     internal static readonly MessageType StockPrintMarkup = 3055;
-    internal static readonly MessageType SyntheticPrint = 2690;
-    internal static readonly MessageType SyntheticQuote = 2695;
+    internal static readonly MessageType SyntheticExpiryQuote = 2700;
+    internal static readonly MessageType SyntheticFutureQuote = 2695;
     internal static readonly MessageType TickerDefinitionExt = 4380;
     internal static readonly MessageType MLinkCacheRequest = 3355;
     internal static readonly MessageType MLinkStreamCheckPt = 3382;
@@ -100,7 +100,7 @@ public partial struct MessageType
             Type = 1030,
             Name = nameof(LiveSurfaceAtm),
             IsCore = true,
-            SchemaHash = 0x4d228ba1f22cca3e
+            SchemaHash = 0x617cbaf003a924cf
         };
 
         attributes[3355] = new()
@@ -164,7 +164,7 @@ public partial struct MessageType
             Type = 2785,
             Name = nameof(OptionNbboQuote),
             IsCore = true,
-            SchemaHash = 0x14845ebc5fc4cb9
+            SchemaHash = 0x22c6dab89bddc9e6
         };
 
         attributes[3230] = new()
@@ -220,7 +220,7 @@ public partial struct MessageType
             Type = 4365,
             Name = nameof(RootDefinition),
             IsCore = true,
-            SchemaHash = 0x2df9eb8d66f39000
+            SchemaHash = 0x4dcffa02770715bd
         };
 
         attributes[2525] = new()
@@ -303,20 +303,20 @@ public partial struct MessageType
             SchemaHash = 0x34195879f021c7b
         };
 
-        attributes[2690] = new()
+        attributes[2700] = new()
         {
-            Type = 2690,
-            Name = nameof(SyntheticPrint),
+            Type = 2700,
+            Name = nameof(SyntheticExpiryQuote),
             IsCore = true,
-            SchemaHash = 0x700ea092e898e52f
+            SchemaHash = 0x1d617821233b9033
         };
 
         attributes[2695] = new()
         {
             Type = 2695,
-            Name = nameof(SyntheticQuote),
+            Name = nameof(SyntheticFutureQuote),
             IsCore = true,
-            SchemaHash = 0x5026e8e2b8b5a21d
+            SchemaHash = 0xf2cebed6b10296f
         };
 
         attributes[4380] = new()

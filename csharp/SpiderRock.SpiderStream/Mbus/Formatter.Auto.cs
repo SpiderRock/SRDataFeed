@@ -1097,7 +1097,7 @@ internal unsafe partial class Formatter
     }
      
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Decode(ReadOnlySpan<byte> buffer, SyntheticPrint dest)
+    public void Decode(ReadOnlySpan<byte> buffer, SyntheticExpiryQuote dest)
     {
         fixed (byte* p = buffer)
         {
@@ -1106,12 +1106,12 @@ internal unsafe partial class Formatter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte* Decode(byte* src, SyntheticPrint dest, byte* max)
+    public byte* Decode(byte* src, SyntheticExpiryQuote dest, byte* max)
     {
         unchecked
         {
             var sizeOfHeader = *src;
-            if (src + sizeOfHeader + sizeof(SyntheticPrint.PKeyLayout) + sizeof(SyntheticPrint.BodyLayout) > max) throw new IOException("Max exceeded decoding SyntheticPrint");
+            if (src + sizeOfHeader + sizeof(SyntheticExpiryQuote.PKeyLayout) + sizeof(SyntheticExpiryQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding SyntheticExpiryQuote");
             
             if (sizeOfHeader == sizeof(Header))
             {
@@ -1124,15 +1124,15 @@ internal unsafe partial class Formatter
 
             src += sizeOfHeader;
 
-            dest.pkey.body = *((SyntheticPrint.PKeyLayout*) src); src += sizeof(SyntheticPrint.PKeyLayout);
-             dest.body = *((SyntheticPrint.BodyLayout*) src); src += sizeof(SyntheticPrint.BodyLayout);
+            dest.pkey.body = *((SyntheticExpiryQuote.PKeyLayout*) src); src += sizeof(SyntheticExpiryQuote.PKeyLayout);
+             dest.body = *((SyntheticExpiryQuote.BodyLayout*) src); src += sizeof(SyntheticExpiryQuote.BodyLayout);
 			
             return src;
         }
     }
      
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Decode(ReadOnlySpan<byte> buffer, SyntheticQuote dest)
+    public void Decode(ReadOnlySpan<byte> buffer, SyntheticFutureQuote dest)
     {
         fixed (byte* p = buffer)
         {
@@ -1141,12 +1141,12 @@ internal unsafe partial class Formatter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public byte* Decode(byte* src, SyntheticQuote dest, byte* max)
+    public byte* Decode(byte* src, SyntheticFutureQuote dest, byte* max)
     {
         unchecked
         {
             var sizeOfHeader = *src;
-            if (src + sizeOfHeader + sizeof(SyntheticQuote.PKeyLayout) + sizeof(SyntheticQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding SyntheticQuote");
+            if (src + sizeOfHeader + sizeof(SyntheticFutureQuote.PKeyLayout) + sizeof(SyntheticFutureQuote.BodyLayout) > max) throw new IOException("Max exceeded decoding SyntheticFutureQuote");
             
             if (sizeOfHeader == sizeof(Header))
             {
@@ -1159,8 +1159,8 @@ internal unsafe partial class Formatter
 
             src += sizeOfHeader;
 
-            dest.pkey.body = *((SyntheticQuote.PKeyLayout*) src); src += sizeof(SyntheticQuote.PKeyLayout);
-             dest.body = *((SyntheticQuote.BodyLayout*) src); src += sizeof(SyntheticQuote.BodyLayout);
+            dest.pkey.body = *((SyntheticFutureQuote.PKeyLayout*) src); src += sizeof(SyntheticFutureQuote.PKeyLayout);
+             dest.body = *((SyntheticFutureQuote.BodyLayout*) src); src += sizeof(SyntheticFutureQuote.BodyLayout);
 			
             return src;
         }

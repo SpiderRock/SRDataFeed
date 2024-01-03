@@ -42,8 +42,8 @@ public sealed partial class MbusClient
     MessageEventsDispatcher<StockMarketSummary> stockMarketSummaryDispatch;
     MessageEventsDispatcher<StockPrint> stockPrintDispatch;
     MessageEventsDispatcher<StockPrintMarkup> stockPrintMarkupDispatch;
-    MessageEventsDispatcher<SyntheticPrint> syntheticPrintDispatch;
-    MessageEventsDispatcher<SyntheticQuote> syntheticQuoteDispatch;
+    MessageEventsDispatcher<SyntheticExpiryQuote> syntheticExpiryQuoteDispatch;
+    MessageEventsDispatcher<SyntheticFutureQuote> syntheticFutureQuoteDispatch;
     MessageEventsDispatcher<TickerDefinitionExt> tickerDefinitionExtDispatch;
 
     private void InitializeMessageEventsDispatch(MessageCache messageCache)
@@ -76,8 +76,8 @@ public sealed partial class MbusClient
         stockMarketSummaryDispatch = new(messageCache.StockMarketSummary);
         stockPrintDispatch = new(messageCache.StockPrint);
         stockPrintMarkupDispatch = new(messageCache.StockPrintMarkup);
-        syntheticPrintDispatch = new(messageCache.SyntheticPrint);
-        syntheticQuoteDispatch = new(messageCache.SyntheticQuote);
+        syntheticExpiryQuoteDispatch = new(messageCache.SyntheticExpiryQuote);
+        syntheticFutureQuoteDispatch = new(messageCache.SyntheticFutureQuote);
         tickerDefinitionExtDispatch = new(messageCache.TickerDefinitionExt);
     }
 
@@ -113,8 +113,8 @@ public sealed partial class MbusClient
             /* StockMarketSummary */ 3040 => stockMarketSummaryDispatch,
             /* StockPrint */ 3045 => stockPrintDispatch,
             /* StockPrintMarkup */ 3055 => stockPrintMarkupDispatch,
-            /* SyntheticPrint */ 2690 => syntheticPrintDispatch,
-            /* SyntheticQuote */ 2695 => syntheticQuoteDispatch,
+            /* SyntheticExpiryQuote */ 2700 => syntheticExpiryQuoteDispatch,
+            /* SyntheticFutureQuote */ 2695 => syntheticFutureQuoteDispatch,
             /* TickerDefinitionExt */ 4380 => tickerDefinitionExtDispatch,
             _ => null
         };
@@ -148,7 +148,7 @@ public sealed partial class MbusClient
     public IMessageEvents<StockMarketSummary> StockMarketSummary => messageCache.StockMarketSummary;
     public IMessageEvents<StockPrint> StockPrint => messageCache.StockPrint;
     public IMessageEvents<StockPrintMarkup> StockPrintMarkup => messageCache.StockPrintMarkup;
-    public IMessageEvents<SyntheticPrint> SyntheticPrint => messageCache.SyntheticPrint;
-    public IMessageEvents<SyntheticQuote> SyntheticQuote => messageCache.SyntheticQuote;
+    public IMessageEvents<SyntheticExpiryQuote> SyntheticExpiryQuote => messageCache.SyntheticExpiryQuote;
+    public IMessageEvents<SyntheticFutureQuote> SyntheticFutureQuote => messageCache.SyntheticFutureQuote;
     public IMessageEvents<TickerDefinitionExt> TickerDefinitionExt => messageCache.TickerDefinitionExt;
 }

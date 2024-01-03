@@ -139,20 +139,21 @@ public partial class FutureBookQuote : IMessage
         
         public ExpiryKey Fkey { get => ExpiryKey.GetCreateExpiryKey(body.fkey); set => body.fkey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -419,20 +420,21 @@ public partial class FuturePrint : IMessage
         
         public ExpiryKey Fkey { get => ExpiryKey.GetCreateExpiryKey(body.fkey); set => body.fkey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -669,20 +671,21 @@ public partial class FuturePrintMarkup : IMessage
         
         public ExpiryKey Fkey { get => ExpiryKey.GetCreateExpiryKey(body.fkey); set => body.fkey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -931,20 +934,21 @@ public partial class IndexQuote : IMessage
         
         public TickerKey Ticker { get => TickerKey.GetCreateTickerKey(body.ticker); set => body.ticker = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -1148,20 +1152,21 @@ public partial class LiveImpliedQuote : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -1455,20 +1460,21 @@ public partial class LiveSurfaceAtm : IMessage
         
         public ExpiryKey Ekey { get => ExpiryKey.GetCreateExpiryKey(body.ekey); set => body.ekey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -1519,10 +1525,11 @@ public partial class LiveSurfaceAtm : IMessage
     {
         public TickerKeyLayout ticker;
 		public ExpiryKeyLayout fkey;
-		public float uBid;
-		public float uAsk;
+		public double uBid;
+		public double uAsk;
 		public float years;
 		public float rate;
+		public float sdiv;
 		public float ddiv;
 		public byte exType;
 		public byte modelType;
@@ -1539,14 +1546,8 @@ public partial class LiveSurfaceAtm : IMessage
 		public float atmCenHist;
 		public float minAtmVol;
 		public float maxAtmVol;
-		public float minCPAdjVal;
-		public float maxCPAdjVal;
 		public float eMove;
 		public float eMoveHist;
-		public float uPrcOffset;
-		public float uPrcOffsetEMA;
-		public float sdiv;
-		public float sdivEMA;
 		public float atmMove;
 		public float atmCenMove;
 		public float atmPhi;
@@ -1625,13 +1626,15 @@ public partial class LiveSurfaceAtm : IMessage
      /// <summary>future that this option expiration month written on (if any)</summary>
     public ExpiryKey Fkey { get => ExpiryKey.GetCreateExpiryKey(body.fkey); set => body.fkey = value.Layout; }
      /// <summary>underlier bid price</summary>
-    public float UBid { get => body.uBid; set => body.uBid = value; }
+    public double UBid { get => body.uBid; set => body.uBid = value; }
      /// <summary>underlier ask price</summary>
-    public float UAsk { get => body.uAsk; set => body.uAsk = value; }
+    public double UAsk { get => body.uAsk; set => body.uAsk = value; }
      /// <summary>time to expiration (in years)</summary>
     public float Years { get => body.years; set => body.years = value; }
      /// <summary>interest rate</summary>
     public float Rate { get => body.rate; set => body.rate = value; }
+     /// <summary>stock dividend (borrow rate)</summary>
+    public float Sdiv { get => body.sdiv; set => body.sdiv = value; }
      /// <summary>present value of discrete dividend stream</summary>
     public float Ddiv { get => body.ddiv; set => body.ddiv = value; }
      /// <summary>exercise type of the options used to compute this surface</summary>
@@ -1648,7 +1651,7 @@ public partial class LiveSurfaceAtm : IMessage
     public float AxisFUPrc { get => body.axisFUPrc; set => body.axisFUPrc = value; }
      /// <summary>moneyness (xAxis) convention</summary>
     public MoneynessType MoneynessType { get => body.moneynessType; set => body.moneynessType = value; }
-     /// <summary>underlier pricing mode (None=use spot/stock market; FrontMonth=use front month future market + uPrcOffset; Actual = use actual underlier future market)</summary>
+     /// <summary>underlier pricing mode (None=use spot/stock market; FrontMonth=use front month future market * uPrcRatio; Actual = use actual underlier future market)</summary>
     public UnderlierMode UnderlierMode { get => body.underlierMode; set => body.underlierMode = value; }
      /// <summary>Price or Vol</summary>
     public PriceQuoteType PriceQuoteType { get => body.priceQuoteType; set => body.priceQuoteType = value; }
@@ -1664,22 +1667,10 @@ public partial class LiveSurfaceAtm : IMessage
     public float MinAtmVol { get => body.minAtmVol; set => body.minAtmVol = value; }
      /// <summary>maximum estimated atm vol</summary>
     public float MaxAtmVol { get => body.maxAtmVol; set => body.maxAtmVol = value; }
-     /// <summary>minimum CP adjust value (sdiv or uPrcOffset)</summary>
-    public float MinCPAdjVal { get => body.minCPAdjVal; set => body.minCPAdjVal = value; }
-     /// <summary>maximum CP adjust value (sdiv or uPrcOffset)</summary>
-    public float MaxCPAdjVal { get => body.maxCPAdjVal; set => body.maxCPAdjVal = value; }
      /// <summary>implied earnings move (from LiveSurfaceTerm)</summary>
     public float EMove { get => body.eMove; set => body.eMove = value; }
      /// <summary>historical earnings move (avg of trailing 8 moves). From StockEarningsCalendar.eMoveHist</summary>
     public float EMoveHist { get => body.eMoveHist; set => body.eMoveHist = value; }
-     /// <summary>implied offset for use when fkey is not the natural underlier for this option expiry</summary>
-    public float UPrcOffset { get => body.uPrcOffset; set => body.uPrcOffset = value; }
-     /// <summary>time smoothed implied uPrcOffset (half-live ~ 20 seconds)</summary>
-    public float UPrcOffsetEMA { get => body.uPrcOffsetEMA; set => body.uPrcOffsetEMA = value; }
-     /// <summary>stock dividend (borrow rate)</summary>
-    public float Sdiv { get => body.sdiv; set => body.sdiv = value; }
-     /// <summary>sdiv exp moving average (10 minutes)</summary>
-    public float SdivEMA { get => body.sdivEMA; set => body.sdivEMA = value; }
      /// <summary>fixed strike atm move from prior period</summary>
     public float AtmMove { get => body.atmMove; set => body.atmMove = value; }
      /// <summary>fixed strike atm (censored) move from prior period</summary>
@@ -1827,7 +1818,8 @@ public partial class LiveSurfaceAtm : IMessage
 /// OptionCloseMark:3140
 /// </summary>
 /// <remarks>
-/// </remarks>
+	/// OptionCloseMark records are created immediately after the market close (clsMarkState=SRClose), when exchanges publish official marks (clsMarkState=ExchClose), and again during top of day rotation (clsMarkState=Final).  These records contain closing quotes and prices as well as markup details for all outright options.
+	/// OptionCloseMark records are published to the SpiderRock elastic cluster when clsMarkState=Final/// </remarks>
 
 public partial class OptionCloseMark : IMessage
 {
@@ -1948,20 +1940,21 @@ public partial class OptionCloseMark : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -2259,20 +2252,21 @@ public partial class OptionExchOrder : IMessage
          
         public OptExch Exch { get => body.exch; set => body.exch = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -2512,20 +2506,21 @@ public partial class OptionExchPrint : IMessage
         /// <summary>SR Generated unique print ID</summary>
         public long SrPrintID { get => body.srPrintID; set => body.srPrintID = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -2738,20 +2733,21 @@ public partial class OptionMarketSummary : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -3003,20 +2999,21 @@ public partial class OptionNbboQuote : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -3076,8 +3073,8 @@ public partial class OptionNbboQuote : IMessage
 		public OptExch askExch;
 		public uint bidMask;
 		public uint askMask;
-		public OpraMktType bidMktType;
-		public OpraMktType askMktType;
+		public OptMktType bidMktType;
+		public OptMktType askMktType;
 		public float bidPrice2;
 		public float askPrice2;
 		public int cumBidSize2;
@@ -3113,9 +3110,9 @@ public partial class OptionNbboQuote : IMessage
      /// <summary>exchange ask bit mask</summary>
     public uint AskMask { get => body.askMask; set => body.askMask = value; }
      /// <summary>bid side quote flags (if any)</summary>
-    public OpraMktType BidMktType { get => body.bidMktType; set => body.bidMktType = value; }
+    public OptMktType BidMktType { get => body.bidMktType; set => body.bidMktType = value; }
      /// <summary>ask side quote flags (if any)</summary>
-    public OpraMktType AskMktType { get => body.askMktType; set => body.askMktType = value; }
+    public OptMktType AskMktType { get => body.askMktType; set => body.askMktType = value; }
      /// <summary>2nd best bid price</summary>
     public float BidPrice2 { get => body.bidPrice2; set => body.bidPrice2 = value; }
      /// <summary>2nd best ask price</summary>
@@ -3262,20 +3259,21 @@ public partial class OptionOpenInterest : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -3464,20 +3462,21 @@ public partial class OptionPrint : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -3765,20 +3764,21 @@ public partial class OptionPrint2 : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -4054,20 +4054,21 @@ public partial class OptionPrintMarkup : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -4427,20 +4428,21 @@ public partial class OptionRiskFactor : IMessage
         
         public OptionKey Okey { get => OptionKey.GetCreateOptionKey(body.okey); set => body.okey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -4559,7 +4561,7 @@ public partial class OptionRiskFactor : IMessage
 /// ProductDefinitionV2:4360
 /// </summary>
 /// <remarks>
-/// </remarks>
+	/// SpiderRock normalized exchange product definitions.  Includes future, option, and spread definitions from a number of exchanges.  TickerDefinitions, RootDefinitions and CCodeDefinitions are consistent with these records./// </remarks>
 
 public partial class ProductDefinitionV2 : IMessage
 {
@@ -4646,24 +4648,31 @@ public partial class ProductDefinitionV2 : IMessage
          pkey.CopyTo(target.pkey);
          target.body = body;
  
-        if (LegsList != null)
+        if ((LegsList?.Length ?? 0) > 0)
         {
-            target.LegsList = new LegsItem[LegsList.Length];
+            if ((target.LegsList?.Length ?? 0) != LegsList.Length)
+            {
+                target.LegsList = new LegsItem[LegsList.Length];
+            }
+
             for (int i = 0; i < LegsList.Length; i++)
             {
                 var src = LegsList[i];
-                
-                var dest = new LegsItem();
-					dest.LegID = src.LegID;
- 					dest.SecKey = src.SecKey;
- 					dest.SecType = src.SecType;
- 					dest.Side = src.Side;
- 					dest.Ratio = src.Ratio;
- 					dest.RefDelta = src.RefDelta;
- 					dest.RefPrc = src.RefPrc;
+                var dest = target.LegsList[i] ?? new LegsItem();
+				dest.LegID = src.LegID;
+ 				dest.SecKey = src.SecKey;
+ 				dest.SecType = src.SecType;
+ 				dest.Side = src.Side;
+ 				dest.Ratio = src.Ratio;
+ 				dest.RefDelta = src.RefDelta;
+ 				dest.RefPrc = src.RefPrc;
 
                 target.LegsList[i] = dest;
             }
+        }
+        else if ((target.LegsList?.Length ?? 0) > 0)
+        {
+            target.LegsList = null;
         }
 
     }
@@ -4703,20 +4712,21 @@ public partial class ProductDefinitionV2 : IMessage
          /// <summary>Security Type [Stock, Future, Option]</summary>
         public SpdrKeyType SecType { get => body.secType; set => body.secType = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -4939,7 +4949,7 @@ public partial class ProductDefinitionV2 : IMessage
 /// RootDefinition:4365
 /// </summary>
 /// <remarks>
-/// </remarks>
+	/// RootDefinition records are sourced from the listing exchange for future options and from OCC for US equity options.  Records are updated as SpiderRock receives changes./// </remarks>
 
 public partial class RootDefinition : IMessage
 {
@@ -5026,19 +5036,26 @@ public partial class RootDefinition : IMessage
          pkey.CopyTo(target.pkey);
          target.body = body;
  
-        if (UnderlyingList != null)
+        if ((UnderlyingList?.Length ?? 0) > 0)
         {
-            target.UnderlyingList = new UnderlyingItem[UnderlyingList.Length];
+            if ((target.UnderlyingList?.Length ?? 0) != UnderlyingList.Length)
+            {
+                target.UnderlyingList = new UnderlyingItem[UnderlyingList.Length];
+            }
+
             for (int i = 0; i < UnderlyingList.Length; i++)
             {
                 var src = UnderlyingList[i];
-                
-                var dest = new UnderlyingItem();
-					dest.Ticker = src.Ticker;
- 					dest.Spc = src.Spc;
+                var dest = target.UnderlyingList[i] ?? new UnderlyingItem();
+				dest.Ticker = src.Ticker;
+ 				dest.Spc = src.Spc;
 
                 target.UnderlyingList[i] = dest;
             }
+        }
+        else if ((target.UnderlyingList?.Length ?? 0) > 0)
+        {
+            target.UnderlyingList = null;
         }
 
     }
@@ -5076,20 +5093,21 @@ public partial class RootDefinition : IMessage
         
         public TickerKey Root { get => TickerKey.GetCreateTickerKey(body.root); set => body.root = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -5162,9 +5180,13 @@ public partial class RootDefinition : IMessage
         public TickerKeyLayout ticker;
 		public FixedString8Layout osiRoot;
 		public TickerKeyLayout ccode;
+		public ExpiryKeyLayout uPrcDriverKey;
+		public SpdrKeyType uPrcDriverType;
+		public ExpiryKeyLayout uPrcDriverKey2;
+		public SpdrKeyType uPrcDriverType2;
+		public YesNo uPrcBoundCCode;
 		public ExpirationMap expirationMap;
 		public UnderlierMode underlierMode;
-		public PricingSource pricingSource;
 		public OptionType optionType;
 		public Multihedge multihedge;
 		public ExerciseTime exerciseTime;
@@ -5196,18 +5218,26 @@ public partial class RootDefinition : IMessage
 
     internal BodyLayout body;
 
-    /// <summary>master underlying</summary>
+    /// <summary>master underlying (can be a stock/product group; eg. @ES)</summary>
     public TickerKey Ticker { get => TickerKey.GetCreateTickerKey(body.ticker); set => body.ticker = value.Layout; }
      /// <summary>long version of the root.  the short version is used in the TickerKey (for example RYAAY1, not RYAA1)</summary>
     public string OsiRoot { get => body.osiRoot; set => body.osiRoot = value; }
      
     public TickerKey Ccode { get => TickerKey.GetCreateTickerKey(body.ccode); set => body.ccode = value.Layout; }
-     
+     /// <summary>(optional) option underlier price driver (all option expiries) (overrides optExpiryDefinition)</summary>
+    public ExpiryKey UPrcDriverKey { get => ExpiryKey.GetCreateExpiryKey(body.uPrcDriverKey); set => body.uPrcDriverKey = value.Layout; }
+     /// <summary>Stock or Future (note: if Future and uPrcDriverKey does not have an expiry month then FrontMonth will be used)</summary>
+    public SpdrKeyType UPrcDriverType { get => body.uPrcDriverType; set => body.uPrcDriverType = value; }
+     /// <summary>(optional) alternate option underlier price driver (all option expiries) (overrides optExpiryDefinition)</summary>
+    public ExpiryKey UPrcDriverKey2 { get => ExpiryKey.GetCreateExpiryKey(body.uPrcDriverKey2); set => body.uPrcDriverKey2 = value.Layout; }
+     /// <summary>Stock or Future (note: if Future and uPrcDriverKey does not have an expiry month then FrontMonth will be used)</summary>
+    public SpdrKeyType UPrcDriverType2 { get => body.uPrcDriverType2; set => body.uPrcDriverType2 = value; }
+     /// <summary>if Yes and if a future exists with ccode=CCode and futExpiry = optExpiry the use this future as a pricing bound</summary>
+    public YesNo UPrcBoundCCode { get => body.uPrcBoundCCode; set => body.uPrcBoundCCode = value; }
+     /// <summary>determines the underlying future (if any)</summary>
     public ExpirationMap ExpirationMap { get => body.expirationMap; set => body.expirationMap = value; }
      
     public UnderlierMode UnderlierMode { get => body.underlierMode; set => body.underlierMode = value; }
-     /// <summary>note: synthetics are priced by root + expiry (from the SyntheticQuote/SyntheticPrint messages)</summary>
-    public PricingSource PricingSource { get => body.pricingSource; set => body.pricingSource = value; }
      /// <summary>indicator for option type</summary>
     public OptionType OptionType { get => body.optionType; set => body.optionType = value; }
      /// <summary>indicates type of multihedge</summary>
@@ -5358,21 +5388,28 @@ public partial class SpdrAuctionState : IMessage
          pkey.CopyTo(target.pkey);
          target.body = body;
  
-        if (LegsList != null)
+        if ((LegsList?.Length ?? 0) > 0)
         {
-            target.LegsList = new LegsItem[LegsList.Length];
+            if ((target.LegsList?.Length ?? 0) != LegsList.Length)
+            {
+                target.LegsList = new LegsItem[LegsList.Length];
+            }
+
             for (int i = 0; i < LegsList.Length; i++)
             {
                 var src = LegsList[i];
-                
-                var dest = new LegsItem();
-					dest.LegSecKey = src.LegSecKey;
- 					dest.LegSecType = src.LegSecType;
- 					dest.LegSide = src.LegSide;
- 					dest.LegRatio = src.LegRatio;
+                var dest = target.LegsList[i] ?? new LegsItem();
+				dest.LegSecKey = src.LegSecKey;
+ 				dest.LegSecType = src.LegSecType;
+ 				dest.LegSide = src.LegSide;
+ 				dest.LegRatio = src.LegRatio;
 
                 target.LegsList[i] = dest;
             }
+        }
+        else if ((target.LegsList?.Length ?? 0) > 0)
+        {
+            target.LegsList = null;
         }
 
     }
@@ -5416,20 +5453,21 @@ public partial class SpdrAuctionState : IMessage
          /// <summary>external exDest of auction (usually means auction is off-exchange)</summary>
         public string AuctionExDest { get => body.auctionExDest; set => body.auctionExDest = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -5747,20 +5785,21 @@ public partial class SpreadBookQuote : IMessage
          /// <summary>Yes indicates that response is made of entirely of isTest=Yes SpreadExchOrders</summary>
         public YesNo IsTest { get => body.isTest; set => body.isTest = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -5981,22 +6020,29 @@ public partial class SpreadExchOrder : IMessage
          pkey.CopyTo(target.pkey);
          target.body = body;
  
-        if (LegsList != null)
+        if ((LegsList?.Length ?? 0) > 0)
         {
-            target.LegsList = new LegsItem[LegsList.Length];
+            if ((target.LegsList?.Length ?? 0) != LegsList.Length)
+            {
+                target.LegsList = new LegsItem[LegsList.Length];
+            }
+
             for (int i = 0; i < LegsList.Length; i++)
             {
                 var src = LegsList[i];
-                
-                var dest = new LegsItem();
-					dest.LegSecKey = src.LegSecKey;
- 					dest.LegSecType = src.LegSecType;
- 					dest.LegSide = src.LegSide;
- 					dest.LegRatio = src.LegRatio;
- 					dest.PositionType = src.PositionType;
+                var dest = target.LegsList[i] ?? new LegsItem();
+				dest.LegSecKey = src.LegSecKey;
+ 				dest.LegSecType = src.LegSecType;
+ 				dest.LegSide = src.LegSide;
+ 				dest.LegRatio = src.LegRatio;
+ 				dest.PositionType = src.PositionType;
 
                 target.LegsList[i] = dest;
             }
+        }
+        else if ((target.LegsList?.Length ?? 0) > 0)
+        {
+            target.LegsList = null;
         }
 
     }
@@ -6040,20 +6086,21 @@ public partial class SpreadExchOrder : IMessage
          
         public YesNo IsTest { get => body.isTest; set => body.isTest = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -6292,22 +6339,29 @@ public partial class SpreadExchPrint : IMessage
          pkey.CopyTo(target.pkey);
          target.body = body;
  
-        if (LegsList != null)
+        if ((LegsList?.Length ?? 0) > 0)
         {
-            target.LegsList = new LegsItem[LegsList.Length];
+            if ((target.LegsList?.Length ?? 0) != LegsList.Length)
+            {
+                target.LegsList = new LegsItem[LegsList.Length];
+            }
+
             for (int i = 0; i < LegsList.Length; i++)
             {
                 var src = LegsList[i];
-                
-                var dest = new LegsItem();
-					dest.LegSecKey = src.LegSecKey;
- 					dest.LegSecType = src.LegSecType;
- 					dest.LegSide = src.LegSide;
- 					dest.LegRatio = src.LegRatio;
- 					dest.PositionType = src.PositionType;
+                var dest = target.LegsList[i] ?? new LegsItem();
+				dest.LegSecKey = src.LegSecKey;
+ 				dest.LegSecType = src.LegSecType;
+ 				dest.LegSide = src.LegSide;
+ 				dest.LegRatio = src.LegRatio;
+ 				dest.PositionType = src.PositionType;
 
                 target.LegsList[i] = dest;
             }
+        }
+        else if ((target.LegsList?.Length ?? 0) > 0)
+        {
+            target.LegsList = null;
         }
 
     }
@@ -6347,20 +6401,21 @@ public partial class SpreadExchPrint : IMessage
          /// <summary>Exchange reporting print</summary>
         public OptExch Exch { get => body.exch; set => body.exch = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -6633,20 +6688,21 @@ public partial class StockBookQuote : IMessage
         
         public TickerKey Ticker { get => TickerKey.GetCreateTickerKey(body.ticker); set => body.ticker = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -6899,20 +6955,21 @@ public partial class StockExchImbalanceV2 : IMessage
          
         public PrimaryExchange Exchange { get => body.exchange; set => body.exchange = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -7152,20 +7209,21 @@ public partial class StockImbalance : IMessage
          /// <summary>Opening/Closing</summary>
         public AuctionReason AuctionType { get => body.auctionType; set => body.auctionType = value; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -7384,20 +7442,21 @@ public partial class StockMarketSummary : IMessage
         
         public TickerKey Ticker { get => TickerKey.GetCreateTickerKey(body.ticker); set => body.ticker = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -7640,20 +7699,21 @@ public partial class StockPrint : IMessage
         
         public TickerKey Ticker { get => TickerKey.GetCreateTickerKey(body.ticker); set => body.ticker = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -7902,20 +7962,21 @@ public partial class StockPrintMarkup : IMessage
         
         public TickerKey Ticker { get => TickerKey.GetCreateTickerKey(body.ticker); set => body.ticker = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -8049,12 +8110,12 @@ public partial class StockPrintMarkup : IMessage
 
 
 /// <summary>
-/// SyntheticPrint:2690
+/// SyntheticExpiryQuote:2700
 /// </summary>
 /// <remarks>
-	/// Live synthetic prints are SpiderRock computed synthetic prints (actual prints in related markets adjusted to match the synthetic instrument)/// </remarks>
+	/// Live synthetic expiry quotes are SpiderRock option/expiry underlier quotes.  These can be from synthetic/implied futures quotes or other sources/// </remarks>
 
-public partial class SyntheticPrint : IMessage
+public partial class SyntheticExpiryQuote : IMessage
 {
     #region IMessage implementation
 
@@ -8089,32 +8150,32 @@ public partial class SyntheticPrint : IMessage
 
     #endregion
 
-    public SyntheticPrint()
+    public SyntheticExpiryQuote()
     {
     }
     
-    public SyntheticPrint(PKey pkey)
+    public SyntheticExpiryQuote(PKey pkey)
     {
         this.pkey.body = pkey.body;
     }
     
-    public SyntheticPrint(SyntheticPrint source)
+    public SyntheticExpiryQuote(SyntheticExpiryQuote source)
     {
         source.CopyTo(this);
     }
     
-    internal SyntheticPrint(PKeyLayout pkey)
+    internal SyntheticExpiryQuote(PKeyLayout pkey)
     {
         this.pkey.body = pkey;
     }
 
     public override bool Equals(object other)
     {
-        return Equals(other as SyntheticPrint);
+        return Equals(other as SyntheticExpiryQuote);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(SyntheticPrint other)
+    public bool Equals(SyntheticExpiryQuote other)
     {
         if (ReferenceEquals(other, null)) return false;
         if (ReferenceEquals(other, this)) return true;
@@ -8133,7 +8194,7 @@ public partial class SyntheticPrint : IMessage
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyTo(SyntheticPrint target)
+    public void CopyTo(SyntheticExpiryQuote target)
     {			
         target.header = header;
          pkey.CopyTo(target.pkey);
@@ -8152,7 +8213,7 @@ public partial class SyntheticPrint : IMessage
     
     internal SourceId SourceId => header.sourceid;
 
-    internal Header header = new() {msgtype = MessageType.SyntheticPrint};
+    internal Header header = new() {msgtype = MessageType.SyntheticExpiryQuote};
     
      public sealed class PKey : IEquatable<PKey>, ICloneable
     {
@@ -8170,23 +8231,24 @@ public partial class SyntheticPrint : IMessage
 				
         }
         
-        
+        /// <summary>root + expiry</summary>
         public ExpiryKey Ekey { get => ExpiryKey.GetCreateExpiryKey(body.ekey); set => body.ekey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -8235,44 +8297,49 @@ public partial class SyntheticPrint : IMessage
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
     internal struct BodyLayout
     {
-        public double printPrice;
-		public int printSize;
-		public ExpiryKeyLayout prtKey;
-		public SpdrKeyType prtSecType;
-		public SyntheticSource prtSource;
+        public double fairPrice;
+		public double bidPrice;
+		public double askPrice;
+		public int bidSize;
+		public int askSize;
+		public SyntheticSource bidSource;
+		public SyntheticSource askSource;
+		public MarketStatus marketStatus;
 		public long netTimestamp;
-		public DateTimeLayout timestamp;
     }
 
     internal BodyLayout body;
 
-    /// <summary>synthetic print price (best estimate of adjusted synthetic price)</summary>
-    public double PrintPrice { get => body.printPrice; set => body.printPrice = value; }
-     /// <summary>print size in the associated market adjusted to match the synthetic basis</summary>
-    public int PrintSize { get => body.printSize; set => body.printSize = value; }
+    
+    public double FairPrice { get => body.fairPrice; set => body.fairPrice = value; }
+     /// <summary>best implied bid price</summary>
+    public double BidPrice { get => body.bidPrice; set => body.bidPrice = value; }
+     /// <summary>best implied ask price</summary>
+    public double AskPrice { get => body.askPrice; set => body.askPrice = value; }
+     /// <summary>best implied bid size</summary>
+    public int BidSize { get => body.bidSize; set => body.bidSize = value; }
+     /// <summary>best implied ask size</summary>
+    public int AskSize { get => body.askSize; set => body.askSize = value; }
      
-    public ExpiryKey PrtKey { get => ExpiryKey.GetCreateExpiryKey(body.prtKey); set => body.prtKey = value.Layout; }
+    public SyntheticSource BidSource { get => body.bidSource; set => body.bidSource = value; }
      
-    public SpdrKeyType PrtSecType { get => body.prtSecType; set => body.prtSecType = value; }
-     
-    public SyntheticSource PrtSource { get => body.prtSource; set => body.prtSource = value; }
-     
+    public SyntheticSource AskSource { get => body.askSource; set => body.askSource = value; }
+     /// <summary>composite market status of all dependent markets</summary>
+    public MarketStatus MarketStatus { get => body.marketStatus; set => body.marketStatus = value; }
+     /// <summary>most recent net timestamp of any market affecting this record</summary>
     public long NetTimestamp { get => body.netTimestamp; set => body.netTimestamp = value; }
-     
-    public DateTime Timestamp { get => body.timestamp; set => body.timestamp = value; }
 
 
-} // SyntheticPrint
+} // SyntheticExpiryQuote
 
 
 /// <summary>
-/// SyntheticQuote:2695
+/// SyntheticFutureQuote:2695
 /// </summary>
 /// <remarks>
-	/// Live synthetic quotes are SpiderRock computed synthetic underlier quotes for options without a market based underlier.  Synthetic quotes are generated for
-	/// index options (cash settled options written on an index), and options on futures./// </remarks>
+	/// Live synthetic future quotes are SpiderRock implied futures quotes derived from roll prices./// </remarks>
 
-public partial class SyntheticQuote : IMessage
+public partial class SyntheticFutureQuote : IMessage
 {
     #region IMessage implementation
 
@@ -8307,32 +8374,32 @@ public partial class SyntheticQuote : IMessage
 
     #endregion
 
-    public SyntheticQuote()
+    public SyntheticFutureQuote()
     {
     }
     
-    public SyntheticQuote(PKey pkey)
+    public SyntheticFutureQuote(PKey pkey)
     {
         this.pkey.body = pkey.body;
     }
     
-    public SyntheticQuote(SyntheticQuote source)
+    public SyntheticFutureQuote(SyntheticFutureQuote source)
     {
         source.CopyTo(this);
     }
     
-    internal SyntheticQuote(PKeyLayout pkey)
+    internal SyntheticFutureQuote(PKeyLayout pkey)
     {
         this.pkey.body = pkey;
     }
 
     public override bool Equals(object other)
     {
-        return Equals(other as SyntheticQuote);
+        return Equals(other as SyntheticFutureQuote);
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(SyntheticQuote other)
+    public bool Equals(SyntheticFutureQuote other)
     {
         if (ReferenceEquals(other, null)) return false;
         if (ReferenceEquals(other, this)) return true;
@@ -8351,7 +8418,7 @@ public partial class SyntheticQuote : IMessage
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void CopyTo(SyntheticQuote target)
+    public void CopyTo(SyntheticFutureQuote target)
     {			
         target.header = header;
          pkey.CopyTo(target.pkey);
@@ -8370,7 +8437,7 @@ public partial class SyntheticQuote : IMessage
     
     internal SourceId SourceId => header.sourceid;
 
-    internal Header header = new() {msgtype = MessageType.SyntheticQuote};
+    internal Header header = new() {msgtype = MessageType.SyntheticFutureQuote};
     
      public sealed class PKey : IEquatable<PKey>, ICloneable
     {
@@ -8388,23 +8455,24 @@ public partial class SyntheticQuote : IMessage
 				
         }
         
-        /// <summary>option root + expiry</summary>
-        public ExpiryKey Ekey { get => ExpiryKey.GetCreateExpiryKey(body.ekey); set => body.ekey = value.Layout; }
+        /// <summary>ccode + expiry</summary>
+        public ExpiryKey Fkey { get => ExpiryKey.GetCreateExpiryKey(body.fkey); set => body.fkey = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);
@@ -8425,12 +8493,12 @@ public partial class SyntheticQuote : IMessage
     [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
     internal struct PKeyLayout : IEquatable<PKeyLayout>
     {
-        public ExpiryKeyLayout ekey;
+        public ExpiryKeyLayout fkey;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(PKeyLayout other)
         {
-            return	ekey.Equals(other.ekey);
+            return	fkey.Equals(other.fkey);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -8441,7 +8509,7 @@ public partial class SyntheticQuote : IMessage
         {
             unchecked
             {
-                var hashCode = ekey.GetHashCode();
+                var hashCode = fkey.GetHashCode();
 
                 return hashCode;
             }
@@ -8457,82 +8525,40 @@ public partial class SyntheticQuote : IMessage
 		public double askPrice;
 		public int bidSize;
 		public int askSize;
-		public ExpiryKeyLayout bidKey;
-		public SpdrKeyType bidKeyType;
-		public ExpiryKeyLayout askKey;
-		public SpdrKeyType askKeyType;
 		public SyntheticSource bidSource;
 		public SyntheticSource askSource;
-		public double undBidPrice;
-		public double undAskPrice;
-		public int undBidSize;
-		public int undAskSize;
-		public ExpiryKeyLayout undKey;
-		public SpdrKeyType undKeyType;
-		public MarketStatus undMarketStatus;
-		public double uOffPrice;
-		public ExpiryKeyLayout uOffKey;
-		public SpdrKeyType uOffKeyType;
+		public MarketStatus marketStatus;
 		public long netTimestamp;
-		public DateTimeLayout timestamp;
     }
 
     internal BodyLayout body;
 
-    /// <summary>best synthetic bid price</summary>
+    /// <summary>best implied future bid price (adjusted for option expiry)</summary>
     public double BidPrice { get => body.bidPrice; set => body.bidPrice = value; }
-     /// <summary>best synthetic ask price</summary>
+     /// <summary>best implied future ask price (adjusted for option expiry)</summary>
     public double AskPrice { get => body.askPrice; set => body.askPrice = value; }
-     /// <summary>best synthetic bid size</summary>
+     /// <summary>best implied future bid size</summary>
     public int BidSize { get => body.bidSize; set => body.bidSize = value; }
-     /// <summary>best synthetic ask size</summary>
+     /// <summary>best implied future ask size</summary>
     public int AskSize { get => body.askSize; set => body.askSize = value; }
-     
-    public ExpiryKey BidKey { get => ExpiryKey.GetCreateExpiryKey(body.bidKey); set => body.bidKey = value.Layout; }
-     
-    public SpdrKeyType BidKeyType { get => body.bidKeyType; set => body.bidKeyType = value; }
-     
-    public ExpiryKey AskKey { get => ExpiryKey.GetCreateExpiryKey(body.askKey); set => body.askKey = value.Layout; }
-     
-    public SpdrKeyType AskKeyType { get => body.askKeyType; set => body.askKeyType = value; }
      
     public SyntheticSource BidSource { get => body.bidSource; set => body.bidSource = value; }
      
     public SyntheticSource AskSource { get => body.askSource; set => body.askSource = value; }
-     /// <summary>bid price (actual underlier market; if any)</summary>
-    public double UndBidPrice { get => body.undBidPrice; set => body.undBidPrice = value; }
-     /// <summary>ask price (actual underlier market; if any)</summary>
-    public double UndAskPrice { get => body.undAskPrice; set => body.undAskPrice = value; }
-     /// <summary>bid size (actual underlier market; if any)</summary>
-    public int UndBidSize { get => body.undBidSize; set => body.undBidSize = value; }
-     /// <summary>ask size (actual underlier market; if any)</summary>
-    public int UndAskSize { get => body.undAskSize; set => body.undAskSize = value; }
-     
-    public ExpiryKey UndKey { get => ExpiryKey.GetCreateExpiryKey(body.undKey); set => body.undKey = value.Layout; }
-     
-    public SpdrKeyType UndKeyType { get => body.undKeyType; set => body.undKeyType = value; }
-     
-    public MarketStatus UndMarketStatus { get => body.undMarketStatus; set => body.undMarketStatus = value; }
-     /// <summary>uOffKey: 0.5 * (bid + ask) + uOffsetEMA (From LiveAtmVol/LiveSurfaceCurve)</summary>
-    public double UOffPrice { get => body.uOffPrice; set => body.uOffPrice = value; }
-     /// <summary>copied from LiveSurfaceCurve.fkey</summary>
-    public ExpiryKey UOffKey { get => ExpiryKey.GetCreateExpiryKey(body.uOffKey); set => body.uOffKey = value.Layout; }
-     
-    public SpdrKeyType UOffKeyType { get => body.uOffKeyType; set => body.uOffKeyType = value; }
-     
+     /// <summary>composite market status of all dependent markets</summary>
+    public MarketStatus MarketStatus { get => body.marketStatus; set => body.marketStatus = value; }
+     /// <summary>most recent net timestamp of any market affecting this record</summary>
     public long NetTimestamp { get => body.netTimestamp; set => body.netTimestamp = value; }
-     
-    public DateTime Timestamp { get => body.timestamp; set => body.timestamp = value; }
 
 
-} // SyntheticQuote
+} // SyntheticFutureQuote
 
 
 /// <summary>
 /// TickerDefinitionExt:4380
 /// </summary>
 /// <remarks>
-/// </remarks>
+	/// TickerDefinitionExt (external) records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets./// </remarks>
 
 public partial class TickerDefinitionExt : IMessage
 {
@@ -8653,20 +8679,21 @@ public partial class TickerDefinitionExt : IMessage
         
         public TickerKey Ticker { get => TickerKey.GetCreateTickerKey(body.ticker); set => body.ticker = value.Layout; }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Clear()
         {
             body = new PKeyLayout();
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void CopyTo(PKey target)
         {
             target.body = body;
 
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public object Clone()
         {
             var target = new PKey(body);

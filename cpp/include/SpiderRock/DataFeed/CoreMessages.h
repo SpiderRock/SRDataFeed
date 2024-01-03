@@ -562,10 +562,11 @@ private:
 		Key pkey;
 		TickerKey ticker;
 		ExpiryKey fkey;
-		Float uBid;
-		Float uAsk;
+		Double uBid;
+		Double uAsk;
 		Float years;
 		Float rate;
+		Float sdiv;
 		Float ddiv;
 		Byte exType;
 		Byte modelType;
@@ -582,14 +583,8 @@ private:
 		Float atmCenHist;
 		Float minAtmVol;
 		Float maxAtmVol;
-		Float minCPAdjVal;
-		Float maxCPAdjVal;
 		Float eMove;
 		Float eMoveHist;
-		Float uPrcOffset;
-		Float uPrcOffsetEMA;
-		Float sdiv;
-		Float sdivEMA;
 		Float atmMove;
 		Float atmCenMove;
 		Float atmPhi;
@@ -675,10 +670,11 @@ public:
 	
 	inline const TickerKey& ticker() const { return layout_.ticker; }
 	inline const ExpiryKey& fkey() const { return layout_.fkey; }
-	inline Float uBid() const { return layout_.uBid; }
-	inline Float uAsk() const { return layout_.uAsk; }
+	inline Double uBid() const { return layout_.uBid; }
+	inline Double uAsk() const { return layout_.uAsk; }
 	inline Float years() const { return layout_.years; }
 	inline Float rate() const { return layout_.rate; }
+	inline Float sdiv() const { return layout_.sdiv; }
 	inline Float ddiv() const { return layout_.ddiv; }
 	inline Byte exType() const { return layout_.exType; }
 	inline Byte modelType() const { return layout_.modelType; }
@@ -695,14 +691,8 @@ public:
 	inline Float atmCenHist() const { return layout_.atmCenHist; }
 	inline Float minAtmVol() const { return layout_.minAtmVol; }
 	inline Float maxAtmVol() const { return layout_.maxAtmVol; }
-	inline Float minCPAdjVal() const { return layout_.minCPAdjVal; }
-	inline Float maxCPAdjVal() const { return layout_.maxCPAdjVal; }
 	inline Float eMove() const { return layout_.eMove; }
 	inline Float eMoveHist() const { return layout_.eMoveHist; }
-	inline Float uPrcOffset() const { return layout_.uPrcOffset; }
-	inline Float uPrcOffsetEMA() const { return layout_.uPrcOffsetEMA; }
-	inline Float sdiv() const { return layout_.sdiv; }
-	inline Float sdivEMA() const { return layout_.sdivEMA; }
 	inline Float atmMove() const { return layout_.atmMove; }
 	inline Float atmCenMove() const { return layout_.atmCenMove; }
 	inline Float atmPhi() const { return layout_.atmPhi; }
@@ -1236,8 +1226,8 @@ private:
 		OptExch askExch;
 		UInt bidMask;
 		UInt askMask;
-		OpraMktType bidMktType;
-		OpraMktType askMktType;
+		OptMktType bidMktType;
+		OptMktType askMktType;
 		Float bidPrice2;
 		Float askPrice2;
 		Int cumBidSize2;
@@ -1271,8 +1261,8 @@ public:
 	inline OptExch askExch() const { return layout_.askExch; }
 	inline UInt bidMask() const { return layout_.bidMask; }
 	inline UInt askMask() const { return layout_.askMask; }
-	inline OpraMktType bidMktType() const { return layout_.bidMktType; }
-	inline OpraMktType askMktType() const { return layout_.askMktType; }
+	inline OptMktType bidMktType() const { return layout_.bidMktType; }
+	inline OptMktType askMktType() const { return layout_.askMktType; }
 	inline Float bidPrice2() const { return layout_.bidPrice2; }
 	inline Float askPrice2() const { return layout_.askPrice2; }
 	inline Int cumBidSize2() const { return layout_.cumBidSize2; }
@@ -2095,9 +2085,13 @@ private:
 		TickerKey ticker;
 		String<8> osiRoot;
 		TickerKey ccode;
+		ExpiryKey uPrcDriverKey;
+		SpdrKeyType uPrcDriverType;
+		ExpiryKey uPrcDriverKey2;
+		SpdrKeyType uPrcDriverType2;
+		YesNo uPrcBoundCCode;
 		ExpirationMap expirationMap;
 		UnderlierMode underlierMode;
-		PricingSource pricingSource;
 		OptionType optionType;
 		Multihedge multihedge;
 		ExerciseTime exerciseTime;
@@ -2142,9 +2136,13 @@ public:
 	inline const TickerKey& ticker() const { return layout_.ticker; }
 	inline const String<8>& osiRoot() const { return layout_.osiRoot; }
 	inline const TickerKey& ccode() const { return layout_.ccode; }
+	inline const ExpiryKey& uPrcDriverKey() const { return layout_.uPrcDriverKey; }
+	inline SpdrKeyType uPrcDriverType() const { return layout_.uPrcDriverType; }
+	inline const ExpiryKey& uPrcDriverKey2() const { return layout_.uPrcDriverKey2; }
+	inline SpdrKeyType uPrcDriverType2() const { return layout_.uPrcDriverType2; }
+	inline YesNo uPrcBoundCCode() const { return layout_.uPrcBoundCCode; }
 	inline ExpirationMap expirationMap() const { return layout_.expirationMap; }
 	inline UnderlierMode underlierMode() const { return layout_.underlierMode; }
-	inline PricingSource pricingSource() const { return layout_.pricingSource; }
 	inline OptionType optionType() const { return layout_.optionType; }
 	inline Multihedge multihedge() const { return layout_.multihedge; }
 	inline ExerciseTime exerciseTime() const { return layout_.exerciseTime; }
@@ -3313,7 +3311,7 @@ public:
 
 };
 
- class SyntheticPrint
+ class SyntheticExpiryQuote
 {
 public:
 	class Key
@@ -3342,13 +3340,15 @@ private:
 	struct Layout
 	{
 		Key pkey;
-		Double printPrice;
-		Int printSize;
-		ExpiryKey prtKey;
-		SpdrKeyType prtSecType;
-		SyntheticSource prtSource;
+		Double fairPrice;
+		Double bidPrice;
+		Double askPrice;
+		Int bidSize;
+		Int askSize;
+		SyntheticSource bidSource;
+		SyntheticSource askSource;
+		MarketStatus marketStatus;
 		Long netTimestamp;
-		DateTime timestamp;
 	};
 	
 	Header header_;
@@ -3363,20 +3363,22 @@ public:
 	inline void time_received(uint64_t value) { time_received_ = value; }
 	inline uint64_t time_received() const { return time_received_; }
 	
-	inline Double printPrice() const { return layout_.printPrice; }
-	inline Int printSize() const { return layout_.printSize; }
-	inline const ExpiryKey& prtKey() const { return layout_.prtKey; }
-	inline SpdrKeyType prtSecType() const { return layout_.prtSecType; }
-	inline SyntheticSource prtSource() const { return layout_.prtSource; }
+	inline Double fairPrice() const { return layout_.fairPrice; }
+	inline Double bidPrice() const { return layout_.bidPrice; }
+	inline Double askPrice() const { return layout_.askPrice; }
+	inline Int bidSize() const { return layout_.bidSize; }
+	inline Int askSize() const { return layout_.askSize; }
+	inline SyntheticSource bidSource() const { return layout_.bidSource; }
+	inline SyntheticSource askSource() const { return layout_.askSource; }
+	inline MarketStatus marketStatus() const { return layout_.marketStatus; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
-		layout_ = *reinterpret_cast<SyntheticPrint::Layout*>(ptr);
+		layout_ = *reinterpret_cast<SyntheticExpiryQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 
@@ -3384,19 +3386,19 @@ public:
 
 };
 
- class SyntheticQuote
+ class SyntheticFutureQuote
 {
 public:
 	class Key
 	{
-		ExpiryKey ekey_;
+		ExpiryKey fkey_;
 		
 	public:
-		inline const ExpiryKey& ekey() const { return ekey_; }
+		inline const ExpiryKey& fkey() const { return fkey_; }
 
 		inline size_t operator()(const Key& k) const
 		{
-			size_t hash_code = ExpiryKey()(k.ekey_);
+			size_t hash_code = ExpiryKey()(k.fkey_);
 
 			return hash_code;
 		}
@@ -3404,7 +3406,7 @@ public:
 		inline bool operator()(const Key& a, const Key& b) const
 		{
 			return
-				a.ekey_ == b.ekey_;
+				a.fkey_ == b.fkey_;
 		}
 	};
 	
@@ -3417,24 +3419,10 @@ private:
 		Double askPrice;
 		Int bidSize;
 		Int askSize;
-		ExpiryKey bidKey;
-		SpdrKeyType bidKeyType;
-		ExpiryKey askKey;
-		SpdrKeyType askKeyType;
 		SyntheticSource bidSource;
 		SyntheticSource askSource;
-		Double undBidPrice;
-		Double undAskPrice;
-		Int undBidSize;
-		Int undAskSize;
-		ExpiryKey undKey;
-		SpdrKeyType undKeyType;
-		MarketStatus undMarketStatus;
-		Double uOffPrice;
-		ExpiryKey uOffKey;
-		SpdrKeyType uOffKeyType;
+		MarketStatus marketStatus;
 		Long netTimestamp;
-		DateTime timestamp;
 	};
 	
 	Header header_;
@@ -3453,31 +3441,17 @@ public:
 	inline Double askPrice() const { return layout_.askPrice; }
 	inline Int bidSize() const { return layout_.bidSize; }
 	inline Int askSize() const { return layout_.askSize; }
-	inline const ExpiryKey& bidKey() const { return layout_.bidKey; }
-	inline SpdrKeyType bidKeyType() const { return layout_.bidKeyType; }
-	inline const ExpiryKey& askKey() const { return layout_.askKey; }
-	inline SpdrKeyType askKeyType() const { return layout_.askKeyType; }
 	inline SyntheticSource bidSource() const { return layout_.bidSource; }
 	inline SyntheticSource askSource() const { return layout_.askSource; }
-	inline Double undBidPrice() const { return layout_.undBidPrice; }
-	inline Double undAskPrice() const { return layout_.undAskPrice; }
-	inline Int undBidSize() const { return layout_.undBidSize; }
-	inline Int undAskSize() const { return layout_.undAskSize; }
-	inline const ExpiryKey& undKey() const { return layout_.undKey; }
-	inline SpdrKeyType undKeyType() const { return layout_.undKeyType; }
-	inline MarketStatus undMarketStatus() const { return layout_.undMarketStatus; }
-	inline Double uOffPrice() const { return layout_.uOffPrice; }
-	inline const ExpiryKey& uOffKey() const { return layout_.uOffKey; }
-	inline SpdrKeyType uOffKeyType() const { return layout_.uOffKeyType; }
+	inline MarketStatus marketStatus() const { return layout_.marketStatus; }
 	inline Long netTimestamp() const { return layout_.netTimestamp; }
-	inline DateTime timestamp() const { return layout_.timestamp; }
 	
 	inline void Decode(Header* buf) 
 	{
 		header_ = *buf;
 		auto ptr = reinterpret_cast<uint8_t*>(buf) + header_->len;
 		
-		layout_ = *reinterpret_cast<SyntheticQuote::Layout*>(ptr);
+		layout_ = *reinterpret_cast<SyntheticFutureQuote::Layout*>(ptr);
 		ptr += sizeof(layout_);
 		
 
