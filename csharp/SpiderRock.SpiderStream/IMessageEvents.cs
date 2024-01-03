@@ -9,5 +9,7 @@ public interface IMessageEvents<TMessage>
 
     event EventHandler<ChangedEventArgs<TMessage>> Changed;
 
+    event EventHandler<UpdatedEventArgs<TMessage>> Updated;
+
     MessageType Type { get; }
 }

@@ -10,6 +10,7 @@ internal class MessageEventsDispatcher<TMessage> : IMessageEvents<IMessage>
     readonly IMessageEvents<TMessage> messageEvents;
     readonly Dictionary<EventHandler<ChangedEventArgs<IMessage>>, EventHandler<ChangedEventArgs<TMessage>>> changedMap = new();
     readonly Dictionary<EventHandler<CreatedEventArgs<IMessage>>, EventHandler<CreatedEventArgs<TMessage>>> createdMap = new();
+    readonly Dictionary<EventHandler<UpdatedEventArgs<IMessage>>, EventHandler<UpdatedEventArgs<TMessage>>> updatedMap = new();
 
     public MessageEventsDispatcher(IMessageEvents<TMessage> messageEvents)
     {
@@ -18,6 +19,7 @@ internal class MessageEventsDispatcher<TMessage> : IMessageEvents<IMessage>
 
     [ThreadStatic] private static CreatedEventArgs<IMessage> createdEventArgs;
     [ThreadStatic] private static ChangedEventArgs<IMessage> changedEventArgs;
+    [ThreadStatic] private static UpdatedEventArgs<IMessage> updatedEventArgs;
 
     public MessageType Type => messageEvents.Type;
 
@@ -102,6 +104,51 @@ internal class MessageEventsDispatcher<TMessage> : IMessageEvents<IMessage>
                 {
                     changedMap.Remove(value);
                     messageEvents.Changed -= onChanged;
+                }
+            }
+        }
+    }
+
+    public event EventHandler<UpdatedEventArgs<IMessage>> Updated
+    {
+        add
+        {
+            lock (updatedMap)
+            {
+                if (!updatedMap.TryGetValue(value, out var onUpdated))
+                {
+                    onUpdated = new((sender, args) =>
+                    {
+                        updatedEventArgs ??= new();
+                        updatedEventArgs.Current = args.Current;
+                        updatedEventArgs.Previous = args.Previous;
+                        updatedEventArgs.Channel = args.Channel;
+
+                        try
+                        {
+                            value(sender, updatedEventArgs);
+                        }
+                        finally
+                        {
+                            updatedEventArgs.Current = default;
+                            updatedEventArgs.Previous = default;
+                            updatedEventArgs.Channel = default;
+                        }
+                    });
+
+                    updatedMap.Add(value, onUpdated);
+                    messageEvents.Updated += onUpdated;
+                }
+            }
+        }
+        remove
+        {
+            lock (updatedMap)
+            {
+                if (updatedMap.TryGetValue(value, out var onUpdated))
+                {
+                    updatedMap.Remove(value);
+                    messageEvents.Updated -= onUpdated;
                 }
             }
         }

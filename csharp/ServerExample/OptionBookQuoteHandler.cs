@@ -14,4 +14,8 @@ public class OptionBookQuoteHandler
     public void OnChange(object sender, ChangedEventArgs<OptionNbboQuote> args)
     {
     }
+
+    public void OnUpdate(object sender, UpdatedEventArgs<OptionNbboQuote> args)
+    {
+    }
 }

@@ -12,6 +12,7 @@ namespace SpiderRock.SpiderStream;
 internal partial class MessageCache
 {
     private abstract class MessageTypeCache<TMessage, TMessagePKeyLayout> : IFrameHandler, IMessageEvents<TMessage>
+        where TMessage : new()
         where TMessagePKeyLayout : unmanaged
     {
         private static readonly int SizeOfPKey = Unsafe.SizeOf<TMessagePKeyLayout>();
@@ -20,11 +21,16 @@ internal partial class MessageCache
 
         [ThreadStatic] private static CreatedEventArgs<TMessage> createdEventArgs;
         [ThreadStatic] private static ChangedEventArgs<TMessage> changedEventArgs;
+        [ThreadStatic] private static UpdatedEventArgs<TMessage> updatedEventArgs;
 
         private event EventHandler<CreatedEventArgs<TMessage>> created;
         private event EventHandler<ChangedEventArgs<TMessage>> changed;
+        private event EventHandler<UpdatedEventArgs<TMessage>> updated;
 
-        private bool AnyEventHandlers() => changed.GetInvocationList().Length > 0 || created.GetInvocationList().Length > 0;
+        private bool AnyEventHandlers() =>
+            changed.GetInvocationList().Length > 0 ||
+            created.GetInvocationList().Length > 0 ||
+            updated.GetInvocationList().Length > 0;
 
         public event EventHandler<CreatedEventArgs<TMessage>> Created
         {
@@ -61,6 +67,26 @@ internal partial class MessageCache
                 lock (this)
                 {
                     changed -= value;
+                    HasEventHandlers = AnyEventHandlers();
+                }
+            }
+        }
+
+        public event EventHandler<UpdatedEventArgs<TMessage>> Updated
+        {
+            add
+            {
+                lock (this)
+                {
+                    updated += value;
+                    HasEventHandlers = true;
+                }
+            }
+            remove
+            {
+                lock (this)
+                {
+                    updated -= value;
                     HasEventHandlers = AnyEventHandlers();
                 }
             }
@@ -115,6 +141,8 @@ internal partial class MessageCache
 
         public abstract MessageType Type { get; }
 
+        [ThreadStatic] static TMessage Previous;
+
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public bool TryHandle(ref Frame frame)
         {
@@ -160,9 +188,37 @@ internal partial class MessageCache
                 return false;
             }
 
-            UpdateFromBuffer(buffer, item, netTimestamp);
+            var updated = this.updated;
 
-            FireChangedEventIfSubscribed(item, channel);
+            if (updated is null)
+            {
+                UpdateFromBuffer(buffer, item, netTimestamp);
+
+                FireChangedEventIfSubscribed(item, channel);
+            }
+            else
+            {
+                Previous ??= new();
+
+                CopyTo(item, Previous);
+
+                UpdateFromBuffer(buffer, item, netTimestamp);
+
+                FireChangedEventIfSubscribed(item, channel);
+
+                try
+                {
+                    updatedEventArgs ??= new();
+                    updatedEventArgs.Current = item;
+                    updatedEventArgs.Previous = Previous;
+                    updatedEventArgs.Channel = channel;
+                    updated(this, updatedEventArgs);
+                }
+                catch (Exception e)
+                {
+                    SRTrace.Default.TraceError(e, $"{ToString()}.{nameof(TryHandle)} exception invoking {nameof(Updated)} event handlers");
+                }
+            }
 
             return true;
         }

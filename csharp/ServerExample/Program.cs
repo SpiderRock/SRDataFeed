@@ -179,6 +179,7 @@ internal class Program
             var optionBookQuoteHandler = new OptionBookQuoteHandler();
             mbusClient.OptionNbboQuote.Created += optionBookQuoteHandler.OnCreate;
             mbusClient.OptionNbboQuote.Changed += optionBookQuoteHandler.OnChange;
+            mbusClient.OptionNbboQuote.Updated += optionBookQuoteHandler.OnUpdate;
 
             // This activates the client by first initiating a cache request
             // and downloading all of the messages that were subscribed.  Once

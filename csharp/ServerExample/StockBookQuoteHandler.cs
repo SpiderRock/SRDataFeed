@@ -12,9 +12,11 @@ public class StockBookQuoteHandler
     {
         stockBookQuoteEvents.Created += OnCreate;
         stockBookQuoteEvents.Changed += OnChange;
+        stockBookQuoteEvents.Updated += OnUpdate;
     }
 
     private int numStockBookQuoteChanges;
+    private int numTopBidChanges;
 
     private void OnCreate(object sender, CreatedEventArgs<StockBookQuote> args)
     {
@@ -36,5 +38,18 @@ public class StockBookQuoteHandler
          */
 
         numStockBookQuoteChanges += 1;
+    }
+
+    private void OnUpdate(object sender, UpdatedEventArgs<StockBookQuote> args)
+    {
+        /* The change event fires after the update event (if subscribed) and contains
+         * an instance at the 'Changed' property of the 'args' argument with the latest values
+         * for that key.  It is safe to retain and access past the completion of the event handler.
+         */
+
+        if (args.Current.BidPrice1 != args.Previous.BidPrice1)
+        {
+            numTopBidChanges += 1;
+        }
     }
 }
