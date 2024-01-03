@@ -74,12 +74,7 @@ public sealed partial class MbusClient : IDisposable
 
             ChannelThreadGroup channelThreadGroup;
 
-            if (NetworkInterface
-                    .GetAllNetworkInterfaces()
-                    .Where(adapter => adapter.Description.StartsWith("Mellanox"))
-                    .SelectMany(adapter => adapter.GetIPProperties().UnicastAddresses)
-                    .Where(ip => ip.Address.AddressFamily == AddressFamily.InterNetwork)
-                    .Any(ip => ip.Address.Equals(ifAddress)))
+            if (MellanoxAdapter.FindInterfaces().Any(ip => ip.Address.Equals(ifAddress)))
             {
                 channelThreadGroup = new FastSockets.MlxChannelThreadGroup<Mbus.FrameHandler<MessageCache>>(ifAddress, frameHandler, label, channels);
             }
