@@ -92,7 +92,7 @@ public partial struct MessageType
             Type = 1015,
             Name = nameof(LiveImpliedQuote),
             IsCore = true,
-            SchemaHash = 0x676ed92444b74907
+            SchemaHash = 0x7c4f705681270f4b
         };
 
         attributes[1030] = new()

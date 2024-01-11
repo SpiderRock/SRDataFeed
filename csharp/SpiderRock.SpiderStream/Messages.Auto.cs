@@ -1247,6 +1247,8 @@ public partial class LiveImpliedQuote : IMessage
 		public float dn15;
 		public float up06;
 		public float dn08;
+		public float spotUPrc;
+		public CalcPriceType priceType;
 		public ImpliedQuoteError calcErr;
 		public CalcSource calcSource;
 		public long srcTimestamp;
@@ -1320,6 +1322,10 @@ public partial class LiveImpliedQuote : IMessage
     public float Up06 { get => body.up06; set => body.up06 = value; }
      /// <summary>underlier dn 8% slide</summary>
     public float Dn08 { get => body.dn08; set => body.dn08 = value; }
+     /// <summary>spot underlier price (same as uPrc when priceType = 'Equity') (note: if Future and spotUPrc is known it will appear here)</summary>
+    public float SpotUPrc { get => body.spotUPrc; set => body.spotUPrc = value; }
+     /// <summary>Equity or Future (Black76) pricing framework;  if Future then uPrc is the forwardUPrc and sdiv = rate</summary>
+    public CalcPriceType PriceType { get => body.priceType; set => body.priceType = value; }
      /// <summary>option pricing calculation error (if any)</summary>
     public ImpliedQuoteError CalcErr { get => body.calcErr; set => body.calcErr = value; }
      

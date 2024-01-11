@@ -44,6 +44,7 @@ internal sealed class WsBinaryClient<TFrameHandler>
         Realm = realm;
         MessageTypes = messageTypes;
         ApiKey = authToken;
+        MLinkEndPoint = new($"wss://mlink-live.nms.{environment}.spiderrockconnect.com/mlink/binary".ToLower(), UriKind.Absolute);
 
         this.frameHandler = new(frameHandler);
         this.queryLabel = queryLabel;
@@ -57,7 +58,7 @@ internal sealed class WsBinaryClient<TFrameHandler>
 
     public string ApiKey { get; }
 
-    public Uri MLinkEndPoint { get; init; } = new("wss://mlink.spiderrockconnect.com/mlink/binary", UriKind.Absolute);
+    public Uri MLinkEndPoint { get; init; }
 
     public async Task ExecuteAsync(CancellationToken cancellationToken)
     {

@@ -15,6 +15,7 @@ public enum AdjConvention : byte { None=0,Original=1,OSI=2,SpcOnly=3,OSIAlt=4 };
  public enum AuctionStatus : byte { None=0,WillRunOpenAndClose=1,WillRunInterest=2,WillNotRunImbalance=3,WillNotRunClsAuction=4 };		
  public enum AuctionType : byte { None=0,Exposure=1,Improvement=2,Facilitation=3,Solicitation=4,Opening=5,Closing=6,RFQ=7,Block=8 };		
  public enum BuySell : byte { None=0,Buy=1,Sell=2 };		
+ public enum CalcPriceType : byte { None=0,Equity=1,Future=2 };		
  public enum CalcSource : byte { None=0,Tick=1,Loop=2 };		
  public enum CallPut : byte { Call=0,Put=1,Pair=2 };		
  public enum ClsMarkState : byte { None=0,LastPrt=1,SRClose=2,ExchClose=4,Final=8 };		

@@ -252,7 +252,7 @@ public partial class LiveImpliedQuote
 {
     [ThreadStatic] private static StringBuilder recordBuilder;
 
-    public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tticker\tuPrc\tuOff\tyears\txAxis\trate\tsdiv\tddiv\toBid\toAsk\toBidIv\toAskIv\tatmVol\tsVol\tsPrc\tsMark\tveSlope\tde\tga\tth\tve\tva\tvo\tro\tph\tdeDecay\tup50\tdn50\tup15\tdn15\tup06\tdn08\tcalcErr\tcalcSource\tsrcTimestamp\tnetTimestamp\ttimestamp";
+    public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tticker\tuPrc\tuOff\tyears\txAxis\trate\tsdiv\tddiv\toBid\toAsk\toBidIv\toAskIv\tatmVol\tsVol\tsPrc\tsMark\tveSlope\tde\tga\tth\tve\tva\tvo\tro\tph\tdeDecay\tup50\tdn50\tup15\tdn15\tup06\tdn08\tspotUPrc\tpriceType\tcalcErr\tcalcSource\tsrcTimestamp\tnetTimestamp\ttimestamp";
 
     public string TabRecord
     {
@@ -328,6 +328,10 @@ public partial class LiveImpliedQuote
             recordBuilder.Append(Up06);
             recordBuilder.Append('\t');
             recordBuilder.Append(Dn08);
+            recordBuilder.Append('\t');
+            recordBuilder.Append(SpotUPrc);
+            recordBuilder.Append('\t');
+            recordBuilder.Append(PriceType);
             recordBuilder.Append('\t');
             recordBuilder.Append(CalcErr);
             recordBuilder.Append('\t');
