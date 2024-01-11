@@ -260,61 +260,56 @@ namespace SpiderRock
 							for (auto& channel : channels_)
 							{
 								int received = channel->Read();
-
-								if (received < 1)
+								
+								if (received > 0)
 								{
-									if (received == -1)
-									{
-										auto last_error = GetLastError();
-										if (last_error != EWOULDBLOCK && last_error != EAGAIN)
-										{
-											SpiderRock::ThrowLastErrorAs<std::runtime_error>();
-										}
-									}
+									spin_miss_cnt = 0;
+									read_loop_cnt += 1;
 
+									try
+									{
+										int roffset = read_handler_->Handle(channel->buffer(), received, channel->context(), source);
+										if (roffset < 0)
+										{
+											SR_TRACE_ERROR("handler (parser) error", channel->end_point().label());
+										}
+										channel->offset(roffset);
+									}
+									catch (const std::exception& e)
+									{
+										SR_TRACE_ERROR("handler error", e.what());
+									}
+									catch (...)
+									{
+										SR_TRACE_ERROR("unknown handler error");
+									}
+								}
+#ifdef _WINDOWS_
+								else if (received == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK)
+#else
+								else if (received == SOCKET_ERROR && (errno == EWOULDBLOCK || errno == EAGAIN))
+#endif
+								{
 									++read_spin_cnt; // one spin count is roughly 1us
 									++spin_miss_cnt;
 
 									if (spin_miss_cnt > 200)
 									{
 										++spin_sleep_0;
+
 										std::this_thread::sleep_for(zero);
-										if (cancel_requested_)
-										{
-											return;
-										}
 									}
 									else if (spin_miss_cnt > 40)
 									{
 										++spin_yield_attempt;
+										++spin_yield_switch;
 
 										std::this_thread::yield();
-										++spin_yield_switch;
 									}
-
-									continue;
 								}
-
-								spin_miss_cnt = 0;
-
-								read_loop_cnt += 1;
-
-								try
+								else
 								{
-									int roffset = read_handler_->Handle(channel->buffer(), received, channel->context(), source);
-									if (roffset < 0)
-									{
-										SR_TRACE_ERROR("handler (parser) error", channel->end_point().label());
-									}
-									channel->offset(roffset);
-								}
-								catch (const std::exception& e)
-								{
-									SR_TRACE_ERROR("handler error", e.what());
-								}
-								catch (...)
-								{
-									SR_TRACE_ERROR("unknown handler error");
+									SpiderRock::ThrowLastErrorAs<std::runtime_error>();
 								}
 							}
 						}

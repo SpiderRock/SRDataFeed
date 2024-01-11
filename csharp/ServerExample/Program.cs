@@ -68,14 +68,16 @@ internal class Program
                  MbusChannel.OptNbboQuoteB,
                  MbusChannel.OptNbboQuoteC,
                  MbusChannel.OptNbboQuoteD,
-                 MbusChannel.StkNbboQuoteABCD);
+                 MbusChannel.StkNbboQuoteAB,
+                 MbusChannel.StkNbboQuoteCD);
 
             mbusClient.AddChannelThreadGroup("Opt/Stk[EFGH]",
                 MbusChannel.OptNbboQuoteE,
                 MbusChannel.OptNbboQuoteF,
                 MbusChannel.OptNbboQuoteG,
                 MbusChannel.OptNbboQuoteH,
-                MbusChannel.StkNbboQuoteEFGH);
+                MbusChannel.StkNbboQuoteEF,
+                MbusChannel.StkNbboQuoteGH);
 
             mbusClient.AddChannelThreadGroup("Opt[MTX]",
                 MbusChannel.OptNbboQuoteM,

@@ -51,8 +51,8 @@ internal sealed partial class MessageCache : IFrameHandler
             /* StockMarketSummary */ 3040 => stockMarketSummary.TryHandle(ref frame),
             /* StockPrint */ 3045 => stockPrint.TryHandle(ref frame),
             /* StockPrintMarkup */ 3055 => stockPrintMarkup.TryHandle(ref frame),
-            /* SyntheticPrint */ 2690 => syntheticPrint.TryHandle(ref frame),
-            /* SyntheticQuote */ 2695 => syntheticQuote.TryHandle(ref frame),
+            /* SyntheticExpiryQuote */ 2700 => syntheticExpiryQuote.TryHandle(ref frame),
+            /* SyntheticFutureQuote */ 2695 => syntheticFutureQuote.TryHandle(ref frame),
             /* TickerDefinitionExt */ 4380 => tickerDefinitionExt.TryHandle(ref frame),
             _ => false
         };
@@ -90,8 +90,8 @@ internal sealed partial class MessageCache : IFrameHandler
             if (stockMarketSummary.HasEventHandlers) yield return (MessageType)3040;
             if (stockPrint.HasEventHandlers) yield return (MessageType)3045;
             if (stockPrintMarkup.HasEventHandlers) yield return (MessageType)3055;
-            if (syntheticPrint.HasEventHandlers) yield return (MessageType)2690;
-            if (syntheticQuote.HasEventHandlers) yield return (MessageType)2695;
+            if (syntheticExpiryQuote.HasEventHandlers) yield return (MessageType)2700;
+            if (syntheticFutureQuote.HasEventHandlers) yield return (MessageType)2695;
             if (tickerDefinitionExt.HasEventHandlers) yield return (MessageType)4380;
         }
     }
@@ -124,8 +124,8 @@ internal sealed partial class MessageCache : IFrameHandler
     private readonly StockMarketSummaryCache stockMarketSummary = new();
     private readonly StockPrintCache stockPrint = new();
     private readonly StockPrintMarkupCache stockPrintMarkup = new();
-    private readonly SyntheticPrintCache syntheticPrint = new();
-    private readonly SyntheticQuoteCache syntheticQuote = new();
+    private readonly SyntheticExpiryQuoteCache syntheticExpiryQuote = new();
+    private readonly SyntheticFutureQuoteCache syntheticFutureQuote = new();
     private readonly TickerDefinitionExtCache tickerDefinitionExt = new();
 
     public IMessageEvents<FutureBookQuote> FutureBookQuote => futureBookQuote;
@@ -156,8 +156,8 @@ internal sealed partial class MessageCache : IFrameHandler
     public IMessageEvents<StockMarketSummary> StockMarketSummary => stockMarketSummary;
     public IMessageEvents<StockPrint> StockPrint => stockPrint;
     public IMessageEvents<StockPrintMarkup> StockPrintMarkup => stockPrintMarkup;
-    public IMessageEvents<SyntheticPrint> SyntheticPrint => syntheticPrint;
-    public IMessageEvents<SyntheticQuote> SyntheticQuote => syntheticQuote;
+    public IMessageEvents<SyntheticExpiryQuote> SyntheticExpiryQuote => syntheticExpiryQuote;
+    public IMessageEvents<SyntheticFutureQuote> SyntheticFutureQuote => syntheticFutureQuote;
     public IMessageEvents<TickerDefinitionExt> TickerDefinitionExt => tickerDefinitionExt;
 
     private sealed class FutureBookQuoteCache : MessageTypeCache<FutureBookQuote, FutureBookQuote.PKeyLayout>
@@ -972,22 +972,22 @@ internal sealed partial class MessageCache : IFrameHandler
         public override string ToString() => nameof(StockPrintMarkupCache); 
     }
 
-    private sealed class SyntheticPrintCache : MessageTypeCache<SyntheticPrint, SyntheticPrint.PKeyLayout>
+    private sealed class SyntheticExpiryQuoteCache : MessageTypeCache<SyntheticExpiryQuote, SyntheticExpiryQuote.PKeyLayout>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void UpdateFromBuffer(ReadOnlySpan<byte> buffer, SyntheticPrint target, long timestamp)
+        protected override void UpdateFromBuffer(ReadOnlySpan<byte> buffer, SyntheticExpiryQuote target, long timestamp)
         {
             Formatter.Default.Decode(buffer, target);
             target.ReceivedNsecsSinceUnixEpoch = timestamp;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void CopyTo(SyntheticPrint fromMessage, SyntheticPrint toMessage) => fromMessage.CopyTo(toMessage);
+        protected override void CopyTo(SyntheticExpiryQuote fromMessage, SyntheticExpiryQuote toMessage) => fromMessage.CopyTo(toMessage);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override SyntheticPrint CreateFromBuffer(ReadOnlySpan<byte> buffer, long timestamp, bool fromCache)
+        protected override SyntheticExpiryQuote CreateFromBuffer(ReadOnlySpan<byte> buffer, long timestamp, bool fromCache)
         {
-            SyntheticPrint message = new();
+            SyntheticExpiryQuote message = new();
 
             UpdateFromBuffer(buffer, message, timestamp);
 
@@ -996,27 +996,27 @@ internal sealed partial class MessageCache : IFrameHandler
             return message;
         }
 
-        public override MessageType Type => 2690;
+        public override MessageType Type => 2700;
         
-        public override string ToString() => nameof(SyntheticPrintCache); 
+        public override string ToString() => nameof(SyntheticExpiryQuoteCache); 
     }
 
-    private sealed class SyntheticQuoteCache : MessageTypeCache<SyntheticQuote, SyntheticQuote.PKeyLayout>
+    private sealed class SyntheticFutureQuoteCache : MessageTypeCache<SyntheticFutureQuote, SyntheticFutureQuote.PKeyLayout>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void UpdateFromBuffer(ReadOnlySpan<byte> buffer, SyntheticQuote target, long timestamp)
+        protected override void UpdateFromBuffer(ReadOnlySpan<byte> buffer, SyntheticFutureQuote target, long timestamp)
         {
             Formatter.Default.Decode(buffer, target);
             target.ReceivedNsecsSinceUnixEpoch = timestamp;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void CopyTo(SyntheticQuote fromMessage, SyntheticQuote toMessage) => fromMessage.CopyTo(toMessage);
+        protected override void CopyTo(SyntheticFutureQuote fromMessage, SyntheticFutureQuote toMessage) => fromMessage.CopyTo(toMessage);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override SyntheticQuote CreateFromBuffer(ReadOnlySpan<byte> buffer, long timestamp, bool fromCache)
+        protected override SyntheticFutureQuote CreateFromBuffer(ReadOnlySpan<byte> buffer, long timestamp, bool fromCache)
         {
-            SyntheticQuote message = new();
+            SyntheticFutureQuote message = new();
 
             UpdateFromBuffer(buffer, message, timestamp);
 
@@ -1027,7 +1027,7 @@ internal sealed partial class MessageCache : IFrameHandler
 
         public override MessageType Type => 2695;
         
-        public override string ToString() => nameof(SyntheticQuoteCache); 
+        public override string ToString() => nameof(SyntheticFutureQuoteCache); 
     }
 
     private sealed class TickerDefinitionExtCache : MessageTypeCache<TickerDefinitionExt, TickerDefinitionExt.PKeyLayout>
