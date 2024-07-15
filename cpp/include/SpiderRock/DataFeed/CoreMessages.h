@@ -1443,6 +1443,7 @@ private:
 		Int prtClusterNum;
 		Int prtClusterSize;
 		Byte prtType;
+		String<18> printCodes;
 		UShort prtOrders;
 		Int prtVolume;
 		Int cxlVolume;
@@ -1479,6 +1480,7 @@ public:
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
 	inline Int prtClusterSize() const { return layout_.prtClusterSize; }
 	inline Byte prtType() const { return layout_.prtType; }
+	inline const String<18>& printCodes() const { return layout_.printCodes; }
 	inline UShort prtOrders() const { return layout_.prtOrders; }
 	inline Int prtVolume() const { return layout_.prtVolume; }
 	inline Int cxlVolume() const { return layout_.cxlVolume; }
@@ -1539,6 +1541,7 @@ private:
 	{
 		Key pkey;
 		OptExch prtExch;
+		String<18> printCodes;
 		Int prtSize;
 		Float prtPrice;
 		Int prtClusterNum;
@@ -1584,6 +1587,7 @@ public:
 	inline uint64_t time_received() const { return time_received_; }
 	
 	inline OptExch prtExch() const { return layout_.prtExch; }
+	inline const String<18>& printCodes() const { return layout_.printCodes; }
 	inline Int prtSize() const { return layout_.prtSize; }
 	inline Float prtPrice() const { return layout_.prtPrice; }
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
@@ -2920,7 +2924,7 @@ private:
 		Double clsPrice;
 		Double minPrice;
 		Double maxPrice;
-		Int sharesOutstanding;
+		Long sharesOutstanding;
 		Int bidCount;
 		Int bidVolume;
 		Int askCount;
@@ -2954,7 +2958,7 @@ public:
 	inline Double clsPrice() const { return layout_.clsPrice; }
 	inline Double minPrice() const { return layout_.minPrice; }
 	inline Double maxPrice() const { return layout_.maxPrice; }
-	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
+	inline Long sharesOutstanding() const { return layout_.sharesOutstanding; }
 	inline Int bidCount() const { return layout_.bidCount; }
 	inline Int bidVolume() const { return layout_.bidVolume; }
 	inline Int askCount() const { return layout_.askCount; }
@@ -3021,6 +3025,7 @@ private:
 		Float mrkPrice;
 		Float clsPrice;
 		StkPrintType prtType;
+		String<18> printCodes;
 		Byte prtCond1;
 		Byte prtCond2;
 		Byte prtCond3;
@@ -3057,6 +3062,7 @@ public:
 	inline Float mrkPrice() const { return layout_.mrkPrice; }
 	inline Float clsPrice() const { return layout_.clsPrice; }
 	inline StkPrintType prtType() const { return layout_.prtType; }
+	inline const String<18>& printCodes() const { return layout_.printCodes; }
 	inline Byte prtCond1() const { return layout_.prtCond1; }
 	inline Byte prtCond2() const { return layout_.prtCond2; }
 	inline Byte prtCond3() const { return layout_.prtCond3; }
@@ -3252,7 +3258,7 @@ private:
 		Float optVolume;
 		String<8> exchString;
 		Int numOptions;
-		Int sharesOutstanding;
+		Long sharesOutstanding;
 		TimeMetric timeMetric;
 		OTCPrimaryMarket otcPrimaryMarket;
 		OTCTier otcTier;
@@ -3308,7 +3314,7 @@ public:
 	inline Float optVolume() const { return layout_.optVolume; }
 	inline const String<8>& exchString() const { return layout_.exchString; }
 	inline Int numOptions() const { return layout_.numOptions; }
-	inline Int sharesOutstanding() const { return layout_.sharesOutstanding; }
+	inline Long sharesOutstanding() const { return layout_.sharesOutstanding; }
 	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
 	inline OTCPrimaryMarket otcPrimaryMarket() const { return layout_.otcPrimaryMarket; }
 	inline OTCTier otcTier() const { return layout_.otcTier; }
