@@ -90,7 +90,8 @@ namespace SpiderRock
 			Opening=5,
 			Closing=6,
 			RFQ=7,
-			Block=8
+			Block=8,
+			Flash=9
 		};
 
  		enum class BuySell : Enum 
@@ -140,6 +141,7 @@ namespace SpiderRock
 			CAD=6,
 			CHF=7,
 			CTRCT=8,
+			CUR=36,
 			CWT=9,
 			CZK=10,
 			EUR=11,
@@ -192,7 +194,8 @@ namespace SpiderRock
 			CZK=19,
 			ZAR=20,
 			HUF=21,
-			USX=22
+			USX=22,
+			GBX=23
 		};
 
  		enum class ExchOrderStatus : Enum 
@@ -285,7 +288,16 @@ namespace SpiderRock
 			CBOT=3,
 			COMEX=4,
 			NYMEX=5,
-			ICE=6
+			ICE=6,
+			EUREX=7,
+			CEDX=8,
+			NXAM=9,
+			NXBR=10,
+			NXLS=11,
+			NXML=12,
+			NXOS=13,
+			NXP=14,
+			ICEFE=15
 		};
 
  		enum class GridType : Enum 
@@ -448,7 +460,9 @@ namespace SpiderRock
 			Rotation=1,
 			TradingHalted=2,
 			CustInterest=4,
-			QuoteNotFirm=8
+			QuoteNotFirm=8,
+			Indicative=16,
+			AutoEligible=32
 		};		
 		inline OpraMktType operator|(OpraMktType a, OpraMktType b)
 		{
@@ -482,7 +496,16 @@ namespace SpiderRock
 			DQTE=22,
 			EMLD=23,
 			CFE=24,
-			MEMX=25
+			MEMX=25,
+			EUREX=26,
+			CEDX=27,
+			NXAM=28,
+			NXBR=29,
+			NXLS=30,
+			NXML=31,
+			NXOS=32,
+			NXP=33,
+			ICEFE=34
 		};
 
  		enum class OptPriceInc : Enum 
@@ -607,7 +630,23 @@ namespace SpiderRock
 			CBOT=15,
 			NYMEX=16,
 			COMEX=17,
-			ICE=18
+			ICE=18,
+			EUREX=19,
+			XETRA=20,
+			CDEX=21,
+			BXE=22,
+			CXE=23,
+			DXE=24,
+			LSE=25,
+			NXAM=26,
+			NXBR=27,
+			NXDUB=28,
+			NXLS=29,
+			NXLDN=30,
+			NXML=31,
+			NXMLT=32,
+			NXOS=33,
+			NXP=34
 		};
 
  		enum class ProductClass : Enum 
@@ -647,7 +686,8 @@ namespace SpiderRock
 			Weekly=13,
 			Pack=14,
 			Bundle=15,
-			IRSAndCDSTenor=16
+			IRSAndCDSTenor=16,
+			Year=17
 		};
 
  		enum class ProductType : Enum 
@@ -747,7 +787,20 @@ namespace SpiderRock
 			LTSE=20,
 			MEMX=21,
 			MXIDX=22,
-			DJIDX=23
+			DJIDX=23,
+			BXE=24,
+			CXE=25,
+			DXE=26,
+			XETRA=27,
+			NXAM=28,
+			NXBR=29,
+			NXDUB=30,
+			NXLS=31,
+			NXLDN=32,
+			NXML=33,
+			NXMLT=34,
+			NXOS=35,
+			NXP=36
 		};
 
  		enum class StkPriceInc : Enum 
@@ -895,7 +948,23 @@ namespace SpiderRock
 			MIAX=26,
 			TSE=27,
 			DJI=28,
-			CBX=29
+			CBX=29,
+			BXE=30,
+			ESX=31,
+			CXE=32,
+			DXE=33,
+			NXAM=34,
+			NXBR=35,
+			NXDUB=36,
+			NXLS=37,
+			NXLDN=38,
+			NXML=39,
+			NXMLT=40,
+			NXOS=41,
+			NXP=42,
+			EUREX=43,
+			CEDX=44,
+			ICEFE=45
 		};
 
  		enum class TimeInForce : Enum 

@@ -99,16 +99,12 @@
 
         OptAuction = 160,
         OptOrder = 161,
-
         OptOrderPhlx = 162,
-        OptOrderCboe = 163,
-
-        OptOrderMiax = 167,
 
         ImbalanceArca = 170,
         ImbalanceNyse = 171,
         ImbalanceNasdaq = 172,
-
+		
 		LiveImpliedQuote1 = 190,
 		LiveImpliedQuote2 = 191,
 		LiveImpliedQuote3 = 192,

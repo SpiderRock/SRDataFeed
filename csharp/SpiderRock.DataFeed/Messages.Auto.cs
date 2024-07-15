@@ -2200,6 +2200,7 @@ namespace SpiderRock.DataFeed
 	/// <remarks>
 	/// OptionCloseMark records are created immediately after the market close (clsMarkState=SRClose), when exchanges publish official marks (clsMarkState=ExchClose), and again during top of day rotation (clsMarkState=Final).  These records contain closing quotes and prices as well as markup details for all outright options.
 	/// OptionCloseMark records are published to the SpiderRock elastic cluster when clsMarkState=Final
+	/// BridgeFromV8
 	/// </remarks>
 
     public partial class OptionCloseMark
@@ -4019,6 +4020,7 @@ namespace SpiderRock.DataFeed
 			target.header = header;
  			pkey.CopyTo(target.pkey);
  			target.body = body;
+ 			target.Invalidate();
 
         }
 
@@ -4026,6 +4028,7 @@ namespace SpiderRock.DataFeed
         public void Clear()
         {
 			pkey.Clear();
+ 			Invalidate();
  			body = new BodyLayout();
 
         }
@@ -4160,6 +4163,7 @@ namespace SpiderRock.DataFeed
 			public int prtClusterNum;
 			public int prtClusterSize;
 			public byte prtType;
+			public FixedString18Layout printCodes;
 			public ushort prtOrders;
 			public int prtVolume;
 			public int cxlVolume;
@@ -4181,9 +4185,12 @@ namespace SpiderRock.DataFeed
 		// ReSharper disable once InconsistentNaming
 		internal BodyLayout body;
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
+		private volatile int usn;
 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedFixedLengthString<FixedString18Layout> printCodes;
 		
 
 
@@ -4204,6 +4211,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>print type</summary>
         public byte PrtType { get { return body.prtType; } set { body.prtType = value; } }
+ 
+		/// <summary>European trade condition codes</summary>
+        public string PrintCodes { get { return CacheVar.AllocIfNull(ref printCodes).Get(ref body.printCodes, usn); } set { CacheVar.AllocIfNull(ref printCodes).Set(value); body.printCodes = value; } }
  
 		/// <summary>number of participating orders</summary>
         public ushort PrtOrders { get { return body.prtOrders; } set { body.prtOrders = value; } }
@@ -4315,6 +4325,7 @@ namespace SpiderRock.DataFeed
 			target.header = header;
  			pkey.CopyTo(target.pkey);
  			target.body = body;
+ 			target.Invalidate();
 
         }
 
@@ -4322,6 +4333,7 @@ namespace SpiderRock.DataFeed
         public void Clear()
         {
 			pkey.Clear();
+ 			Invalidate();
  			body = new BodyLayout();
 
         }
@@ -4451,6 +4463,7 @@ namespace SpiderRock.DataFeed
 		internal struct BodyLayout
 		{
 			public OptExch prtExch;
+			public FixedString18Layout printCodes;
 			public int prtSize;
 			public float prtPrice;
 			public int prtClusterNum;
@@ -4486,14 +4499,20 @@ namespace SpiderRock.DataFeed
 		// ReSharper disable once InconsistentNaming
 		internal BodyLayout body;
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
+		private volatile int usn;
 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedFixedLengthString<FixedString18Layout> printCodes;
 		
 
 
 		
         public OptExch PrtExch { get { return body.prtExch; } set { body.prtExch = value; } }
+ 
+		/// <summary>European trade condition codes</summary>
+        public string PrintCodes { get { return CacheVar.AllocIfNull(ref printCodes).Get(ref body.printCodes, usn); } set { CacheVar.AllocIfNull(ref printCodes).Set(value); body.printCodes = value; } }
  
 		/// <summary>print size [contracts]</summary>
         public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
@@ -5337,6 +5356,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// SpiderRock normalized exchange product definitions.  Includes future, option, and spread definitions from a number of exchanges.  TickerDefinitions, RootDefinitions and CCodeDefinitions are consistent with these records.
+	/// BridgeFromV8::Lane3
 	/// </remarks>
 
     public partial class ProductDefinitionV2
@@ -5791,6 +5811,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// RootDefinition records are sourced from the listing exchange for future options and from OCC for US equity options.  Records are updated as SpiderRock receives changes.
+	/// BridgeFromV8::Lane3
 	/// </remarks>
 
     public partial class RootDefinition
@@ -8292,7 +8313,7 @@ namespace SpiderRock.DataFeed
 			public double clsPrice;
 			public double minPrice;
 			public double maxPrice;
-			public int sharesOutstanding;
+			public long sharesOutstanding;
 			public int bidCount;
 			public int bidVolume;
 			public int askCount;
@@ -8334,7 +8355,7 @@ namespace SpiderRock.DataFeed
         public double MaxPrice { get { return body.maxPrice; } set { body.maxPrice = value; } }
  
 		/// <summary>shares outstanding</summary>
-        public int SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
+        public long SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
  
 		/// <summary>num prints &lt;= quote.bid</summary>
         public int BidCount { get { return body.bidCount; } set { body.bidCount = value; } }
@@ -8440,6 +8461,7 @@ namespace SpiderRock.DataFeed
 			target.header = header;
  			pkey.CopyTo(target.pkey);
  			target.body = body;
+ 			target.Invalidate();
 
         }
 
@@ -8447,6 +8469,7 @@ namespace SpiderRock.DataFeed
         public void Clear()
         {
 			pkey.Clear();
+ 			Invalidate();
  			body = new BodyLayout();
 
         }
@@ -8584,6 +8607,7 @@ namespace SpiderRock.DataFeed
 			public float mrkPrice;
 			public float clsPrice;
 			public StkPrintType prtType;
+			public FixedString18Layout printCodes;
 			public byte prtCond1;
 			public byte prtCond2;
 			public byte prtCond3;
@@ -8602,9 +8626,12 @@ namespace SpiderRock.DataFeed
 		// ReSharper disable once InconsistentNaming
 		internal BodyLayout body;
 		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void Invalidate() { }
+		private volatile int usn;
 		
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal void Invalidate() { ++usn; }
+		
+ 		private CachedFixedLengthString<FixedString18Layout> printCodes;
 		
 
 
@@ -8634,6 +8661,9 @@ namespace SpiderRock.DataFeed
  
 		
         public StkPrintType PrtType { get { return body.prtType; } set { body.prtType = value; } }
+ 
+		/// <summary>European trade condition codes</summary>
+        public string PrintCodes { get { return CacheVar.AllocIfNull(ref printCodes).Get(ref body.printCodes, usn); } set { CacheVar.AllocIfNull(ref printCodes).Set(value); body.printCodes = value; } }
  
 		/// <summary>print condition (from SIP feed)</summary>
         public byte PrtCond1 { get { return body.prtCond1; } set { body.prtCond1 = value; } }
@@ -8993,6 +9023,7 @@ namespace SpiderRock.DataFeed
 	/// </summary>
 	/// <remarks>
 	/// TickerDefinitionExt (external) records exist for all SpiderRock tickers including equity tickers (stocks and ETFs) as well as index tickers and synthetic tickers for future chains and option multihedge baskets.
+	/// BridgeFromV8::Lane3
 	/// </remarks>
 
     public partial class TickerDefinitionExt
@@ -9217,7 +9248,7 @@ namespace SpiderRock.DataFeed
 			public FixedString8Layout exchString;
 			public YesNo hasOptions;
 			public int numOptions;
-			public int sharesOutstanding;
+			public long sharesOutstanding;
 			public TimeMetric timeMetric;
 			public OTCPrimaryMarket otcPrimaryMarket;
 			public OTCTier otcTier;
@@ -9373,7 +9404,7 @@ namespace SpiderRock.DataFeed
         public int NumOptions { get { return body.numOptions; } set { body.numOptions = value; } }
  
 		/// <summary>symbol shares outstanding</summary>
-        public int SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
+        public long SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }
  
 		/// <summary>trading time metric - 252 or 365 trading days or a weekly cycle type</summary>
         public TimeMetric TimeMetric { get { return body.timeMetric; } set { body.timeMetric = value; } }

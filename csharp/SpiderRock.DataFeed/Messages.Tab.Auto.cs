@@ -1042,7 +1042,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tprtExch\tprtSize\tprtPrice\tprtClusterNum\tprtClusterSize\tprtType\tprtOrders\tprtVolume\tcxlVolume\tbidCount\taskCount\tbidVolume\taskVolume\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tprtExch\tprtSize\tprtPrice\tprtClusterNum\tprtClusterSize\tprtType\tprintCodes\tprtOrders\tprtVolume\tcxlVolume\tbidCount\taskCount\tbidVolume\taskVolume\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
 
 		public string TabRecord
         {
@@ -1065,6 +1065,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(PrtClusterSize);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrintCodes);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtOrders);
 				recordBuilder.Append("\t");
@@ -1107,7 +1109,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tprtExch\tprtSize\tprtPrice\tprtClusterNum\tprtClusterSize\tprtType\tprtOrders\tprtVolume\toosVolume\tisoVolume\tslaVolume\tmlaVolume\tcrxVolume\tflrVolume\tmlgVolume\tuknVolume\tcxlVolume\ttotalVolume\tbidCount\taskCount\tbidVolume\taskVolume\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
+		public const string TabHeader = "okey_rt\tokey_ts\tokey_at\tokey_yr\tokey_mn\tokey_dy\tokey_xx\tokey_cp\tprtExch\tprintCodes\tprtSize\tprtPrice\tprtClusterNum\tprtClusterSize\tprtType\tprtOrders\tprtVolume\toosVolume\tisoVolume\tslaVolume\tmlaVolume\tcrxVolume\tflrVolume\tmlgVolume\tuknVolume\tcxlVolume\ttotalVolume\tbidCount\taskCount\tbidVolume\taskVolume\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
 
 		public string TabRecord
         {
@@ -1120,6 +1122,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 
 				recordBuilder.Append(PrtExch);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrintCodes);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtSize);
 				recordBuilder.Append("\t");
@@ -2029,7 +2033,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "ticker\tprtExch\tprtSize\tprtPrice\tprtClusterNum\tprtClusterSize\tprtVolume\tmrkPrice\tclsPrice\tprtType\tprtCond1\tprtCond2\tprtCond3\tprtCond4\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
+		public const string TabHeader = "ticker\tprtExch\tprtSize\tprtPrice\tprtClusterNum\tprtClusterSize\tprtVolume\tmrkPrice\tclsPrice\tprtType\tprintCodes\tprtCond1\tprtCond2\tprtCond3\tprtCond4\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
 
 		public string TabRecord
         {
@@ -2058,6 +2062,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(ClsPrice);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtType);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrintCodes);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtCond1);
 				recordBuilder.Append("\t");
