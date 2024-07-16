@@ -9,17 +9,13 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: linux-latest
 
     steps:
     - uses: actions/checkout@v4
-#    - name: Setup .NET
-#      uses: actions/setup-dotnet@v4
-#      with:
-#        dotnet-version: 4.7.2
     - name: Build libSRDF
       working-directory: cpp/libSRDF
-      run: |
+      run:
         make
         make install
     - name: Build ServerExample
