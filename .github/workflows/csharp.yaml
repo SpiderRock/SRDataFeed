@@ -2,9 +2,9 @@ name: Build C#
 
 on:
   push:
-    branches: [ "master", "v7-stable", "v7-latest", "v8/saturn", "v8/saturn", "jdugan/add-actions" ]
+    branches: [ "master", "v7-stable", "v7-latest", "v8/venus", "v8/saturn", "jdugan/add-actions" ]
   pull_request:
-    branches: [ "master", "v7-stable", "v7-latest", "v8/saturn", "v8/saturn" ]
+    branches: [ "master", "v7-stable", "v7-latest", "v8/venus", "v8/saturn" ]
 
 jobs:
   build:
