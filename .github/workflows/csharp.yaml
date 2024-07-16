@@ -2,9 +2,9 @@ name: Build C#
 
 on:
   push:
-    branches: [ "master", "v7-stable", "v7-latest", i"v8/saturn", "v8/saturn" ]
+    branches: [ "master", "v7-stable", "v7-latest", "v8/saturn", "v8/saturn", "jdugan/add-actions" ]
   pull_request:
-    branches: [ "master", "v7-stable", "v7-latest", i"v8/saturn", "v8/saturn" ]
+    branches: [ "master", "v7-stable", "v7-latest", "v8/saturn", "v8/saturn" ]
 
 jobs:
   build:
@@ -18,8 +18,11 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
+      working-directory: csharp
       run: dotnet restore
     - name: Build
+      working-directory: csharp
       run: dotnet build --no-restore
     - name: Test
+      working-directory: csharp
       run: dotnet test --no-build --verbosity normal
