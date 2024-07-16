@@ -9,14 +9,14 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 4.7.x
+        dotnet-version: 4.7.2
     - name: Restore dependencies
       working-directory: csharp
       run: dotnet restore
