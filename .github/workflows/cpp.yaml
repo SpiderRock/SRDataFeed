@@ -9,15 +9,15 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on:
+      - ubuntu-latest
+      - windows-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Build libSRDF
       working-directory: cpp/libSRDF
-      run:
-        make
-        make install
+      run: make && make install
     - name: Build ServerExample
       working-directory: cpp/ServerExample
       run: make
