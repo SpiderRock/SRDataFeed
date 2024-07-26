@@ -1,7 +1,0 @@
-{
-  "configProperties": {
-    "System.GC.Server": true,
-    "System.GC.HeapCount": 12,
-    "System.GC.CpuGroup":  true
-  }
-}
