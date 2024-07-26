@@ -2,17 +2,13 @@ name: Build C++ (Linux)
 
 on:
   push:
-    branches: [ "master", "v7-stable", "v7-latest", "v8/venus", "v8/saturn", "jdugan/add-actions" ]
+    branches: [ "v7-stable", "v7-stable-nodbl", "jdugan/add-actions" ]
   pull_request:
-    branches: [ "master", "v7-stable", "v7-latest", "v8/venus", "v8/saturn" ]
+    branches: [ "v7-stable", "v7-stable-nodbl" ]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4

@@ -2,9 +2,10 @@ name: Build C#
 
 on:
   push:
-    branches: [ "master", "v7-stable", "v7-latest", "v8/venus", "v8/saturn", "jdugan/add-actions" ]
+    branches: [ "v7-stable", "v7-stable-nodbl", "jdugan/add-actions" ]
   pull_request:
-    branches: [ "master", "v7-stable", "v7-latest", "v8/venus", "v8/saturn" ]
+    branches: [ "v7-stable", "v7-stable-nodbl" ]
+
 
 jobs:
   build:
@@ -13,10 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-#    - name: Setup .NET
-#      uses: actions/setup-dotnet@v4
-#      with:
-#        dotnet-version: 4.7.2
     - name: Restore dependencies
       working-directory: csharp
       run: dotnet restore
