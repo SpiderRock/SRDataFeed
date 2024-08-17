@@ -7354,7 +7354,7 @@ namespace SpiderRock.DataFeed
 		public PKey Key { get { return pkey; } }
 
 		// ReSharper disable once InconsistentNaming
-        internal Header header = new Header {msgtype = MessageType.StockBookQuote};
+        public Header header = new Header {msgtype = MessageType.StockBookQuote};
  	
 		#region PKey
 		

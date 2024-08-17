@@ -3,7 +3,7 @@
 namespace SpiderRock.DataFeed.FrameHandling
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    internal struct Header
+    public struct Header
     {
         public SysEnvironment environment;
         public ushort reserved;

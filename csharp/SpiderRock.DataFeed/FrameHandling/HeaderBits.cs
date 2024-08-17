@@ -3,7 +3,7 @@
 namespace SpiderRock.DataFeed.FrameHandling
 {
     [Flags]
-    internal enum HeaderBits : byte
+    public enum HeaderBits : byte
     {
         None = 0,
         FromCache = 2,
