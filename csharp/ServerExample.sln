@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark", "Benchmark\Benc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmePrintDefChecker", "CmePrintDefChecker\CmePrintDefChecker.csproj", "{647BAAB4-25B8-400D-853B-018871A7D688}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeBoxAnalysis", "TimeBoxAnalysis\TimeBoxAnalysis.csproj", "{2C433AEF-E0DD-44BC-9936-D6FFDEF38A89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{647BAAB4-25B8-400D-853B-018871A7D688}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{647BAAB4-25B8-400D-853B-018871A7D688}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{647BAAB4-25B8-400D-853B-018871A7D688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C433AEF-E0DD-44BC-9936-D6FFDEF38A89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C433AEF-E0DD-44BC-9936-D6FFDEF38A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C433AEF-E0DD-44BC-9936-D6FFDEF38A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C433AEF-E0DD-44BC-9936-D6FFDEF38A89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
