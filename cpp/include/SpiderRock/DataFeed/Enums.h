@@ -497,15 +497,16 @@ namespace SpiderRock
 			EMLD=23,
 			CFE=24,
 			MEMX=25,
-			EUREX=26,
-			CEDX=27,
-			NXAM=28,
-			NXBR=29,
-			NXLS=30,
-			NXML=31,
-			NXOS=32,
-			NXP=33,
-			ICEFE=34
+			SPHR=26,
+			EUREX=27,
+			CEDX=28,
+			NXAM=29,
+			NXBR=30,
+			NXLS=31,
+			NXML=32,
+			NXOS=33,
+			NXP=34,
+			ICEFE=35
 		};
 
  		enum class OptPriceInc : Enum 
@@ -640,13 +641,10 @@ namespace SpiderRock
 			LSE=25,
 			NXAM=26,
 			NXBR=27,
-			NXDUB=28,
-			NXLS=29,
-			NXLDN=30,
-			NXML=31,
-			NXMLT=32,
-			NXOS=33,
-			NXP=34
+			NXLS=28,
+			NXML=29,
+			NXOS=30,
+			NXP=31
 		};
 
  		enum class ProductClass : Enum 
@@ -794,13 +792,10 @@ namespace SpiderRock
 			XETRA=27,
 			NXAM=28,
 			NXBR=29,
-			NXDUB=30,
-			NXLS=31,
-			NXLDN=32,
-			NXML=33,
-			NXMLT=34,
-			NXOS=35,
-			NXP=36
+			NXLS=30,
+			NXML=31,
+			NXOS=32,
+			NXP=33
 		};
 
  		enum class StkPriceInc : Enum 
@@ -950,21 +945,18 @@ namespace SpiderRock
 			DJI=28,
 			CBX=29,
 			BXE=30,
-			ESX=31,
+			EUX=31,
 			CXE=32,
 			DXE=33,
 			NXAM=34,
 			NXBR=35,
-			NXDUB=36,
-			NXLS=37,
-			NXLDN=38,
-			NXML=39,
-			NXMLT=40,
-			NXOS=41,
-			NXP=42,
-			EUREX=43,
-			CEDX=44,
-			ICEFE=45
+			NXLS=36,
+			NXML=37,
+			NXOS=38,
+			NXP=39,
+			EUREX=40,
+			CEDX=41,
+			ICEFE=42
 		};
 
  		enum class TimeInForce : Enum 
@@ -1029,6 +1021,31 @@ namespace SpiderRock
 			VWidthEma=18,
 			PWidthEma=19,
 			Closed=20
+		};
+
+ 		enum class TradingPeriod : Enum 
+		{
+			None=0,
+			NMS=1,
+			NMS_EXT=2,
+			NMS_GTH=3,
+			CME_ES=10,
+			CME_ZC=11,
+			CME_ZN=12,
+			CME_CL=13,
+			CME_GC=14,
+			CFE=30,
+			ICE_US=32,
+			ICE_EU=35,
+			EUX=50,
+			EU_ERX=51,
+			EU_CBOE=52,
+			EU_NXAM=53,
+			EU_NXBR=54,
+			EU_NXLS=55,
+			EU_NXML=56,
+			EU_NXOS=57,
+			EU_NXP=58
 		};
 
  		enum class UnderlierMode : Enum 
