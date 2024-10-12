@@ -2155,6 +2155,7 @@ private:
 		Currency strikeCurr;
 		TickerKey defaultSurfaceRoot;
 		DateTime timestamp;
+		TradingPeriod tradingPeriod;
 	};
 	
 	Header header_;
@@ -2202,6 +2203,7 @@ public:
 	inline Currency strikeCurr() const { return layout_.strikeCurr; }
 	inline const TickerKey& defaultSurfaceRoot() const { return layout_.defaultSurfaceRoot; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
+	inline TradingPeriod tradingPeriod() const { return layout_.tradingPeriod; }
 	
 	inline void Decode(Header* buf) 
 	{

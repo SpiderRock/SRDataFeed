@@ -6074,6 +6074,7 @@ namespace SpiderRock.DataFeed
 			public Currency strikeCurr;
 			public TickerKeyLayout defaultSurfaceRoot;
 			public DateTimeLayout timestamp;
+			public TradingPeriod tradingPeriod;
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -6190,6 +6191,9 @@ namespace SpiderRock.DataFeed
  
 		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
+ 
+		
+        public TradingPeriod TradingPeriod { get { return body.tradingPeriod; } set { body.tradingPeriod = value; } }
 
 		
 		#endregion	

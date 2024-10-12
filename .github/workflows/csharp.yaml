@@ -2,21 +2,24 @@ name: Build C#
 
 on:
   push:
-    branches: [ "master", "v7-stable", "v7-latest", i"v8/saturn", "v8/saturn" ]
+    branches: [ "master", "v7-stable", "v7-latest" ] 
   pull_request:
-    branches: [ "master", "v7-stable", "v7-latest", i"v8/saturn", "v8/saturn" ]
+    branches: [ "master", "v7-stable", "v7-latest" ]
 
 jobs:
   build:
+    runs-on: windows-latest
 
-    runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: csharp
+    
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 8
     - name: Restore dependencies
       run: dotnet restore
     - name: Build

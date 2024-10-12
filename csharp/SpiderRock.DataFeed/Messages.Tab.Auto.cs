@@ -1499,7 +1499,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "root\tticker\tosiRoot\tccode\texpirationMap\tunderlierMode\tpricingSource\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tmoneynessType\tpriceQuoteType\tvolumeTier\tpositionLimit\texchanges\ttickValue\tpointValue\tpointCurrency\tstrikeScale\tstrikeRatio\tcashOnExercise\tunderliersPerCn\tpremiumMult\tadjConvention\toptPriceInc\tpriceFormat\ttradeCurr\tsettleCurr\tstrikeCurr\tdefaultSurfaceRoot\ttimestamp\tUnderlying";
+		public const string TabHeader = "root\tticker\tosiRoot\tccode\texpirationMap\tunderlierMode\tpricingSource\toptionType\tmultihedge\texerciseTime\texerciseType\ttimeMetric\tpricingModel\tmoneynessType\tpriceQuoteType\tvolumeTier\tpositionLimit\texchanges\ttickValue\tpointValue\tpointCurrency\tstrikeScale\tstrikeRatio\tcashOnExercise\tunderliersPerCn\tpremiumMult\tadjConvention\toptPriceInc\tpriceFormat\ttradeCurr\tsettleCurr\tstrikeCurr\tdefaultSurfaceRoot\ttimestamp\ttradingPeriod\tUnderlying";
 
 		public string TabRecord
         {
@@ -1576,6 +1576,8 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append(DefaultSurfaceRoot);
 				recordBuilder.Append("\t");
 				recordBuilder.AppendInTabRecordFormat(Timestamp);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(TradingPeriod);
 
 				return recordBuilder.ToString();
 			}
