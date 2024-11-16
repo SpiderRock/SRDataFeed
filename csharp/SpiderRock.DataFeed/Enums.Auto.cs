@@ -78,7 +78,7 @@ namespace SpiderRock.DataFeed
  	public enum TkDefSource : byte { None=0,Vendor=1,OTC=2,SR=3,Exchange=4 };		
  	public enum TkStatusFlag : byte { None=0,Active=1,Delisted=2 };		
  	public enum TradeableStatus : byte { None=0,OK=1,SurfaceErr=2,LowCCnt=3,LowPCnt=4,FitPrcErr=5,BidAskMiss=6,LowCounter=7,DefaultSkew=8,SessionMiss=9,BaseErr=10,SwitchDelay=11,WideMktV=12,WideMktP=13,WideUMkt=14,UWidthEma=15,CCntEma=16,PCntEma=17,VWidthEma=18,PWidthEma=19,Closed=20 };		
- 	public enum TradingPeriod : byte { None=0,NMS=1,NMS_EXT=2,NMS_GTH=3,CME_ES=10,CME_ZC=11,CME_ZN=12,CME_CL=13,CME_GC=14,CFE=30,ICE_US=32,ICE_EU=35,EUX=50,EU_ERX=51,EU_CBOE=52,EU_NXAM=53,EU_NXBR=54,EU_NXLS=55,EU_NXML=56,EU_NXOS=57,EU_NXP=58 };		
+ 	public enum TradingPeriod : byte { None=0,NMS=1,NMS_EXT=2,NMS_GTH=3,CME_ES=10,CME_GRAIN=11,CME_TRSY=12,CME_ENGY=13,CME_METAL=14,CME_FX=15,CME_COMD=16,CME_CRYP=17,CME_DAIRY=18,CME_EQBTIC=19,CME_NKBTIC=20,CME_WEATHER=21,CME_TACO=22,CME_TPXBTIC=23,CME_FTSE=24,CME_BMD=25,CME_BOVESPA=26,CME_EQTMAC=27,CME_TAM=28,CME_OTHER=29,CFE=30,ICE_US=32,ICE_EU=35,EUX=50,EU_ERX=51,EU_CBOE=52,EU_NXAM=53,EU_NXBR=54,EU_NXLS=55,EU_NXML=56,EU_NXOS=57,EU_NXP=58 };		
  	public enum UnderlierMode : byte { None=0,Actual=1,FrontMonth=2,UPrcAdj=3 };		
  	public enum UpdateType : byte { None=0,PrcChange=1,SizeOnly=2,PrevPeriod=3 };		
  	public enum VolumeTier : byte { None=0,Top50=1 };		
