@@ -101,7 +101,7 @@
         OptOrder = 161,
         OptOrderPhlx = 162,
 		OptOrderCboe = 163,
-		OptOrderMiax =167,
+		OptOrderMiax = 167,
 
         ImbalanceArca = 170,
         ImbalanceNyse = 171,

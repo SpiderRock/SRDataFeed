@@ -195,7 +195,9 @@ namespace SpiderRock
 			ZAR=20,
 			HUF=21,
 			USX=22,
-			GBX=23
+			GBX=23,
+			DKK=24,
+			GEL=25
 		};
 
  		enum class ExchOrderStatus : Enum 
@@ -584,7 +586,19 @@ namespace SpiderRock
 			A5=42,
 			A6=43,
 			A7=44,
-			E32=45
+			E32=45,
+			EU2A=46,
+			EU2B=47,
+			EU2C=48,
+			EU2D=49,
+			EU2E=50,
+			EU3A=51,
+			EU3B=52,
+			EU3C=53,
+			EU3D=54,
+			EU3E=55,
+			EU4A=57,
+			EU5A=58
 		};
 
  		enum class PriceQuoteType : Enum 
