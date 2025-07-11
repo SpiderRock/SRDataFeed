@@ -2154,6 +2154,9 @@ private:
 		Currency settleCurr;
 		Currency strikeCurr;
 		TickerKey defaultSurfaceRoot;
+		String<6> ricCode;
+		String<6> bbgRoot;
+		YellowKey bbgGroup;
 		DateTime timestamp;
 		TradingPeriod tradingPeriod;
 	};
@@ -2202,6 +2205,9 @@ public:
 	inline Currency settleCurr() const { return layout_.settleCurr; }
 	inline Currency strikeCurr() const { return layout_.strikeCurr; }
 	inline const TickerKey& defaultSurfaceRoot() const { return layout_.defaultSurfaceRoot; }
+	inline const String<6>& ricCode() const { return layout_.ricCode; }
+	inline const String<6>& bbgRoot() const { return layout_.bbgRoot; }
+	inline YellowKey bbgGroup() const { return layout_.bbgGroup; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	inline TradingPeriod tradingPeriod() const { return layout_.tradingPeriod; }
 	

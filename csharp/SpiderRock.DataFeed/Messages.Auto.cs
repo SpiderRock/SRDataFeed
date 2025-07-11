@@ -6073,6 +6073,9 @@ namespace SpiderRock.DataFeed
 			public Currency settleCurr;
 			public Currency strikeCurr;
 			public TickerKeyLayout defaultSurfaceRoot;
+			public FixedString6Layout ricCode;
+			public FixedString6Layout bbgRoot;
+			public YellowKey bbgGroup;
 			public DateTimeLayout timestamp;
 			public TradingPeriod tradingPeriod;
 		}
@@ -6090,6 +6093,8 @@ namespace SpiderRock.DataFeed
  		private CachedTickerKey ccode;
  		private CachedFixedLengthString<FixedString24Layout> exchanges;
  		private CachedTickerKey defaultSurfaceRoot;
+ 		private CachedFixedLengthString<FixedString6Layout> ricCode;
+ 		private CachedFixedLengthString<FixedString6Layout> bbgRoot;
 		
 
             
@@ -6188,6 +6193,15 @@ namespace SpiderRock.DataFeed
              
 		/// <summary>fallback ticker to use for option surfaces if no native surfaces are available</summary>
         public TickerKey DefaultSurfaceRoot { get { return CacheVar.AllocIfNull(ref defaultSurfaceRoot).Get(ref body.defaultSurfaceRoot, usn); } set { CacheVar.AllocIfNull(ref defaultSurfaceRoot).Set(value); body.defaultSurfaceRoot = value.Layout; } }
+ 
+		/// <summary>RIC Code</summary>
+        public string RicCode { get { return CacheVar.AllocIfNull(ref ricCode).Get(ref body.ricCode, usn); } set { CacheVar.AllocIfNull(ref ricCode).Set(value); body.ricCode = value; } }
+ 
+		/// <summary>Bloomberg root</summary>
+        public string BbgRoot { get { return CacheVar.AllocIfNull(ref bbgRoot).Get(ref body.bbgRoot, usn); } set { CacheVar.AllocIfNull(ref bbgRoot).Set(value); body.bbgRoot = value; } }
+ 
+		/// <summary>Bloomberg Yellow Key</summary>
+        public YellowKey BbgGroup { get { return body.bbgGroup; } set { body.bbgGroup = value; } }
  
 		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
