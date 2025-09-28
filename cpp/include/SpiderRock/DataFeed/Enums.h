@@ -94,6 +94,23 @@ namespace SpiderRock
 			Flash=9
 		};
 
+ 		enum class BbgYrCode : Enum 
+		{
+			None=0,
+			OneDigit=1,
+			TwoDigit=2,
+			FourDigit=3,
+			OneDigitWeekly=4,
+			TwoDigitWeekly=5,
+			FourDigitWeekly=6,
+			OneDigitDec=7,
+			TwoDigitDec=8,
+			FourDigitDec=9,
+			OneDigitWeeklyDec=10,
+			TwoDigitWeeklyDec=11,
+			FourDigitWeeklyDec=12
+		};
+
  		enum class BuySell : Enum 
 		{
 			None=0,
