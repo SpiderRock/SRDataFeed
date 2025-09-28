@@ -6073,6 +6073,10 @@ namespace SpiderRock.DataFeed
 			public Currency settleCurr;
 			public Currency strikeCurr;
 			public TickerKeyLayout defaultSurfaceRoot;
+			public FixedString6Layout ricCode;
+			public FixedString6Layout bbgRoot;
+			public BbgYrCode bbgYrCode;
+			public YellowKey bbgGroup;
 			public DateTimeLayout timestamp;
 			public TradingPeriod tradingPeriod;
 		}
@@ -6090,6 +6094,8 @@ namespace SpiderRock.DataFeed
  		private CachedTickerKey ccode;
  		private CachedFixedLengthString<FixedString24Layout> exchanges;
  		private CachedTickerKey defaultSurfaceRoot;
+ 		private CachedFixedLengthString<FixedString6Layout> ricCode;
+ 		private CachedFixedLengthString<FixedString6Layout> bbgRoot;
 		
 
             
@@ -6188,6 +6194,18 @@ namespace SpiderRock.DataFeed
              
 		/// <summary>fallback ticker to use for option surfaces if no native surfaces are available</summary>
         public TickerKey DefaultSurfaceRoot { get { return CacheVar.AllocIfNull(ref defaultSurfaceRoot).Get(ref body.defaultSurfaceRoot, usn); } set { CacheVar.AllocIfNull(ref defaultSurfaceRoot).Set(value); body.defaultSurfaceRoot = value.Layout; } }
+ 
+		/// <summary>RIC Code</summary>
+        public string RicCode { get { return CacheVar.AllocIfNull(ref ricCode).Get(ref body.ricCode, usn); } set { CacheVar.AllocIfNull(ref ricCode).Set(value); body.ricCode = value; } }
+ 
+		/// <summary>Bloomberg root</summary>
+        public string BbgRoot { get { return CacheVar.AllocIfNull(ref bbgRoot).Get(ref body.bbgRoot, usn); } set { CacheVar.AllocIfNull(ref bbgRoot).Set(value); body.bbgRoot = value; } }
+ 
+		/// <summary>Format for the year field in the Bloomberg Code</summary>
+        public BbgYrCode BbgYrCode { get { return body.bbgYrCode; } set { body.bbgYrCode = value; } }
+ 
+		/// <summary>Bloomberg Yellow Key</summary>
+        public YellowKey BbgGroup { get { return body.bbgGroup; } set { body.bbgGroup = value; } }
  
 		
         public DateTime Timestamp { get { return body.timestamp; } set { body.timestamp = value; } }
@@ -9252,6 +9270,7 @@ namespace SpiderRock.DataFeed
 			public FixedString8Layout exchString;
 			public YesNo hasOptions;
 			public int numOptions;
+			public int roundlot;
 			public long sharesOutstanding;
 			public TimeMetric timeMetric;
 			public OTCPrimaryMarket otcPrimaryMarket;
@@ -9406,6 +9425,9 @@ namespace SpiderRock.DataFeed
  
 		/// <summary>total number of listed options</summary>
         public int NumOptions { get { return body.numOptions; } set { body.numOptions = value; } }
+ 
+		/// <summary>round lot</summary>
+        public int Roundlot { get { return body.roundlot; } set { body.roundlot = value; } }
  
 		/// <summary>symbol shares outstanding</summary>
         public long SharesOutstanding { get { return body.sharesOutstanding; } set { body.sharesOutstanding = value; } }

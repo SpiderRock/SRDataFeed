@@ -2154,6 +2154,10 @@ private:
 		Currency settleCurr;
 		Currency strikeCurr;
 		TickerKey defaultSurfaceRoot;
+		String<6> ricCode;
+		String<6> bbgRoot;
+		BbgYrCode bbgYrCode;
+		YellowKey bbgGroup;
 		DateTime timestamp;
 		TradingPeriod tradingPeriod;
 	};
@@ -2202,6 +2206,10 @@ public:
 	inline Currency settleCurr() const { return layout_.settleCurr; }
 	inline Currency strikeCurr() const { return layout_.strikeCurr; }
 	inline const TickerKey& defaultSurfaceRoot() const { return layout_.defaultSurfaceRoot; }
+	inline const String<6>& ricCode() const { return layout_.ricCode; }
+	inline const String<6>& bbgRoot() const { return layout_.bbgRoot; }
+	inline BbgYrCode bbgYrCode() const { return layout_.bbgYrCode; }
+	inline YellowKey bbgGroup() const { return layout_.bbgGroup; }
 	inline DateTime timestamp() const { return layout_.timestamp; }
 	inline TradingPeriod tradingPeriod() const { return layout_.tradingPeriod; }
 	
@@ -3270,6 +3278,7 @@ private:
 		String<8> exchString;
 		YesNo hasOptions;
 		Int numOptions;
+		Int roundlot;
 		Long sharesOutstanding;
 		TimeMetric timeMetric;
 		OTCPrimaryMarket otcPrimaryMarket;
@@ -3330,6 +3339,7 @@ public:
 	inline const String<8>& exchString() const { return layout_.exchString; }
 	inline YesNo hasOptions() const { return layout_.hasOptions; }
 	inline Int numOptions() const { return layout_.numOptions; }
+	inline Int roundlot() const { return layout_.roundlot; }
 	inline Long sharesOutstanding() const { return layout_.sharesOutstanding; }
 	inline TimeMetric timeMetric() const { return layout_.timeMetric; }
 	inline OTCPrimaryMarket otcPrimaryMarket() const { return layout_.otcPrimaryMarket; }

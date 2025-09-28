@@ -17,6 +17,7 @@ namespace SpiderRock.DataFeed
  	public enum AuctionState : byte { None=0,Start=1,Update=2,End=3 };		
  	public enum AuctionStatus : byte { None=0,WillRunOpenAndClose=1,WillRunInterest=2,WillNotRunImbalance=3,WillNotRunClsAuction=4 };		
  	public enum AuctionType : byte { None=0,Exposure=1,Improvement=2,Facilitation=3,Solicitation=4,Opening=5,Closing=6,RFQ=7,Block=8,Flash=9 };		
+ 	public enum BbgYrCode : byte { None=0,OneDigit=1,TwoDigit=2,FourDigit=3,OneDigitWeekly=4,TwoDigitWeekly=5,FourDigitWeekly=6,OneDigitDec=7,TwoDigitDec=8,FourDigitDec=9,OneDigitWeeklyDec=10,TwoDigitWeeklyDec=11,FourDigitWeeklyDec=12 };		
  	public enum BuySell : byte { None=0,Buy=1,Sell=2 };		
  	public enum CalcSource : byte { None=0,Tick=1,Loop=2 };		
  	public enum CalcType : byte { Loop=0,Tick=1 };		
@@ -53,7 +54,7 @@ namespace SpiderRock.DataFeed
  	public enum OptPriceInc : byte { None=0,PartPenny=1,PartNickle=2,FullPenny=3 };		
  	public enum OptionType : byte { None=0,Equity=1,Index=2,Future=3,Binary=4,Warrant=5,Flex=6,MapError=99 };		
  	public enum PositionType : byte { None=0,Opening=1,Closing=2,Auto=3 };		
- 	public enum PriceFormat : byte { None=0,N0=1,N1=2,N2=3,N3=4,N4=5,N5=6,N6=7,N7=8,F4=9,F8=10,Q8=11,F16=12,F32=13,H32=14,Q32=15,F64=16,H64=17,FullPenny=18,PartPenny=19,PartNickle=20,EQT=21,V1=22,V2=23,V3=24,V4=25,V5=26,V6=27,V7=28,V8=29,V9=30,V10=31,V11=32,V12=33,V13=34,V14=35,V15=36,A0=37,A1=38,A2=39,A3=40,A4=41,A5=42,A6=43,A7=44,E32=45,EU2A=46,EU2B=47,EU2C=48,EU2D=49,EU2E=50,EU3A=51,EU3B=52,EU3C=53,EU3D=54,EU3E=55,EU4A=57,EU5A=58 };		
+ 	public enum PriceFormat : byte { None=0,N0=1,N1=2,N2=3,N3=4,N4=5,N5=6,N6=7,N7=8,F4=9,F8=10,Q8=11,F16=12,F32=13,H32=14,Q32=15,F64=16,H64=17,FullPenny=18,PartPenny=19,PartNickle=20,EQT=21,V1=22,V2=23,V3=24,V4=25,V5=26,V6=27,V7=28,V8=29,V9=30,V10=31,V11=32,V12=33,V13=34,V14=35,V15=36,A0=37,A1=38,A2=39,A3=40,A4=41,A5=42,A6=43,A7=44,E32=45,EU2A=46,EU2B=47,EU2C=48,EU2D=49,EU2E=50,EU2F=51,EU3A=52,EU3B=53,EU3C=54,EU3D=55,EU3E=56,EU3F=57,EU3G=58,EU3H=59,EU3I=60,EU3J=61,EU4A=62,EU4B=63,EU4C=64,EU5A=65,EU5B=66,V16=67 };		
  	public enum PriceQuoteType : byte { None=0,Price=1,Vol=2 };		
  	public enum PricingModel : byte { None=0,Equity=1,FutureApprox=2,FutureExact=3,NormalApprox=4,NormalExact=5 };		
  	public enum PricingSource : byte { None=0,Native=1,SyntheticExpiry=2 };		
@@ -82,6 +83,7 @@ namespace SpiderRock.DataFeed
  	public enum UnderlierMode : byte { None=0,Actual=1,FrontMonth=2,UPrcAdj=3 };		
  	public enum UpdateType : byte { None=0,PrcChange=1,SizeOnly=2,PrevPeriod=3 };		
  	public enum VolumeTier : byte { None=0,Top50=1 };		
+ 	public enum YellowKey : byte { None=0,Govt=1,Corp=2,Mtge=3,MMkt=4,Muni=5,Pfd=6,Equity=7,Comdty=8,Index=9,Curncy=10 };		
  	public enum YesNo : byte { None=0,Yes=1,No=2 };		
 
 }
