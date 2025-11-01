@@ -91,7 +91,10 @@ namespace SpiderRock
 			Closing=6,
 			RFQ=7,
 			Block=8,
-			Flash=9
+			Flash=9,
+			BlockDAC=10,
+			BlockPOC=11,
+			BlockPCV=12
 		};
 
  		enum class BbgYrCode : Enum 
@@ -579,22 +582,22 @@ namespace SpiderRock
 			FullPenny=18,
 			PartPenny=19,
 			PartNickle=20,
-			EQT=21,
-			V1=22,
-			V2=23,
-			V3=24,
-			V4=25,
-			V5=26,
-			V6=27,
-			V7=28,
-			V8=29,
-			V9=30,
-			V10=31,
-			V11=32,
-			V12=33,
-			V13=34,
-			V14=35,
-			V15=36,
+			V1=21,
+			V2=22,
+			V3=23,
+			V4=24,
+			V5=25,
+			V6=26,
+			V7=27,
+			V8=28,
+			V9=29,
+			V10=30,
+			V11=31,
+			V12=32,
+			V13=33,
+			V14=34,
+			V15=35,
+			V16=36,
 			A0=37,
 			A1=38,
 			A2=39,
@@ -625,7 +628,10 @@ namespace SpiderRock
 			EU4C=64,
 			EU5A=65,
 			EU5B=66,
-			V16=67
+			NMS_Penny=67,
+			NMS_Nickle=68,
+			NMS_HalfPenny=69,
+			EQT=70
 		};
 
  		enum class PriceQuoteType : Enum 
@@ -836,14 +842,16 @@ namespace SpiderRock
 			NXLS=30,
 			NXML=31,
 			NXOS=32,
-			NXP=33
+			NXP=33,
+			X24=34
 		};
 
  		enum class StkPriceInc : Enum 
 		{
 			None=0,
 			FullPenny=1,
-			Nickle=2
+			Nickle=2,
+			HalfPenny=3
 		};
 
  		enum class StkPrintType : Enum 
@@ -1101,7 +1109,21 @@ namespace SpiderRock
 			EU_NXLS=55,
 			EU_NXML=56,
 			EU_NXOS=57,
-			EU_NXP=58
+			EU_NXP=58,
+			EU_AT=59,
+			EU_BE=60,
+			EU_CH=61,
+			EU_DE=62,
+			EU_DK=63,
+			EU_FI=64,
+			EU_FR=65,
+			EU_GB=66,
+			EU_IE=67,
+			EU_IT=68,
+			EU_NL=69,
+			EU_NO=70,
+			EU_PT=71,
+			EU_SE=72
 		};
 
  		enum class UnderlierMode : Enum 
