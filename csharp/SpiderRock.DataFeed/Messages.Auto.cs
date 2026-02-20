@@ -8622,10 +8622,14 @@ namespace SpiderRock.DataFeed
 		{
 			public StkExch prtExch;
 			public int prtSize;
+			public float prtSizeFractional;
+			public YesNo isPrtSizeFractional;
 			public float prtPrice;
 			public int prtClusterNum;
 			public int prtClusterSize;
+			public float prtClusterSizeFractional;
 			public int prtVolume;
+			public float prtVolumeFractional;
 			public float mrkPrice;
 			public float clsPrice;
 			public StkPrintType prtType;
@@ -8663,6 +8667,12 @@ namespace SpiderRock.DataFeed
 		/// <summary>print size</summary>
         public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
  
+		/// <summary>print size today in fractional qty</summary>
+        public float PrtSizeFractional { get { return body.prtSizeFractional; } set { body.prtSizeFractional = value; } }
+ 
+		/// <summary>print size has fractional qty</summary>
+        public YesNo IsPrtSizeFractional { get { return body.isPrtSizeFractional; } set { body.isPrtSizeFractional = value; } }
+ 
 		/// <summary>print price level</summary>
         public float PrtPrice { get { return body.prtPrice; } set { body.prtPrice = value; } }
  
@@ -8672,8 +8682,14 @@ namespace SpiderRock.DataFeed
 		/// <summary>cumulative size of prints in this sequence (prints @ same or more aggressive price with less than 25 ms elapsing since first print; can span exchanges)</summary>
         public int PrtClusterSize { get { return body.prtClusterSize; } set { body.prtClusterSize = value; } }
  
+		/// <summary>cumulative fractional size of prints in this sequence (prints @ same or more aggressive price with less than 25 ms elapsing since first print; can span exchanges)</summary>
+        public float PrtClusterSizeFractional { get { return body.prtClusterSizeFractional; } set { body.prtClusterSizeFractional = value; } }
+ 
 		/// <summary>cumulative print size today</summary>
         public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
+ 
+		/// <summary>cumulative print size fractional today</summary>
+        public float PrtVolumeFractional { get { return body.prtVolumeFractional; } set { body.prtVolumeFractional = value; } }
  
 		/// <summary>last regular market print price</summary>
         public float MrkPrice { get { return body.mrkPrice; } set { body.mrkPrice = value; } }
