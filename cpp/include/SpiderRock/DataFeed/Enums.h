@@ -319,7 +319,8 @@ namespace SpiderRock
 			NXML=12,
 			NXOS=13,
 			NXP=14,
-			ICEFE=15
+			ICEFE=15,
+			ICELF=16
 		};
 
  		enum class GridType : Enum 
@@ -528,7 +529,8 @@ namespace SpiderRock
 			NXML=32,
 			NXOS=33,
 			NXP=34,
-			ICEFE=35
+			ICEFE=35,
+			ICELF=36
 		};
 
  		enum class OptPriceInc : Enum 
@@ -631,7 +633,24 @@ namespace SpiderRock
 			NMS_Penny=67,
 			NMS_Nickle=68,
 			NMS_HalfPenny=69,
-			EQT=70
+			EQT=70,
+			EU2G=71,
+			EU4D=72,
+			EU5C=73,
+			EU5D=74,
+			EU7A=75,
+			EU10A=76,
+			EU12A=77,
+			EU14A=78,
+			EU15A=79,
+			EU16A=80,
+			EU17A=81,
+			EU18A=82,
+			EU19A=83,
+			EU19B=84,
+			EU19C=85,
+			V17=86,
+			V18=87
 		};
 
  		enum class PriceQuoteType : Enum 
@@ -994,7 +1013,7 @@ namespace SpiderRock
 			DJI=28,
 			CBX=29,
 			BXE=30,
-			EUX=31,
+			SCE=31,
 			CXE=32,
 			DXE=33,
 			NXAM=34,
@@ -1005,7 +1024,8 @@ namespace SpiderRock
 			NXP=39,
 			EUREX=40,
 			CEDX=41,
-			ICEFE=42
+			ICEFE=42,
+			ICELF=43
 		};
 
  		enum class TimeInForce : Enum 
@@ -1101,7 +1121,7 @@ namespace SpiderRock
 			CFE=30,
 			ICE_US=32,
 			ICE_EU=35,
-			EUX=50,
+			SCE=50,
 			EU_ERX=51,
 			EU_CBOE=52,
 			EU_NXAM=53,

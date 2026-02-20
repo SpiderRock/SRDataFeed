@@ -3034,10 +3034,14 @@ private:
 		Key pkey;
 		StkExch prtExch;
 		Int prtSize;
+		Float prtSizeFractional;
+		YesNo isPrtSizeFractional;
 		Float prtPrice;
 		Int prtClusterNum;
 		Int prtClusterSize;
+		Float prtClusterSizeFractional;
 		Int prtVolume;
+		Float prtVolumeFractional;
 		Float mrkPrice;
 		Float clsPrice;
 		StkPrintType prtType;
@@ -3071,10 +3075,14 @@ public:
 	
 	inline StkExch prtExch() const { return layout_.prtExch; }
 	inline Int prtSize() const { return layout_.prtSize; }
+	inline Float prtSizeFractional() const { return layout_.prtSizeFractional; }
+	inline YesNo isPrtSizeFractional() const { return layout_.isPrtSizeFractional; }
 	inline Float prtPrice() const { return layout_.prtPrice; }
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
 	inline Int prtClusterSize() const { return layout_.prtClusterSize; }
+	inline Float prtClusterSizeFractional() const { return layout_.prtClusterSizeFractional; }
 	inline Int prtVolume() const { return layout_.prtVolume; }
+	inline Float prtVolumeFractional() const { return layout_.prtVolumeFractional; }
 	inline Float mrkPrice() const { return layout_.mrkPrice; }
 	inline Float clsPrice() const { return layout_.clsPrice; }
 	inline StkPrintType prtType() const { return layout_.prtType; }

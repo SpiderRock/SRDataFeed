@@ -2043,7 +2043,7 @@ namespace SpiderRock.DataFeed
     {
 		[ThreadStatic] private static StringBuilder recordBuilder;
 
-		public const string TabHeader = "ticker\tprtExch\tprtSize\tprtPrice\tprtClusterNum\tprtClusterSize\tprtVolume\tmrkPrice\tclsPrice\tprtType\tprintCodes\tprtCond1\tprtCond2\tprtCond3\tprtCond4\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
+		public const string TabHeader = "ticker\tprtExch\tprtSize\tprtSizeFractional\tisPrtSizeFractional\tprtPrice\tprtClusterNum\tprtClusterSize\tprtClusterSizeFractional\tprtVolume\tprtVolumeFractional\tmrkPrice\tclsPrice\tprtType\tprintCodes\tprtCond1\tprtCond2\tprtCond3\tprtCond4\tebid\teask\tebsz\teasz\teage\tprtSide\tprtTimestamp\tnetTimestamp\ttimestamp";
 
 		public string TabRecord
         {
@@ -2059,13 +2059,21 @@ namespace SpiderRock.DataFeed
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtSize);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtSizeFractional);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(IsPrtSizeFractional);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtPrice);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtClusterNum);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtClusterSize);
 				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtClusterSizeFractional);
+				recordBuilder.Append("\t");
 				recordBuilder.Append(PrtVolume);
+				recordBuilder.Append("\t");
+				recordBuilder.Append(PrtVolumeFractional);
 				recordBuilder.Append("\t");
 				recordBuilder.Append(MrkPrice);
 				recordBuilder.Append("\t");
