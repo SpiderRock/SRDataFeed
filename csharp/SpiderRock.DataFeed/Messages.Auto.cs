@@ -4163,7 +4163,7 @@ namespace SpiderRock.DataFeed
 			public int prtClusterNum;
 			public int prtClusterSize;
 			public byte prtType;
-			public FixedString18Layout printCodes;
+			public FixedString36Layout printCodes;
 			public ushort prtOrders;
 			public int prtVolume;
 			public int cxlVolume;
@@ -4190,7 +4190,7 @@ namespace SpiderRock.DataFeed
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Invalidate() { ++usn; }
 		
- 		private CachedFixedLengthString<FixedString18Layout> printCodes;
+ 		private CachedFixedLengthString<FixedString36Layout> printCodes;
 		
 
 
@@ -4463,7 +4463,7 @@ namespace SpiderRock.DataFeed
 		internal struct BodyLayout
 		{
 			public OptExch prtExch;
-			public FixedString18Layout printCodes;
+			public FixedString36Layout printCodes;
 			public int prtSize;
 			public float prtPrice;
 			public int prtClusterNum;
@@ -4504,7 +4504,7 @@ namespace SpiderRock.DataFeed
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Invalidate() { ++usn; }
 		
- 		private CachedFixedLengthString<FixedString18Layout> printCodes;
+ 		private CachedFixedLengthString<FixedString36Layout> printCodes;
 		
 
 
@@ -8633,7 +8633,7 @@ namespace SpiderRock.DataFeed
 			public float mrkPrice;
 			public float clsPrice;
 			public StkPrintType prtType;
-			public FixedString18Layout printCodes;
+			public FixedString36Layout printCodes;
 			public byte prtCond1;
 			public byte prtCond2;
 			public byte prtCond3;
@@ -8657,7 +8657,7 @@ namespace SpiderRock.DataFeed
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal void Invalidate() { ++usn; }
 		
- 		private CachedFixedLengthString<FixedString18Layout> printCodes;
+ 		private CachedFixedLengthString<FixedString36Layout> printCodes;
 		
 
 
@@ -8667,7 +8667,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>print size</summary>
         public int PrtSize { get { return body.prtSize; } set { body.prtSize = value; } }
  
-		/// <summary>print size today in fractional qty</summary>
+		/// <summary>print size with fractional qts</summary>
         public float PrtSizeFractional { get { return body.prtSizeFractional; } set { body.prtSizeFractional = value; } }
  
 		/// <summary>print size has fractional qty</summary>
@@ -8688,7 +8688,7 @@ namespace SpiderRock.DataFeed
 		/// <summary>cumulative print size today</summary>
         public int PrtVolume { get { return body.prtVolume; } set { body.prtVolume = value; } }
  
-		/// <summary>cumulative print size fractional today</summary>
+		/// <summary>cumulative fractional size of prints in this sequence (prints @ same or more aggressive price with less than 25 ms elapsing since first print; can span exchanges)</summary>
         public float PrtVolumeFractional { get { return body.prtVolumeFractional; } set { body.prtVolumeFractional = value; } }
  
 		/// <summary>last regular market print price</summary>
