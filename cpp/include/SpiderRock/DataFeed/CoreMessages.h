@@ -1443,7 +1443,7 @@ private:
 		Int prtClusterNum;
 		Int prtClusterSize;
 		Byte prtType;
-		String<18> printCodes;
+		String<36> printCodes;
 		UShort prtOrders;
 		Int prtVolume;
 		Int cxlVolume;
@@ -1480,7 +1480,7 @@ public:
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
 	inline Int prtClusterSize() const { return layout_.prtClusterSize; }
 	inline Byte prtType() const { return layout_.prtType; }
-	inline const String<18>& printCodes() const { return layout_.printCodes; }
+	inline const String<36>& printCodes() const { return layout_.printCodes; }
 	inline UShort prtOrders() const { return layout_.prtOrders; }
 	inline Int prtVolume() const { return layout_.prtVolume; }
 	inline Int cxlVolume() const { return layout_.cxlVolume; }
@@ -1541,7 +1541,7 @@ private:
 	{
 		Key pkey;
 		OptExch prtExch;
-		String<18> printCodes;
+		String<36> printCodes;
 		Int prtSize;
 		Float prtPrice;
 		Int prtClusterNum;
@@ -1587,7 +1587,7 @@ public:
 	inline uint64_t time_received() const { return time_received_; }
 	
 	inline OptExch prtExch() const { return layout_.prtExch; }
-	inline const String<18>& printCodes() const { return layout_.printCodes; }
+	inline const String<36>& printCodes() const { return layout_.printCodes; }
 	inline Int prtSize() const { return layout_.prtSize; }
 	inline Float prtPrice() const { return layout_.prtPrice; }
 	inline Int prtClusterNum() const { return layout_.prtClusterNum; }
@@ -3045,7 +3045,7 @@ private:
 		Float mrkPrice;
 		Float clsPrice;
 		StkPrintType prtType;
-		String<18> printCodes;
+		String<36> printCodes;
 		Byte prtCond1;
 		Byte prtCond2;
 		Byte prtCond3;
@@ -3086,7 +3086,7 @@ public:
 	inline Float mrkPrice() const { return layout_.mrkPrice; }
 	inline Float clsPrice() const { return layout_.clsPrice; }
 	inline StkPrintType prtType() const { return layout_.prtType; }
-	inline const String<18>& printCodes() const { return layout_.printCodes; }
+	inline const String<36>& printCodes() const { return layout_.printCodes; }
 	inline Byte prtCond1() const { return layout_.prtCond1; }
 	inline Byte prtCond2() const { return layout_.prtCond2; }
 	inline Byte prtCond3() const { return layout_.prtCond3; }

@@ -319,8 +319,8 @@ namespace SpiderRock
 			NXML=12,
 			NXOS=13,
 			NXP=14,
-			ICEFE=15,
-			ICELF=16
+			ICEFEC=15,
+			ICEFEF=16
 		};
 
  		enum class GridType : Enum 
@@ -529,8 +529,8 @@ namespace SpiderRock
 			NXML=32,
 			NXOS=33,
 			NXP=34,
-			ICEFE=35,
-			ICELF=36
+			ICEFEC=35,
+			ICEFEF=36
 		};
 
  		enum class OptPriceInc : Enum 
@@ -1024,8 +1024,8 @@ namespace SpiderRock
 			NXP=39,
 			EUREX=40,
 			CEDX=41,
-			ICEFE=42,
-			ICELF=43
+			ICEFEC=42,
+			ICEFEF=43
 		};
 
  		enum class TimeInForce : Enum 
@@ -1119,6 +1119,7 @@ namespace SpiderRock
 			CME_TAM=28,
 			CME_OTHER=29,
 			CFE=30,
+			CFE_VX=31,
 			ICE_US=32,
 			ICE_EU=35,
 			SCE=50,
@@ -1143,7 +1144,11 @@ namespace SpiderRock
 			EU_NL=69,
 			EU_NO=70,
 			EU_PT=71,
-			EU_SE=72
+			EU_SE=72,
+			EU_ES=73,
+			EU_CZ=74,
+			EU_HU=75,
+			EU_PL=76
 		};
 
  		enum class UnderlierMode : Enum 
