@@ -1119,6 +1119,7 @@ namespace SpiderRock
 			CME_TAM=28,
 			CME_OTHER=29,
 			CFE=30,
+			CFE_VX=31,
 			ICE_US=32,
 			ICE_EU=35,
 			SCE=50,
