@@ -530,7 +530,8 @@ namespace SpiderRock
 			NXOS=33,
 			NXP=34,
 			ICEFEC=35,
-			ICEFEF=36
+			ICEFEF=36,
+			TMX=37
 		};
 
  		enum class OptPriceInc : Enum 
@@ -710,7 +711,8 @@ namespace SpiderRock
 			NXLS=28,
 			NXML=29,
 			NXOS=30,
-			NXP=31
+			NXP=31,
+			XTSE=32
 		};
 
  		enum class ProductClass : Enum 
@@ -862,7 +864,9 @@ namespace SpiderRock
 			NXML=31,
 			NXOS=32,
 			NXP=33,
-			X24=34
+			X24=34,
+			TSX=35,
+			TXSE=36
 		};
 
  		enum class StkPriceInc : Enum 
@@ -1025,7 +1029,9 @@ namespace SpiderRock
 			EUREX=40,
 			CEDX=41,
 			ICEFEC=42,
-			ICEFEF=43
+			ICEFEF=43,
+			TSX=44,
+			TMX=45
 		};
 
  		enum class TimeInForce : Enum 
@@ -1148,7 +1154,8 @@ namespace SpiderRock
 			EU_ES=73,
 			EU_CZ=74,
 			EU_HU=75,
-			EU_PL=76
+			EU_PL=76,
+			CA=77
 		};
 
  		enum class UnderlierMode : Enum 
