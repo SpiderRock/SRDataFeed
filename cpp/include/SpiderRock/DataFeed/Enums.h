@@ -1127,6 +1127,7 @@ namespace SpiderRock
 			CFE=30,
 			CFE_VX=31,
 			ICE_US=32,
+			ICE_US_ETH=33,
 			ICE_EU=35,
 			SCE=50,
 			EU_ERX=51,
